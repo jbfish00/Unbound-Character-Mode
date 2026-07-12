@@ -8,3 +8,8 @@ rom/*.zip
 build/
 __pycache__/
 *.pyc
+
+# armips is a third-party source clone (github.com/Kingcom/armips), not our code
+tools/armips/
+# local compiled/copied tool binaries — regenerate via build steps, not committed
+tools/bin/
