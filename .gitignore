@@ -1,0 +1,10 @@
+# ROM/patch binaries — never commit copyrighted material
+rom/*.gba
+rom/*.zip
+*.gba
+*.ips
+*.ups
+*.bps
+build/
+__pycache__/
+*.pyc
