@@ -1,0 +1,3503 @@
+{
+ "staged_character_count": 96,
+ "total_characters": 156,
+ "characters": [
+  {
+   "character": "Red",
+   "key": "red",
+   "rowe_symbols": {
+    "ow": "OBJ_EVENT_GFX_RED_NORMAL",
+    "front": "TRAINER_PIC_RED",
+    "back": "TRAINER_BACK_PIC_RED"
+   },
+   "staged_files": {
+    "front": [
+     "front.png",
+     "front.4bpp",
+     "front.4bpp.lz"
+    ],
+    "back": [
+     "back.png",
+     "back.4bpp"
+    ],
+    "ow": [
+     "ow.png",
+     "ow.4bpp"
+    ],
+    "trainer_pal": [],
+    "ow_pal": []
+   },
+   "has_any_asset": true
+  },
+  {
+   "character": "Leaf",
+   "key": "leaf",
+   "rowe_symbols": {
+    "ow": "OBJ_EVENT_GFX_LEAF_NORMAL",
+    "front": "TRAINER_PIC_LEAF",
+    "back": "TRAINER_BACK_PIC_LEAF"
+   },
+   "staged_files": {
+    "front": [
+     "front.png",
+     "front.4bpp",
+     "front.4bpp.lz"
+    ],
+    "back": [
+     "back.png",
+     "back.4bpp"
+    ],
+    "ow": [
+     "ow.png",
+     "ow.4bpp"
+    ],
+    "trainer_pal": [],
+    "ow_pal": []
+   },
+   "has_any_asset": true
+  },
+  {
+   "character": "Blue",
+   "key": "blue",
+   "rowe_symbols": {
+    "ow": "OBJ_EVENT_GFX_CM_BLUE",
+    "front": "TRAINER_PIC_BLUE",
+    "back": "-"
+   },
+   "staged_files": {
+    "front": [
+     "front.png",
+     "front.4bpp",
+     "front.4bpp.lz"
+    ],
+    "back": [],
+    "ow": [
+     "ow.png",
+     "ow.4bpp",
+     "ow.pal",
+     "ow.gbapal"
+    ],
+    "trainer_pal": [
+     "trainer_pal.pal",
+     "trainer_pal.gbapal"
+    ],
+    "ow_pal": []
+   },
+   "has_any_asset": true
+  },
+  {
+   "character": "Lance",
+   "key": "lance",
+   "rowe_symbols": {
+    "ow": "OBJ_EVENT_GFX_CM_LANCE",
+    "front": "TRAINER_PIC_LANCE",
+    "back": "-"
+   },
+   "staged_files": {
+    "front": [
+     "front.png",
+     "front.4bpp",
+     "front.4bpp.lz"
+    ],
+    "back": [],
+    "ow": [
+     "ow.png",
+     "ow.4bpp",
+     "ow.pal",
+     "ow.gbapal"
+    ],
+    "trainer_pal": [
+     "trainer_pal.pal",
+     "trainer_pal.gbapal"
+    ],
+    "ow_pal": []
+   },
+   "has_any_asset": true
+  },
+  {
+   "character": "Lorelei",
+   "key": "lorelei",
+   "rowe_symbols": {
+    "ow": "OBJ_EVENT_GFX_CM_LORELEI",
+    "front": "TRAINER_PIC_LORELEI",
+    "back": "-"
+   },
+   "staged_files": {
+    "front": [
+     "front.png",
+     "front.4bpp",
+     "front.4bpp.lz"
+    ],
+    "back": [],
+    "ow": [
+     "ow.png",
+     "ow.4bpp",
+     "ow.pal",
+     "ow.gbapal"
+    ],
+    "trainer_pal": [
+     "trainer_pal.pal",
+     "trainer_pal.gbapal"
+    ],
+    "ow_pal": []
+   },
+   "has_any_asset": true
+  },
+  {
+   "character": "Bruno",
+   "key": "bruno",
+   "rowe_symbols": {
+    "ow": "OBJ_EVENT_GFX_CM_BRUNO",
+    "front": "TRAINER_PIC_BRUNO",
+    "back": "-"
+   },
+   "staged_files": {
+    "front": [
+     "front.png",
+     "front.4bpp",
+     "front.4bpp.lz"
+    ],
+    "back": [],
+    "ow": [
+     "ow.png",
+     "ow.4bpp",
+     "ow.pal",
+     "ow.gbapal"
+    ],
+    "trainer_pal": [
+     "trainer_pal.pal",
+     "trainer_pal.gbapal"
+    ],
+    "ow_pal": []
+   },
+   "has_any_asset": true
+  },
+  {
+   "character": "Agatha",
+   "key": "agatha",
+   "rowe_symbols": {
+    "ow": "OBJ_EVENT_GFX_CM_AGATHA",
+    "front": "TRAINER_PIC_AGATHA",
+    "back": "-"
+   },
+   "staged_files": {
+    "front": [
+     "front.png",
+     "front.4bpp",
+     "front.4bpp.lz"
+    ],
+    "back": [],
+    "ow": [
+     "ow.png",
+     "ow.4bpp",
+     "ow.pal",
+     "ow.gbapal"
+    ],
+    "trainer_pal": [
+     "trainer_pal.pal",
+     "trainer_pal.gbapal"
+    ],
+    "ow_pal": []
+   },
+   "has_any_asset": true
+  },
+  {
+   "character": "Koga",
+   "key": "koga",
+   "rowe_symbols": {
+    "ow": "OBJ_EVENT_GFX_CM_KOGA",
+    "front": "TRAINER_PIC_KOGA",
+    "back": "-"
+   },
+   "staged_files": {
+    "front": [
+     "front.png",
+     "front.4bpp",
+     "front.4bpp.lz"
+    ],
+    "back": [],
+    "ow": [
+     "ow.png",
+     "ow.4bpp",
+     "ow.pal",
+     "ow.gbapal"
+    ],
+    "trainer_pal": [
+     "trainer_pal.pal",
+     "trainer_pal.gbapal"
+    ],
+    "ow_pal": []
+   },
+   "has_any_asset": true
+  },
+  {
+   "character": "Brock",
+   "key": "brock",
+   "rowe_symbols": {
+    "ow": "OBJ_EVENT_GFX_CM_BROCK",
+    "front": "TRAINER_PIC_BROCK",
+    "back": "-"
+   },
+   "staged_files": {
+    "front": [
+     "front.png",
+     "front.4bpp",
+     "front.4bpp.lz"
+    ],
+    "back": [],
+    "ow": [
+     "ow.png",
+     "ow.4bpp",
+     "ow.pal",
+     "ow.gbapal"
+    ],
+    "trainer_pal": [
+     "trainer_pal.pal",
+     "trainer_pal.gbapal"
+    ],
+    "ow_pal": []
+   },
+   "has_any_asset": true
+  },
+  {
+   "character": "Misty",
+   "key": "misty",
+   "rowe_symbols": {
+    "ow": "OBJ_EVENT_GFX_CM_MISTY",
+    "front": "TRAINER_PIC_MISTY",
+    "back": "-"
+   },
+   "staged_files": {
+    "front": [
+     "front.png",
+     "front.4bpp",
+     "front.4bpp.lz"
+    ],
+    "back": [],
+    "ow": [
+     "ow.png",
+     "ow.4bpp",
+     "ow.pal",
+     "ow.gbapal"
+    ],
+    "trainer_pal": [
+     "trainer_pal.pal",
+     "trainer_pal.gbapal"
+    ],
+    "ow_pal": []
+   },
+   "has_any_asset": true
+  },
+  {
+   "character": "Lt. Surge",
+   "key": "lt_surge",
+   "rowe_symbols": {
+    "ow": "OBJ_EVENT_GFX_CM_LT_SURGE",
+    "front": "TRAINER_PIC_LT_SURGE",
+    "back": "-"
+   },
+   "staged_files": {
+    "front": [
+     "front.png",
+     "front.4bpp",
+     "front.4bpp.lz"
+    ],
+    "back": [],
+    "ow": [
+     "ow.png",
+     "ow.4bpp",
+     "ow.pal",
+     "ow.gbapal"
+    ],
+    "trainer_pal": [
+     "trainer_pal.pal",
+     "trainer_pal.gbapal"
+    ],
+    "ow_pal": []
+   },
+   "has_any_asset": true
+  },
+  {
+   "character": "Erika",
+   "key": "erika",
+   "rowe_symbols": {
+    "ow": "OBJ_EVENT_GFX_CM_ERIKA",
+    "front": "TRAINER_PIC_ERIKA",
+    "back": "-"
+   },
+   "staged_files": {
+    "front": [
+     "front.png",
+     "front.4bpp",
+     "front.4bpp.lz"
+    ],
+    "back": [],
+    "ow": [
+     "ow.png",
+     "ow.4bpp",
+     "ow.pal",
+     "ow.gbapal"
+    ],
+    "trainer_pal": [
+     "trainer_pal.pal",
+     "trainer_pal.gbapal"
+    ],
+    "ow_pal": []
+   },
+   "has_any_asset": true
+  },
+  {
+   "character": "Sabrina",
+   "key": "sabrina",
+   "rowe_symbols": {
+    "ow": "OBJ_EVENT_GFX_CM_SABRINA",
+    "front": "TRAINER_PIC_SABRINA",
+    "back": "-"
+   },
+   "staged_files": {
+    "front": [
+     "front.png",
+     "front.4bpp",
+     "front.4bpp.lz"
+    ],
+    "back": [],
+    "ow": [
+     "ow.png",
+     "ow.4bpp",
+     "ow.pal",
+     "ow.gbapal"
+    ],
+    "trainer_pal": [
+     "trainer_pal.pal",
+     "trainer_pal.gbapal"
+    ],
+    "ow_pal": []
+   },
+   "has_any_asset": true
+  },
+  {
+   "character": "Blaine",
+   "key": "blaine",
+   "rowe_symbols": {
+    "ow": "OBJ_EVENT_GFX_CM_BLAINE",
+    "front": "TRAINER_PIC_BLAINE",
+    "back": "-"
+   },
+   "staged_files": {
+    "front": [
+     "front.png",
+     "front.4bpp",
+     "front.4bpp.lz"
+    ],
+    "back": [],
+    "ow": [
+     "ow.png",
+     "ow.4bpp",
+     "ow.pal",
+     "ow.gbapal"
+    ],
+    "trainer_pal": [
+     "trainer_pal.pal",
+     "trainer_pal.gbapal"
+    ],
+    "ow_pal": []
+   },
+   "has_any_asset": true
+  },
+  {
+   "character": "Giovanni",
+   "key": "giovanni",
+   "rowe_symbols": {
+    "ow": "OBJ_EVENT_GFX_CM_GIOVANNI",
+    "front": "TRAINER_PIC_GIOVANNI",
+    "back": "-"
+   },
+   "staged_files": {
+    "front": [
+     "front.png",
+     "front.4bpp",
+     "front.4bpp.lz"
+    ],
+    "back": [],
+    "ow": [
+     "ow.png",
+     "ow.4bpp",
+     "ow.pal",
+     "ow.gbapal"
+    ],
+    "trainer_pal": [
+     "trainer_pal.pal",
+     "trainer_pal.gbapal"
+    ],
+    "ow_pal": []
+   },
+   "has_any_asset": true
+  },
+  {
+   "character": "Ash",
+   "key": "ash",
+   "rowe_symbols": {
+    "ow": "OBJ_EVENT_GFX_CM_ASH",
+    "front": "-",
+    "back": "-"
+   },
+   "staged_files": {
+    "front": [],
+    "back": [],
+    "ow": [
+     "ow.png",
+     "ow.4bpp",
+     "ow.pal",
+     "ow.gbapal"
+    ],
+    "trainer_pal": [],
+    "ow_pal": []
+   },
+   "has_any_asset": true
+  },
+  {
+   "character": "Gary",
+   "key": "gary",
+   "rowe_symbols": {
+    "ow": "OBJ_EVENT_GFX_CM_BLUE",
+    "front": "TRAINER_PIC_BLUE",
+    "back": "-"
+   },
+   "staged_files": {
+    "front": [],
+    "back": [],
+    "ow": [],
+    "trainer_pal": [],
+    "ow_pal": []
+   },
+   "has_any_asset": false
+  },
+  {
+   "character": "Ritchie",
+   "key": "ritchie",
+   "rowe_symbols": {
+    "ow": "-",
+    "front": "-",
+    "back": "-"
+   },
+   "staged_files": {
+    "front": [],
+    "back": [],
+    "ow": [],
+    "trainer_pal": [],
+    "ow_pal": []
+   },
+   "has_any_asset": false
+  },
+  {
+   "character": "Tracey",
+   "key": "tracey",
+   "rowe_symbols": {
+    "ow": "-",
+    "front": "-",
+    "back": "-"
+   },
+   "staged_files": {
+    "front": [],
+    "back": [],
+    "ow": [],
+    "trainer_pal": [],
+    "ow_pal": []
+   },
+   "has_any_asset": false
+  },
+  {
+   "character": "Jessie",
+   "key": "jessie",
+   "rowe_symbols": {
+    "ow": "-",
+    "front": "-",
+    "back": "-"
+   },
+   "staged_files": {
+    "front": [],
+    "back": [],
+    "ow": [],
+    "trainer_pal": [],
+    "ow_pal": []
+   },
+   "has_any_asset": false
+  },
+  {
+   "character": "James",
+   "key": "james",
+   "rowe_symbols": {
+    "ow": "-",
+    "front": "-",
+    "back": "-"
+   },
+   "staged_files": {
+    "front": [],
+    "back": [],
+    "ow": [],
+    "trainer_pal": [],
+    "ow_pal": []
+   },
+   "has_any_asset": false
+  },
+  {
+   "character": "Ethan",
+   "key": "ethan",
+   "rowe_symbols": {
+    "ow": "OBJ_EVENT_GFX_CM_ETHAN",
+    "front": "TRAINER_PIC_ETHAN",
+    "back": "TRAINER_BACK_PIC_CM_ETHAN"
+   },
+   "staged_files": {
+    "front": [
+     "front.png",
+     "front.4bpp",
+     "front.4bpp.lz"
+    ],
+    "back": [
+     "back.png",
+     "back.4bpp"
+    ],
+    "ow": [
+     "ow.png",
+     "ow.4bpp",
+     "ow.pal",
+     "ow.gbapal"
+    ],
+    "trainer_pal": [
+     "trainer_pal.pal",
+     "trainer_pal.gbapal"
+    ],
+    "ow_pal": []
+   },
+   "has_any_asset": true
+  },
+  {
+   "character": "Kris",
+   "key": "kris",
+   "rowe_symbols": {
+    "ow": "OBJ_EVENT_GFX_CM_KRIS",
+    "front": "TRAINER_PIC_KRIS",
+    "back": "TRAINER_BACK_PIC_CM_KRIS"
+   },
+   "staged_files": {
+    "front": [
+     "front.png",
+     "front.4bpp",
+     "front.4bpp.lz"
+    ],
+    "back": [
+     "back.png",
+     "back.4bpp"
+    ],
+    "ow": [
+     "ow.png",
+     "ow.4bpp",
+     "ow.pal",
+     "ow.gbapal"
+    ],
+    "trainer_pal": [
+     "trainer_pal.pal",
+     "trainer_pal.gbapal"
+    ],
+    "ow_pal": []
+   },
+   "has_any_asset": true
+  },
+  {
+   "character": "Lyra",
+   "key": "lyra",
+   "rowe_symbols": {
+    "ow": "-",
+    "front": "-",
+    "back": "-"
+   },
+   "staged_files": {
+    "front": [],
+    "back": [],
+    "ow": [],
+    "trainer_pal": [],
+    "ow_pal": []
+   },
+   "has_any_asset": false
+  },
+  {
+   "character": "Will",
+   "key": "will",
+   "rowe_symbols": {
+    "ow": "OBJ_EVENT_GFX_CM_WILL",
+    "front": "TRAINER_PIC_WILL",
+    "back": "-"
+   },
+   "staged_files": {
+    "front": [
+     "front.png",
+     "front.4bpp",
+     "front.4bpp.lz"
+    ],
+    "back": [],
+    "ow": [
+     "ow.png",
+     "ow.4bpp",
+     "ow.pal",
+     "ow.gbapal"
+    ],
+    "trainer_pal": [
+     "trainer_pal.pal",
+     "trainer_pal.gbapal"
+    ],
+    "ow_pal": []
+   },
+   "has_any_asset": true
+  },
+  {
+   "character": "Karen",
+   "key": "karen",
+   "rowe_symbols": {
+    "ow": "OBJ_EVENT_GFX_CM_KAREN",
+    "front": "TRAINER_PIC_KAREN",
+    "back": "-"
+   },
+   "staged_files": {
+    "front": [
+     "front.png",
+     "front.4bpp",
+     "front.4bpp.lz"
+    ],
+    "back": [],
+    "ow": [
+     "ow.png",
+     "ow.4bpp",
+     "ow.pal",
+     "ow.gbapal"
+    ],
+    "trainer_pal": [
+     "trainer_pal.pal",
+     "trainer_pal.gbapal"
+    ],
+    "ow_pal": []
+   },
+   "has_any_asset": true
+  },
+  {
+   "character": "Janine",
+   "key": "janine",
+   "rowe_symbols": {
+    "ow": "OBJ_EVENT_GFX_CM_JANINE",
+    "front": "TRAINER_PIC_JANINE",
+    "back": "-"
+   },
+   "staged_files": {
+    "front": [
+     "front.png",
+     "front.4bpp",
+     "front.4bpp.lz"
+    ],
+    "back": [],
+    "ow": [
+     "ow.png",
+     "ow.4bpp",
+     "ow.pal",
+     "ow.gbapal"
+    ],
+    "trainer_pal": [
+     "trainer_pal.pal",
+     "trainer_pal.gbapal"
+    ],
+    "ow_pal": []
+   },
+   "has_any_asset": true
+  },
+  {
+   "character": "Falkner",
+   "key": "falkner",
+   "rowe_symbols": {
+    "ow": "OBJ_EVENT_GFX_CM_FALKNER",
+    "front": "TRAINER_PIC_FALKNER",
+    "back": "-"
+   },
+   "staged_files": {
+    "front": [
+     "front.png",
+     "front.4bpp",
+     "front.4bpp.lz"
+    ],
+    "back": [],
+    "ow": [
+     "ow.png",
+     "ow.4bpp",
+     "ow.pal",
+     "ow.gbapal"
+    ],
+    "trainer_pal": [
+     "trainer_pal.pal",
+     "trainer_pal.gbapal"
+    ],
+    "ow_pal": []
+   },
+   "has_any_asset": true
+  },
+  {
+   "character": "Bugsy",
+   "key": "bugsy",
+   "rowe_symbols": {
+    "ow": "OBJ_EVENT_GFX_CM_BUGSY",
+    "front": "TRAINER_PIC_BUGSY",
+    "back": "-"
+   },
+   "staged_files": {
+    "front": [
+     "front.png",
+     "front.4bpp",
+     "front.4bpp.lz"
+    ],
+    "back": [],
+    "ow": [
+     "ow.png",
+     "ow.4bpp",
+     "ow.pal",
+     "ow.gbapal"
+    ],
+    "trainer_pal": [
+     "trainer_pal.pal",
+     "trainer_pal.gbapal"
+    ],
+    "ow_pal": []
+   },
+   "has_any_asset": true
+  },
+  {
+   "character": "Whitney",
+   "key": "whitney",
+   "rowe_symbols": {
+    "ow": "OBJ_EVENT_GFX_CM_WHITNEY",
+    "front": "TRAINER_PIC_WHITNEY",
+    "back": "-"
+   },
+   "staged_files": {
+    "front": [
+     "front.png",
+     "front.4bpp",
+     "front.4bpp.lz"
+    ],
+    "back": [],
+    "ow": [
+     "ow.png",
+     "ow.4bpp",
+     "ow.pal",
+     "ow.gbapal"
+    ],
+    "trainer_pal": [
+     "trainer_pal.pal",
+     "trainer_pal.gbapal"
+    ],
+    "ow_pal": []
+   },
+   "has_any_asset": true
+  },
+  {
+   "character": "Morty",
+   "key": "morty",
+   "rowe_symbols": {
+    "ow": "OBJ_EVENT_GFX_CM_MORTY",
+    "front": "TRAINER_PIC_MORTY",
+    "back": "-"
+   },
+   "staged_files": {
+    "front": [
+     "front.png",
+     "front.4bpp",
+     "front.4bpp.lz"
+    ],
+    "back": [],
+    "ow": [
+     "ow.png",
+     "ow.4bpp",
+     "ow.pal",
+     "ow.gbapal"
+    ],
+    "trainer_pal": [
+     "trainer_pal.pal",
+     "trainer_pal.gbapal"
+    ],
+    "ow_pal": []
+   },
+   "has_any_asset": true
+  },
+  {
+   "character": "Chuck",
+   "key": "chuck",
+   "rowe_symbols": {
+    "ow": "OBJ_EVENT_GFX_CM_CHUCK",
+    "front": "TRAINER_PIC_CHUCK",
+    "back": "-"
+   },
+   "staged_files": {
+    "front": [
+     "front.png",
+     "front.4bpp",
+     "front.4bpp.lz"
+    ],
+    "back": [],
+    "ow": [
+     "ow.png",
+     "ow.4bpp",
+     "ow.pal",
+     "ow.gbapal"
+    ],
+    "trainer_pal": [
+     "trainer_pal.pal",
+     "trainer_pal.gbapal"
+    ],
+    "ow_pal": []
+   },
+   "has_any_asset": true
+  },
+  {
+   "character": "Jasmine",
+   "key": "jasmine",
+   "rowe_symbols": {
+    "ow": "OBJ_EVENT_GFX_CM_JASMINE",
+    "front": "TRAINER_PIC_JASMINE",
+    "back": "-"
+   },
+   "staged_files": {
+    "front": [
+     "front.png",
+     "front.4bpp",
+     "front.4bpp.lz"
+    ],
+    "back": [],
+    "ow": [
+     "ow.png",
+     "ow.4bpp",
+     "ow.pal",
+     "ow.gbapal"
+    ],
+    "trainer_pal": [
+     "trainer_pal.pal",
+     "trainer_pal.gbapal"
+    ],
+    "ow_pal": []
+   },
+   "has_any_asset": true
+  },
+  {
+   "character": "Pryce",
+   "key": "pryce",
+   "rowe_symbols": {
+    "ow": "OBJ_EVENT_GFX_CM_PRYCE",
+    "front": "TRAINER_PIC_PRYCE",
+    "back": "-"
+   },
+   "staged_files": {
+    "front": [
+     "front.png",
+     "front.4bpp",
+     "front.4bpp.lz"
+    ],
+    "back": [],
+    "ow": [
+     "ow.png",
+     "ow.4bpp",
+     "ow.pal",
+     "ow.gbapal"
+    ],
+    "trainer_pal": [
+     "trainer_pal.pal",
+     "trainer_pal.gbapal"
+    ],
+    "ow_pal": []
+   },
+   "has_any_asset": true
+  },
+  {
+   "character": "Clair",
+   "key": "clair",
+   "rowe_symbols": {
+    "ow": "OBJ_EVENT_GFX_CM_CLAIR",
+    "front": "TRAINER_PIC_CLAIR",
+    "back": "-"
+   },
+   "staged_files": {
+    "front": [
+     "front.png",
+     "front.4bpp",
+     "front.4bpp.lz"
+    ],
+    "back": [],
+    "ow": [
+     "ow.png",
+     "ow.4bpp",
+     "ow.pal",
+     "ow.gbapal"
+    ],
+    "trainer_pal": [
+     "trainer_pal.pal",
+     "trainer_pal.gbapal"
+    ],
+    "ow_pal": []
+   },
+   "has_any_asset": true
+  },
+  {
+   "character": "Silver",
+   "key": "silver",
+   "rowe_symbols": {
+    "ow": "OBJ_EVENT_GFX_CM_SILVER",
+    "front": "-",
+    "back": "-"
+   },
+   "staged_files": {
+    "front": [],
+    "back": [],
+    "ow": [
+     "ow.png",
+     "ow.4bpp",
+     "ow.pal",
+     "ow.gbapal"
+    ],
+    "trainer_pal": [],
+    "ow_pal": []
+   },
+   "has_any_asset": true
+  },
+  {
+   "character": "Archer",
+   "key": "archer",
+   "rowe_symbols": {
+    "ow": "OBJ_EVENT_GFX_CM_ARCHER",
+    "front": "TRAINER_PIC_ARCHER",
+    "back": "-"
+   },
+   "staged_files": {
+    "front": [
+     "front.png",
+     "front.4bpp",
+     "front.4bpp.lz"
+    ],
+    "back": [],
+    "ow": [
+     "ow.png",
+     "ow.4bpp",
+     "ow.pal",
+     "ow.gbapal"
+    ],
+    "trainer_pal": [
+     "trainer_pal.pal",
+     "trainer_pal.gbapal"
+    ],
+    "ow_pal": []
+   },
+   "has_any_asset": true
+  },
+  {
+   "character": "Ariana",
+   "key": "ariana",
+   "rowe_symbols": {
+    "ow": "OBJ_EVENT_GFX_CM_ARIANA",
+    "front": "TRAINER_PIC_ARIANA",
+    "back": "-"
+   },
+   "staged_files": {
+    "front": [
+     "front.png",
+     "front.4bpp",
+     "front.4bpp.lz"
+    ],
+    "back": [],
+    "ow": [
+     "ow.png",
+     "ow.4bpp",
+     "ow.pal",
+     "ow.gbapal"
+    ],
+    "trainer_pal": [
+     "trainer_pal.pal",
+     "trainer_pal.gbapal"
+    ],
+    "ow_pal": []
+   },
+   "has_any_asset": true
+  },
+  {
+   "character": "Brendan",
+   "key": "brendan",
+   "rowe_symbols": {
+    "ow": "OBJ_EVENT_GFX_BRENDAN_NORMAL",
+    "front": "TRAINER_PIC_BRENDAN",
+    "back": "TRAINER_BACK_PIC_BRENDAN"
+   },
+   "staged_files": {
+    "front": [
+     "front.png",
+     "front.4bpp",
+     "front.4bpp.lz"
+    ],
+    "back": [
+     "back.png",
+     "back.4bpp"
+    ],
+    "ow": [],
+    "trainer_pal": [],
+    "ow_pal": []
+   },
+   "has_any_asset": true
+  },
+  {
+   "character": "May",
+   "key": "may",
+   "rowe_symbols": {
+    "ow": "OBJ_EVENT_GFX_MAY_NORMAL",
+    "front": "TRAINER_PIC_MAY",
+    "back": "TRAINER_BACK_PIC_MAY"
+   },
+   "staged_files": {
+    "front": [
+     "front.png",
+     "front.4bpp",
+     "front.4bpp.lz"
+    ],
+    "back": [
+     "back.png",
+     "back.4bpp"
+    ],
+    "ow": [],
+    "trainer_pal": [],
+    "ow_pal": []
+   },
+   "has_any_asset": true
+  },
+  {
+   "character": "Steven",
+   "key": "steven",
+   "rowe_symbols": {
+    "ow": "OBJ_EVENT_GFX_CM_STEVEN",
+    "front": "TRAINER_PIC_STEVEN",
+    "back": "TRAINER_BACK_PIC_STEVEN"
+   },
+   "staged_files": {
+    "front": [
+     "front.png",
+     "front.4bpp",
+     "front.4bpp.lz"
+    ],
+    "back": [
+     "back.png",
+     "back.4bpp"
+    ],
+    "ow": [
+     "ow.png",
+     "ow.4bpp",
+     "ow.pal",
+     "ow.gbapal"
+    ],
+    "trainer_pal": [],
+    "ow_pal": []
+   },
+   "has_any_asset": true
+  },
+  {
+   "character": "Wallace",
+   "key": "wallace",
+   "rowe_symbols": {
+    "ow": "OBJ_EVENT_GFX_CM_WALLACE",
+    "front": "TRAINER_PIC_CHAMPION_WALLACE",
+    "back": "-"
+   },
+   "staged_files": {
+    "front": [],
+    "back": [],
+    "ow": [
+     "ow.png",
+     "ow.4bpp",
+     "ow.pal",
+     "ow.gbapal"
+    ],
+    "trainer_pal": [],
+    "ow_pal": []
+   },
+   "has_any_asset": true
+  },
+  {
+   "character": "Sidney",
+   "key": "sidney",
+   "rowe_symbols": {
+    "ow": "OBJ_EVENT_GFX_CM_SIDNEY",
+    "front": "TRAINER_PIC_ELITE_FOUR_SIDNEY",
+    "back": "-"
+   },
+   "staged_files": {
+    "front": [],
+    "back": [],
+    "ow": [
+     "ow.png",
+     "ow.4bpp",
+     "ow.pal",
+     "ow.gbapal"
+    ],
+    "trainer_pal": [],
+    "ow_pal": []
+   },
+   "has_any_asset": true
+  },
+  {
+   "character": "Phoebe",
+   "key": "phoebe",
+   "rowe_symbols": {
+    "ow": "OBJ_EVENT_GFX_CM_PHOEBE",
+    "front": "TRAINER_PIC_ELITE_FOUR_PHOEBE",
+    "back": "-"
+   },
+   "staged_files": {
+    "front": [],
+    "back": [],
+    "ow": [
+     "ow.png",
+     "ow.4bpp",
+     "ow.pal",
+     "ow.gbapal"
+    ],
+    "trainer_pal": [],
+    "ow_pal": []
+   },
+   "has_any_asset": true
+  },
+  {
+   "character": "Glacia",
+   "key": "glacia",
+   "rowe_symbols": {
+    "ow": "OBJ_EVENT_GFX_CM_GLACIA",
+    "front": "TRAINER_PIC_ELITE_FOUR_GLACIA",
+    "back": "-"
+   },
+   "staged_files": {
+    "front": [],
+    "back": [],
+    "ow": [
+     "ow.png",
+     "ow.4bpp",
+     "ow.pal",
+     "ow.gbapal"
+    ],
+    "trainer_pal": [],
+    "ow_pal": []
+   },
+   "has_any_asset": true
+  },
+  {
+   "character": "Drake",
+   "key": "drake",
+   "rowe_symbols": {
+    "ow": "OBJ_EVENT_GFX_CM_DRAKE",
+    "front": "TRAINER_PIC_ELITE_FOUR_DRAKE",
+    "back": "-"
+   },
+   "staged_files": {
+    "front": [],
+    "back": [],
+    "ow": [
+     "ow.png",
+     "ow.4bpp",
+     "ow.pal",
+     "ow.gbapal"
+    ],
+    "trainer_pal": [],
+    "ow_pal": []
+   },
+   "has_any_asset": true
+  },
+  {
+   "character": "Roxanne",
+   "key": "roxanne",
+   "rowe_symbols": {
+    "ow": "OBJ_EVENT_GFX_CM_ROXANNE",
+    "front": "TRAINER_PIC_LEADER_ROXANNE",
+    "back": "-"
+   },
+   "staged_files": {
+    "front": [],
+    "back": [],
+    "ow": [
+     "ow.png",
+     "ow.4bpp",
+     "ow.pal",
+     "ow.gbapal"
+    ],
+    "trainer_pal": [],
+    "ow_pal": []
+   },
+   "has_any_asset": true
+  },
+  {
+   "character": "Brawly",
+   "key": "brawly",
+   "rowe_symbols": {
+    "ow": "OBJ_EVENT_GFX_CM_BRAWLY",
+    "front": "TRAINER_PIC_LEADER_BRAWLY",
+    "back": "-"
+   },
+   "staged_files": {
+    "front": [],
+    "back": [],
+    "ow": [
+     "ow.png",
+     "ow.4bpp",
+     "ow.pal",
+     "ow.gbapal"
+    ],
+    "trainer_pal": [],
+    "ow_pal": []
+   },
+   "has_any_asset": true
+  },
+  {
+   "character": "Wattson",
+   "key": "wattson",
+   "rowe_symbols": {
+    "ow": "OBJ_EVENT_GFX_CM_WATTSON",
+    "front": "TRAINER_PIC_LEADER_WATTSON",
+    "back": "-"
+   },
+   "staged_files": {
+    "front": [],
+    "back": [],
+    "ow": [
+     "ow.png",
+     "ow.4bpp",
+     "ow.pal",
+     "ow.gbapal"
+    ],
+    "trainer_pal": [],
+    "ow_pal": []
+   },
+   "has_any_asset": true
+  },
+  {
+   "character": "Flannery",
+   "key": "flannery",
+   "rowe_symbols": {
+    "ow": "OBJ_EVENT_GFX_CM_FLANNERY",
+    "front": "TRAINER_PIC_LEADER_FLANNERY",
+    "back": "-"
+   },
+   "staged_files": {
+    "front": [],
+    "back": [],
+    "ow": [
+     "ow.png",
+     "ow.4bpp",
+     "ow.pal",
+     "ow.gbapal"
+    ],
+    "trainer_pal": [],
+    "ow_pal": []
+   },
+   "has_any_asset": true
+  },
+  {
+   "character": "Norman",
+   "key": "norman",
+   "rowe_symbols": {
+    "ow": "OBJ_EVENT_GFX_CM_NORMAN",
+    "front": "TRAINER_PIC_LEADER_NORMAN",
+    "back": "-"
+   },
+   "staged_files": {
+    "front": [],
+    "back": [],
+    "ow": [
+     "ow.png",
+     "ow.4bpp",
+     "ow.pal",
+     "ow.gbapal"
+    ],
+    "trainer_pal": [],
+    "ow_pal": []
+   },
+   "has_any_asset": true
+  },
+  {
+   "character": "Winona",
+   "key": "winona",
+   "rowe_symbols": {
+    "ow": "OBJ_EVENT_GFX_CM_WINONA",
+    "front": "TRAINER_PIC_LEADER_WINONA",
+    "back": "-"
+   },
+   "staged_files": {
+    "front": [],
+    "back": [],
+    "ow": [
+     "ow.png",
+     "ow.4bpp",
+     "ow.pal",
+     "ow.gbapal"
+    ],
+    "trainer_pal": [],
+    "ow_pal": []
+   },
+   "has_any_asset": true
+  },
+  {
+   "character": "Tate",
+   "key": "tate",
+   "rowe_symbols": {
+    "ow": "OBJ_EVENT_GFX_CM_TATE",
+    "front": "TRAINER_PIC_LEADER_TATE_AND_LIZA",
+    "back": "-"
+   },
+   "staged_files": {
+    "front": [],
+    "back": [],
+    "ow": [
+     "ow.png",
+     "ow.4bpp",
+     "ow.pal",
+     "ow.gbapal"
+    ],
+    "trainer_pal": [],
+    "ow_pal": []
+   },
+   "has_any_asset": true
+  },
+  {
+   "character": "Liza",
+   "key": "liza",
+   "rowe_symbols": {
+    "ow": "OBJ_EVENT_GFX_CM_LIZA",
+    "front": "TRAINER_PIC_LEADER_TATE_AND_LIZA",
+    "back": "-"
+   },
+   "staged_files": {
+    "front": [],
+    "back": [],
+    "ow": [
+     "ow.png",
+     "ow.4bpp",
+     "ow.pal",
+     "ow.gbapal"
+    ],
+    "trainer_pal": [],
+    "ow_pal": []
+   },
+   "has_any_asset": true
+  },
+  {
+   "character": "Juan",
+   "key": "juan",
+   "rowe_symbols": {
+    "ow": "OBJ_EVENT_GFX_CM_JUAN",
+    "front": "TRAINER_PIC_LEADER_JUAN",
+    "back": "-"
+   },
+   "staged_files": {
+    "front": [],
+    "back": [],
+    "ow": [
+     "ow.png",
+     "ow.4bpp",
+     "ow.pal",
+     "ow.gbapal"
+    ],
+    "trainer_pal": [],
+    "ow_pal": []
+   },
+   "has_any_asset": true
+  },
+  {
+   "character": "Wally",
+   "key": "wally",
+   "rowe_symbols": {
+    "ow": "OBJ_EVENT_GFX_CM_WALLY",
+    "front": "TRAINER_PIC_WALLY",
+    "back": "TRAINER_BACK_PIC_WALLY"
+   },
+   "staged_files": {
+    "front": [
+     "front.png",
+     "front.4bpp",
+     "front.4bpp.lz"
+    ],
+    "back": [
+     "back.png",
+     "back.4bpp"
+    ],
+    "ow": [
+     "ow.png",
+     "ow.4bpp",
+     "ow.pal",
+     "ow.gbapal"
+    ],
+    "trainer_pal": [],
+    "ow_pal": []
+   },
+   "has_any_asset": true
+  },
+  {
+   "character": "Maxie",
+   "key": "maxie",
+   "rowe_symbols": {
+    "ow": "OBJ_EVENT_GFX_CM_MAXIE",
+    "front": "TRAINER_PIC_MAGMA_LEADER_MAXIE",
+    "back": "-"
+   },
+   "staged_files": {
+    "front": [],
+    "back": [],
+    "ow": [
+     "ow.png",
+     "ow.4bpp",
+     "ow.pal",
+     "ow.gbapal"
+    ],
+    "trainer_pal": [],
+    "ow_pal": []
+   },
+   "has_any_asset": true
+  },
+  {
+   "character": "Archie",
+   "key": "archie",
+   "rowe_symbols": {
+    "ow": "OBJ_EVENT_GFX_CM_ARCHIE",
+    "front": "TRAINER_PIC_AQUA_LEADER_ARCHIE",
+    "back": "-"
+   },
+   "staged_files": {
+    "front": [],
+    "back": [],
+    "ow": [
+     "ow.png",
+     "ow.4bpp",
+     "ow.pal",
+     "ow.gbapal"
+    ],
+    "trainer_pal": [],
+    "ow_pal": []
+   },
+   "has_any_asset": true
+  },
+  {
+   "character": "Drew",
+   "key": "drew",
+   "rowe_symbols": {
+    "ow": "-",
+    "front": "-",
+    "back": "-"
+   },
+   "staged_files": {
+    "front": [],
+    "back": [],
+    "ow": [],
+    "trainer_pal": [],
+    "ow_pal": []
+   },
+   "has_any_asset": false
+  },
+  {
+   "character": "Lucas",
+   "key": "lucas",
+   "rowe_symbols": {
+    "ow": "OBJ_EVENT_GFX_CM_LUCAS",
+    "front": "TRAINER_PIC_LUCAS",
+    "back": "TRAINER_BACK_PIC_CM_LUCAS"
+   },
+   "staged_files": {
+    "front": [
+     "front.png",
+     "front.4bpp",
+     "front.4bpp.lz"
+    ],
+    "back": [
+     "back.png",
+     "back.4bpp"
+    ],
+    "ow": [
+     "ow.png",
+     "ow.4bpp",
+     "ow.pal",
+     "ow.gbapal"
+    ],
+    "trainer_pal": [
+     "trainer_pal.pal",
+     "trainer_pal.gbapal"
+    ],
+    "ow_pal": []
+   },
+   "has_any_asset": true
+  },
+  {
+   "character": "Dawn",
+   "key": "dawn",
+   "rowe_symbols": {
+    "ow": "OBJ_EVENT_GFX_CM_DAWN",
+    "front": "TRAINER_PIC_DAWN",
+    "back": "TRAINER_BACK_PIC_CM_DAWN"
+   },
+   "staged_files": {
+    "front": [
+     "front.png",
+     "front.4bpp",
+     "front.4bpp.lz"
+    ],
+    "back": [
+     "back.png",
+     "back.4bpp"
+    ],
+    "ow": [
+     "ow.png",
+     "ow.4bpp",
+     "ow.pal",
+     "ow.gbapal"
+    ],
+    "trainer_pal": [
+     "trainer_pal.pal",
+     "trainer_pal.gbapal"
+    ],
+    "ow_pal": []
+   },
+   "has_any_asset": true
+  },
+  {
+   "character": "Cynthia",
+   "key": "cynthia",
+   "rowe_symbols": {
+    "ow": "OBJ_EVENT_GFX_CM_CYNTHIA",
+    "front": "TRAINER_PIC_CYNTHIA",
+    "back": "-"
+   },
+   "staged_files": {
+    "front": [
+     "front.png",
+     "front.4bpp",
+     "front.4bpp.lz"
+    ],
+    "back": [],
+    "ow": [
+     "ow.png",
+     "ow.4bpp",
+     "ow.pal",
+     "ow.gbapal"
+    ],
+    "trainer_pal": [
+     "trainer_pal.pal",
+     "trainer_pal.gbapal"
+    ],
+    "ow_pal": []
+   },
+   "has_any_asset": true
+  },
+  {
+   "character": "Aaron",
+   "key": "aaron",
+   "rowe_symbols": {
+    "ow": "OBJ_EVENT_GFX_CM_AARON",
+    "front": "-",
+    "back": "-"
+   },
+   "staged_files": {
+    "front": [],
+    "back": [],
+    "ow": [
+     "ow.png",
+     "ow.4bpp",
+     "ow.pal",
+     "ow.gbapal"
+    ],
+    "trainer_pal": [],
+    "ow_pal": []
+   },
+   "has_any_asset": true
+  },
+  {
+   "character": "Bertha",
+   "key": "bertha",
+   "rowe_symbols": {
+    "ow": "OBJ_EVENT_GFX_CM_BERTHA",
+    "front": "TRAINER_PIC_BERTHA",
+    "back": "-"
+   },
+   "staged_files": {
+    "front": [
+     "front.png",
+     "front.4bpp",
+     "front.4bpp.lz"
+    ],
+    "back": [],
+    "ow": [
+     "ow.png",
+     "ow.4bpp",
+     "ow.pal",
+     "ow.gbapal"
+    ],
+    "trainer_pal": [
+     "trainer_pal.pal",
+     "trainer_pal.gbapal"
+    ],
+    "ow_pal": []
+   },
+   "has_any_asset": true
+  },
+  {
+   "character": "Flint",
+   "key": "flint",
+   "rowe_symbols": {
+    "ow": "OBJ_EVENT_GFX_CM_FLINT",
+    "front": "-",
+    "back": "-"
+   },
+   "staged_files": {
+    "front": [],
+    "back": [],
+    "ow": [
+     "ow.png",
+     "ow.4bpp",
+     "ow.pal",
+     "ow.gbapal"
+    ],
+    "trainer_pal": [],
+    "ow_pal": []
+   },
+   "has_any_asset": true
+  },
+  {
+   "character": "Lucian",
+   "key": "lucian",
+   "rowe_symbols": {
+    "ow": "OBJ_EVENT_GFX_CM_LUCIAN",
+    "front": "TRAINER_PIC_LUCIAN",
+    "back": "-"
+   },
+   "staged_files": {
+    "front": [
+     "front.png",
+     "front.4bpp",
+     "front.4bpp.lz"
+    ],
+    "back": [],
+    "ow": [
+     "ow.png",
+     "ow.4bpp",
+     "ow.pal",
+     "ow.gbapal"
+    ],
+    "trainer_pal": [
+     "trainer_pal.pal",
+     "trainer_pal.gbapal"
+    ],
+    "ow_pal": []
+   },
+   "has_any_asset": true
+  },
+  {
+   "character": "Roark",
+   "key": "roark",
+   "rowe_symbols": {
+    "ow": "OBJ_EVENT_GFX_CM_ROARK",
+    "front": "TRAINER_PIC_ROARK",
+    "back": "-"
+   },
+   "staged_files": {
+    "front": [
+     "front.png",
+     "front.4bpp",
+     "front.4bpp.lz"
+    ],
+    "back": [],
+    "ow": [
+     "ow.png",
+     "ow.4bpp",
+     "ow.pal",
+     "ow.gbapal"
+    ],
+    "trainer_pal": [
+     "trainer_pal.pal",
+     "trainer_pal.gbapal"
+    ],
+    "ow_pal": []
+   },
+   "has_any_asset": true
+  },
+  {
+   "character": "Gardenia",
+   "key": "gardenia",
+   "rowe_symbols": {
+    "ow": "OBJ_EVENT_GFX_CM_GARDENIA",
+    "front": "TRAINER_PIC_GARDENIA",
+    "back": "-"
+   },
+   "staged_files": {
+    "front": [
+     "front.png",
+     "front.4bpp",
+     "front.4bpp.lz"
+    ],
+    "back": [],
+    "ow": [
+     "ow.png",
+     "ow.4bpp",
+     "ow.pal",
+     "ow.gbapal"
+    ],
+    "trainer_pal": [
+     "trainer_pal.pal",
+     "trainer_pal.gbapal"
+    ],
+    "ow_pal": []
+   },
+   "has_any_asset": true
+  },
+  {
+   "character": "Maylene",
+   "key": "maylene",
+   "rowe_symbols": {
+    "ow": "OBJ_EVENT_GFX_CM_MAYLENE",
+    "front": "TRAINER_PIC_MAYLENE",
+    "back": "-"
+   },
+   "staged_files": {
+    "front": [
+     "front.png",
+     "front.4bpp",
+     "front.4bpp.lz"
+    ],
+    "back": [],
+    "ow": [
+     "ow.png",
+     "ow.4bpp",
+     "ow.pal",
+     "ow.gbapal"
+    ],
+    "trainer_pal": [
+     "trainer_pal.pal",
+     "trainer_pal.gbapal"
+    ],
+    "ow_pal": []
+   },
+   "has_any_asset": true
+  },
+  {
+   "character": "Crasher Wake",
+   "key": "crasher_wake",
+   "rowe_symbols": {
+    "ow": "OBJ_EVENT_GFX_CM_CRASHER_WAKE",
+    "front": "TRAINER_PIC_CRASHER_WAKE",
+    "back": "-"
+   },
+   "staged_files": {
+    "front": [
+     "front.png",
+     "front.4bpp",
+     "front.4bpp.lz"
+    ],
+    "back": [],
+    "ow": [
+     "ow.png",
+     "ow.4bpp",
+     "ow.pal",
+     "ow.gbapal"
+    ],
+    "trainer_pal": [
+     "trainer_pal.pal",
+     "trainer_pal.gbapal"
+    ],
+    "ow_pal": []
+   },
+   "has_any_asset": true
+  },
+  {
+   "character": "Fantina",
+   "key": "fantina",
+   "rowe_symbols": {
+    "ow": "OBJ_EVENT_GFX_CM_FANTINA",
+    "front": "TRAINER_PIC_FANTINA",
+    "back": "-"
+   },
+   "staged_files": {
+    "front": [
+     "front.png",
+     "front.4bpp",
+     "front.4bpp.lz"
+    ],
+    "back": [],
+    "ow": [
+     "ow.png",
+     "ow.4bpp",
+     "ow.pal",
+     "ow.gbapal"
+    ],
+    "trainer_pal": [
+     "trainer_pal.pal",
+     "trainer_pal.gbapal"
+    ],
+    "ow_pal": []
+   },
+   "has_any_asset": true
+  },
+  {
+   "character": "Byron",
+   "key": "byron",
+   "rowe_symbols": {
+    "ow": "OBJ_EVENT_GFX_CM_BYRON",
+    "front": "TRAINER_PIC_BYRON",
+    "back": "-"
+   },
+   "staged_files": {
+    "front": [
+     "front.png",
+     "front.4bpp",
+     "front.4bpp.lz"
+    ],
+    "back": [],
+    "ow": [
+     "ow.png",
+     "ow.4bpp",
+     "ow.pal",
+     "ow.gbapal"
+    ],
+    "trainer_pal": [
+     "trainer_pal.pal",
+     "trainer_pal.gbapal"
+    ],
+    "ow_pal": []
+   },
+   "has_any_asset": true
+  },
+  {
+   "character": "Candice",
+   "key": "candice",
+   "rowe_symbols": {
+    "ow": "OBJ_EVENT_GFX_CM_CANDICE",
+    "front": "TRAINER_PIC_CANDICE",
+    "back": "-"
+   },
+   "staged_files": {
+    "front": [
+     "front.png",
+     "front.4bpp",
+     "front.4bpp.lz"
+    ],
+    "back": [],
+    "ow": [
+     "ow.png",
+     "ow.4bpp",
+     "ow.pal",
+     "ow.gbapal"
+    ],
+    "trainer_pal": [
+     "trainer_pal.pal",
+     "trainer_pal.gbapal"
+    ],
+    "ow_pal": []
+   },
+   "has_any_asset": true
+  },
+  {
+   "character": "Volkner",
+   "key": "volkner",
+   "rowe_symbols": {
+    "ow": "OBJ_EVENT_GFX_CM_VOLKNER",
+    "front": "TRAINER_PIC_VOLKNER",
+    "back": "-"
+   },
+   "staged_files": {
+    "front": [
+     "front.png",
+     "front.4bpp",
+     "front.4bpp.lz"
+    ],
+    "back": [],
+    "ow": [
+     "ow.png",
+     "ow.4bpp",
+     "ow.pal",
+     "ow.gbapal"
+    ],
+    "trainer_pal": [
+     "trainer_pal.pal",
+     "trainer_pal.gbapal"
+    ],
+    "ow_pal": []
+   },
+   "has_any_asset": true
+  },
+  {
+   "character": "Barry",
+   "key": "barry",
+   "rowe_symbols": {
+    "ow": "OBJ_EVENT_GFX_CM_BARRY",
+    "front": "TRAINER_PIC_BARRY",
+    "back": "TRAINER_BACK_PIC_CM_BARRY"
+   },
+   "staged_files": {
+    "front": [
+     "front.png",
+     "front.4bpp",
+     "front.4bpp.lz"
+    ],
+    "back": [
+     "back.png",
+     "back.4bpp"
+    ],
+    "ow": [
+     "ow.png",
+     "ow.4bpp",
+     "ow.pal",
+     "ow.gbapal"
+    ],
+    "trainer_pal": [
+     "trainer_pal.pal",
+     "trainer_pal.gbapal"
+    ],
+    "ow_pal": []
+   },
+   "has_any_asset": true
+  },
+  {
+   "character": "Cyrus",
+   "key": "cyrus",
+   "rowe_symbols": {
+    "ow": "OBJ_EVENT_GFX_CM_CYRUS",
+    "front": "TRAINER_PIC_CYRUS",
+    "back": "-"
+   },
+   "staged_files": {
+    "front": [
+     "front.png",
+     "front.4bpp",
+     "front.4bpp.lz"
+    ],
+    "back": [],
+    "ow": [
+     "ow.png",
+     "ow.4bpp",
+     "ow.pal",
+     "ow.gbapal"
+    ],
+    "trainer_pal": [
+     "trainer_pal.pal",
+     "trainer_pal.gbapal"
+    ],
+    "ow_pal": []
+   },
+   "has_any_asset": true
+  },
+  {
+   "character": "Mars",
+   "key": "mars",
+   "rowe_symbols": {
+    "ow": "OBJ_EVENT_GFX_CM_MARS",
+    "front": "TRAINER_PIC_MARS",
+    "back": "-"
+   },
+   "staged_files": {
+    "front": [
+     "front.png",
+     "front.4bpp",
+     "front.4bpp.lz"
+    ],
+    "back": [],
+    "ow": [
+     "ow.png",
+     "ow.4bpp",
+     "ow.pal",
+     "ow.gbapal"
+    ],
+    "trainer_pal": [
+     "trainer_pal.pal",
+     "trainer_pal.gbapal"
+    ],
+    "ow_pal": []
+   },
+   "has_any_asset": true
+  },
+  {
+   "character": "Jupiter",
+   "key": "jupiter",
+   "rowe_symbols": {
+    "ow": "OBJ_EVENT_GFX_CM_JUPITER",
+    "front": "TRAINER_PIC_JUPITER",
+    "back": "-"
+   },
+   "staged_files": {
+    "front": [
+     "front.png",
+     "front.4bpp",
+     "front.4bpp.lz"
+    ],
+    "back": [],
+    "ow": [
+     "ow.png",
+     "ow.4bpp",
+     "ow.pal",
+     "ow.gbapal"
+    ],
+    "trainer_pal": [
+     "trainer_pal.pal",
+     "trainer_pal.gbapal"
+    ],
+    "ow_pal": []
+   },
+   "has_any_asset": true
+  },
+  {
+   "character": "Saturn",
+   "key": "saturn",
+   "rowe_symbols": {
+    "ow": "OBJ_EVENT_GFX_CM_SATURN",
+    "front": "TRAINER_PIC_SATURN",
+    "back": "-"
+   },
+   "staged_files": {
+    "front": [
+     "front.png",
+     "front.4bpp",
+     "front.4bpp.lz"
+    ],
+    "back": [],
+    "ow": [
+     "ow.png",
+     "ow.4bpp",
+     "ow.pal",
+     "ow.gbapal"
+    ],
+    "trainer_pal": [
+     "trainer_pal.pal",
+     "trainer_pal.gbapal"
+    ],
+    "ow_pal": []
+   },
+   "has_any_asset": true
+  },
+  {
+   "character": "Paul",
+   "key": "paul",
+   "rowe_symbols": {
+    "ow": "-",
+    "front": "-",
+    "back": "-"
+   },
+   "staged_files": {
+    "front": [],
+    "back": [],
+    "ow": [],
+    "trainer_pal": [],
+    "ow_pal": []
+   },
+   "has_any_asset": false
+  },
+  {
+   "character": "Zoey",
+   "key": "zoey",
+   "rowe_symbols": {
+    "ow": "-",
+    "front": "-",
+    "back": "-"
+   },
+   "staged_files": {
+    "front": [],
+    "back": [],
+    "ow": [],
+    "trainer_pal": [],
+    "ow_pal": []
+   },
+   "has_any_asset": false
+  },
+  {
+   "character": "Nando",
+   "key": "nando",
+   "rowe_symbols": {
+    "ow": "-",
+    "front": "-",
+    "back": "-"
+   },
+   "staged_files": {
+    "front": [],
+    "back": [],
+    "ow": [],
+    "trainer_pal": [],
+    "ow_pal": []
+   },
+   "has_any_asset": false
+  },
+  {
+   "character": "Alder",
+   "key": "alder",
+   "rowe_symbols": {
+    "ow": "OBJ_EVENT_GFX_CM_ALDER",
+    "front": "-",
+    "back": "-"
+   },
+   "staged_files": {
+    "front": [],
+    "back": [],
+    "ow": [
+     "ow.png",
+     "ow.4bpp",
+     "ow.pal",
+     "ow.gbapal"
+    ],
+    "trainer_pal": [],
+    "ow_pal": []
+   },
+   "has_any_asset": true
+  },
+  {
+   "character": "Iris",
+   "key": "iris",
+   "rowe_symbols": {
+    "ow": "OBJ_EVENT_GFX_CM_IRIS",
+    "front": "-",
+    "back": "-"
+   },
+   "staged_files": {
+    "front": [],
+    "back": [],
+    "ow": [
+     "ow.png",
+     "ow.4bpp",
+     "ow.pal",
+     "ow.gbapal"
+    ],
+    "trainer_pal": [],
+    "ow_pal": []
+   },
+   "has_any_asset": true
+  },
+  {
+   "character": "Shauntal",
+   "key": "shauntal",
+   "rowe_symbols": {
+    "ow": "OBJ_EVENT_GFX_CM_SHAUNTAL",
+    "front": "-",
+    "back": "-"
+   },
+   "staged_files": {
+    "front": [],
+    "back": [],
+    "ow": [
+     "ow.png",
+     "ow.4bpp",
+     "ow.pal",
+     "ow.gbapal"
+    ],
+    "trainer_pal": [],
+    "ow_pal": []
+   },
+   "has_any_asset": true
+  },
+  {
+   "character": "Marshal",
+   "key": "marshal",
+   "rowe_symbols": {
+    "ow": "OBJ_EVENT_GFX_CM_MARSHAL",
+    "front": "-",
+    "back": "-"
+   },
+   "staged_files": {
+    "front": [],
+    "back": [],
+    "ow": [
+     "ow.png",
+     "ow.4bpp",
+     "ow.pal",
+     "ow.gbapal"
+    ],
+    "trainer_pal": [],
+    "ow_pal": []
+   },
+   "has_any_asset": true
+  },
+  {
+   "character": "Grimsley",
+   "key": "grimsley",
+   "rowe_symbols": {
+    "ow": "OBJ_EVENT_GFX_CM_GRIMSLEY",
+    "front": "-",
+    "back": "-"
+   },
+   "staged_files": {
+    "front": [],
+    "back": [],
+    "ow": [
+     "ow.png",
+     "ow.4bpp",
+     "ow.pal",
+     "ow.gbapal"
+    ],
+    "trainer_pal": [],
+    "ow_pal": []
+   },
+   "has_any_asset": true
+  },
+  {
+   "character": "Caitlin",
+   "key": "caitlin",
+   "rowe_symbols": {
+    "ow": "OBJ_EVENT_GFX_CM_CAITLIN",
+    "front": "-",
+    "back": "-"
+   },
+   "staged_files": {
+    "front": [],
+    "back": [],
+    "ow": [
+     "ow.png",
+     "ow.4bpp",
+     "ow.pal",
+     "ow.gbapal"
+    ],
+    "trainer_pal": [],
+    "ow_pal": []
+   },
+   "has_any_asset": true
+  },
+  {
+   "character": "Cilan",
+   "key": "cilan",
+   "rowe_symbols": {
+    "ow": "OBJ_EVENT_GFX_CM_CILAN",
+    "front": "-",
+    "back": "-"
+   },
+   "staged_files": {
+    "front": [],
+    "back": [],
+    "ow": [
+     "ow.png",
+     "ow.4bpp",
+     "ow.pal",
+     "ow.gbapal"
+    ],
+    "trainer_pal": [],
+    "ow_pal": []
+   },
+   "has_any_asset": true
+  },
+  {
+   "character": "Chili",
+   "key": "chili",
+   "rowe_symbols": {
+    "ow": "OBJ_EVENT_GFX_CM_CHILI",
+    "front": "-",
+    "back": "-"
+   },
+   "staged_files": {
+    "front": [],
+    "back": [],
+    "ow": [
+     "ow.png",
+     "ow.4bpp",
+     "ow.pal",
+     "ow.gbapal"
+    ],
+    "trainer_pal": [],
+    "ow_pal": []
+   },
+   "has_any_asset": true
+  },
+  {
+   "character": "Cress",
+   "key": "cress",
+   "rowe_symbols": {
+    "ow": "OBJ_EVENT_GFX_CM_CRESS",
+    "front": "-",
+    "back": "-"
+   },
+   "staged_files": {
+    "front": [],
+    "back": [],
+    "ow": [
+     "ow.png",
+     "ow.4bpp",
+     "ow.pal",
+     "ow.gbapal"
+    ],
+    "trainer_pal": [],
+    "ow_pal": []
+   },
+   "has_any_asset": true
+  },
+  {
+   "character": "Lenora",
+   "key": "lenora",
+   "rowe_symbols": {
+    "ow": "OBJ_EVENT_GFX_CM_LENORA",
+    "front": "-",
+    "back": "-"
+   },
+   "staged_files": {
+    "front": [],
+    "back": [],
+    "ow": [
+     "ow.png",
+     "ow.4bpp",
+     "ow.pal",
+     "ow.gbapal"
+    ],
+    "trainer_pal": [],
+    "ow_pal": []
+   },
+   "has_any_asset": true
+  },
+  {
+   "character": "Burgh",
+   "key": "burgh",
+   "rowe_symbols": {
+    "ow": "OBJ_EVENT_GFX_CM_BURGH",
+    "front": "-",
+    "back": "-"
+   },
+   "staged_files": {
+    "front": [],
+    "back": [],
+    "ow": [
+     "ow.png",
+     "ow.4bpp",
+     "ow.pal",
+     "ow.gbapal"
+    ],
+    "trainer_pal": [],
+    "ow_pal": []
+   },
+   "has_any_asset": true
+  },
+  {
+   "character": "Elesa",
+   "key": "elesa",
+   "rowe_symbols": {
+    "ow": "OBJ_EVENT_GFX_CM_ELESA",
+    "front": "-",
+    "back": "-"
+   },
+   "staged_files": {
+    "front": [],
+    "back": [],
+    "ow": [
+     "ow.png",
+     "ow.4bpp",
+     "ow.pal",
+     "ow.gbapal"
+    ],
+    "trainer_pal": [],
+    "ow_pal": []
+   },
+   "has_any_asset": true
+  },
+  {
+   "character": "Clay",
+   "key": "clay",
+   "rowe_symbols": {
+    "ow": "OBJ_EVENT_GFX_CM_CLAY",
+    "front": "-",
+    "back": "-"
+   },
+   "staged_files": {
+    "front": [],
+    "back": [],
+    "ow": [
+     "ow.png",
+     "ow.4bpp",
+     "ow.pal",
+     "ow.gbapal"
+    ],
+    "trainer_pal": [],
+    "ow_pal": []
+   },
+   "has_any_asset": true
+  },
+  {
+   "character": "Skyla",
+   "key": "skyla",
+   "rowe_symbols": {
+    "ow": "OBJ_EVENT_GFX_CM_SKYLA",
+    "front": "-",
+    "back": "-"
+   },
+   "staged_files": {
+    "front": [],
+    "back": [],
+    "ow": [
+     "ow.png",
+     "ow.4bpp",
+     "ow.pal",
+     "ow.gbapal"
+    ],
+    "trainer_pal": [],
+    "ow_pal": []
+   },
+   "has_any_asset": true
+  },
+  {
+   "character": "Brycen",
+   "key": "brycen",
+   "rowe_symbols": {
+    "ow": "OBJ_EVENT_GFX_CM_BRYCEN",
+    "front": "-",
+    "back": "-"
+   },
+   "staged_files": {
+    "front": [],
+    "back": [],
+    "ow": [
+     "ow.png",
+     "ow.4bpp",
+     "ow.pal",
+     "ow.gbapal"
+    ],
+    "trainer_pal": [],
+    "ow_pal": []
+   },
+   "has_any_asset": true
+  },
+  {
+   "character": "Drayden",
+   "key": "drayden",
+   "rowe_symbols": {
+    "ow": "OBJ_EVENT_GFX_CM_DRAYDEN",
+    "front": "-",
+    "back": "-"
+   },
+   "staged_files": {
+    "front": [],
+    "back": [],
+    "ow": [
+     "ow.png",
+     "ow.4bpp",
+     "ow.pal",
+     "ow.gbapal"
+    ],
+    "trainer_pal": [],
+    "ow_pal": []
+   },
+   "has_any_asset": true
+  },
+  {
+   "character": "Cheren",
+   "key": "cheren",
+   "rowe_symbols": {
+    "ow": "OBJ_EVENT_GFX_CM_CHEREN",
+    "front": "-",
+    "back": "-"
+   },
+   "staged_files": {
+    "front": [],
+    "back": [],
+    "ow": [
+     "ow.png",
+     "ow.4bpp",
+     "ow.pal",
+     "ow.gbapal"
+    ],
+    "trainer_pal": [],
+    "ow_pal": []
+   },
+   "has_any_asset": true
+  },
+  {
+   "character": "Roxie",
+   "key": "roxie",
+   "rowe_symbols": {
+    "ow": "OBJ_EVENT_GFX_CM_ROXIE",
+    "front": "-",
+    "back": "-"
+   },
+   "staged_files": {
+    "front": [],
+    "back": [],
+    "ow": [
+     "ow.png",
+     "ow.4bpp",
+     "ow.pal",
+     "ow.gbapal"
+    ],
+    "trainer_pal": [],
+    "ow_pal": []
+   },
+   "has_any_asset": true
+  },
+  {
+   "character": "Marlon",
+   "key": "marlon",
+   "rowe_symbols": {
+    "ow": "OBJ_EVENT_GFX_CM_MARLON",
+    "front": "-",
+    "back": "-"
+   },
+   "staged_files": {
+    "front": [],
+    "back": [],
+    "ow": [
+     "ow.png",
+     "ow.4bpp",
+     "ow.pal",
+     "ow.gbapal"
+    ],
+    "trainer_pal": [],
+    "ow_pal": []
+   },
+   "has_any_asset": true
+  },
+  {
+   "character": "Bianca",
+   "key": "bianca",
+   "rowe_symbols": {
+    "ow": "OBJ_EVENT_GFX_CM_BIANCA",
+    "front": "-",
+    "back": "-"
+   },
+   "staged_files": {
+    "front": [],
+    "back": [],
+    "ow": [
+     "ow.png",
+     "ow.4bpp",
+     "ow.pal",
+     "ow.gbapal"
+    ],
+    "trainer_pal": [],
+    "ow_pal": []
+   },
+   "has_any_asset": true
+  },
+  {
+   "character": "Hugh",
+   "key": "hugh",
+   "rowe_symbols": {
+    "ow": "OBJ_EVENT_GFX_CM_HUGH",
+    "front": "-",
+    "back": "-"
+   },
+   "staged_files": {
+    "front": [],
+    "back": [],
+    "ow": [
+     "ow.png",
+     "ow.4bpp",
+     "ow.pal",
+     "ow.gbapal"
+    ],
+    "trainer_pal": [],
+    "ow_pal": []
+   },
+   "has_any_asset": true
+  },
+  {
+   "character": "N",
+   "key": "n",
+   "rowe_symbols": {
+    "ow": "OBJ_EVENT_GFX_CM_N",
+    "front": "-",
+    "back": "-"
+   },
+   "staged_files": {
+    "front": [],
+    "back": [],
+    "ow": [
+     "ow.png",
+     "ow.4bpp",
+     "ow.pal",
+     "ow.gbapal"
+    ],
+    "trainer_pal": [],
+    "ow_pal": []
+   },
+   "has_any_asset": true
+  },
+  {
+   "character": "Ghetsis",
+   "key": "ghetsis",
+   "rowe_symbols": {
+    "ow": "OBJ_EVENT_GFX_CM_GHETSIS",
+    "front": "-",
+    "back": "-"
+   },
+   "staged_files": {
+    "front": [],
+    "back": [],
+    "ow": [
+     "ow.png",
+     "ow.4bpp",
+     "ow.pal",
+     "ow.gbapal"
+    ],
+    "trainer_pal": [],
+    "ow_pal": []
+   },
+   "has_any_asset": true
+  },
+  {
+   "character": "Colress",
+   "key": "colress",
+   "rowe_symbols": {
+    "ow": "OBJ_EVENT_GFX_CM_COLRESS",
+    "front": "-",
+    "back": "-"
+   },
+   "staged_files": {
+    "front": [],
+    "back": [],
+    "ow": [
+     "ow.png",
+     "ow.4bpp",
+     "ow.pal",
+     "ow.gbapal"
+    ],
+    "trainer_pal": [],
+    "ow_pal": []
+   },
+   "has_any_asset": true
+  },
+  {
+   "character": "Trip",
+   "key": "trip",
+   "rowe_symbols": {
+    "ow": "-",
+    "front": "-",
+    "back": "-"
+   },
+   "staged_files": {
+    "front": [],
+    "back": [],
+    "ow": [],
+    "trainer_pal": [],
+    "ow_pal": []
+   },
+   "has_any_asset": false
+  },
+  {
+   "character": "Diantha",
+   "key": "diantha",
+   "rowe_symbols": {
+    "ow": "-",
+    "front": "-",
+    "back": "-"
+   },
+   "staged_files": {
+    "front": [],
+    "back": [],
+    "ow": [],
+    "trainer_pal": [],
+    "ow_pal": []
+   },
+   "has_any_asset": false
+  },
+  {
+   "character": "Malva",
+   "key": "malva",
+   "rowe_symbols": {
+    "ow": "-",
+    "front": "-",
+    "back": "-"
+   },
+   "staged_files": {
+    "front": [],
+    "back": [],
+    "ow": [],
+    "trainer_pal": [],
+    "ow_pal": []
+   },
+   "has_any_asset": false
+  },
+  {
+   "character": "Siebold",
+   "key": "siebold",
+   "rowe_symbols": {
+    "ow": "-",
+    "front": "-",
+    "back": "-"
+   },
+   "staged_files": {
+    "front": [],
+    "back": [],
+    "ow": [],
+    "trainer_pal": [],
+    "ow_pal": []
+   },
+   "has_any_asset": false
+  },
+  {
+   "character": "Wikstrom",
+   "key": "wikstrom",
+   "rowe_symbols": {
+    "ow": "-",
+    "front": "-",
+    "back": "-"
+   },
+   "staged_files": {
+    "front": [],
+    "back": [],
+    "ow": [],
+    "trainer_pal": [],
+    "ow_pal": []
+   },
+   "has_any_asset": false
+  },
+  {
+   "character": "Drasna",
+   "key": "drasna",
+   "rowe_symbols": {
+    "ow": "-",
+    "front": "-",
+    "back": "-"
+   },
+   "staged_files": {
+    "front": [],
+    "back": [],
+    "ow": [],
+    "trainer_pal": [],
+    "ow_pal": []
+   },
+   "has_any_asset": false
+  },
+  {
+   "character": "Viola",
+   "key": "viola",
+   "rowe_symbols": {
+    "ow": "-",
+    "front": "-",
+    "back": "-"
+   },
+   "staged_files": {
+    "front": [],
+    "back": [],
+    "ow": [],
+    "trainer_pal": [],
+    "ow_pal": []
+   },
+   "has_any_asset": false
+  },
+  {
+   "character": "Grant",
+   "key": "grant",
+   "rowe_symbols": {
+    "ow": "-",
+    "front": "-",
+    "back": "-"
+   },
+   "staged_files": {
+    "front": [],
+    "back": [],
+    "ow": [],
+    "trainer_pal": [],
+    "ow_pal": []
+   },
+   "has_any_asset": false
+  },
+  {
+   "character": "Korrina",
+   "key": "korrina",
+   "rowe_symbols": {
+    "ow": "-",
+    "front": "-",
+    "back": "-"
+   },
+   "staged_files": {
+    "front": [],
+    "back": [],
+    "ow": [],
+    "trainer_pal": [],
+    "ow_pal": []
+   },
+   "has_any_asset": false
+  },
+  {
+   "character": "Ramos",
+   "key": "ramos",
+   "rowe_symbols": {
+    "ow": "-",
+    "front": "-",
+    "back": "-"
+   },
+   "staged_files": {
+    "front": [],
+    "back": [],
+    "ow": [],
+    "trainer_pal": [],
+    "ow_pal": []
+   },
+   "has_any_asset": false
+  },
+  {
+   "character": "Clemont",
+   "key": "clemont",
+   "rowe_symbols": {
+    "ow": "-",
+    "front": "-",
+    "back": "-"
+   },
+   "staged_files": {
+    "front": [],
+    "back": [],
+    "ow": [],
+    "trainer_pal": [],
+    "ow_pal": []
+   },
+   "has_any_asset": false
+  },
+  {
+   "character": "Valerie",
+   "key": "valerie",
+   "rowe_symbols": {
+    "ow": "-",
+    "front": "-",
+    "back": "-"
+   },
+   "staged_files": {
+    "front": [],
+    "back": [],
+    "ow": [],
+    "trainer_pal": [],
+    "ow_pal": []
+   },
+   "has_any_asset": false
+  },
+  {
+   "character": "Olympia",
+   "key": "olympia",
+   "rowe_symbols": {
+    "ow": "-",
+    "front": "-",
+    "back": "-"
+   },
+   "staged_files": {
+    "front": [],
+    "back": [],
+    "ow": [],
+    "trainer_pal": [],
+    "ow_pal": []
+   },
+   "has_any_asset": false
+  },
+  {
+   "character": "Wulfric",
+   "key": "wulfric",
+   "rowe_symbols": {
+    "ow": "-",
+    "front": "-",
+    "back": "-"
+   },
+   "staged_files": {
+    "front": [],
+    "back": [],
+    "ow": [],
+    "trainer_pal": [],
+    "ow_pal": []
+   },
+   "has_any_asset": false
+  },
+  {
+   "character": "Shauna",
+   "key": "shauna",
+   "rowe_symbols": {
+    "ow": "-",
+    "front": "-",
+    "back": "-"
+   },
+   "staged_files": {
+    "front": [],
+    "back": [],
+    "ow": [],
+    "trainer_pal": [],
+    "ow_pal": []
+   },
+   "has_any_asset": false
+  },
+  {
+   "character": "Lysandre",
+   "key": "lysandre",
+   "rowe_symbols": {
+    "ow": "-",
+    "front": "-",
+    "back": "-"
+   },
+   "staged_files": {
+    "front": [],
+    "back": [],
+    "ow": [],
+    "trainer_pal": [],
+    "ow_pal": []
+   },
+   "has_any_asset": false
+  },
+  {
+   "character": "Alain",
+   "key": "alain",
+   "rowe_symbols": {
+    "ow": "-",
+    "front": "-",
+    "back": "-"
+   },
+   "staged_files": {
+    "front": [],
+    "back": [],
+    "ow": [],
+    "trainer_pal": [],
+    "ow_pal": []
+   },
+   "has_any_asset": false
+  },
+  {
+   "character": "Sawyer",
+   "key": "sawyer",
+   "rowe_symbols": {
+    "ow": "-",
+    "front": "-",
+    "back": "-"
+   },
+   "staged_files": {
+    "front": [],
+    "back": [],
+    "ow": [],
+    "trainer_pal": [],
+    "ow_pal": []
+   },
+   "has_any_asset": false
+  },
+  {
+   "character": "Kukui",
+   "key": "kukui",
+   "rowe_symbols": {
+    "ow": "-",
+    "front": "-",
+    "back": "-"
+   },
+   "staged_files": {
+    "front": [],
+    "back": [],
+    "ow": [],
+    "trainer_pal": [],
+    "ow_pal": []
+   },
+   "has_any_asset": false
+  },
+  {
+   "character": "Hau",
+   "key": "hau",
+   "rowe_symbols": {
+    "ow": "-",
+    "front": "-",
+    "back": "-"
+   },
+   "staged_files": {
+    "front": [],
+    "back": [],
+    "ow": [],
+    "trainer_pal": [],
+    "ow_pal": []
+   },
+   "has_any_asset": false
+  },
+  {
+   "character": "Molayne",
+   "key": "molayne",
+   "rowe_symbols": {
+    "ow": "-",
+    "front": "-",
+    "back": "-"
+   },
+   "staged_files": {
+    "front": [],
+    "back": [],
+    "ow": [],
+    "trainer_pal": [],
+    "ow_pal": []
+   },
+   "has_any_asset": false
+  },
+  {
+   "character": "Kahili",
+   "key": "kahili",
+   "rowe_symbols": {
+    "ow": "-",
+    "front": "-",
+    "back": "-"
+   },
+   "staged_files": {
+    "front": [],
+    "back": [],
+    "ow": [],
+    "trainer_pal": [],
+    "ow_pal": []
+   },
+   "has_any_asset": false
+  },
+  {
+   "character": "Acerola",
+   "key": "acerola",
+   "rowe_symbols": {
+    "ow": "-",
+    "front": "-",
+    "back": "-"
+   },
+   "staged_files": {
+    "front": [],
+    "back": [],
+    "ow": [],
+    "trainer_pal": [],
+    "ow_pal": []
+   },
+   "has_any_asset": false
+  },
+  {
+   "character": "Olivia",
+   "key": "olivia",
+   "rowe_symbols": {
+    "ow": "-",
+    "front": "-",
+    "back": "-"
+   },
+   "staged_files": {
+    "front": [],
+    "back": [],
+    "ow": [],
+    "trainer_pal": [],
+    "ow_pal": []
+   },
+   "has_any_asset": false
+  },
+  {
+   "character": "Gladion",
+   "key": "gladion",
+   "rowe_symbols": {
+    "ow": "-",
+    "front": "-",
+    "back": "-"
+   },
+   "staged_files": {
+    "front": [],
+    "back": [],
+    "ow": [],
+    "trainer_pal": [],
+    "ow_pal": []
+   },
+   "has_any_asset": false
+  },
+  {
+   "character": "Guzma",
+   "key": "guzma",
+   "rowe_symbols": {
+    "ow": "-",
+    "front": "-",
+    "back": "-"
+   },
+   "staged_files": {
+    "front": [],
+    "back": [],
+    "ow": [],
+    "trainer_pal": [],
+    "ow_pal": []
+   },
+   "has_any_asset": false
+  },
+  {
+   "character": "Plumeria",
+   "key": "plumeria",
+   "rowe_symbols": {
+    "ow": "-",
+    "front": "-",
+    "back": "-"
+   },
+   "staged_files": {
+    "front": [],
+    "back": [],
+    "ow": [],
+    "trainer_pal": [],
+    "ow_pal": []
+   },
+   "has_any_asset": false
+  },
+  {
+   "character": "Lusamine",
+   "key": "lusamine",
+   "rowe_symbols": {
+    "ow": "-",
+    "front": "-",
+    "back": "-"
+   },
+   "staged_files": {
+    "front": [],
+    "back": [],
+    "ow": [],
+    "trainer_pal": [],
+    "ow_pal": []
+   },
+   "has_any_asset": false
+  },
+  {
+   "character": "Lillie (anime)",
+   "key": "lillie",
+   "rowe_symbols": {
+    "ow": "-",
+    "front": "-",
+    "back": "-"
+   },
+   "staged_files": {
+    "front": [],
+    "back": [],
+    "ow": [],
+    "trainer_pal": [],
+    "ow_pal": []
+   },
+   "has_any_asset": false
+  },
+  {
+   "character": "Kiawe (anime)",
+   "key": "kiawe",
+   "rowe_symbols": {
+    "ow": "-",
+    "front": "-",
+    "back": "-"
+   },
+   "staged_files": {
+    "front": [],
+    "back": [],
+    "ow": [],
+    "trainer_pal": [],
+    "ow_pal": []
+   },
+   "has_any_asset": false
+  },
+  {
+   "character": "Lana (anime)",
+   "key": "lana",
+   "rowe_symbols": {
+    "ow": "-",
+    "front": "-",
+    "back": "-"
+   },
+   "staged_files": {
+    "front": [],
+    "back": [],
+    "ow": [],
+    "trainer_pal": [],
+    "ow_pal": []
+   },
+   "has_any_asset": false
+  },
+  {
+   "character": "Mallow (anime)",
+   "key": "mallow",
+   "rowe_symbols": {
+    "ow": "-",
+    "front": "-",
+    "back": "-"
+   },
+   "staged_files": {
+    "front": [],
+    "back": [],
+    "ow": [],
+    "trainer_pal": [],
+    "ow_pal": []
+   },
+   "has_any_asset": false
+  },
+  {
+   "character": "Sophocles",
+   "key": "sophocles",
+   "rowe_symbols": {
+    "ow": "-",
+    "front": "-",
+    "back": "-"
+   },
+   "staged_files": {
+    "front": [],
+    "back": [],
+    "ow": [],
+    "trainer_pal": [],
+    "ow_pal": []
+   },
+   "has_any_asset": false
+  },
+  {
+   "character": "Leon",
+   "key": "leon",
+   "rowe_symbols": {
+    "ow": "-",
+    "front": "-",
+    "back": "-"
+   },
+   "staged_files": {
+    "front": [],
+    "back": [],
+    "ow": [],
+    "trainer_pal": [],
+    "ow_pal": []
+   },
+   "has_any_asset": false
+  },
+  {
+   "character": "Milo",
+   "key": "milo",
+   "rowe_symbols": {
+    "ow": "-",
+    "front": "-",
+    "back": "-"
+   },
+   "staged_files": {
+    "front": [],
+    "back": [],
+    "ow": [],
+    "trainer_pal": [],
+    "ow_pal": []
+   },
+   "has_any_asset": false
+  },
+  {
+   "character": "Nessa",
+   "key": "nessa",
+   "rowe_symbols": {
+    "ow": "-",
+    "front": "-",
+    "back": "-"
+   },
+   "staged_files": {
+    "front": [],
+    "back": [],
+    "ow": [],
+    "trainer_pal": [],
+    "ow_pal": []
+   },
+   "has_any_asset": false
+  },
+  {
+   "character": "Kabu",
+   "key": "kabu",
+   "rowe_symbols": {
+    "ow": "-",
+    "front": "-",
+    "back": "-"
+   },
+   "staged_files": {
+    "front": [],
+    "back": [],
+    "ow": [],
+    "trainer_pal": [],
+    "ow_pal": []
+   },
+   "has_any_asset": false
+  },
+  {
+   "character": "Bea",
+   "key": "bea",
+   "rowe_symbols": {
+    "ow": "-",
+    "front": "-",
+    "back": "-"
+   },
+   "staged_files": {
+    "front": [],
+    "back": [],
+    "ow": [],
+    "trainer_pal": [],
+    "ow_pal": []
+   },
+   "has_any_asset": false
+  },
+  {
+   "character": "Allister",
+   "key": "allister",
+   "rowe_symbols": {
+    "ow": "-",
+    "front": "-",
+    "back": "-"
+   },
+   "staged_files": {
+    "front": [],
+    "back": [],
+    "ow": [],
+    "trainer_pal": [],
+    "ow_pal": []
+   },
+   "has_any_asset": false
+  },
+  {
+   "character": "Opal",
+   "key": "opal",
+   "rowe_symbols": {
+    "ow": "-",
+    "front": "-",
+    "back": "-"
+   },
+   "staged_files": {
+    "front": [],
+    "back": [],
+    "ow": [],
+    "trainer_pal": [],
+    "ow_pal": []
+   },
+   "has_any_asset": false
+  },
+  {
+   "character": "Gordie",
+   "key": "gordie",
+   "rowe_symbols": {
+    "ow": "-",
+    "front": "-",
+    "back": "-"
+   },
+   "staged_files": {
+    "front": [],
+    "back": [],
+    "ow": [],
+    "trainer_pal": [],
+    "ow_pal": []
+   },
+   "has_any_asset": false
+  },
+  {
+   "character": "Melony",
+   "key": "melony",
+   "rowe_symbols": {
+    "ow": "-",
+    "front": "-",
+    "back": "-"
+   },
+   "staged_files": {
+    "front": [],
+    "back": [],
+    "ow": [],
+    "trainer_pal": [],
+    "ow_pal": []
+   },
+   "has_any_asset": false
+  },
+  {
+   "character": "Piers",
+   "key": "piers",
+   "rowe_symbols": {
+    "ow": "-",
+    "front": "-",
+    "back": "-"
+   },
+   "staged_files": {
+    "front": [],
+    "back": [],
+    "ow": [],
+    "trainer_pal": [],
+    "ow_pal": []
+   },
+   "has_any_asset": false
+  },
+  {
+   "character": "Raihan",
+   "key": "raihan",
+   "rowe_symbols": {
+    "ow": "-",
+    "front": "-",
+    "back": "-"
+   },
+   "staged_files": {
+    "front": [],
+    "back": [],
+    "ow": [],
+    "trainer_pal": [],
+    "ow_pal": []
+   },
+   "has_any_asset": false
+  },
+  {
+   "character": "Hop",
+   "key": "hop",
+   "rowe_symbols": {
+    "ow": "-",
+    "front": "-",
+    "back": "-"
+   },
+   "staged_files": {
+    "front": [],
+    "back": [],
+    "ow": [],
+    "trainer_pal": [],
+    "ow_pal": []
+   },
+   "has_any_asset": false
+  },
+  {
+   "character": "Bede",
+   "key": "bede",
+   "rowe_symbols": {
+    "ow": "-",
+    "front": "-",
+    "back": "-"
+   },
+   "staged_files": {
+    "front": [],
+    "back": [],
+    "ow": [],
+    "trainer_pal": [],
+    "ow_pal": []
+   },
+   "has_any_asset": false
+  },
+  {
+   "character": "Marnie",
+   "key": "marnie",
+   "rowe_symbols": {
+    "ow": "-",
+    "front": "-",
+    "back": "-"
+   },
+   "staged_files": {
+    "front": [],
+    "back": [],
+    "ow": [],
+    "trainer_pal": [],
+    "ow_pal": []
+   },
+   "has_any_asset": false
+  },
+  {
+   "character": "Rose",
+   "key": "rose",
+   "rowe_symbols": {
+    "ow": "-",
+    "front": "-",
+    "back": "-"
+   },
+   "staged_files": {
+    "front": [],
+    "back": [],
+    "ow": [],
+    "trainer_pal": [],
+    "ow_pal": []
+   },
+   "has_any_asset": false
+  },
+  {
+   "character": "Goh",
+   "key": "goh",
+   "rowe_symbols": {
+    "ow": "-",
+    "front": "-",
+    "back": "-"
+   },
+   "staged_files": {
+    "front": [],
+    "back": [],
+    "ow": [],
+    "trainer_pal": [],
+    "ow_pal": []
+   },
+   "has_any_asset": false
+  },
+  {
+   "character": "Chloe",
+   "key": "chloe",
+   "rowe_symbols": {
+    "ow": "-",
+    "front": "-",
+    "back": "-"
+   },
+   "staged_files": {
+    "front": [],
+    "back": [],
+    "ow": [],
+    "trainer_pal": [],
+    "ow_pal": []
+   },
+   "has_any_asset": false
+  }
+ ]
+}
