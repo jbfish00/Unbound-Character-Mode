@@ -85,7 +85,28 @@ Expert / Insane / Challenging / Back          (difficulty sub-menu options)
 
 This is a real, working, **multi-step opt-in toggle system** exposed at new-game setup — a near-ideal structural precedent (or literal insertion point — a "Character Mode" toggle could plausibly be added as one more entry in this same sequence) for where Character Mode's own character-select menu should hook in.
 
-The true string start ("Would you like to view game enhancement options?") is at file offset `0x1F1065C`. Its pointer is referenced once, at file offset `0x1E70005`, embedded in what reads as compiled script bytecode (small-opcode-plus-operand rhythm matching what we saw for the Mystery Gift reference: `... 5C 06 F1 09 ...` — `5C 06 F1 09` is exactly this pointer in LE form, `0x09F1065C`). Confirms this menu is script-driven, same mechanism as other dialogue flows. **Not yet done**: decode more of the surrounding script bytes to find the actual branch/condition structure (which flag/var gets set when the player answers each yes/no prompt — that's the concrete hook target for Phase 4), and locate the very first "Would you like to play with [difficulty]?" root prompt that starts this whole flow (to find where in the intro sequence this is first reached).
+The true string start ("Would you like to view game enhancement options?") is at file offset `0x1F1065C`. Its pointer is referenced once, at file offset `0x1E70005`, embedded in what reads as compiled script bytecode (small-opcode-plus-operand rhythm matching what we saw for the Mystery Gift reference: `... 5C 06 F1 09 ...` — `5C 06 F1 09` is exactly this pointer in LE form, `0x09F1065C`). Confirms this menu is script-driven, same mechanism as other dialogue flows.
+
+### Script opcodes decoded — CONFIRMED (independently cross-validated, not guessed)
+
+Scanned the raw script bytes for `0x1E6FF80`–`0x1E70120` (covering the species/moveset/ability randomizer toggle sequence) for a repeating pattern, since three near-identical "would you like to enable the X randomizer?" prompts should compile to near-identical script snippets differing only in which flag they set:
+
+```
+0x01E700AA: 2B FD 09   -> setflag(0x09FD)
+0x01E700B3: 2B FE 09   -> setflag(0x09FE)
+0x01E700BC: 2B 22 15   -> setflag(0x1522)
+```
+
+**`0x09FD` is an exact match for `FLAG_UNBOUND_SPECIES_RANDOMIZER`**, the one flag ID the plan's original research already had documented (via Unbound-Cloud's reverse-engineered save format). This independently confirms two things at once: **opcode `0x2B` is `setflag(u16 flagId)`**, and this specific script-decoding approach is correct, not a coincidental pattern match. `0x09FE` (moveset randomizer, presumably) and `0x1522` (ability randomizer or the next toggle, presumably) are two more real, in-use flag IDs, newly discovered.
+
+Also found the companion `setvar` pattern:
+```
+0x01E70042 / 0x01E7006B: 16 00 80 ...  -> setvar(VAR=0x8000, ...)
+0x01E700DB / 0x01E700E9 / 0x01E700F7: 16 06 80 ...  -> setvar(VAR=0x8006, ...)
+```
+`0x8000`/`0x8006` land exactly in pret's standard "special var" range (`VAR_RESULT = 0x8000` is the classic convention) — another independent confirmation that Unbound's scripting engine hasn't diverged from the vanilla/CFRU shape.
+
+**Practical takeaway for Phase 4**: `FLAG_CHARACTER_MODE`/`VAR_CHARACTER_ID` must avoid at least `0x09FD`, `0x09FE`, `0x1522`, `0x8000`, `0x8006` (now confirmed in-use) plus the previously-known `VAR_UNBOUND_GAME_DIFFICULTY 0x50DF` — still not a complete unused-range map, but real, growing, confirmed exclusions rather than the empty list Phase 4 started with. **Not yet done**: decode the branch/condition bytes around each `setflag` (which opcode reads the yes/no answer and decides whether to execute it) to fully understand the pattern before reusing it, and locate the very first "difficulty" root prompt that starts this whole flow.
 
 ## Not yet found / not yet searched
 
