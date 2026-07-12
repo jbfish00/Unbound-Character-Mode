@@ -13,3 +13,9 @@ __pycache__/
 tools/armips/
 # local compiled/copied tool binaries — regenerate via build steps, not committed
 tools/bin/
+
+# Ghidra install + analysis project — huge, regenerable, not our code
+tools/ghidra/
+ghidra_project/
+docs/strings_dump.txt
+docs/ghidra_analysis.log

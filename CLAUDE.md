@@ -38,15 +38,21 @@ Porting the "Character Mode" feature from the Pokemon ROWE project (`/home/jbfis
 
 ~1.46 MiB confirmed free (0xFF-padded) across 264 runs; three big blocks (337 KiB @ 0x015FBC90, 147 KiB @ 0x00B2B280, 101 KiB @ 0x01FE6C64) are the primary injection targets. This was flagged as an open risk in the plan and is now resolved — free space is not the bottleneck.
 
-## Status (2026-07-12 v1)
+## Status (2026-07-12 v2)
 
 Phase 0 complete: project scaffolded, ROM extracted from the user-provided zip and checksummed (`b4776b82a4c7915d0fadeaa27e013523f99dfd94`), git initialized, ROM/patches gitignored. ROM header confirms `POKEMON FIRE` / `BPRE` / rev 0 — genuinely FireRed-based, consistent with the CFRU research behind the plan. Note: the zip's readme.txt is a ROM-site watermark ("ROMSFUN.COM & ROMSPURE.CC"), not a self-produced patch record — flagged to the user, proceeding as a personal hobby project per their direction.
 
-Phase 1 in progress (toolchain bring-up + free-space audit done, real routine-tracing not yet started):
-- Toolchain verified: `arm-none-eabi-gcc` Thumb output correct, `armips` built and runs, `mgba-qt` has Lua scripting compiled in, `flips` available.
-- Free-space audit done and resolved (see above) — this de-risks plan risk #3 entirely.
-- **NOT yet done**: the "hello world" injection test (compile → insert into free space → hook → confirm execution in mGBA) — deliberately not attempted blind this session, since a safe/known hook site hasn't been identified yet and a wrong guess risks wasted cycles on a crash with no diagnostic info. Needs either (a) a well-known, hack-agnostic FireRed boot-sequence address as a first low-stakes hook target, cross-referenced against pret/pokefirered decomp, or (b) Ghidra set up first so a candidate hook site can be read/verified statically before trying it live.
-- **NOT yet done**: Ghidra + GBA loader plugin installation.
-- **NOT yet done**: any routine tracing (catch/gift/trade/starter/menu/sprite tables) — this is the actual substance of Phase 1's go/no-go gate and hasn't started.
+Phase 1 in progress, real substance now underway. Toolchain fully verified: `arm-none-eabi-gcc` Thumb output correct, `armips` built and runs, `mgba-qt` has Lua scripting compiled in, `flips` available, and **Ghidra 12.0.2 + `pudii/gba-ghidra-loader` 1.1.0 installed** (`tools/ghidra/`) — confirmed the loader auto-detects the ROM (`GBA Loader`, `ARM:LE:32:v4t:default`) on import. Free-space audit resolved plan risk #3 (~1.46 MiB confirmed free). Full Ghidra auto-analysis of the ROM is running headlessly in the background (`ghidra_project/UnboundCM`, log at `docs/ghidra_analysis.log`) — this is genuinely slow on a 32MB binary; check process status before assuming it's done (as of this checkpoint: ~6 min CPU time in, still working through the address space, no fatal errors, some benign thunk-overlap warnings).
 
-NEXT: install Ghidra + a GBA loader plugin, identify a safe first hook site (likely via pret/pokefirered's well-documented `AgbMain`/boot sequence as a hack-agnostic starting point, verified statically before touching the live ROM), run the hello-world injection test end-to-end in mGBA, then begin empirical routine tracing via the built-in Species Randomizer + mGBA watchpoints as the plan describes.
+**Big win this session**: built `tools/search_gametext.py` + `tools/decode_gametext.py`, which encode/decode the Gen3 charmap (reused from ROWE's `charmap.txt`) to search the ROM for game text directly — no Ghidra/disassembly needed for this part. Validated against known vanilla strings first (`TRAINER`, `POKéMON`, `SAVE` all decoded correctly), then found several strong **string anchors** for Phase 1's target routines — see `docs/ROUTINE_MAP.md` for full detail and exact offsets:
+- The full vanilla catch-sequence string bank (`Gotcha! X was caught!` / nickname prompt / PC-deposit message / "The Box is full!") at file offset `0x3FD790`+ — byte-for-byte the standard FRLG/CFRU bank, a good sign the catch subsystem hasn't diverged much structurally.
+- Mystery Gift explanation dialogue at `0x1A6317`+, corroborating the earlier `mevent.c`/`mevent_server.c` debug-string find.
+- A link-trade confirmation dialogue cluster at `0x1F85A25`+ (likely NOT the same path as an NPC in-game trade — that's still unfound).
+- A weak, unconfirmed starter-selection lead ("Go ahead, choose a Pokémon.") at `0x75CB20`.
+- Several false leads ruled out and documented (generic substring matches hitting unrelated text) — see ROUTINE_MAP.md so they aren't re-tried.
+
+These are **string anchors, not routines yet** — the actual code that reads/displays each string still needs to be found via Ghidra XREF analysis (pending completion) or an mGBA read-watchpoint on the string bytes. That conversion is the next concrete step.
+
+Still NOT done: the "hello world" injection test (deliberately deferred — no confirmed safe hook site yet, and Ghidra will make picking one far less risky than guessing blind), any XREF-derived routine addresses, intro-menu hook point (text search for likely wording came up empty except one unconfirmed "CHALLENGE" hit), sprite/trainer-card/battle-pic table locations (need Ghidra's data typing, not text search).
+
+NEXT: once Ghidra's analysis finishes, run XREF queries against each string anchor above to convert them into confirmed routine addresses (this is the core of the go/no-go gate). In parallel, text-search for better NPC-in-game-trade and intro-menu candidate phrases, and re-check the starter-selection lead with a properly bounded read (it likely got cut off mid-string).
