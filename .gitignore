@@ -20,6 +20,8 @@ ghidra_project/
 # Dynamic-Pokemon-Expansion Unbound-branch clone — third-party donor data,
 # regenerable via git clone, not our code
 tools/dpe_unbound_donor/
+# Complete FireRed Upgrade clone — third-party reference source, not our code
+tools/cfru_donor/
 docs/strings_dump.txt
 docs/ghidra_analysis.log
 docs/all_strings_dump.txt
