@@ -44,9 +44,13 @@ Amoonguss         <->  Shiinotic  (two-way, both directions listed)
 ```
 "Borrius" is Unbound's custom region name, confirming this is genuinely Unbound-authored content, not a leftover vanilla string. This is a much better hook-point candidate than the original guess — it's a clean, self-contained table of species-for-species swaps, exactly the shape of code the plan needs to find (something that reads an incoming species and assigns an outgoing one). **Next step**: XREF from these string addresses (once Ghidra is done) to find the actual trade-handler function; also read further past `0x1F85BBA` to capture the rest of the trade table (this dump was truncated mid-table).
 
-## Starter selection — WEAK LEAD, needs verification
+## Starter selection — RULED OUT (was a weak lead; now identified as something else)
 
-File offset `0x75CB20`: "Go ahead, choose a Pokémon." — plausible starter-selection or gift-selection prompt, but not yet confirmed which screen it belongs to (could be a lab starter pick, a gift-egg pick, or something else entirely). Text immediately following this string decodes to garbage/mixed encoding, suggesting the window read past the string's actual terminator into unrelated data — needs a tighter re-read once we know the real string length. **Do not build on this without confirming first.**
+File offset `0x75CB20` ("Go ahead, choose a Pokémon.") is **NOT starter selection** — wider context read (`0x75CA80`+) shows it's part of a mid-story escape sequence: "...If we each take one, we can use them to attack the guard and escape! Here, take this Poké Ball I picked up. [X] received a Poké Ball from [Y]! [Go ahead, choose a Pokémon.]" This is a scripted cutscene (an ally hands you a spare Poké Ball during an escape), not the game's opening starter pick. Do not use this as the starter-selection hook.
+
+Still potentially useful as a **generic gift-item/gift-Pokémon message lead**: "[X] received a [Y] from [Z]!" reads like shared vanilla-shape infrastructure (the standard FRLG "received an item/Pokémon from" message format), which could be the same underlying print routine used across many gift scenarios, not just this one cutscene. Not yet pointer-searched — worth trying once the true string start is pinned down (this one also needs the careful backward-scan-to-real-boundary treatment other leads required).
+
+Real starter-selection dialogue is still **UNKNOWN** — not yet found by any technique. Candidate search terms tried and failed: generic "starter" substring (too many false positives, see below).
 
 False leads ruled out during this search (recorded so they aren't re-tried): plain `"starter"` substring-matched unrelated dialogue about "starters" (ferry/ocean traffic flavor text) — too generic a search term. `"was caught"` substring-matched a battle move effect message ("was caught in a sticky web!" — String Shot/Sticky Web) as well as the real catch text — needs the fuller surrounding-context check every time, not just a raw hit count.
 
