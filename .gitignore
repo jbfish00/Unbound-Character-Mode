@@ -17,6 +17,9 @@ tools/bin/
 # Ghidra install + analysis project — huge, regenerable, not our code
 tools/ghidra/
 ghidra_project/
+# Dynamic-Pokemon-Expansion Unbound-branch clone — third-party donor data,
+# regenerable via git clone, not our code
+tools/dpe_unbound_donor/
 docs/strings_dump.txt
 docs/ghidra_analysis.log
 docs/all_strings_dump.txt
