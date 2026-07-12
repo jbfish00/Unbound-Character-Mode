@@ -28,15 +28,36 @@ This is byte-for-byte the standard FRLG/CFRU catch message bank (not reworded), 
 
 File offset `0x1A6317`–`0x1A6385` decodes to Mystery Gift explanation dialogue ("...you must know about the MYSTERY GIFT... From now on, you should be receiving MYSTERY GIFTS!... Once you save your game, you can access the MYSTERY GIFT... Thank you for accessing the MYSTERY GIFT System..."). Corroborated by Phase-1's earlier debug-string find: the ROM retains original GameFreak assert strings naming `mevent.c` and `mevent_server.c` (Mystery Event/Gift source files in the pret/pokefirered decomp) — those files are the known real implementation this dialogue belongs to. **Next step**: XREF from these string addresses once Ghidra is done, cross-reference against pokefirered's `mevent.c`/`mevent_server.c` structure for the species-assignment call site.
 
-## Trade sequence — STRING ANCHOR (moderate lead, likely link/wireless trade not NPC in-game trade)
+## Trade sequence — STRING ANCHOR (strong lead, corrected from earlier pass)
 
-File offset `0x1F85A25`–`0x1F85BBA`: tight cluster of "In exchange"/"Traded" strings — this reads as the link-trade confirmation dialogue ("In exchange, I'll send you a Pokémon!" / "Traded ... for ..."), which is probably NOT the same code path as an NPC in-game trade (give-one-get-one, no link cable). Both eventually call something like the ROWE precedent's species-assignment site, but need to be treated as two separate hook candidates, not assumed to be one. **Next step**: also locate NPC in-game trade dialogue specifically (search terms tried so far were too generic — need better candidate phrases, e.g. names of actual known in-game trade NPCs once we have a walkthrough/map reference).
+Earlier pass mischaracterized this as link-trade dialogue — a wider read proved it wrong. File offset `~0x1F8590`–`0x1F85BBA`+ is **Unbound's actual "Borrius Trade Quest" NPC in-game trade table** — a self-contained sidequest with real, named, Unbound-specific trade pairs:
+```
+"It looks like there are still residents of Borrius that are willing to trade.
+ Trade with all of them, and then I'll give you a nice reward."
+...
+Alolan Sandshrew  <->  Quacker the Ducklett
+Onix              <->  Roly-Poly the Electrode
+Lickitung         <->  Top the Hitmontop
+Manectric         <->  Squirry the Pachirisu
+Amoonguss         <->  Shiinotic  (two-way, both directions listed)
+... (table continues past what's been read so far)
+```
+"Borrius" is Unbound's custom region name, confirming this is genuinely Unbound-authored content, not a leftover vanilla string. This is a much better hook-point candidate than the original guess — it's a clean, self-contained table of species-for-species swaps, exactly the shape of code the plan needs to find (something that reads an incoming species and assigns an outgoing one). **Next step**: XREF from these string addresses (once Ghidra is done) to find the actual trade-handler function; also read further past `0x1F85BBA` to capture the rest of the trade table (this dump was truncated mid-table).
 
 ## Starter selection — WEAK LEAD, needs verification
 
 File offset `0x75CB20`: "Go ahead, choose a Pokémon." — plausible starter-selection or gift-selection prompt, but not yet confirmed which screen it belongs to (could be a lab starter pick, a gift-egg pick, or something else entirely). Text immediately following this string decodes to garbage/mixed encoding, suggesting the window read past the string's actual terminator into unrelated data — needs a tighter re-read once we know the real string length. **Do not build on this without confirming first.**
 
 False leads ruled out during this search (recorded so they aren't re-tried): plain `"starter"` substring-matched unrelated dialogue about "starters" (ferry/ocean traffic flavor text) — too generic a search term. `"was caught"` substring-matched a battle move effect message ("was caught in a sticky web!" — String Shot/Sticky Web) as well as the real catch text — needs the fuller surrounding-context check every time, not just a raw hit count.
+
+## Pointer-reference technique (no Ghidra needed for this class of finding)
+
+Discovered a technique that works without waiting for Ghidra: GBA code and data reference strings via plain 4-byte little-endian pointers (`file_offset + 0x08000000`) — this is true both for data tables *and* for ARM/Thumb literal pools and compiled script bytecode, since none of those embed the address as a relative/encoded value. `tools/find_pointer_refs.py` searches the raw ROM bytes for a given string's pointer value directly. Important nuance learned the hard way: the pointer always targets the **true start** of the enclosing string, not wherever a keyword search happened to match mid-sentence — back up to the preceding `0xFF` terminator first (with caution: `0xFF` also appears in non-text binary/script data, so a long backtrack distance is a red flag that the heuristic wandered into non-text bytes, not a real string boundary; short, plausible backtracks like the mystery-gift case below are trustworthy, the trade-table case's 3.7 KB backtrack was not and needs a different approach).
+
+Results:
+- **Catch message ("Gotcha!") — confirmed part of a real string table.** File offset `0x3FD7A2`'s pointer is referenced once, at `0x3FE338`, which sits inside a long, tightly-packed, monotonically-increasing array of ~60+ pointers all landing in the `0x083FCxxx`–`0x083FDxxx` range (dumped in full in the session transcript). This is unmistakably the shape of pret/pokefirered's `gBattleStringsTable` — an indexed array of battle message pointers, looked up by a numeric string ID (`STRINGID_*` in pret's naming) from a single dispatcher function. This is a strong, converging signal for risk #1 (Unbound's battle-message plumbing has NOT diverged from the CFRU/vanilla shape) — once Ghidra can disassemble the code around `0x083FE338`'s containing function, matching the table's exact length/start against pret's known `gBattleStringsTable` layout should identify the dispatcher, and from there the real catch-handling call site.
+- **Mystery Gift dialogue — confirmed to be script-invoked.** True string start (after backing up past a plausible preceding terminator) is `0x1A62D3` ("Oh, hello! You know those words? That means you must know about the MYSTERY GIFT..."). Its one pointer reference is at file offset `0x1A7770`, embedded directly in what looks like compiled map-script bytecode (single-byte opcodes interleaved with a handful of 2-4 byte operands, e.g. `... D3 62 1A 08 09 04 ...` — the 4 bytes `D3 62 1A 08` are exactly our pointer in LE form). This confirms Mystery Gift's intro dialogue is triggered from a scripted event, as expected, but the actual native routine (invoked from the script via a `special`-style call, most likely) hasn't been isolated yet — that needs either Ghidra's script/special-function-table cross-referencing or manually decoding more of the surrounding script bytes against pret's `scrcmd.c` opcode table (which we already have a real anchor for, from the retained debug-assert filename).
+- **Trade table — pointer search inconclusive so far.** The naive backward-terminator-scan landed implausibly far back (3.7 KB), a sign the heuristic crossed into non-text bytes rather than finding a real string boundary; needs a smarter string-start detection (e.g. reuse `dump_all_strings.py`'s decode-forward validator to find the previous *valid* decoded run's start, not just the previous raw `0xFF` byte) before trusting a pointer search here.
 
 ## Not yet found / not yet searched
 
