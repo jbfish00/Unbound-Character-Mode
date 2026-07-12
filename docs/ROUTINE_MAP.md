@@ -65,8 +65,9 @@ Results:
 
 ## Not yet found / not yet searched
 
-- Gift-Pokémon-from-NPC handler (distinct from Mystery Gift and from trades) — no confirmed string lead yet.
-- Party/PC "route to PC when full or disallowed" logic — Deposit/Withdraw/Storage/Release/Nickname text banks were found (`0x4162E8` deposit cluster, `0x417713` withdraw cluster) but not yet cross-referenced to code.
+- Gift-Pokémon-from-NPC handler (distinct from Mystery Gift and from trades) — no confirmed string lead yet. Ruled out one candidate: the generic "received a ___ from ___" phrase (37 separate hits across the ROM) is NOT shared infrastructure — these are independently-written NPC dialogue lines, not one reusable template, so it's not a useful pointer-search anchor.
+- **Correction**: the `0x4162E8`/`0x417713` Deposit/Withdraw/Storage text clusters are the **Bag's item-storage PC box** ("Store items in the PC", "Withdraw Item", item pocket categories) — NOT the Pokémon Storage System. Not relevant to Character Mode's party/PC-routing enforcement.
+- The actually-relevant "route to PC" message for Character Mode enforcement is **already found**: it's part of the catch-message string bank (`0x3FD790`+ — "[X] was sent to [Y]'s PC", "someone's", "Bill's", "The Box is full!"), already tied into the 26-xref battle-string-table finding above. No separate search needed for this.
 - Intro menu / opt-in mode hook point (the plan's lead was Unbound's built-in Species Randomizer "enhancement options" intro menu) — not yet searched for by text; needs candidate phrases for that specific menu's wording (guesses tried: RANDOMIZER, ENHANCEMENT, OPTIONS, DIFFICULTY, CHALLENGE, FEATURES, SETTINGS, SANDBOX, NEW GAME+ — none hit except "CHALLENGE" once, single unconfirmed hit at `0x3E8B0B`, not yet decoded/verified).
 - Overworld sprite table, trainer-card asset table, battle-intro pic table — not started (these are binary data tables, not findable via text search; need Ghidra's data-type analysis or manual structure hunting once available).
 - Entry point / boot sequence address for a "hello world" injection hook — not yet attempted (deliberately deferred until Ghidra static analysis gives us a real candidate instead of guessing blind).
