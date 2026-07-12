@@ -24,5 +24,6 @@ tools/dpe_unbound_donor/
 tools/cfru_donor/
 docs/strings_dump.txt
 docs/ghidra_analysis.log
+docs/ghidra_analysis2.log
 docs/all_strings_dump.txt
 docs/all_strings_dump.stderr
