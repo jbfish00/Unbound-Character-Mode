@@ -66,14 +66,35 @@ Results:
 - **Mystery Gift dialogue — confirmed to be script-invoked.** True string start (after backing up past a plausible preceding terminator) is `0x1A62D3` ("Oh, hello! You know those words? That means you must know about the MYSTERY GIFT..."). Its one pointer reference is at file offset `0x1A7770`, embedded directly in what looks like compiled map-script bytecode (single-byte opcodes interleaved with a handful of 2-4 byte operands, e.g. `... D3 62 1A 08 09 04 ...` — the 4 bytes `D3 62 1A 08` are exactly our pointer in LE form). This confirms Mystery Gift's intro dialogue is triggered from a scripted event, as expected, but the actual native routine (invoked from the script via a `special`-style call, most likely) hasn't been isolated yet — that needs either Ghidra's script/special-function-table cross-referencing or manually decoding more of the surrounding script bytes against pret's `scrcmd.c` opcode table (which we already have a real anchor for, from the retained debug-assert filename).
 - **Trade table — pointer search inconclusive so far.** The naive backward-terminator-scan landed implausibly far back (3.7 KB), a sign the heuristic crossed into non-text bytes rather than finding a real string boundary; needs a smarter string-start detection (e.g. reuse `dump_all_strings.py`'s decode-forward validator to find the previous *valid* decoded run's start, not just the previous raw `0xFF` byte) before trusting a pointer search here.
 
+## Intro "enhancement options" menu — FOUND (major win, was the last big unknown for Phase 4's menu hook)
+
+The exhaustive full-ROM string dump (`tools/dump_all_strings.py`, ~210K lines, ran ~40 min in the background) found exactly what the plan predicted would be the best precedent for Character Mode's own opt-in intro menu — Unbound's real new-game setup flow, starting at file offset `~0x1F1060`:
+
+```
+Expert / Insane / Challenging / Back          (difficulty sub-menu options)
+"Would you like to view game enhancement options?"
+"Would you like to view [randomizer] options?"
+"Would you like to enable the [species] randomizer?"
+"The [species] randomizer has been enabled."
+"Would you like to enable the [level-up moveset] randomizer?" / enabled confirmation
+"Would you like to enable the [Ability] randomizer?" / enabled confirmation
+"Note that the randomizer will be temporarily disabled during boss battles."
+"Would you like to play a variant with stat rebalancing?" / enabled confirmation
+  + a full paragraph explaining the rebalancing math (BST ~600, Shedinja/Huge Power exceptions)
+```
+
+This is a real, working, **multi-step opt-in toggle system** exposed at new-game setup — a near-ideal structural precedent (or literal insertion point — a "Character Mode" toggle could plausibly be added as one more entry in this same sequence) for where Character Mode's own character-select menu should hook in.
+
+The true string start ("Would you like to view game enhancement options?") is at file offset `0x1F1065C`. Its pointer is referenced once, at file offset `0x1E70005`, embedded in what reads as compiled script bytecode (small-opcode-plus-operand rhythm matching what we saw for the Mystery Gift reference: `... 5C 06 F1 09 ...` — `5C 06 F1 09` is exactly this pointer in LE form, `0x09F1065C`). Confirms this menu is script-driven, same mechanism as other dialogue flows. **Not yet done**: decode more of the surrounding script bytes to find the actual branch/condition structure (which flag/var gets set when the player answers each yes/no prompt — that's the concrete hook target for Phase 4), and locate the very first "Would you like to play with [difficulty]?" root prompt that starts this whole flow (to find where in the intro sequence this is first reached).
+
 ## Not yet found / not yet searched
 
 - Gift-Pokémon-from-NPC handler (distinct from Mystery Gift and from trades) — no confirmed string lead yet. Ruled out one candidate: the generic "received a ___ from ___" phrase (37 separate hits across the ROM) is NOT shared infrastructure — these are independently-written NPC dialogue lines, not one reusable template, so it's not a useful pointer-search anchor.
 - **Correction**: the `0x4162E8`/`0x417713` Deposit/Withdraw/Storage text clusters are the **Bag's item-storage PC box** ("Store items in the PC", "Withdraw Item", item pocket categories) — NOT the Pokémon Storage System. Not relevant to Character Mode's party/PC-routing enforcement.
 - The actually-relevant "route to PC" message for Character Mode enforcement is **already found**: it's part of the catch-message string bank (`0x3FD790`+ — "[X] was sent to [Y]'s PC", "someone's", "Bill's", "The Box is full!"), already tied into the 26-xref battle-string-table finding above. No separate search needed for this.
-- Intro menu / opt-in mode hook point (the plan's lead was Unbound's built-in Species Randomizer "enhancement options" intro menu) — not yet searched for by text; needs candidate phrases for that specific menu's wording (guesses tried: RANDOMIZER, ENHANCEMENT, OPTIONS, DIFFICULTY, CHALLENGE, FEATURES, SETTINGS, SANDBOX, NEW GAME+ — none hit except "CHALLENGE" once, single unconfirmed hit at `0x3E8B0B`, not yet decoded/verified).
+- ~~Intro menu / opt-in mode hook point~~ **FOUND** — see the "Intro enhancement options menu" section above.
 - Overworld sprite table, trainer-card asset table, battle-intro pic table — not started (these are binary data tables, not findable via text search; need Ghidra's data-type analysis or manual structure hunting once available).
-- Entry point / boot sequence address for a "hello world" injection hook — not yet attempted (deliberately deferred until Ghidra static analysis gives us a real candidate instead of guessing blind).
+- Entry point / boot sequence address for a "hello world" injection hook — the injection MECHANISM is now built and verified (`tools/inject_code.py`, tested clean against a confirmed-free ROM block, exactly the right bytes changed), but no hook site has been wired yet — still need a call site to branch into injected code, not just a place to put it.
 
 ## Free space
 
