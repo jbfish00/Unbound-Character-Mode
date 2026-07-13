@@ -19,7 +19,7 @@ real hook/table addresses):
   characters_manifest.json - human-readable record of every field + offset,
                     for the later insert step and for debugging
 
-Record layout (12 bytes, native ROM byte order = little-endian), OFFSETS
+Record layout (16 bytes, native ROM byte order = little-endian), OFFSETS
 ARE RELATIVE TO THE START OF THEIR OWN BLOB, not final ROM addresses — the
 insert step (Phase 1-informed) adds each blob's actual injected base address
 and writes real 0x08xxxxxx pointers:
@@ -30,11 +30,22 @@ and writes real 0x08xxxxxx pointers:
                              equivalent once real ids exist
     u8  generation
     u8  flags             -- bit0: hasSignature: signature ace is roster[0]
+    u8  starter_count     -- roster[0..starter_count) are the base-stage,
+                             non-legendary species eligible as starters
+    u8  reserved          -- 0
+    u16 pad               -- 0 (record aligned to 16 bytes)
 
-species IDs referenced in rosters.bin are the PROVISIONAL DPE-donor ids from
-map_species.py — NOT yet cross-checked against the real compiled ROM. Do not
-trust for actual injection until Phase 1's routine-mapping work verifies
-them (same caveat map_species.py already carries).
+Roster layout per character (all u16 LE, 0-terminated):
+    [starters: base stages, signature first][legendary bases][family
+    expansion: every evolved form of every base above, so the ROM-side
+    membership check is a FLAT scan — no evolution-table walking in
+    injected code]. Expansion follows the DPE donor's 'Evolution Table.c'
+    (this ROM's own table format), excluding EVO_MEGA/EVO_GIGANTAMAX
+    (battle-only forms, not obtainable species).
+
+Species IDs were ROM-VERIFIED this session (2026-07-12 v8) against the live
+in-ROM species-name table at 0x0966A98C (457/457 match) — no longer
+provisional.
 """
 import json
 import os
@@ -87,6 +98,66 @@ def display_name(disp):
     return disp
 
 
+DONOR = os.path.join(HERE, "..", "dpe_unbound_donor")
+
+# Battle-only transformation "evolutions" — not obtainable species, excluded
+# from family expansion.
+NON_EVOLUTIONS = {"EVO_MEGA", "EVO_GIGANTAMAX"}
+
+
+def family_children_map():
+    """species id -> [direct evolution species ids], from the DPE donor's
+    'Evolution Table.c' (same source map_species.py walks backwards for its
+    base-form reduction; here we walk it FORWARD to expand families)."""
+    with open(os.path.join(DONOR, "include/species.h"), encoding="utf-8") as f:
+        species_h = f.read()
+    const_to_id = {m.group(1): int(m.group(2), 0)
+                   for m in re.finditer(r"#define\s+(SPECIES_\w+)\s+(0x[0-9A-Fa-f]+|\d+)", species_h)}
+
+    with open(os.path.join(DONOR, "src", "Evolution Table.c"), encoding="utf-8") as f:
+        text = f.read()
+    m = re.search(r"gEvolutionTable\[NUM_SPECIES\]\[EVOS_PER_MON\]\s*=\s*\{(.*?)^\};",
+                  text, re.S | re.M)
+    body = m.group(1)
+
+    rows = [(r.start(), r.group(1)) for r in re.finditer(r"\[(SPECIES_\w+)\]\s*=", body)]
+    children = {}
+    for t in re.finditer(r"\{\s*(EVO_\w+)\s*,[^,{}]+,\s*(SPECIES_\w+)", body):
+        if t.group(1) in NON_EVOLUTIONS:
+            continue
+        src = None
+        for pos, name in rows:
+            if pos < t.start():
+                src = name
+            else:
+                break
+        if src is None or src == t.group(2):
+            continue
+        sid, tid = const_to_id.get(src), const_to_id.get(t.group(2))
+        if sid is None or tid is None:
+            continue
+        children.setdefault(sid, []).append(tid)
+    return children
+
+
+def expand_family(base_ids, children):
+    """All evolution descendants of base_ids (excluding the bases themselves),
+    in deterministic BFS order."""
+    out = []
+    seen = set(base_ids)
+    frontier = list(base_ids)
+    while frontier:
+        nxt = []
+        for sid in frontier:
+            for c in children.get(sid, []):
+                if c not in seen:
+                    seen.add(c)
+                    out.append(c)
+                    nxt.append(c)
+        frontier = nxt
+    return out
+
+
 def main():
     with open(os.path.join(HERE, "rosters_mapped.json")) as f:
         mapped = json.load(f)
@@ -107,6 +178,7 @@ def main():
     records = bytearray()
     manifest = []
     skipped = []
+    children = family_children_map()
 
     for disp in order:
         info = mapped[disp]
@@ -131,7 +203,8 @@ def main():
             starters.insert(0, sig_id)
             has_signature = 1
 
-        ordered_ids = starters + legends
+        expansion = expand_family(starters + legends, children)
+        ordered_ids = starters + legends + expansion
         if not starters:
             manifest.append({"character": disp, "warning": "all-legendary roster, starter fallback needed"})
 
@@ -147,7 +220,8 @@ def main():
         flags = has_signature & 0x1
         sprite_asset_id = 0xFFFF  # TBD — Unbound OW/trainer-pic table not yet located (Phase 1/3)
 
-        records += struct.pack("<IIHBB", name_off, roster_off, sprite_asset_id, generation, flags)
+        records += struct.pack("<IIHBBBB2x", name_off, roster_off, sprite_asset_id,
+                               generation, flags, min(len(starters), 255), 0)
 
         manifest.append({
             "character": disp,
@@ -155,10 +229,11 @@ def main():
             "generation": generation,
             "name_offset": name_off,
             "roster_offset": roster_off,
-            "roster_species_ids_PROVISIONAL": ordered_ids,
+            "roster_species_ids": ordered_ids,
             "starter_count": len(starters),
+            "family_expansion_count": len(expansion),
             "has_signature": bool(has_signature),
-            "signature_id_PROVISIONAL": sig.get("id") if sig else None,
+            "signature_id": sig.get("id") if sig else None,
             "sprite_asset_id": "TBD",
         })
 
@@ -169,16 +244,16 @@ def main():
     with open(os.path.join(HERE, "names.bin"), "wb") as f:
         f.write(names_blob)
     with open(os.path.join(HERE, "characters_manifest.json"), "w") as f:
-        json.dump({"record_count": len(order) - len(skipped), "record_size_bytes": 12,
+        json.dump({"record_count": len(order) - len(skipped), "record_size_bytes": 16,
                    "skipped_empty_roster": skipped, "characters": manifest}, f, indent=1)
 
     print("emitted %d characters (%d skipped empty)" % (len(order) - len(skipped), len(skipped)))
-    print("  characters.bin: %d bytes (%d records x 12)" % (len(records), len(records) // 12))
+    print("  characters.bin: %d bytes (%d records x 16)" % (len(records), len(records) // 16))
     print("  rosters.bin:    %d bytes" % len(rosters_blob))
     print("  names.bin:      %d bytes" % len(names_blob))
     print("\nsprite_asset_id is a PLACEHOLDER (0xFFFF) for every record — Phase 3 fills")
     print("this in once Unbound's OW/trainer-pic tables are located (Phase 1).")
-    print("All species ids are still PROVISIONAL (DPE donor, not ROM-verified).")
+    print("All species ids ROM-verified against gSpeciesNames @0x0966A98C (2026-07-12).")
 
 
 if __name__ == "__main__":
