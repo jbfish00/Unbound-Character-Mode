@@ -11,7 +11,8 @@
 //
 // Run via: analyzeHeadless <project> <name> -process <file> -noanalysis
 //   -scriptPath <this dir> -postScript InspectRegions.java <addr1> <addr2> ...
-// Addresses are hex WITHOUT the 0x08000000 base, e.g. 000CEFEC
+// Addresses are hex WITH the 0x08000000 GBA ROM base included, e.g. 080CEFEC
+// (toAddr() resolves an un-prefixed offset to an unmapped address and silently no-ops).
 // @category CharacterMode
 import ghidra.app.script.GhidraScript;
 import ghidra.program.model.address.Address;

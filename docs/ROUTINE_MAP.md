@@ -128,11 +128,55 @@ Also found the companion `setvar` pattern:
 ```
 `0x8000`/`0x8006` land exactly in pret's standard "special var" range (`VAR_RESULT = 0x8000` is the classic convention) — another independent confirmation that Unbound's scripting engine hasn't diverged from the vanilla/CFRU shape.
 
-**Practical takeaway for Phase 4**: `FLAG_CHARACTER_MODE`/`VAR_CHARACTER_ID` must avoid at least `0x09FD`, `0x09FE`, `0x1522`, `0x8000`, `0x8006` (now confirmed in-use) plus the previously-known `VAR_UNBOUND_GAME_DIFFICULTY 0x50DF` — still not a complete unused-range map, but real, growing, confirmed exclusions rather than the empty list Phase 4 started with. **Not yet done**: decode the branch/condition bytes around each `setflag` (which opcode reads the yes/no answer and decides whether to execute it) to fully understand the pattern before reusing it, and locate the very first "difficulty" root prompt that starts this whole flow.
+**Practical takeaway for Phase 4**: `FLAG_CHARACTER_MODE`/`VAR_CHARACTER_ID` must avoid at least `0x09FD`, `0x09FE`, `0x1522`, `0x8000`, `0x8006` (now confirmed in-use) plus the previously-known `VAR_UNBOUND_GAME_DIFFICULTY 0x50DF` — still not a complete unused-range map, but real, growing, confirmed exclusions rather than the empty list Phase 4 started with.
+
+### Yes/No branch mechanism decoded — CONFIRMED (2026-07-12 v7)
+
+Hand-decoded the raw bytes at `0x1E6FF80`–`0x1E70140` to find the actual conditional-branch pair gating each `setflag`, cross-checked across all three randomizer prompts (species/moveset/ability) for consistency — all three follow the identical pattern, byte-for-byte:
+
+```
+0x1E70003: 0F 00 5C 06 F1 09      loadword(bank=0, ptr=0x09F1065C)   ; load "enhancement options?" text
+0x1E70009: 09 05                  callstd(5)                          ; MSGBOX_YESNO — display + wait for Yes/No
+0x1E7000B: 21 0D 80 00 00         compare_var_to_value(VAR=0x800D, value=0)
+0x1E70010: 06 01 48 01 E7 09      goto_if(cond=1/EQ, ptr=0x09E70148)  ; if answer==0 (No), skip enabling
+0x1E7003F: 29 FD 09               <opcode 0x29>(flagid=0x09FD)        ; NOT setflag — see caveat below
+  ...                             loadword+callstd for "enabled" confirmation message
+0x1E700A6: 16 00 80 00 00         setvar(VAR=0x8000, 0) / setvar(VAR=0x8006, {0,1,2})  ; per-prompt bookkeeping var, not the answer
+```
+
+**Real, useful findings**:
+- The Yes/No answer from `callstd(5)` (`MSGBOX_YESNO`) lands in **VAR `0x800D`** — a new, previously-unidentified scratch var. This (not `0x8000`/`0x8006`, which are written separately via `setvar` and are probably per-prompt bookkeeping, e.g. a running enabled-count) is the actual condition variable Character Mode's own Yes/No or character-select prompt would need to read.
+- Confirms opcode `0x21` = `compare_var_to_value` (5 bytes: opcode + u16 var + u16 value) and opcode `0x06` = `goto_if` (6 bytes: opcode + u8 cond + u32 pointer) — both consistent with the standard XSE/pret Gen3 script command shapes, another independent cross-validation of the opcode table (in addition to `0x16`=`setvar`/`0x2B`=`setflag` from the prior session).
+- **Caveat, not yet resolved**: opcode `0x29` appears immediately before each real `setflag(0x2B)` **using the identical flag id** (e.g. `29 FD 09` then later, in a separate batched block at `0x1E700AA`, `2B FD 09` — same `0x09FD`). These are two *different* opcodes touching the same flag, so `0x29` is NOT `setflag` (that's independently confirmed as `0x2B`) — most likely `checkflag` or `clearflag` given XSE-table neighboring conventions, but not confirmed which. Don't conflate `0x29` and `0x2B` hits when scanning for flag usage.
+- New flag ids seen via opcode `0x29` early in this same script region (before the difficulty/randomizer prompts even start): **`0x16E4`, `0x1503`, `0x170E`** — real, flag-touching, in-use ids regardless of `0x29`'s exact semantics. Added to the exclusion list below.
+- Root "difficulty" prompt that starts the whole flow: **not fully pinned down this pass** — the window inspected (`0x1E6FF80` onward) starts mid-flow; a few bytes at the very start (`0x1E6FF80`–`0x1E6FF9F`) don't cleanly parse against the opcodes confirmed so far and need a slightly wider backward read to resolve. Low priority — the practical hook point (the enhancement-options entry, `0x1E70003` onward) is already well understood.
+
+**Updated Phase 4 exclusion list**: `0x09FD`, `0x09FE`, `0x1522`, `0x16E4`, `0x1503`, `0x170E` (flags), `0x8000`, `0x8006`, `0x800D` (vars), plus `VAR_UNBOUND_GAME_DIFFICULTY 0x50DF`.
+
+## Battle-string-table xref cluster — CATCH HANDLER RULED OUT (2026-07-12 v7, full 26/26 survey)
+
+Completed decompiling every one of the 26 xref sites to the battle-string-table base (`0x3FDF3C`) found in the previous session — 9 had been decompiled before, the remaining 17 (really: the containing functions for the 2 remaining un-inspected raw xrefs plus resolution of the 2 known thunks' real targets) were done this session via the same `InspectRegions.java` → `DecompileFunc.java` pipeline. One gotcha hit along the way: the scripts' own comments about whether to include the `0x08` ROM-base prefix in the hex address argument are inconsistent/wrong (`InspectRegions.java`'s comment example, `000CEFEC`, omits it; `FindXrefs.java`'s, `083FD7A2`, includes it) — the correct, working convention is **always include the `08` prefix** (e.g. `080CEFEC`), confirmed by `toAddr()` resolving the un-prefixed form to an unmapped address (`MemoryBlock` null) rather than throwing. Worth fixing the misleading comment in `InspectRegions.java`/`DecompileFunc.java` next time either is touched.
+
+**Result: every single one of the 26 sites (all now resolved to a real, decompiled function) is the same `scrcmd.c`-equivalent per-instance-state-write family** — write a small tag/counter into a `(bank_index)*8 + base` struct at offsets `+0x14`/`+0x16`/`+0x18`, call one of a small set of shared helpers (`FUN_080d77f4`, `func_0x08054508`, `func_0x080d87bc`), and return via one of (at least) two shared tail-branch epilogues (`0x080cf536`, `0x080d0044` — refines the earlier single-epilogue claim: there appear to be multiple, not one). `FUN_080cfe50` (previously flagged) re-confirms the "get-candidate → validate → placeholder-embed-on-failure" shape tied to Species Randomizer internals. The 3 outlier sites (`0x08883520`, `0x088c0dbc`, `0x089a3288`, scattered far from the main cluster) are tiny unrelated call-forwarding stubs, not catch-related either.
+
+**This is a definitive negative result, not just "still unconfirmed" as before**: with full 26/26 coverage and zero sites showing catch-success/catch-failure/PC-routing logic, this specific xref cluster can be ruled out as the catch handler's location. The 374-entry string table's *content* identification (containing "Gotcha!"/"Box is full!", matching `gBattleStringsTable`'s known size) still stands — it's genuinely referenced by this `scrcmd.c`-equivalent region — but the actual code that prints from it on a real catch attempt must live elsewhere, reached through a mechanism not yet found (most likely the actual opcode dispatch table, still not located, which would let a known opcode value be mapped straight to its handler; or requires live mGBA tracing during an actual catch, per the plan's original Phase 5 approach).
+
+## Gift-Pokémon-from-NPC handler — FOUND, two distinct instances (2026-07-12 v7)
+
+Found via `tools/search_gametext.py` searches for phrases like "willing to trade" / "take good care" / "raise it well", which also turned up several *more* instances of the already-known Borrius Trade Quest NPC template (creature-for-creature swap dialogue at `0x007C2D0B`, `0x01F03BDD`, `0x01F29A7D`, all using the same "Would you be willing to trade one for my ___?" phrasing as the documented trade table) — not new findings, just confirms the trade-quest mechanic recurs at multiple map locations, all likely sharing one handler.
+
+Two genuinely distinct **gift-Pokémon** (not trade, not Mystery Gift) events found, both with a real multi-choice "pick one of several Pokémon" structure:
+
+1. **The "exhausted Sinnoh caretaker" NPC.** True string start `0x1EFB6F8` ("Yawn… Raising so many Pokémon from the Sinnoh region is exhausting… Oh! You seem like a strong Trainer! How would you like to raise one for me?" → "Which of my Pokémon would you like?" → offers a `Turtwig`/`Chimchar`/`Piplup` multichoice → "Please raise it well! If you come back when you have [N] Badges, I'll give you another."). Confirmed script-invoked: one pointer reference at file offset `0x1E63745`.
+2. **The "neglected companions" NPC.** True string start `0x1F6B534` ("My husband is a very well known businessman from Cube Corp… I brought along three Pokémon with me… now that my husband returns home earlier, I've begun to neglect them… entrust them to a caring Trainer… would you like one of these Pokémon?" → repeat-visit variant: "You came back! … Which of my Pokémon would you like today?"). Confirmed script-invoked: one pointer reference at file offset `0x1E8E8C6`.
+
+Both are real candidates for a "player receives a Pokémon directly from a script, not a trade/gift-code system" enforcement hook (Character Mode would need to gate/reject the choice if it's off-roster, same as catching). **Ruled out as a false positive for this category**: a third, superficially similar "Which of my Pokémon..." hit (`0x1F8DF45`/`0x1F8E0AB`, the "Milo" NPC) is actually a **battle ally/partner-selection** picker ("Which of my Pokémon should I use?" to join a double battle), not a permanent gift — don't conflate it with the two real finds above.
+
+Neither has been traced to its native handler code yet (same next step as Mystery Gift/trade: XREF the script bytecode's `special`-style call, or targeted Ghidra decompilation once a code-level lead narrows which routine actually creates/assigns the resulting Pokémon).
 
 ## Not yet found / not yet searched
 
-- Gift-Pokémon-from-NPC handler (distinct from Mystery Gift and from trades) — no confirmed string lead yet. Ruled out one candidate: the generic "received a ___ from ___" phrase (37 separate hits across the ROM) is NOT shared infrastructure — these are independently-written NPC dialogue lines, not one reusable template, so it's not a useful pointer-search anchor.
+- **Correction**: the `0x4162E8`/`0x417713` Deposit/Withdraw/Storage text clusters are the **Bag's item-storage PC box** ("Store items in the PC", "Withdraw Item", item pocket categories) — NOT the Pokémon Storage System. Not relevant to Character Mode's party/PC-routing enforcement.
 - **Correction**: the `0x4162E8`/`0x417713` Deposit/Withdraw/Storage text clusters are the **Bag's item-storage PC box** ("Store items in the PC", "Withdraw Item", item pocket categories) — NOT the Pokémon Storage System. Not relevant to Character Mode's party/PC-routing enforcement.
 - The actually-relevant "route to PC" message for Character Mode enforcement is **already found**: it's part of the catch-message string bank (`0x3FD790`+ — "[X] was sent to [Y]'s PC", "someone's", "Bill's", "The Box is full!"), already tied into the 26-xref battle-string-table finding above. No separate search needed for this.
 - ~~Intro menu / opt-in mode hook point~~ **FOUND** — see the "Intro enhancement options menu" section above.

@@ -1,6 +1,7 @@
 // Print incoming references to a list of ROM addresses.
 // Run via: analyzeHeadless <project> <name> -process <file> -scriptPath <this dir> -postScript FindXrefs.java <addr1> <addr2> ...
-// Addresses are hex strings WITHOUT the 0x08000000 GBA base offset already added, e.g. 083FD7A2
+// Addresses are hex strings WITH the 0x08000000 GBA ROM base included, e.g. 083FD7A2
+// (toAddr() resolves an un-prefixed offset to an unmapped address and silently no-ops).
 // @category CharacterMode
 import ghidra.app.script.GhidraScript;
 import ghidra.program.model.address.Address;

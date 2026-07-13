@@ -1,7 +1,8 @@
 // Run Ghidra's Decompiler on specific functions and print the C-like output.
 // Run via: analyzeHeadless <project> <name> -process <file> -noanalysis
 //   -scriptPath <this dir> -postScript DecompileFunc.java <addr1> <addr2> ...
-// Addresses are hex WITHOUT the 0x08000000 base, e.g. 000CF068
+// Addresses are hex WITH the 0x08000000 GBA ROM base included, e.g. 080CF068
+// (toAddr() resolves an un-prefixed offset to an unmapped address and silently no-ops).
 // @category CharacterMode
 import ghidra.app.decompiler.DecompInterface;
 import ghidra.app.decompiler.DecompileResults;
