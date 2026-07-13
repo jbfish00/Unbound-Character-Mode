@@ -1,5 +1,58 @@
 # Routine Map — Pokemon Unbound (v2.1.1.1).gba
 
+## THE BIG ONE — script & battle dispatch tables located, engine symbol map unlocked (2026-07-12 v8)
+
+**This section supersedes most of the hunting below.** The script-command dispatch table (`gScriptCmdTable`) survives at **vanilla FireRed's exact address `0x0815F9B4`** (file `0x15F9B4`), 0xD6 entries, followed immediately by the special-vars pointer table — byte-identical layout to pret/pokefirered. Found by scanning the ROM for ≥150-entry runs of consecutive Thumb function pointers. From there everything unlocked, because **Unbound leaves the vanilla FR engine core intact and CFRU hooks it surgically** — and `tools/cfru_donor/BPRE.ld` is a full FR symbol map that names every address we extract.
+
+### CRITICAL CORRECTION to v6/v7 opcode labels
+
+The dispatch table proves the standard XSE/pret opcode order — v6 had setflag/checkflag swapped:
+- **`0x29` = setflag** (handler `0x0806A82C` → calls `FlagSet 0x0806E680`)
+- **`0x2A` = clearflag** (handler `0x0806A840` → calls `FlagClear 0x0806E6A8`)
+- **`0x2B` = checkflag** (handler `0x0806A854` → calls `FlagGet 0x0806E6D0`, result → ctx+2)
+
+Re-reading the enhancement-menu script with this fix: the `29 FD 09` right after each Yes-answer **is** the setflag; the batched `2B xx xx` + `06 01 …` sequences later are checkflag→goto_if-TRUE chains (e.g. "if any randomizer enabled, show boss-battle disclaimer"). Everything parses consistently now; v6's claim "0x2B=setflag" was wrong (the 0x9FD flag-id cross-validation was still right — both opcodes touch that same flag).
+
+### Confirmed script-engine symbols (all verified two ways: decompiled handler shape + BPRE.ld name match)
+
+| Symbol | Address | How confirmed |
+|---|---|---|
+| `gScriptCmdTable` | `0x0815F9B4` | vanilla address, 0xD6 entries, interpreter refs at `0x69A9C/0x69B1C/0x69B78` |
+| `gSpecialVars` table | `0x0815FD0C` | follows cmd table; `VAR 0x800D → 0x020370D0 = gSpecialVar_Result` |
+| `gSpecials` | `0x0815FD60` | 444 entries (CFRU-extended; vanilla FR has 396) |
+| `gStdScripts` | `0x08160450` | 10 entries; **callstd 3–6 repointed to Unbound high-ROM `0x09E7D5BC+`** (custom msgbox/yesno) |
+| `ScriptReadHalfword` | `0x080698F8` | used by every u16-operand handler |
+| `FlagSet` / `FlagClear` / `FlagGet` | `0x0806E680` / `0x0806E6A8` / `0x0806E6D0` | setflag/clearflag/checkflag handlers + BPRE.ld |
+| `GetVarPointer` / `VarGet` / `VarSet` | `0x0806E454` / `0x0806E568` / `0x0806E584` | setvar/compare handlers + BPRE.ld |
+| `GetMonData` / `SetMonData` | `0x0803FBE8` / `0x0804037C` | givecaughtmon literal pool + BPRE.ld |
+| `ZeroMonData` / `CopyMon` | `0x0803D994` / `0x08040B08` | BPRE.ld |
+| `CalculatePlayerPartyCount` / `CompactPartySlots` | `0x08040C3C` / `0x080937DC` | BPRE.ld |
+| `GetSpeciesName` / `gEvolutionTable` | `0x08040FD0` / `0x08259754` | BPRE.ld (evolution table may be DPE-repointed — verify before use) |
+| `gPlayerParty` / `gEnemyParty` | `0x02024284` / `0x0202402C` | BPRE.ld |
+| `gStringVar1/2/4` | `0x02021CD0/CF0/D18` | BPRE.ld + seen in givecaughtmon |
+| `gNewBS` (CFRU battle struct ptr) | `0x0203E038` | BPRE.ld + deref'd in givecaughtmon |
+| `ScriptGiveMon` | `0x080A011C` | givemon(0x79) handler calls it with CFRU's exact 6-arg signature (`build_pokemon.c:4007`) |
+| `ScriptGiveEgg` | `0x080A01AC` | giveegg(0x7A) handler |
+| `agbcc call_via_rX` veneers | `0x089C9A70+` | `bx r3/r4/r5/r6/r7` ladder (CFRU compiled code calls natives through these) |
+
+### CATCH HANDLER — FOUND AND CONFIRMED (was the project's #1 unknown)
+
+The battle engine's own command table was repointed by CFRU: live copy at **`0x0899FFFC`** (file; 5 interpreter refs at `0x14C1C/0x15A28/0x15C6C/0x15C98/0x1D054`; the vanilla copy at `0x025011C` and an intermediate at `0x95F480` are orphaned). Commands `0xEE–0xF1` are repointed into CFRU high-ROM while neighbors stay vanilla:
+
+- **`atkEF_handleballthrow` = `0x089C8BE4`** — catch odds/success logic (CFRU `catching.c`)
+- **`atkF0_givecaughtmon` = `0x089C97AC`** — decompiled and matched **line-for-line** against CFRU source `src/catching.c` (raid-item restore, Unbound PP fix loop, box-name strings, `GAME_STAT_CAUGHT_TODAY`, `gBattleResults.caughtMonSpecies`)
+- `atkF1_trysetcaughtmondexflags` = `0x089C961C`
+
+### THE ENFORCEMENT CHOKE POINT
+
+**`GiveMonToPlayer` (CFRU-compiled) = `0x089C905C`** — called by `atkF0_givecaughtmon` (every catch) AND by `ScriptGiveMon`/`build_pokemon.c` paths (every scripted gift). Signature `u8 GiveMonToPlayer(struct Pokemon* mon)` (`catching.c:600`, comment "//Hook in" — CFRU itself hooks the vanilla one here). Returns `MON_GIVEN_TO_PARTY(0) / MON_GIVEN_TO_PC(1)? / MON_CANT_GIVE(2)?` (check `defines.h` for exact values). One hook at this entry enforces Character Mode for catches and gifts simultaneously. `SendMonToPC` vanilla addr `0x08040B90` (commented out in BPRE.ld — CFRU replaces it; find CFRU's compiled version via GiveMonToPlayer's internals when needed).
+
+### What this means for the phase gates
+
+Phase 1's routine-hunting is **effectively COMPLETE** for the mechanics that matter: catch (`0x089C905C` / `0x089C8BE4` / `0x089C97AC`), gift (`0x080A011C` → same choke point), menu hook (enhancement script + full opcode grammar + `VAR_RESULT 0x800D`), and all of Phase 4's Group-B externs are now real addresses. Remaining unknowns are secondary: trade-handler native (Borrius quest — likely also funnels through party/mon copy natives), sprite/asset tables (Phase 3), and DPE's possibly-repointed evolution table (verify `0x08259754` before relying on it).
+
+---
+
 The project's substitute for a public symbol table. Every finding is tagged:
 - **CONFIRMED** — address verified by trace/patch-and-observe (code located and behavior proven).
 - **STRING ANCHOR** — a data string is located and its content strongly implies which subsystem/dialogue it belongs to; the *code* that reads/displays it (the actual routine we need) is not yet located. Next step for these is Ghidra XREF analysis (find what code references the string's address) or an mGBA read-watchpoint on the string bytes.
@@ -114,12 +167,12 @@ The true string start ("Would you like to view game enhancement options?") is at
 Scanned the raw script bytes for `0x1E6FF80`–`0x1E70120` (covering the species/moveset/ability randomizer toggle sequence) for a repeating pattern, since three near-identical "would you like to enable the X randomizer?" prompts should compile to near-identical script snippets differing only in which flag they set:
 
 ```
-0x01E700AA: 2B FD 09   -> setflag(0x09FD)
-0x01E700B3: 2B FE 09   -> setflag(0x09FE)
-0x01E700BC: 2B 22 15   -> setflag(0x1522)
+0x01E700AA: 2B FD 09   -> flag op on 0x09FD   [v8 correction: this is CHECKFLAG, not setflag]
+0x01E700B3: 2B FE 09   -> flag op on 0x09FE   [v8: checkflag]
+0x01E700BC: 2B 22 15   -> flag op on 0x1522   [v8: checkflag]
 ```
 
-**`0x09FD` is an exact match for `FLAG_UNBOUND_SPECIES_RANDOMIZER`**, the one flag ID the plan's original research already had documented (via Unbound-Cloud's reverse-engineered save format). This independently confirms two things at once: **opcode `0x2B` is `setflag(u16 flagId)`**, and this specific script-decoding approach is correct, not a coincidental pattern match. `0x09FE` (moveset randomizer, presumably) and `0x1522` (ability randomizer or the next toggle, presumably) are two more real, in-use flag IDs, newly discovered.
+**`0x09FD` is an exact match for `FLAG_UNBOUND_SPECIES_RANDOMIZER`**, the one flag ID the plan's original research already had documented (via Unbound-Cloud's reverse-engineered save format). This independently confirms the script-decoding approach and the flag id — but the original conclusion "`0x2B` is `setflag`" was **wrong** (corrected in v8 via the dispatch table: `0x29`=setflag, `0x2B`=checkflag; these sites are checkflag→goto_if chains). `0x09FE` and `0x1522` remain two more real, in-use flag IDs.
 
 Also found the companion `setvar` pattern:
 ```
@@ -139,7 +192,7 @@ Hand-decoded the raw bytes at `0x1E6FF80`–`0x1E70140` to find the actual condi
 0x1E70009: 09 05                  callstd(5)                          ; MSGBOX_YESNO — display + wait for Yes/No
 0x1E7000B: 21 0D 80 00 00         compare_var_to_value(VAR=0x800D, value=0)
 0x1E70010: 06 01 48 01 E7 09      goto_if(cond=1/EQ, ptr=0x09E70148)  ; if answer==0 (No), skip enabling
-0x1E7003F: 29 FD 09               <opcode 0x29>(flagid=0x09FD)        ; NOT setflag — see caveat below
+0x1E7003F: 29 FD 09               setflag(0x09FD)                     ; [corrected in v8: 0x29 IS setflag]
   ...                             loadword+callstd for "enabled" confirmation message
 0x1E700A6: 16 00 80 00 00         setvar(VAR=0x8000, 0) / setvar(VAR=0x8006, {0,1,2})  ; per-prompt bookkeeping var, not the answer
 ```
@@ -147,7 +200,7 @@ Hand-decoded the raw bytes at `0x1E6FF80`–`0x1E70140` to find the actual condi
 **Real, useful findings**:
 - The Yes/No answer from `callstd(5)` (`MSGBOX_YESNO`) lands in **VAR `0x800D`** — a new, previously-unidentified scratch var. This (not `0x8000`/`0x8006`, which are written separately via `setvar` and are probably per-prompt bookkeeping, e.g. a running enabled-count) is the actual condition variable Character Mode's own Yes/No or character-select prompt would need to read.
 - Confirms opcode `0x21` = `compare_var_to_value` (5 bytes: opcode + u16 var + u16 value) and opcode `0x06` = `goto_if` (6 bytes: opcode + u8 cond + u32 pointer) — both consistent with the standard XSE/pret Gen3 script command shapes, another independent cross-validation of the opcode table (in addition to `0x16`=`setvar`/`0x2B`=`setflag` from the prior session).
-- **Caveat, not yet resolved**: opcode `0x29` appears immediately before each real `setflag(0x2B)` **using the identical flag id** (e.g. `29 FD 09` then later, in a separate batched block at `0x1E700AA`, `2B FD 09` — same `0x09FD`). These are two *different* opcodes touching the same flag, so `0x29` is NOT `setflag` (that's independently confirmed as `0x2B`) — most likely `checkflag` or `clearflag` given XSE-table neighboring conventions, but not confirmed which. Don't conflate `0x29` and `0x2B` hits when scanning for flag usage.
+- ~~**Caveat, not yet resolved**: opcode `0x29` vs `0x2B`~~ **RESOLVED in v8 (see top section): `0x29`=setflag, `0x2A`=clearflag, `0x2B`=checkflag** — this v7 section's `setflag`/`goto_if` reading of the control flow still holds, but every `setflag` label in the byte listing above actually refers to opcode `0x29`'s sites, and the `2B` sites are checkflags. The dispatch table proved it.
 - New flag ids seen via opcode `0x29` early in this same script region (before the difficulty/randomizer prompts even start): **`0x16E4`, `0x1503`, `0x170E`** — real, flag-touching, in-use ids regardless of `0x29`'s exact semantics. Added to the exclusion list below.
 - Root "difficulty" prompt that starts the whole flow: **not fully pinned down this pass** — the window inspected (`0x1E6FF80` onward) starts mid-flow; a few bytes at the very start (`0x1E6FF80`–`0x1E6FF9F`) don't cleanly parse against the opcodes confirmed so far and need a slightly wider backward read to resolve. Low priority — the practical hook point (the enhancement-options entry, `0x1E70003` onward) is already well understood.
 

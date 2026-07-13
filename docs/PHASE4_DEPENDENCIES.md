@@ -28,17 +28,31 @@ Already built and tested (`tools/character_mode/{characters,rosters,names}.bin`)
 - `gCharacterRosters` → `rosters.bin`
 - `gCharacterCount` → constant, 156 (or however many after any later roster edits)
 
-## Group B — Unbound engine functions (Phase 1 reverse-engineering, NOT yet located)
+## Group B — Unbound engine functions — **RESOLVED (2026-07-12 v8)**
 
-These are the real remaining unknowns. Assumed CFRU/vanilla-shaped signatures based on the battle-string-table finding (`docs/ROUTINE_MAP.md` — Unbound's battle-message plumbing hasn't diverged structurally), but that's supporting evidence, not confirmation for these specific functions.
+All addresses confirmed two independent ways: decompiled-handler shape match AND name match in CFRU's FR symbol map (`tools/cfru_donor/BPRE.ld`). Unbound's engine core is vanilla FireRed with CFRU hooks; the vanilla addresses below are live in this ROM. Full derivation in `docs/ROUTINE_MAP.md` (v8 top section).
 
-- `FlagGet(u16 flagId)` / `VarGet(u16 varId)` — save-block flag/var accessors. Vanilla FRLG has these as simple, extremely commonly-called leaf functions; should be easy to spot via Ghidra once available (called from hundreds of sites) or via the Species Randomizer's own flag checks (it must call these to know its settings — a good tracing entry point).
-- `GetMonData(mon, field, unused)` — the field-id enum (`MON_DATA_SPECIES` etc.) is Unbound-specific; CFRU is known to extend the vanilla enum for new mechanics (Tera-equivalent, Battle Styles, etc.) so vanilla field ids are a starting guess, not a given.
-- `GetMonDataIsEgg(mon)` — may not exist as a separate function; could just be `GetMonData(mon, MON_DATA_IS_EGG, ...)` — this file's split is speculative, revisit once the real API shape is known.
-- `GetFirstEvolution(species)` / `GetBaseFormSpeciesId(species)` — ROWE has these as real functions in its decomp source (`src/level_scaling.c`); Unbound's equivalent (if it exists as a discrete function at all — could be inlined) needs to be found or reimplemented against Unbound's real evolution table once its address is known.
-- `SendMonToPC(mon)` — the actual PC-deposit routine; return-value convention (`MON_CANT_GIVE`-equivalent) unconfirmed.
-- `ZeroMonData(mon)` / `CompactPartySlots()` / `CalculatePlayerPartyCount()` — party-array maintenance helpers.
-- `gPlayerParty` — base address of the live party array; this file's indexing math (`gPlayerParty + i * 0`) is a literal placeholder — `sizeof(struct Pokemon)` (or Unbound's equivalent struct) must be known before this is real code, not just compiles-cleanly code.
+| Extern | Address | Notes |
+|---|---|---|
+| `FlagGet` | `0x0806E6D0\|1` | verified via checkflag(0x2B) handler |
+| `VarGet` | `0x0806E568\|1` | verified via givemon handler; `VarSet` = `0x0806E584\|1` |
+| `GetMonData` | `0x0803FBE8\|1` | vanilla field ids OK for SPECIES/IS_EGG (CFRU only appends past the vanilla enum) |
+| `GetMonDataIsEgg` | — | fold into `GetMonData(mon, MON_DATA_IS_EGG, NULL)`; drop the separate extern |
+| `SendMonToPC` | `0x08040B90\|1` (vanilla) | CFRU replaces it (commented out in BPRE.ld); **prefer hooking `GiveMonToPlayer` = `0x089C905C\|1`**, which routes party-vs-PC itself (returns `MON_GIVEN_TO_PARTY=0`) |
+| `ZeroMonData` | `0x0803D994\|1` | |
+| `CompactPartySlots` | `0x080937DC\|1` | |
+| `CalculatePlayerPartyCount` | `0x08040C3C\|1` | |
+| `gPlayerParty` | `0x02024284` | `sizeof(struct Pokemon)` = 100 (0x64), vanilla layout |
+| `GetFirstEvolution` / `GetBaseFormSpeciesId` | — | reimplement against `gEvolutionTable` = `0x08259754` (**verify not DPE-repointed first**), or better: precompute evolution families into the roster data at emit time (Phase 2's scripts already expand families — the ROM-side check may not need evolution walking at all) |
+
+Bonus addresses for the enforcement/menu work (same confidence):
+- `GiveMonToPlayer` (CFRU) = `0x089C905C|1` — THE enforcement choke point (all catches + all scripted gifts)
+- `atkEF_handleballthrow` = `0x089C8BE4|1`, `atkF0_givecaughtmon` = `0x089C97AC|1` (live battle cmd table @ file `0x099FFFC`)
+- `ScriptGiveMon` = `0x080A011C|1`, `ScriptGiveEgg` = `0x080A01AC|1`
+- `FlagSet` = `0x0806E680|1`, `FlagClear` = `0x0806E6A8|1`, `GetVarPointer` = `0x0806E454|1`
+- `SetMonData` = `0x0804037C|1`, `CopyMon` = `0x08040B08|1`, `GetSpeciesName` = `0x08040FD0|1`
+- `gSpecialVar_Result` (VAR 0x800D) = `0x020370D0`, `gStringVar1/2/4` = `0x02021CD0/CF0/D18`
+- `gSpecials` table = `0x0815FD60` (444 entries), `gScriptCmdTable` = `0x0815F9B4`
 
 ## Group C — flag/var allocation (Phase 4, needs an empirical unused-range scan)
 
