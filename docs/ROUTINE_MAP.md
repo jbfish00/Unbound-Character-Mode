@@ -47,6 +47,27 @@ The battle engine's own command table was repointed by CFRU: live copy at **`0x0
 
 **`GiveMonToPlayer` (CFRU-compiled) = `0x089C905C`** — called by `atkF0_givecaughtmon` (every catch) AND by `ScriptGiveMon`/`build_pokemon.c` paths (every scripted gift). Signature `u8 GiveMonToPlayer(struct Pokemon* mon)` (`catching.c:600`, comment "//Hook in" — CFRU itself hooks the vanilla one here). Returns `MON_GIVEN_TO_PARTY(0) / MON_GIVEN_TO_PC(1)? / MON_CANT_GIVE(2)?` (check `defines.h` for exact values). One hook at this entry enforces Character Mode for catches and gifts simultaneously. `SendMonToPC` vanilla addr `0x08040B90` (commented out in BPRE.ld — CFRU replaces it; find CFRU's compiled version via GiveMonToPlayer's internals when needed).
 
+### Hook-site working set (v8 continued — everything needed to write the actual patch)
+
+**Catch-block hook (ROWE parity: off-roster species can't be caught, ball is dodged):**
+- CFRU `atkEF_handleballthrow` already contains a block path: `gBattleTypeFlags & BATTLE_TYPE_GHOST || FlagGet(FLAG_NO_CATCHING) || FlagGet(FLAG_NO_CATCHING_AND_RUNNING)` → `EmitBallThrowAnim(0,6)` + `BattleScript_DodgedBall`.
+- **`FLAG_NO_CATCHING` = `0x09F8`**, **`FLAG_NO_CATCHING_AND_RUNNING` = `0x08E2`** (literals at file `0x9C8E00`/`0x9C8E04`).
+- The `FlagGet(FLAG_NO_CATCHING)` call is `bl 0x089C9A76` (call_via_r6, r6=FlagGet) at **ROM `0x089C8CA6`** (bytes `F0 00 E6 FE`… stored LE as `00 F0 E6 FE` at file `0x9C8CA6`). **The hook is a single 4-byte retarget of this `bl`** to our injected `u8 CharacterMode_CatchFlagGet(u16 flagId)` = `FlagGet(flagId) || (InCharacterMode() && !IsSpeciesAllowedForCharacter(gBattleMons[gBankTarget].species))`. Thumb `bl` range ±4MB reaches the `0x08B2B280` free block (+1.45MB) comfortably.
+- Battle globals (from givecaughtmon/handleballthrow literal pools, BPRE.ld-confirmed): `gBankTarget` = `0x02023D6C` (u8), `gBattleMons` = `0x02023BE4` (stride 0x58, species u16 at +0), `gBattleTypeFlags` = `0x02022B4C`, `gBattleResults` = `0x03004F90`, `gMain` = `0x030030F0` (`inBattle` = bit 1 of byte +0x439).
+
+**Gift hook (ROWE parity: off-roster non-egg gifts go straight to the PC):**
+- `GiveMonToPlayer` (CFRU) = `0x089C905C`, entry bytes `70 B5 04 00 1C F0 CE FE …` (`push {r4-r6,lr}; movs r4,r0; bl TryFormRevert`…). Small function, fully mapped:
+  `TryFormRevert` = `0x089E5E00|1` (bl at entry+4), `TryRevertMega` = `0x089F77B0|1`, `TryRevertGigantamax` = `0x089D9D34|1`, `TryRevertOriginFormes` = `0x089E5D08|1`, **CFRU `SendMonToPC` = `0x08A04CB0|1`**, `CopyMon` ptr literal `0x08040B09`, `gSaveBlock2Ptr` = `0x0300500C` (Unbound reads it via pointer — dynamic saveblocks), `gPlayerParty` = `0x02024284` (stride 100, species at +0x20), `gPlayerPartyCount` = `0x02024029` (u8), `MON_GIVEN_TO_PARTY` = 0.
+- Hook shape: 8-byte entry trampoline (`ldr r1,=hook|1; bx r1` + literal) replacing the prologue, with our C function fully re-implementing the (small, fully-mapped) original + the ROWE roster check. All callee addresses above are pinned, so the reimplementation is semantics-identical.
+
+**Species names (live, DPE-repointed): `gSpeciesNames` = `0x0966A98C`** (stride 11; extracted from `GetSpeciesName 0x08040FD0`'s literal pool). **Phase 2's species IDs are now ROM-VERIFIED**: all 457 unique roster species IDs checked against this table — 100% match (5 apparent misses are charmap artifacts/10-char truncations: Type: Null, Flabébé, Stonjourner, Blacephalon, Mime Jr.). IDs are no longer provisional.
+
+**ROWE enforcement semantics to port (read from ROWE source this session):**
+1. `handleballthrow`: off-roster → ball-block anim + message (no catch, no odds roll).
+2. `GiveMonToPlayer`: off-roster && !egg → `return SendMonToPC(mon)` (gift lands in PC, not party).
+3. Trades/Mystery Gift/storage: post-event `CharacterMode_SweepPartyToPC()` (party sweep, never empties party, eggs exempt).
+4. Roster check = base-stage match: rosters store base stages only; check walks the mon's species down to its base form first. (For the binary port, simpler alternative: emit ALL family members into the binary rosters at build time — Phase 2's scraper already expands families — so the ROM-side check is a flat membership test, no evolution walking.)
+
 ### What this means for the phase gates
 
 Phase 1's routine-hunting is **effectively COMPLETE** for the mechanics that matter: catch (`0x089C905C` / `0x089C8BE4` / `0x089C97AC`), gift (`0x080A011C` → same choke point), menu hook (enhancement script + full opcode grammar + `VAR_RESULT 0x800D`), and all of Phase 4's Group-B externs are now real addresses. Remaining unknowns are secondary: trade-handler native (Borrius quest — likely also funnels through party/mon copy natives), sprite/asset tables (Phase 3), and DPE's possibly-repointed evolution table (verify `0x08259754` before relying on it).
