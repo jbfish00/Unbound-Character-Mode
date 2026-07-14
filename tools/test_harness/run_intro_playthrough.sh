@@ -56,28 +56,30 @@ walk() {
     # that need actual walking to reach the next trigger (the difficulty +
     # enhancement prompts come after the bedroom). Mix A-mashing (advances
     # dialogue/answers Yes) with directional sweeps (south-biased: exits).
-    dirs=(k k j l k i k k j l k k)   # k=down j=left l=right i=up
-    for i in $(seq 1 500); do
+    # Maze exploration needs directional PERSISTENCE: hold one direction for
+    # several tiles, A-mash between bursts (advances dialogue, interacts).
+    # No Start (wanders into the options menu), no B (would answer No on
+    # yesno prompts, including ours).
+    dirs=(k k l k j k k i l k j k)   # k=down j=left l=right i=up
+    i=0
+    while true; do
+        i=$((i + 1))
         press x
-        sleep 0.25
+        sleep 0.2
         press x
-        sleep 0.25
-        press x
-        sleep 0.25
+        sleep 0.2
         d=${dirs[$((i % 12))]}
-        walk "$d" 0.9
+        walk "$d" 2.2
+        press x
+        sleep 0.2
         if [ $((i % 20)) -eq 0 ]; then
-            press q
-            sleep 0.25
-        fi
-        if [ $((i % 30)) -eq 0 ]; then
             press F12  # mGBA-native screenshot -> build/unbound-cm-N.png
         fi
     done
 ) &
 MASH_PID=$!
 
-timeout 800 gdb-multiarch -batch -x "$HERE/intro_probe.gdb" >"$LOG" 2>&1
+timeout 1750 gdb-multiarch -batch -x "$HERE/intro_probe.gdb" >"$LOG" 2>&1
 
 kill $MASH_PID $MGBA_PID 2>/dev/null
 trap - EXIT

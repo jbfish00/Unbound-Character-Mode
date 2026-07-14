@@ -17,6 +17,8 @@ FlagClear = 0x0806E6A8 | 1;
 VarGet    = 0x0806E568 | 1;
 VarSet    = 0x0806E584 | 1;
 
+ScriptContext1_SetupScript = 0x08069AE4 | 1;
+
 GetMonData  = 0x0803FBE8 | 1;
 SetMonData  = 0x0804037C | 1;
 ZeroMonData = 0x0803D994 | 1;

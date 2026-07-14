@@ -65,11 +65,13 @@ def build(block_rom_addr):
     enabled = encode_msg(ENABLED_TEXT, charmap)
 
     # fixed-size body, so label offsets are static
-    OFF_NO = 35      # the No branch (clears mode state, then replays)
-    OFF_TEXT = 52    # first text byte (right after the `return`)
+    OFF_NO = 40      # the No branch (clears mode state, falls into replay)
+    OFF_REPLAY = 48  # replay of the displaced enhancement prompt
+    OFF_TEXT = 57    # first text byte (right after the `return`)
     p_prompt = block_rom_addr + OFF_TEXT
     p_enabled = p_prompt + len(prompt)
     p_no = block_rom_addr + OFF_NO
+    p_replay = block_rom_addr + OFF_REPLAY
 
     body = bytearray()
     body += bytes([0x0F, 0x00]) + struct.pack("<I", p_prompt)          # loadword 0, prompt
@@ -80,11 +82,15 @@ def build(block_rom_addr):
     body += bytes([0x16]) + struct.pack("<HH", VAR_CHARACTER_ID, 1)    # setvar id, 1 (Red)
     body += bytes([0x0F, 0x00]) + struct.pack("<I", p_enabled)         # loadword 0, enabled
     body += bytes([0x09, 0x04])                                        # callstd MSGBOX_DEFAULT
+    body += bytes([0x05]) + struct.pack("<I", p_replay)                # goto replay — MUST
+    # skip the No branch (the fall-through here once cleared the flag right
+    # after setting it; caught live by tools/test_harness/live_script_test)
     assert len(body) == OFF_NO, f"OFF_NO drifted: {len(body)}"
     # No branch: actively clear mode state so if the intro flow is re-entered
     # (difficulty menu Back loop), the LAST answer wins
     body += bytes([0x2A]) + struct.pack("<H", FLAG_CHARACTER_MODE)     # clearflag
     body += bytes([0x16]) + struct.pack("<HH", VAR_CHARACTER_ID, 0)    # setvar id, 0
+    assert len(body) == OFF_REPLAY, f"OFF_REPLAY drifted: {len(body)}"
     body += bytes([0x0F, 0x00]) + struct.pack("<I", ENHANCEMENT_PROMPT_PTR)  # replay original
     body += bytes([0x09, 0x05])
     body += bytes([0x03])                                              # return

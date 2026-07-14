@@ -277,6 +277,18 @@ __attribute__((noinline)) void CharacterMode_SelfTestDone(void)
         ;
 }
 
+/* Debug/test primitive (the ROWE debug-menu equivalent for a binary hack):
+ * queue the new-game difficulty script (entry 0x09E70000 — flows through our
+ * opt-in splice at 0x09E70003) on the game's own script engine, then park in
+ * SelfTestDone so the harness can restore the interrupted CPU context. The
+ * overworld CB1 picks the queued script up on the next frame. Never called
+ * by the game itself. */
+void CharacterMode_TriggerIntroScript(void)
+{
+    ScriptContext1_SetupScript((const u8 *)0x09E70000);
+    CharacterMode_SelfTestDone();
+}
+
 void CharacterMode_RunSelfTest(void)
 {
     volatile u8 *r = SELFTEST_BUF;

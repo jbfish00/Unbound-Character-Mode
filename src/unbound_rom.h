@@ -46,6 +46,7 @@ struct Pokemon
 #define GMAIN_INBATTLE_BIT 0x2 /* bit 1 of gMain byte +0x439 */
 
 /* ---- engine functions (addresses in unbound.ld) ---- */
+void ScriptContext1_SetupScript(const u8 *script);
 u8 FlagGet(u16 flagId);
 u8 FlagSet(u16 flagId);
 u8 FlagClear(u16 flagId);

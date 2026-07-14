@@ -18,7 +18,7 @@ def rd(addr, n):
 
 success = False
 dead = False
-for cycle in range(90):
+for cycle in range(200):
     threading.Timer(8.0, lambda: os.kill(os.getpid(), signal.SIGINT)).start()
     try:
         gdb.execute("continue", to_string=True)
@@ -29,11 +29,17 @@ for cycle in range(90):
         var = rd(0x0203B76C, 2)           # VAR_CHARACTER_ID 0x51FC
         vb = rd(0x03003114, 4)            # gMain.vblankCounter2
         cb2 = rd(0x030030F4, 4)           # gMain.callback2
+        diff = rd(0x0203B532, 2)          # VAR_UNBOUND_GAME_DIFFICULTY 0x50DF:
+                                          # nonzero => the difficulty script ran,
+                                          # i.e. our splice was reached
+        sb1 = rd(0x03005008, 4)           # gSaveBlock1Ptr
+        x = rd(sb1, 2) if 0x02000000 <= sb1 < 0x02040000 else 0xFFFF
+        y = rd(sb1 + 2, 2) if x != 0xFFFF else 0xFFFF
     except gdb.MemoryError:
         print(f"probe {cycle:02d}: emulator gone (memory read failed) — aborting")
         dead = True
         break
-    print(f"probe {cycle:02d}: flag18F8={flag} var51FC={var} vblank={vb} cb2=0x{cb2:08x}")
+    print(f"probe {cycle:02d}: flag18F8={flag} var51FC={var} diff50DF={diff} pos=({x},{y}) vblank={vb} cb2=0x{cb2:08x}")
     if flag:
         success = True
         # two more short cycles to prove the game stays alive after the prompt
