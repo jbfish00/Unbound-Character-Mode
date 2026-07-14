@@ -32,6 +32,9 @@ ROM = os.path.join(ROOT, "rom", "Pokemon Unbound (v2.1.1.1).gba")
 BUILD = os.path.join(ROOT, "build")
 CM_DIR = os.path.join(HERE, "character_mode")
 
+sys.path.insert(0, CM_DIR)
+import optin_script
+
 ROM_BASE = 0x08000000
 
 # Injection block: confirmed 0xFF-free, 147 KiB @ file 0x00B2B280 (docs/FREE_SPACE.md)
@@ -79,7 +82,7 @@ def main():
 
     # 2. compile
     obj = os.path.join(BUILD, "character_mode.o")
-    run(["arm-none-eabi-gcc", "-c", "-mthumb", "-mcpu=arm7tdmi", "-mtune=arm7tdmi",
+    run(["arm-none-eabi-gcc", "-c", "-g", "-mthumb", "-mcpu=arm7tdmi", "-mtune=arm7tdmi",
          "-O2", "-ffreestanding", "-fno-builtin", "-mlong-calls", "-Wall", "-Wextra",
          "-Werror", "-o", obj, os.path.join(ROOT, "src", "character_mode.c")])
 
@@ -128,7 +131,12 @@ def main():
     print(f"CharacterMode_CatchFlagGet   @ {catch_hook:#010x}")
     print(f"CharacterMode_GiveMonToPlayer@ {gmtp_hook:#010x}")
 
-    total_len = off_code + len(code)
+    # opt-in prompt script block, appended after the code
+    off_optin = (off_code + len(code) + 3) & ~3
+    optin_blob, optin_splice = optin_script.build(addr(off_optin))
+    print(f"opt-in script block          @ {addr(off_optin):#010x} ({len(optin_blob)} bytes)")
+
+    total_len = off_optin + len(optin_blob)
     assert total_len <= INJECT_BLOCK_LEN, "injection block overflow"
 
     # 7a. preconditions BEFORE writing anything
@@ -138,6 +146,10 @@ def main():
         "catch-hook site bytes changed — wrong ROM?"
     assert rom[GMTP_FILE_OFF:GMTP_FILE_OFF + 8] == GMTP_ORIG, \
         "GiveMonToPlayer entry bytes changed — wrong ROM?"
+    assert rom[optin_script.SPLICE_FILE_OFF:
+               optin_script.SPLICE_FILE_OFF + len(optin_script.SPLICE_ORIG)] \
+        == optin_script.SPLICE_ORIG, \
+        "opt-in splice site bytes changed — wrong ROM?"
 
     # 5. splice data + code
     rom[INJECT_FILE_OFF + off_characters:INJECT_FILE_OFF + off_characters + len(characters)] = characters
@@ -145,6 +157,7 @@ def main():
     rom[INJECT_FILE_OFF + off_names:INJECT_FILE_OFF + off_names + len(names)] = names
     rom[INJECT_FILE_OFF + off_count:INJECT_FILE_OFF + off_count + 2] = struct.pack("<H", n_chars)
     rom[INJECT_FILE_OFF + off_code:INJECT_FILE_OFF + off_code + len(code)] = code
+    rom[INJECT_FILE_OFF + off_optin:INJECT_FILE_OFF + off_optin + len(optin_blob)] = optin_blob
 
     # 6a. bl retarget (thumb bit must NOT be in a bl target address)
     bl = thumb_bl(ROM_BASE + CATCH_BL_FILE_OFF, catch_hook & ~1)
@@ -155,6 +168,11 @@ def main():
     tramp = struct.pack("<HHI", 0x4900, 0x4708, gmtp_hook | 1)
     rom[GMTP_FILE_OFF:GMTP_FILE_OFF + 8] = tramp
     print(f"gift hook: trampoline @{ROM_BASE + GMTP_FILE_OFF:#x} -> {gmtp_hook | 1:#x}  bytes={tramp.hex()}")
+
+    # 6c. opt-in prompt splice (call <block>; nop nop nop)
+    rom[optin_script.SPLICE_FILE_OFF:
+        optin_script.SPLICE_FILE_OFF + len(optin_splice)] = optin_splice
+    print(f"opt-in splice @{ROM_BASE + optin_script.SPLICE_FILE_OFF:#x}  bytes={optin_splice.hex()}")
 
     # 7b. disassemble both patched sites back and check shape
     verify_disasm(bytes(rom[CATCH_BL_FILE_OFF:CATCH_BL_FILE_OFF + 4]),

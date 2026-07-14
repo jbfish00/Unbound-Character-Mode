@@ -244,3 +244,83 @@ u8 IsPlayerInCharacterMode(void)
 {
     return InCharacterMode();
 }
+
+/* ---- GDB-driven self-test (tools/test_harness) ----
+ *
+ * ROWE tests via an in-game debug menu; the binary-hack equivalent is this
+ * in-ROM test runner. The whole unit matrix executes inside the emulated
+ * CPU — every check goes through the real engine calls (FlagSet/VarSet ->
+ * CFRU expanded-save handlers, etc.), so it exercises the exact code paths
+ * the hooks use. The harness (tools/test_harness/unit_tests.gdb) starts it
+ * at the reset state via a tiny ARM->Thumb shim poked into EWRAM, breaks on
+ * CharacterMode_SelfTestDone, then reads the result bytes back.
+ *
+ * Dead code in normal play: nothing in the ROM calls it. Safe at reset
+ * because IME=0 (no interrupts) and only our own callees run — the CFRU
+ * expanded flag/var arrays are fixed EWRAM addresses needing no save init.
+ */
+
+#define FLAG_NO_CATCHING 0x9F8
+#define SELFTEST_BUF ((volatile u8 *)0x0203FE00)
+#define SELFTEST_COUNT (*(volatile u32 *)0x0203FEF8)
+#define SELFTEST_MAGIC (*(volatile u32 *)0x0203FEFC)
+
+/* noinline so the harness's parked-PC check can match this symbol's range */
+__attribute__((noinline)) void CharacterMode_SelfTestDone(void)
+{
+    for (;;)
+        ;
+}
+
+void CharacterMode_RunSelfTest(void)
+{
+    volatile u8 *r = SELFTEST_BUF;
+    u32 n = 0;
+
+    /* A: mode off */
+    FlagClear(FLAG_CHARACTER_MODE);
+    VarSet(VAR_CHARACTER_ID, 0);
+    FlagClear(FLAG_NO_CATCHING);
+    r[n++] = InCharacterMode();                      /* A1 want 0 */
+    r[n++] = IsSpeciesAllowedForCharacter(150);      /* A2 want 1 */
+    r[n++] = CharacterMode_CatchFlagGet(FLAG_NO_CATCHING); /* A3 want 0 */
+
+    /* B: mode on as character 1 (Red) */
+    FlagSet(FLAG_CHARACTER_MODE);
+    VarSet(VAR_CHARACTER_ID, 1);
+    r[n++] = InCharacterMode();                      /* B1 want 1 */
+    r[n++] = (u8)GetCharacterCount();                /* B2 want 156 */
+    r[n++] = IsSpeciesAllowedForCharacter(25);       /* B3 Pikachu want 1 */
+    r[n++] = IsSpeciesAllowedForCharacter(6);        /* B4 Charizard (family expansion) want 1 */
+    r[n++] = IsSpeciesAllowedForCharacter(150);      /* B5 Mewtwo want 0 */
+    r[n++] = IsSpeciesAllowedForCharacter(0);        /* B6 SPECIES_NONE want 0 */
+
+    /* C: catch gate against live battle state */
+    gBankTarget = 0;
+    BATTLEMON_SPECIES(0) = 150;
+    r[n++] = CharacterMode_CatchFlagGet(FLAG_NO_CATCHING); /* C1 want 1 (blocked) */
+    BATTLEMON_SPECIES(0) = 25;
+    r[n++] = CharacterMode_CatchFlagGet(FLAG_NO_CATCHING); /* C2 want 0 (allowed) */
+    BATTLEMON_SPECIES(0) = 6;
+    r[n++] = CharacterMode_CatchFlagGet(FLAG_NO_CATCHING); /* C3 want 0 (allowed) */
+
+    /* D: FLAG_NO_CATCHING passthrough with mode off */
+    FlagClear(FLAG_CHARACTER_MODE);
+    FlagSet(FLAG_NO_CATCHING);
+    r[n++] = CharacterMode_CatchFlagGet(FLAG_NO_CATCHING); /* D1 want 1 */
+    FlagClear(FLAG_NO_CATCHING);
+
+    /* E: out-of-range character id behaves as mode off */
+    FlagSet(FLAG_CHARACTER_MODE);
+    VarSet(VAR_CHARACTER_ID, 999);
+    r[n++] = InCharacterMode();                      /* E1 want 0 */
+    r[n++] = IsSpeciesAllowedForCharacter(150);      /* E2 want 1 */
+
+    /* leave the expanded save state clean */
+    FlagClear(FLAG_CHARACTER_MODE);
+    VarSet(VAR_CHARACTER_ID, 0);
+
+    SELFTEST_COUNT = n;
+    SELFTEST_MAGIC = 0xC0DED00D;
+    CharacterMode_SelfTestDone();
+}
