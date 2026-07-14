@@ -15,9 +15,9 @@ Pipeline (all addresses from docs/ROUTINE_MAP.md v8, double-confirmed):
   7. self-verify: original-byte preconditions, free-space precondition,
      disassemble the patched sites back and check the expected shape
   8. write build/unbound-cm.gba (+ .sha1) and, if flips is present,
-     build/unbound-cm.ups
+     build/unbound-cm.bps (this flips build only supports IPS/BPS)
 
-Distribution is ALWAYS the .ups patch, never the ROM.
+Distribution is ALWAYS the patch, never the ROM.
 """
 import hashlib
 import os

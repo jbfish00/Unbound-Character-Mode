@@ -54,7 +54,7 @@ printf "parked in SelfTestDone (want 1): %d\n", ((unsigned int)$pc >= (((unsigne
 
 echo \n=== results ===\n
 printf "MAGIC ok (want 1): %d\n", (*(unsigned int*)0x0203FEFC == 0xC0DED00D)
-printf "COUNT checks ran (want 15): %d\n", *(unsigned int*)0x0203FEF8
+printf "COUNT checks ran (want 21): %d\n", *(unsigned int*)0x0203FEF8
 printf "A1 InCharacterMode mode-off (want 0): %d\n", *(unsigned char*)(0x0203FE00 + 0)
 printf "A2 IsSpeciesAllowed(150) mode-off (want 1): %d\n", *(unsigned char*)(0x0203FE00 + 1)
 printf "A3 CatchFlagGet mode-off (want 0): %d\n", *(unsigned char*)(0x0203FE00 + 2)
@@ -70,6 +70,12 @@ printf "C3 CatchFlagGet target=Charizard (want 0=allowed): %d\n", *(unsigned cha
 printf "D1 CatchFlagGet no-catching-flag mode-off (want 1): %d\n", *(unsigned char*)(0x0203FE00 + 12)
 printf "E1 InCharacterMode var=999 (want 0): %d\n", *(unsigned char*)(0x0203FE00 + 13)
 printf "E2 IsSpeciesAllowed(150) var=999 (want 1): %d\n", *(unsigned char*)(0x0203FE00 + 14)
+printf "F1 GiveMon(Pikachu) to party (want 0): %d\n", *(unsigned char*)(0x0203FE00 + 15)
+printf "F2 party[0] is Pikachu (want 1): %d\n", *(unsigned char*)(0x0203FE00 + 16)
+printf "F3 party count (want 1): %d\n", *(unsigned char*)(0x0203FE00 + 17)
+printf "G1 GiveMon(Mewtwo) kept out of party (want 1): %d\n", *(unsigned char*)(0x0203FE00 + 18)
+printf "H1 GiveMon(Mewtwo) empty party accepted (want 0): %d\n", *(unsigned char*)(0x0203FE00 + 19)
+printf "H2 party[0] is Mewtwo (softlock guard) (want 1): %d\n", *(unsigned char*)(0x0203FE00 + 20)
 
 echo \n=== TESTS DONE ===\n
 # mGBA's stub doesn't implement the detach packet (E07) — just drop the link

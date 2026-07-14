@@ -209,19 +209,24 @@ u8 CharacterMode_GiveMonToPlayer(struct Pokemon *mon)
     SetMonData(mon, MON_DATA_OT_GENDER, sb2 + 8); /* playerGender */
     SetMonData(mon, MON_DATA_OT_ID, sb2 + 10);    /* playerTrainerId */
 
-    /* Character Mode: off-roster gifts/statics go straight to the PC. */
-    if (InCharacterMode()
+    for (i = 0; i < PARTY_SIZE; i++)
+    {
+        if (*(u16 *)(gPlayerParty[i].raw + 0x20) == SPECIES_NONE)
+            break;
+    }
+
+    /* Character Mode: off-roster gifts/statics go straight to the PC —
+     * unless the party is empty (i == 0: no mon in slot 0 means no mons at
+     * all, slots are kept compacted). Without this guard the intro starter
+     * would be PC-routed and the player would leave the lab with an empty
+     * party: a softlock. Mirrors ROWE's never-empty-party sweep rule. */
+    if (i != 0
+        && InCharacterMode()
         && !GetMonData(mon, MON_DATA_IS_EGG, 0)
         && !IsSpeciesAllowedForCharacter(GetMonData(mon, MON_DATA_SPECIES, 0)))
     {
         TryRevertOriginFormes(mon, TRUE);
         return SendMonToPC(mon);
-    }
-
-    for (i = 0; i < PARTY_SIZE; i++)
-    {
-        if (*(u16 *)(gPlayerParty[i].raw + 0x20) == SPECIES_NONE)
-            break;
     }
 
     if (i >= PARTY_SIZE
@@ -276,6 +281,7 @@ void CharacterMode_RunSelfTest(void)
 {
     volatile u8 *r = SELFTEST_BUF;
     u32 n = 0;
+    u32 i;
 
     /* A: mode off */
     FlagClear(FLAG_CHARACTER_MODE);
@@ -315,6 +321,46 @@ void CharacterMode_RunSelfTest(void)
     VarSet(VAR_CHARACTER_ID, 999);
     r[n++] = InCharacterMode();                      /* E1 want 0 */
     r[n++] = IsSpeciesAllowedForCharacter(150);      /* E2 want 1 */
+
+    /* F/G: GiveMonToPlayer routing. Built from a zeroed stack mon with the
+     * species written at raw+0x20 (the unencrypted CFRU layout the shipped
+     * binary itself uses). G deliberately only asserts the off-roster mon
+     * did NOT join the party — the PC path runs against a null storage
+     * pointer at reset, so its return value is not meaningful here. */
+    FlagSet(FLAG_CHARACTER_MODE);
+    VarSet(VAR_CHARACTER_ID, 1);
+    for (i = 0; i < PARTY_SIZE; i++)
+        ZeroMonData(&gPlayerParty[i]);
+    gPlayerPartyCount = 0;
+    {
+        struct Pokemon m;
+        u32 j;
+
+        for (j = 0; j < POKEMON_SIZE; j++)
+            m.raw[j] = 0;
+        *(u16 *)(m.raw + 0x20) = 25;                         /* Pikachu */
+        r[n++] = CharacterMode_GiveMonToPlayer(&m);          /* F1 want 0 (party) */
+        r[n++] = *(u16 *)(gPlayerParty[0].raw + 0x20) == 25; /* F2 want 1 */
+        r[n++] = gPlayerPartyCount;                          /* F3 want 1 */
+
+        for (j = 0; j < POKEMON_SIZE; j++)
+            m.raw[j] = 0;
+        *(u16 *)(m.raw + 0x20) = 150;                        /* Mewtwo, off-roster */
+        CharacterMode_GiveMonToPlayer(&m);
+        r[n++] = (gPlayerPartyCount == 1
+                  && *(u16 *)(gPlayerParty[1].raw + 0x20) == SPECIES_NONE); /* G1 want 1 */
+
+        /* H: empty-party softlock guard — an off-roster gift into an EMPTY
+         * party (the intro starter case) must be accepted, not PC-routed. */
+        for (i = 0; i < PARTY_SIZE; i++)
+            ZeroMonData(&gPlayerParty[i]);
+        gPlayerPartyCount = 0;
+        for (j = 0; j < POKEMON_SIZE; j++)
+            m.raw[j] = 0;
+        *(u16 *)(m.raw + 0x20) = 150;                        /* Mewtwo, off-roster */
+        r[n++] = CharacterMode_GiveMonToPlayer(&m);          /* H1 want 0 (party) */
+        r[n++] = *(u16 *)(gPlayerParty[0].raw + 0x20) == 150; /* H2 want 1 */
+    }
 
     /* leave the expanded save state clean */
     FlagClear(FLAG_CHARACTER_MODE);
