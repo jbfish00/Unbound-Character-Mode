@@ -1,135 +1,102 @@
 /*
- * Character Mode enforcement logic — Pokemon Unbound port.
+ * Character Mode enforcement — Pokemon Unbound v2.1.1.1 binary port.
  *
- * Ported from the ROWE Character Mode project's src/character_mode.c, which
- * this file mirrors in spirit (same core algorithm: roster membership check
- * by evolution-family base stage, party sweep to PC for off-roster mons).
- * ROWE reads `const struct CharacterInfo gCharacters[]`, a C array compiled
- * straight into its build from src/data/characters.h. Unbound has no build
- * step for us — this file instead reads the RAW BINARY tables produced by
- * tools/character_mode/emit_characters.py (characters.bin / rosters.bin /
- * names.bin) directly, once they're injected into ROM free space.
+ * Ported from ROWE's src/character_mode.c (the reference implementation);
+ * same enforcement semantics, read from ROWE source 2026-07-12:
+ *   1. handleballthrow: off-roster species cannot be caught (ball is
+ *      dodged, reusing CFRU's existing FLAG_NO_CATCHING block path).
+ *   2. GiveMonToPlayer: off-roster non-egg gifts go straight to the PC.
+ *   3. Trades/storage: post-event party sweep (CharacterMode_SweepPartyToPC).
  *
- * BUILD: compiled standalone with arm-none-eabi-gcc (freestanding, no libc),
- * NOT linked against any Unbound/CFRU source tree (we don't have one). Every
- * external symbol below that isn't defined in this file is expected to be
- * resolved by the Phase-1-informed insert script, which patches in the real
- * ROM addresses once Phase 1 locates them. This file is written NOW so the
- * core algorithm is ready — the extern declarations are literally the
- * project's remaining to-do list for Phase 1/4.
+ * Differences from ROWE (deliberate, documented):
+ *   - Rosters are pre-expanded to full evolution families at emit time
+ *     (tools/character_mode/emit_characters.py), so the membership check is
+ *     a flat scan — no evolution-table walking in injected code.
+ *   - Reads the raw binary character tables injected into free space, not a
+ *     compiled-in C array.
  *
- * STATUS: compiles conceptually, NOT YET BUILT OR TESTED (no real addresses
- * to link against yet). See docs/PHASE4_DEPENDENCIES.md for what each
- * extern needs and why.
+ * Hook wiring (tools/build_patch.py):
+ *   - CharacterMode_CatchFlagGet: `bl` retarget at ROM 0x089C8CA6 (inside
+ *     CFRU's atkEF_handleballthrow, replacing its FlagGet(FLAG_NO_CATCHING)
+ *     call). Receives the flag id in r0 exactly like FlagGet.
+ *   - CharacterMode_GiveMonToPlayer: 8-byte entry trampoline at 0x089C905C
+ *     fully replaces CFRU's GiveMonToPlayer (semantics-identical
+ *     reimplementation + the roster check; every callee is pinned in
+ *     unbound.ld).
+ *
+ * Flag/var allocation (empirical zero-usage scan, 2026-07-12):
+ *   FLAG_CHARACTER_MODE = 0x18F8 (CFRU expanded flags 0x900-0x18FF)
+ *   VAR_CHARACTER_ID    = 0x51FC (CFRU expanded vars 0x5000-0x51FF)
+ * Both routed through the vanilla FlagGet/VarGet entry points, which CFRU
+ * trampolines to its expanded-save handlers (verified: GetFlagPointer ->
+ * 0x089A2F6C, GetVarPointer -> 0x089A2F44).
  */
 
-#include <stdint.h>
+#include "unbound_rom.h"
 
-typedef uint8_t bool8;
-typedef uint8_t u8;
-typedef uint16_t u16;
-typedef uint32_t u32;
-#define TRUE 1
-#define FALSE 0
-#define SPECIES_NONE 0
+#define FLAG_CHARACTER_MODE 0x18F8
+#define VAR_CHARACTER_ID 0x51FC
 
-/* ---- Binary table layout (must match tools/character_mode/emit_characters.py) ---- */
+/* ---- injected data (tools/character_mode binaries; addresses via unbound.ld) ---- */
 
 struct CharacterRecordBin
 {
-    u32 nameOffset;      /* offset into the injected names blob */
-    u32 rosterOffset;    /* offset into the injected rosters blob (u16 species ids, SPECIES_NONE-terminated) */
-    u16 spriteAssetId;   /* 0xFFFF = "TBD", Phase 3 not yet wired */
+    u32 nameOffset;
+    u32 rosterOffset;
+    u16 spriteAssetId;
     u8 generation;
-    u8 flags;            /* bit0 = hasSignature (signature ace is rosterOffset[0]) */
+    u8 flags;         /* bit0 = hasSignature (ace at roster[0]) */
+    u8 starterCount;  /* roster[0..starterCount) eligible as starters */
+    u8 reserved;
+    u16 pad;
 };
 
-#define FLAG_HAS_SIGNATURE 0x1
-
-/* ---- Injected data — addresses patched in by the insert script once known (Phase 1/2) ---- */
-/* TODO(Phase 1/2): these three symbols must be given real ROM addresses by the
- * insert script once characters.bin/rosters.bin/names.bin are placed in free
- * space (candidates: the 337 KiB block @ file offset 0x015FBC90, or the
- * 147 KiB block @ 0x00B2B280 — see docs/FREE_SPACE.md). Until then this file
- * builds as an object with unresolved symbols; it is not link-complete. */
 extern const struct CharacterRecordBin gCharacterTable[];
-extern const u16 gCharacterRosters[];   /* rosters.bin, viewed as u16 */
-extern const u8 gCharacterNames[];      /* names.bin, Gen3-charmap-encoded, 0xFF-terminated per name */
-extern const u16 gCharacterCount;       /* NOTE: record count, patched in as a constant by the insert script */
+extern const u16 gCharacterRosters[]; /* rosters.bin viewed as u16 */
+extern const u8 gCharacterNames[];
+extern const u16 gCharacterCount;
 
-/* ---- Unbound engine glue — NOT YET LOCATED (Phase 1). Every one of these is
- * a placeholder prototype; the insert script must repoint them at Unbound's
- * real functions/flag-var storage once Phase 1 confirms the addresses. See
- * docs/PHASE4_DEPENDENCIES.md. Assumed CFRU/vanilla-shaped signatures based
- * on the battle-string-table finding (docs/ROUTINE_MAP.md) — Unbound's
- * battle-message plumbing hasn't diverged structurally, which is our best
- * evidence these signatures are still a reasonable bet, NOT confirmation. */
-extern bool8 FlagGet(u16 flagId);
-extern u16 VarGet(u16 varId);
-extern u16 GetMonData(void *mon, u8 field, void *unused);   /* real struct Pokemon type unknown here yet */
-extern bool8 GetMonDataIsEgg(void *mon);                    /* MON_DATA_IS_EGG field id unknown yet */
-extern u16 GetFirstEvolution(u16 species);                  /* walks the evolution table backward to base stage */
-extern u16 GetBaseFormSpeciesId(u16 species);                /* strips regional/alt forms to the base form id */
-extern int SendMonToPC(void *mon);                          /* PC-deposit routine; return convention TBD (MON_CANT_GIVE equivalent unknown) */
-extern void ZeroMonData(void *mon);
-extern void CompactPartySlots(void);
-extern void CalculatePlayerPartyCount(void);
-extern void *gPlayerParty;                                   /* base address of the party array; stride/size TBD */
+/* ---- core (mirrors ROWE's API names) ---- */
 
-#define PARTY_SIZE 6
-#define MON_DATA_SPECIES 0    /* PLACEHOLDER field id — Unbound's real MON_DATA_* enum not yet confirmed */
-
-/* TODO(Phase 4): flag/var ids for FLAG_CHARACTER_MODE / VAR_CHARACTER_ID must
- * be chosen from a confirmed-unused range. Known-real Unbound ids collected
- * so far (Unbound-Cloud, see the plan's technical-approach section):
- *   FLAG_UNBOUND_SPECIES_RANDOMIZER 0x9FD
- *   VAR_UNBOUND_GAME_DIFFICULTY     0x50DF
- * These two placeholders are NOT verified unused — an empirical scan (diff a
- * fully-played save, or find a fuller community flag/var list) is required
- * before picking real values. */
-#define FLAG_CHARACTER_MODE 0     /* PLACEHOLDER */
-#define VAR_CHARACTER_ID 0        /* PLACEHOLDER */
-
-/* ---- Core algorithm (this part IS ready — pure logic, no ROM addresses needed) ---- */
-
-static const struct CharacterRecordBin *GetCharacterRecord(u16 index)
+u16 GetCharacterCount(void)
 {
-    return &gCharacterTable[index];
+    return gCharacterCount;
 }
 
 bool8 InCharacterMode(void)
 {
-    u16 charId = VarGet(VAR_CHARACTER_ID);
-    return FlagGet(FLAG_CHARACTER_MODE) && charId != 0 && charId <= gCharacterCount;
+    u16 id;
+
+    if (!FlagGet(FLAG_CHARACTER_MODE))
+        return FALSE;
+    id = VarGet(VAR_CHARACTER_ID);
+    return id != 0 && id <= gCharacterCount;
 }
 
 static const struct CharacterRecordBin *GetActiveCharacter(void)
 {
     if (!InCharacterMode())
-        return (void *)0;
-    return GetCharacterRecord(VarGet(VAR_CHARACTER_ID) - 1);
+        return 0;
+    return &gCharacterTable[VarGet(VAR_CHARACTER_ID) - 1];
 }
 
-/* A species is allowed if the base stage of its evolution family is on the
- * active character's roster (rosters store base stages only, so whole
- * families are always allowed together). Mirrors ROWE's
- * IsSpeciesAllowedForCharacter() exactly, just reading a raw u16 array
- * instead of a compiled struct's `.roster` member. */
+/* Flat roster scan — families are pre-expanded at emit time, so no
+ * base-form reduction is needed here (unlike ROWE). */
 bool8 IsSpeciesAllowedForCharacter(u16 species)
 {
     const struct CharacterRecordBin *character = GetActiveCharacter();
-    u16 base;
+    const u16 *roster;
     u32 i;
 
-    if (character == (void *)0)
+    if (character == 0)
         return TRUE;
     if (species == SPECIES_NONE)
         return FALSE;
 
-    base = GetFirstEvolution(GetBaseFormSpeciesId(species));
-    for (i = 0; gCharacterRosters[character->rosterOffset / 2 + i] != SPECIES_NONE; i++)
+    roster = (const u16 *)((const u8 *)gCharacterRosters + character->rosterOffset);
+    for (i = 0; roster[i] != SPECIES_NONE; i++)
     {
-        if (gCharacterRosters[character->rosterOffset / 2 + i] == base)
+        if (roster[i] == species)
             return TRUE;
     }
     return FALSE;
@@ -137,25 +104,23 @@ bool8 IsSpeciesAllowedForCharacter(u16 species)
 
 bool8 CharacterMode_PartyHasAllowedMon(void)
 {
-    /* TODO(Phase 1): party array indexing (gPlayerParty[i]) needs the real
-     * struct Pokemon size/stride once located — placeholder arithmetic below
-     * assumes a flat array of opaque mon structs, real size unknown. */
     u32 i;
 
     for (i = 0; i < PARTY_SIZE; i++)
     {
-        void *mon = (u8 *)gPlayerParty + i * 0 /* TODO: real sizeof(struct Pokemon) */;
-        u16 species = GetMonData(mon, MON_DATA_SPECIES, (void *)0);
+        u16 species = GetMonData(&gPlayerParty[i], MON_DATA_SPECIES, 0);
 
-        if (species != SPECIES_NONE && !GetMonDataIsEgg(mon) && IsSpeciesAllowedForCharacter(species))
+        if (species != SPECIES_NONE
+            && !GetMonData(&gPlayerParty[i], MON_DATA_IS_EGG, 0)
+            && IsSpeciesAllowedForCharacter(species))
             return TRUE;
     }
     return FALSE;
 }
 
 /* Move every off-roster party member to the PC. Never leaves the party
- * empty: if all members are off-roster, slot 0 is kept. Mons stay in the
- * party if the boxes are full. Mirrors ROWE's CharacterMode_SweepPartyToPC(). */
+ * empty: if all members are off-roster, one is kept. Mons stay in the
+ * party if the boxes are full. Eggs are exempt. (ROWE semantics.) */
 void CharacterMode_SweepPartyToPC(void)
 {
     u32 i;
@@ -166,34 +131,116 @@ void CharacterMode_SweepPartyToPC(void)
 
     for (i = 0; i < PARTY_SIZE; i++)
     {
-        void *mon = (u8 *)gPlayerParty + i * 0 /* TODO: real sizeof(struct Pokemon) */;
-        u16 species = GetMonData(mon, MON_DATA_SPECIES, (void *)0);
+        u16 species = GetMonData(&gPlayerParty[i], MON_DATA_SPECIES, 0);
 
         if (species == SPECIES_NONE)
             continue;
-        if (GetMonDataIsEgg(mon) || IsSpeciesAllowedForCharacter(species))
+        if (GetMonData(&gPlayerParty[i], MON_DATA_IS_EGG, 0)
+            || IsSpeciesAllowedForCharacter(species))
         {
             keptOne = TRUE;
-            continue;
         }
     }
 
     for (i = 0; i < PARTY_SIZE; i++)
     {
-        void *mon = (u8 *)gPlayerParty + i * 0 /* TODO: real sizeof(struct Pokemon) */;
-        u16 species = GetMonData(mon, MON_DATA_SPECIES, (void *)0);
+        u16 species = GetMonData(&gPlayerParty[i], MON_DATA_SPECIES, 0);
 
-        if (species == SPECIES_NONE || GetMonDataIsEgg(mon) || IsSpeciesAllowedForCharacter(species))
+        if (species == SPECIES_NONE
+            || GetMonData(&gPlayerParty[i], MON_DATA_IS_EGG, 0)
+            || IsSpeciesAllowedForCharacter(species))
             continue;
         if (!keptOne)
         {
-            keptOne = TRUE;
+            keptOne = TRUE; /* never empty the party */
             continue;
         }
-        if (SendMonToPC(mon) /* TODO: confirm MON_CANT_GIVE-equivalent return value */)
-            ZeroMonData(mon);
+        if (SendMonToPC(&gPlayerParty[i]) != MON_CANT_GIVE)
+            ZeroMonData(&gPlayerParty[i]);
     }
 
     CompactPartySlots();
     CalculatePlayerPartyCount();
+}
+
+/* ---- hook bodies ---- */
+
+/*
+ * Replaces the `bl FlagGet` for FLAG_NO_CATCHING inside CFRU's
+ * atkEF_handleballthrow (ROM 0x089C8CA6). Called with r0 = FLAG_NO_CATCHING
+ * exactly as the original; a nonzero return takes the existing
+ * BattleScript_DodgedBall branch — the ball visibly fails, using a complete,
+ * already-working code path (no new battle strings or states).
+ */
+u8 CharacterMode_CatchFlagGet(u16 flagId)
+{
+    if (FlagGet(flagId))
+        return TRUE;
+    if (InCharacterMode()
+        && !IsSpeciesAllowedForCharacter(BATTLEMON_SPECIES(gBankTarget)))
+        return TRUE;
+    return FALSE;
+}
+
+/*
+ * Full replacement for CFRU's GiveMonToPlayer (entry trampoline at
+ * 0x089C905C). Reimplements the original exactly (every callee pinned in
+ * unbound.ld; layout facts from docs/ROUTINE_MAP.md v8) and adds ROWE's
+ * rule: off-roster non-egg gifts go straight to the PC.
+ *
+ * Original semantics being preserved (CFRU src/catching.c:600):
+ *   TryFormRevert, TryRevertMega, TryRevertGigantamax
+ *   SetMonData(OT_NAME/OT_GENDER/OT_ID from gSaveBlock2)
+ *   free slot scan; multi-battle partner forces PC
+ *   full party -> TryRevertOriginFormes + SendMonToPC
+ *   else CopyMon into slot, bump gPlayerPartyCount, MON_GIVEN_TO_PARTY
+ */
+u8 CharacterMode_GiveMonToPlayer(struct Pokemon *mon)
+{
+    u8 *sb2;
+    u32 i;
+
+    TryFormRevert(mon);
+    TryRevertMega(mon);
+    TryRevertGigantamax(mon);
+
+    sb2 = gSaveBlock2Ptr;
+    SetMonData(mon, MON_DATA_OT_NAME, sb2 + 0);   /* playerName */
+    SetMonData(mon, MON_DATA_OT_GENDER, sb2 + 8); /* playerGender */
+    SetMonData(mon, MON_DATA_OT_ID, sb2 + 10);    /* playerTrainerId */
+
+    /* Character Mode: off-roster gifts/statics go straight to the PC. */
+    if (InCharacterMode()
+        && !GetMonData(mon, MON_DATA_IS_EGG, 0)
+        && !IsSpeciesAllowedForCharacter(GetMonData(mon, MON_DATA_SPECIES, 0)))
+    {
+        TryRevertOriginFormes(mon, TRUE);
+        return SendMonToPC(mon);
+    }
+
+    for (i = 0; i < PARTY_SIZE; i++)
+    {
+        if (*(u16 *)(gPlayerParty[i].raw + 0x20) == SPECIES_NONE)
+            break;
+    }
+
+    if (i >= PARTY_SIZE
+        || ((gMainInBattleByte & GMAIN_INBATTLE_BIT)
+            && (gBattleTypeFlags & BATTLE_TYPE_INGAME_PARTNER)))
+    {
+        TryRevertOriginFormes(mon, TRUE);
+        return SendMonToPC(mon);
+    }
+
+    CopyMon(&gPlayerParty[i], mon, POKEMON_SIZE);
+    gPlayerPartyCount = i + 1;
+    return MON_GIVEN_TO_PARTY;
+}
+
+/* Script-callable: returns whether Character Mode is active. Wired into a
+ * spare specials slot later (Phase 4 menu work); also handy for the
+ * in-game debug script. */
+u8 IsPlayerInCharacterMode(void)
+{
+    return InCharacterMode();
 }
