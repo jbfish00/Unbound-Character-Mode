@@ -38,6 +38,13 @@ Porting the "Character Mode" feature from the Pokemon ROWE project (`/home/jbfis
 
 ~1.46 MiB confirmed free (0xFF-padded) across 264 runs; three big blocks (337 KiB @ 0x015FBC90, 147 KiB @ 0x00B2B280, 101 KiB @ 0x01FE6C64) are the primary injection targets. This was flagged as an open risk in the plan and is now resolved — free space is not the bottleneck.
 
+## Cross-project breakthroughs available here (2026-07-16, from Lazarus/Seaglass)
+
+Two tools landed in the sibling projects that apply to this one if/when more RE is needed:
+
+1. **`../Lazarus-Character-Mode/tools/find_script_cmd_table.py`** — finds the script command table in ANY pokeemerald/pokefirered-family binary (CFRU included) in seconds, by scanning for the ScriptContext-init signature (cmdTable + cmdTableEnd as adjacent literal-pool words pointing at a dense run of odd Thumb pointers). One clean hit on both Lazarus and Seaglass; entry 0x2B (checkflag) → FlagGet → flags offset, entry 0x16 (setvar) → GetVarPointer → vars offset, in one static pass each. Useful here for any future script-command work without live tracing.
+2. **Headless breakpoints fixed**: stock `mgba-headless` (Seaglass's build, `../Seaglass-Character-Mode/tools/mgba_src/build/mgba-headless`) never fired `emu:setBreakpoint` (returns -1 — `core->debugger` was never created). Now patched: set **`MGBA_HEADLESS_DEBUGGER=1`** and script breakpoints work headlessly (no GUI/Xvfb/xdotool needed). If a future Unbound task needs PC-level tracing, this is strictly less painful than the mgba-qt/Xvfb harness — no audio-stall workarounds, deterministic input, and breakpoint callbacks with full register access.
+
 ## Status (2026-07-16 v11) — CHARACTER-SELECT MENU WORKING END-TO-END LIVE
 
 The player can now pick any of the 156 characters at new game. Final design (v3, after two failed approaches taught real lessons):
