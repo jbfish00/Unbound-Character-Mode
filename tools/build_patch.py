@@ -202,7 +202,7 @@ def main():
         s += bytes([0x16]) + struct.pack("<HH", 0x51FC, 1)
         s += bytes([0x44]) + struct.pack("<HH", 1, 10)
         s += bytes([0x79]) + struct.pack("<HBH", 25, 30, 0) + b"\x00" * 9
-        s += bytes([0xB6]) + struct.pack("<HBH", species, 5, 0)
+        s += bytes([0xB6]) + struct.pack("<HBH", species, 30, 0)
         s += bytes([0xB7, 0x27, 0x02])
         return bytes(s)
 

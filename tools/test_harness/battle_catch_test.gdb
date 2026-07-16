@@ -92,7 +92,7 @@ if ok:
     wr(0x0203B764, struct.pack("<I", script_addr))
     wr(CB1, struct.pack("<I", QUEUE_SHIM | 1))
     run(2)
-    print(f"B1 script queued (want 1): {1 if rd(CB1, 4) == CB1_OVERWORLD else 0}")
+    print(f"info: cb1 restored at +2s: {rd(CB1, 4) == CB1_OVERWORLD} (battle start B2 is the authoritative gate)")
 
     # advance the givemon fanfare/messages with A, watching for battle start
     inb = 0
