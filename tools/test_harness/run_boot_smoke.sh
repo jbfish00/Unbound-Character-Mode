@@ -3,6 +3,7 @@
 set -u
 HERE="$(cd "$(dirname "$0")" && pwd)"
 ROOT="$(cd "$HERE/../.." && pwd)"
+. "$HERE/headless_display.sh"
 ROM="$ROOT/build/unbound-cm.gba"
 LOG="$ROOT/build/boot_smoke.log"
 
@@ -12,7 +13,7 @@ pkill -f "mgba-qt -g .*unbound-cm\.gba" 2>/dev/null && sleep 1
 
 mgba-qt -g "$ROM" &
 MGBA_PID=$!
-trap 'kill $MGBA_PID 2>/dev/null' EXIT
+trap 'kill $MGBA_PID 2>/dev/null; headless_display_stop' EXIT
 sleep 5
 
 timeout 90 gdb-multiarch -batch -x "$HERE/boot_smoke.gdb" >"$LOG" 2>&1

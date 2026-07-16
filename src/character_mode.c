@@ -277,6 +277,63 @@ __attribute__((noinline)) void CharacterMode_SelfTestDone(void)
         ;
 }
 
+/* ---- character-select menu: scrolling-multichoice list hooks ----
+ *
+ * Unbound ships CFRU's scrolling multichoice (special 0x158): the vanilla
+ * list machinery at 0x080CB7C4 asks two tiny CFRU getters for the list.
+ * We trampoline BOTH getters (0x09EB48B8 / 0x09EB48D4, wired in
+ * tools/build_patch.py) to these replacements: a magic set index returns
+ * the 156 character names; anything else reproduces the originals exactly
+ * (including Unbound's own idx>31 clamp-to-0), so every existing menu in
+ * the game behaves identically.
+ *
+ * Script contract (decoded from Unbound's own scripts, docs/ROUTINE_MAP.md):
+ *   setvar 0x8000, <set>; setvar 0x8001, <rows>; setvar 0x8004, <cursor>;
+ *   special 0x158; waitstate -> 0x800D = picked index, 0xFFFF on cancel.
+ *   (0x8004 MUST be set: a stale value crashes the vanilla task.)
+ */
+
+#define VAR_8000 (*(volatile u16 *)0x020370B8)
+
+struct ScrollingMulti
+{
+    const u8 *const *set;
+    u8 count;
+    u8 pad[3];
+};
+
+/* The ORIGINAL table (0x09FB196C, 32 sets) is read not only by the two
+ * getters but by at least 3 more Unbound-custom code sites that index it
+ * with a raw, unclamped Var8000 — a magic out-of-range index caused
+ * run-dependent chaos (SIGILL wedges, even a spurious trainer battle).
+ * Fix: tools/build_patch.py relocates the table into injection space with
+ * OUR character list appended as entry 32 (gCharacterScrollSets) and
+ * repoints all 5 pool references, so index 32 is valid for EVERY reader.
+ * These trampolined getters extend the original idx>31->0 clamp to >32. */
+extern const struct ScrollingMulti gCharacterScrollSets[];
+#define CM_SCROLLSET_INDEX 32
+#define GSCROLLING_SETS_MAX CM_SCROLLSET_INDEX
+
+extern const u8 *const gCharacterNamePtrs[];
+
+u32 CharacterMode_GetSizeOfMultiList(void)
+{
+    u16 idx = VAR_8000;
+
+    if (idx > GSCROLLING_SETS_MAX)
+        idx = 0;
+    return gCharacterScrollSets[idx].count;
+}
+
+const u8 *const *CharacterMode_GetScrollingMultiList(void)
+{
+    u16 idx = VAR_8000;
+
+    if (idx > GSCROLLING_SETS_MAX)
+        idx = 0;
+    return gCharacterScrollSets[idx].set;
+}
+
 /* Debug/test primitive (the ROWE debug-menu equivalent for a binary hack):
  * queue the new-game difficulty script (entry 0x09E70000 — flows through our
  * opt-in splice at 0x09E70003) on the game's own script engine, then park in
@@ -373,6 +430,18 @@ void CharacterMode_RunSelfTest(void)
         r[n++] = CharacterMode_GiveMonToPlayer(&m);          /* H1 want 0 (party) */
         r[n++] = *(u16 *)(gPlayerParty[0].raw + 0x20) == 150; /* H2 want 1 */
     }
+
+    /* I: scrolling-multichoice list hooks (character-select menu) */
+    VAR_8000 = CM_SCROLLSET_INDEX;
+    r[n++] = (u8)CharacterMode_GetSizeOfMultiList();                /* I1 want 156 */
+    r[n++] = CharacterMode_GetScrollingMultiList() == gCharacterNamePtrs; /* I2 want 1 */
+    r[n++] = (gCharacterNamePtrs[0] != 0 && gCharacterNamePtrs[0][0] != 0xFF
+              && gCharacterNamePtrs[155] != 0);                     /* I3 want 1 */
+    VAR_8000 = 0;
+    r[n++] = (u8)CharacterMode_GetSizeOfMultiList();                /* I4 want 7 (set 0) */
+    VAR_8000 = 999; /* out of range -> clamp -> set 0 */
+    r[n++] = (u8)CharacterMode_GetSizeOfMultiList();                /* I5 want 7 */
+    VAR_8000 = 0;
 
     /* leave the expanded save state clean */
     FlagClear(FLAG_CHARACTER_MODE);

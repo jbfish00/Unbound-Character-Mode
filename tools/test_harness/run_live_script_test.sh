@@ -5,6 +5,7 @@
 set -u
 HERE="$(cd "$(dirname "$0")" && pwd)"
 ROOT="$(cd "$HERE/../.." && pwd)"
+. "$HERE/headless_display.sh"
 ROM="$ROOT/build/unbound-cm.gba"
 ELF="$ROOT/build/character_mode.elf"
 LOG="$ROOT/build/live_script_test.log"
@@ -18,7 +19,7 @@ pkill -f "mgba-qt -g .*unbound-cm\.gba" 2>/dev/null && sleep 1
 mgba-qt -g "$ROM" &
 MGBA_PID=$!
 MASH_PID=""
-trap 'kill $MGBA_PID $MASH_PID 2>/dev/null' EXIT
+trap 'kill $MGBA_PID $MASH_PID 2>/dev/null; headless_display_stop' EXIT
 sleep 5
 
 WID=$(xdotool search --pid $MGBA_PID 2>/dev/null | tail -1)

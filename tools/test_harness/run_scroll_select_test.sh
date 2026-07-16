@@ -1,5 +1,5 @@
 #!/bin/bash
-# Live catch-gate test driver (see scroll_probe.gdb). Phase-1 masher
+# Live catch-gate test driver (see scroll_select_test.gdb). Phase-1 masher
 # plays to free-roam, then the gdb script takes over ALL input (choreographed
 # presses), so the masher is killed before the injection.
 set -u
@@ -8,7 +8,7 @@ ROOT="$(cd "$HERE/../.." && pwd)"
 . "$HERE/headless_display.sh"
 ROM="$ROOT/build/unbound-cm.gba"
 ELF="$ROOT/build/character_mode.elf"
-LOG="$ROOT/build/scroll_probe.log"
+LOG="$ROOT/build/scroll_select_test.log"
 
 [ -f "$ROM" ] || { echo "patched ROM missing"; exit 1; }
 [ -f "$ELF" ] || { echo "ELF missing"; exit 1; }
@@ -42,7 +42,7 @@ press() {
 ) &
 MASH_PID=$!
 
-timeout 420 gdb-multiarch -batch -x "$HERE/scroll_probe.gdb" "$ELF" >"$LOG" 2>&1
+timeout 420 gdb-multiarch -batch -x "$HERE/scroll_select_test.gdb" "$ELF" >"$LOG" 2>&1
 
 kill $MASH_PID $MGBA_PID 2>/dev/null
 trap - EXIT

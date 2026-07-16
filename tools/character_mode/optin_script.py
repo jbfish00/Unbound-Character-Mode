@@ -44,8 +44,15 @@ FLAG_CHARACTER_MODE = 0x18F8
 VAR_CHARACTER_ID = 0x51FC
 VAR_RESULT = 0x800D
 
-PROMPT_TEXT = "Would you like to enable Character\nMode and play as Red of Kanto?"
-ENABLED_TEXT = "Character Mode is now enabled!\nOnly Red's team may join you."
+PROMPT_TEXT = "Would you like to enable Character\nMode and pick your character?"
+ENABLED_TEXT = "Character Mode has been enabled\nfor your chosen character!"
+
+# scrolling-multichoice contract (docs/ROUTINE_MAP.md v8.1)
+VAR_SETINDEX = 0x8000
+VAR_ROWS = 0x8001
+VAR_CURSOR = 0x8004
+SPECIAL_SCROLLMULTI = 0x158
+CM_SCROLLSET_INDEX = 32   # entry appended to the relocated gScrollingSets
 
 NEWLINE = 0xFE  # in-msgbox line break
 
@@ -55,8 +62,14 @@ def encode_msg(text, charmap):
     return bytes([NEWLINE]).join(lines) + b"\xFF"
 
 
-def build(block_rom_addr):
-    """Return (block_blob, splice_bytes) for a block placed at block_rom_addr."""
+def build(block_rom_addr, char_count):
+    """Return (block_blob, splice_bytes) for a block placed at block_rom_addr.
+
+    v2 flow: yesno -> scrolling character list (all char_count names via the
+    magic set index) -> picked index+1 becomes VAR_CHARACTER_ID; cancel
+    (0xFFFF, >= char_count) or No answer clears mode state. Either way the
+    displaced enhancement prompt is replayed so the original flow continues.
+    """
     charmap = load_charmap(CHARMAP_PATH)
     # the charmap file escapes the apostrophe ('\'' = B4), which load_charmap's
     # simple regex misses — add it directly
@@ -65,9 +78,9 @@ def build(block_rom_addr):
     enabled = encode_msg(ENABLED_TEXT, charmap)
 
     # fixed-size body, so label offsets are static
-    OFF_NO = 40      # the No branch (clears mode state, falls into replay)
-    OFF_REPLAY = 48  # replay of the displaced enhancement prompt
-    OFF_TEXT = 57    # first text byte (right after the `return`)
+    OFF_NO = 75      # the No/cancel branch (clears mode state, falls into replay)
+    OFF_REPLAY = 83  # replay of the displaced enhancement prompt
+    OFF_TEXT = 92    # first text byte (right after the `return`)
     p_prompt = block_rom_addr + OFF_TEXT
     p_enabled = p_prompt + len(prompt)
     p_no = block_rom_addr + OFF_NO
@@ -78,16 +91,25 @@ def build(block_rom_addr):
     body += bytes([0x09, 0x05])                                        # callstd MSGBOX_YESNO
     body += bytes([0x21]) + struct.pack("<HH", VAR_RESULT, 1)          # compare 0x800D, 1
     body += bytes([0x06, 0x05]) + struct.pack("<I", p_no)              # goto_if NE -> no
+    # Yes: open the scrolling character list
+    body += bytes([0x16]) + struct.pack("<HH", VAR_SETINDEX, CM_SCROLLSET_INDEX)
+    body += bytes([0x16]) + struct.pack("<HH", VAR_ROWS, 6)
+    body += bytes([0x16]) + struct.pack("<HH", VAR_CURSOR, 0)          # stale cursor crashes!
+    body += bytes([0x25]) + struct.pack("<H", SPECIAL_SCROLLMULTI)
+    body += bytes([0x27])                                              # waitstate
+    body += bytes([0x21]) + struct.pack("<HH", VAR_RESULT, char_count) # cancel/overflow?
+    body += bytes([0x06, 0x04]) + struct.pack("<I", p_no)              # goto_if >= -> no
+    body += bytes([0x19]) + struct.pack("<HH", VAR_CHARACTER_ID, VAR_RESULT)  # copyvar
+    body += bytes([0x17]) + struct.pack("<HH", VAR_CHARACTER_ID, 1)    # addvar (id = idx+1)
     body += bytes([0x29]) + struct.pack("<H", FLAG_CHARACTER_MODE)     # setflag
-    body += bytes([0x16]) + struct.pack("<HH", VAR_CHARACTER_ID, 1)    # setvar id, 1 (Red)
     body += bytes([0x0F, 0x00]) + struct.pack("<I", p_enabled)         # loadword 0, enabled
     body += bytes([0x09, 0x04])                                        # callstd MSGBOX_DEFAULT
-    body += bytes([0x05]) + struct.pack("<I", p_replay)                # goto replay — MUST
-    # skip the No branch (the fall-through here once cleared the flag right
+    body += bytes([0x05]) + struct.pack("<I", p_replay)                # goto replay (must
+    # skip the No branch — a fall-through here once cleared the flag right
     # after setting it; caught live by tools/test_harness/live_script_test)
     assert len(body) == OFF_NO, f"OFF_NO drifted: {len(body)}"
-    # No branch: actively clear mode state so if the intro flow is re-entered
-    # (difficulty menu Back loop), the LAST answer wins
+    # No/cancel branch: actively clear mode state so if the intro flow is
+    # re-entered (difficulty menu Back loop), the LAST answer wins
     body += bytes([0x2A]) + struct.pack("<H", FLAG_CHARACTER_MODE)     # clearflag
     body += bytes([0x16]) + struct.pack("<HH", VAR_CHARACTER_ID, 0)    # setvar id, 0
     assert len(body) == OFF_REPLAY, f"OFF_REPLAY drifted: {len(body)}"
@@ -103,5 +125,5 @@ def build(block_rom_addr):
 
 
 if __name__ == "__main__":
-    blob, splice = build(0x08B2B280)
+    blob, splice = build(0x08B2B280, 156)
     print(f"block: {len(blob)} bytes; splice: {splice.hex(' ')}")

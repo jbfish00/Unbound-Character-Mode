@@ -54,7 +54,7 @@ printf "parked in SelfTestDone (want 1): %d\n", ((unsigned int)$pc >= (((unsigne
 
 echo \n=== results ===\n
 printf "MAGIC ok (want 1): %d\n", (*(unsigned int*)0x0203FEFC == 0xC0DED00D)
-printf "COUNT checks ran (want 21): %d\n", *(unsigned int*)0x0203FEF8
+printf "COUNT checks ran (want 26): %d\n", *(unsigned int*)0x0203FEF8
 printf "A1 InCharacterMode mode-off (want 0): %d\n", *(unsigned char*)(0x0203FE00 + 0)
 printf "A2 IsSpeciesAllowed(150) mode-off (want 1): %d\n", *(unsigned char*)(0x0203FE00 + 1)
 printf "A3 CatchFlagGet mode-off (want 0): %d\n", *(unsigned char*)(0x0203FE00 + 2)
@@ -76,6 +76,11 @@ printf "F3 party count (want 1): %d\n", *(unsigned char*)(0x0203FE00 + 17)
 printf "G1 GiveMon(Mewtwo) kept out of party (want 1): %d\n", *(unsigned char*)(0x0203FE00 + 18)
 printf "H1 GiveMon(Mewtwo) empty party accepted (want 0): %d\n", *(unsigned char*)(0x0203FE00 + 19)
 printf "H2 party[0] is Mewtwo (softlock guard) (want 1): %d\n", *(unsigned char*)(0x0203FE00 + 20)
+printf "I1 multilist size magic set (want 156): %d\n", *(unsigned char*)(0x0203FE00 + 21)
+printf "I2 multilist ptr magic set (want 1): %d\n", *(unsigned char*)(0x0203FE00 + 22)
+printf "I3 name ptrs sane (want 1): %d\n", *(unsigned char*)(0x0203FE00 + 23)
+printf "I4 multilist size set 0 passthrough (want 7): %d\n", *(unsigned char*)(0x0203FE00 + 24)
+printf "I5 multilist size clamp >31 (want 7): %d\n", *(unsigned char*)(0x0203FE00 + 25)
 
 echo \n=== TESTS DONE ===\n
 # mGBA's stub doesn't implement the detach packet (E07) — just drop the link

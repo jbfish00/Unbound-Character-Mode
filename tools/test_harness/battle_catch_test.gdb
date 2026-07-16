@@ -71,7 +71,8 @@ for attempt in range(30):
     cb2 = rd(0x030030F4, 4)
     pc = reg("pc")
     cpsr = reg("cpsr")
-    if (cb2 == 0x080565B5 and 0x08000000 <= pc < 0x0A000000
+    ctx2 = rd(0x03000F9C, 1)   # sScriptContext2Enabled: 0 = player has control
+    if (cb2 == 0x080565B5 and ctx2 == 0 and 0x08000000 <= pc < 0x0A000000
             and (cpsr & 0x1F) == 0x1F and (cpsr & 0x20) == 0x20):
         ok = True
         break
