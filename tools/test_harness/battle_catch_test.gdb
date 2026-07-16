@@ -80,22 +80,19 @@ for attempt in range(30):
 print(f"B0 reached hijackable overworld state (want 1): {1 if ok else 0}")
 
 if ok:
-    wr(SCRATCH, script)
-    # patch the trigger's script pointer: TriggerIntroScript loads 0x09E70000;
-    # easier to just call SetupScript ourselves through the same trampoline?
-    # No — reuse the trigger but override r0 AFTER the jump is not possible;
-    # instead: set pc to SetupScript directly with r0=SCRATCH and lr=park.
-    saved = {r: reg(r) for r in REGS}
-    SETUP = 0x08069AE4
-    gdb.execute(f"set $r0 = {SCRATCH}")
-    gdb.execute(f"set $lr = {PARK | 1}")
-    gdb.execute(f"set $pc = {SETUP}")
-    run(3)
-    pc = reg("pc")
-    parked = PARK <= pc < PARK + 8
-    print(f"B1 script queued (want 1): {1 if parked else 0}")
-    for r in REGS:
-        gdb.execute(f"set ${r} = {saved[r]}")
+    # queue the ROM-baked debug script via the parameterized callback1 shim:
+    # script ptr goes into audited vars 0x51F8/F9 (0x0203B764, data-only),
+    # the shim (ROM code) restores CB1 and calls ScriptContext1_SetupScript
+    import json
+    dbg = json.load(open("/home/jbfish00/Documents/Character Hacks/Unbound-Character-Mode/build/debug_addrs.json"))
+    script_addr = dbg["battle_block_script" if TEST_WANT == "block" else "battle_catch_script"]
+    CB1 = 0x030030F0
+    CB1_OVERWORLD = 0x08056535
+    QUEUE_SHIM = int(gdb.parse_and_eval("(unsigned int)CharacterMode_QueueScriptCb1")) & ~1
+    wr(0x0203B764, struct.pack("<I", script_addr))
+    wr(CB1, struct.pack("<I", QUEUE_SHIM | 1))
+    run(2)
+    print(f"B1 script queued (want 1): {1 if rd(CB1, 4) == CB1_OVERWORLD else 0}")
 
     # advance the givemon fanfare/messages with A, watching for battle start
     inb = 0

@@ -190,6 +190,38 @@ def main():
         optin_script.SPLICE_FILE_OFF + len(optin_splice)] = optin_splice
     print(f"opt-in splice @{ROM_BASE + optin_script.SPLICE_FILE_OFF:#x}  bytes={optin_splice.hex()}")
 
+    # 6c'. test-harness debug scripts, baked into ROM so live tests never
+    # stage bytecode in volatile EWRAM. Two wild-battle setups: enable
+    # Character Mode as Red, grant Pikachu L30 + 10 Master Balls, force a
+    # wild battle vs Mewtwo (block case) / Charizard (catch case).
+    def battle_debug_script(species):
+        s = bytearray()
+        for v in range(0x8000, 0x8008):
+            s += bytes([0x16]) + struct.pack("<HH", v, 0)
+        s += bytes([0x29]) + struct.pack("<H", 0x18F8)
+        s += bytes([0x16]) + struct.pack("<HH", 0x51FC, 1)
+        s += bytes([0x44]) + struct.pack("<HH", 1, 10)
+        s += bytes([0x79]) + struct.pack("<HBH", 25, 30, 0) + b"\x00" * 9
+        s += bytes([0xB6]) + struct.pack("<HBH", species, 5, 0)
+        s += bytes([0xB7, 0x27, 0x02])
+        return bytes(s)
+
+    off_dbg_block = (off_optin + len(optin_blob) + 3) & ~3
+    dbg_block = battle_debug_script(150)
+    off_dbg_catch = off_dbg_block + len(dbg_block)
+    dbg_catch = battle_debug_script(6)
+    total_len = off_dbg_catch + len(dbg_catch)
+    assert total_len <= INJECT_BLOCK_LEN, "injection block overflow (debug scripts)"
+    span2 = rom[INJECT_FILE_OFF + off_dbg_block:INJECT_FILE_OFF + total_len]
+    assert all(b == 0xFF for b in span2), "debug-script target not 0xFF-free!"
+    rom[INJECT_FILE_OFF + off_dbg_block:INJECT_FILE_OFF + off_dbg_block + len(dbg_block)] = dbg_block
+    rom[INJECT_FILE_OFF + off_dbg_catch:INJECT_FILE_OFF + off_dbg_catch + len(dbg_catch)] = dbg_catch
+    import json
+    with open(os.path.join(BUILD, "debug_addrs.json"), "w") as f:
+        json.dump({"battle_block_script": addr(off_dbg_block),
+                   "battle_catch_script": addr(off_dbg_catch)}, f)
+    print(f"debug scripts: block @ {addr(off_dbg_block):#010x}, catch @ {addr(off_dbg_catch):#010x}")
+
     # 6d. character-select: wire the name-buffering special into slot 0x1B6
     buf_special = syms["CharacterMode_BufferNameSpecial"]
     rom[SPECIAL_1B6_FILE_OFF:SPECIAL_1B6_FILE_OFF + 4] = struct.pack("<I", buf_special | 1)

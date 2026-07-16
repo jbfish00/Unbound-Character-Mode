@@ -349,6 +349,16 @@ void CharacterMode_QueueIntroScriptCb1(void)
     ScriptContext1_SetupScript((const u8 *)0x09E70000);
 }
 
+/* Parameterized variant: the script pointer is read from expanded vars
+ * 0x51F8/0x51F9 (EWRAM 0x0203B764 — audited unused; 4 bytes of DATA there
+ * is safe where poked CODE was not). Debug scripts themselves live in ROM
+ * (baked by tools/build_patch.py). Never called by the game. */
+void CharacterMode_QueueScriptCb1(void)
+{
+    *(volatile u32 *)0x030030F0 = 0x08056535;      /* CB1_Overworld|1 */
+    ScriptContext1_SetupScript((const u8 *)*(volatile u32 *)0x0203B764);
+}
+
 void CharacterMode_RunSelfTest(void)
 {
     volatile u8 *r = SELFTEST_BUF;
