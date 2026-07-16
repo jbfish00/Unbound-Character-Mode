@@ -38,6 +38,16 @@ Porting the "Character Mode" feature from the Pokemon ROWE project (`/home/jbfis
 
 ~1.46 MiB confirmed free (0xFF-padded) across 264 runs; three big blocks (337 KiB @ 0x015FBC90, 147 KiB @ 0x00B2B280, 101 KiB @ 0x01FE6C64) are the primary injection targets. This was flagged as an open risk in the plan and is now resolved — free space is not the bottleneck.
 
+## Status (2026-07-15 v10) — CATCH GATE VERIFIED IN LIVE GAMEPLAY, BOTH DIRECTIONS
+
+The core enforcement mechanic is now proven end-to-end in real battles (`tools/test_harness/run_battle_catch_test.sh`), on top of v9's live opt-in verification:
+
+- **Off-roster block**: Character Mode on as Red, forced wild **Mewtwo** battle, a **Master Ball** ("catches without fail") thrown via the real battle-bag UI was **visibly dodged** (ball left lying on the field, battle continues, mon not caught) — with the game's own `FLAG_NO_CATCHING` (0x9F8) and `FLAG_NO_CATCHING_AND_RUNNING` (0x8E2, vanilla range: sb1+0xEE0+id/8) both verified CLEAR, so the block is unambiguously ours.
+- **Allowed catch (control)**: same setup vs wild **Charizard** (on Red's roster via family expansion): "Gotcha! Charizard was caught!", battle outcome 7 (CAUGHT), party[1] = species 6 — written by OUR `CharacterMode_GiveMonToPlayer` party path, which also granted the test Pikachu via `givemon`.
+- **Debug primitive that made this possible (task #10's ROWE-debug-menu equivalent)**: poke arbitrary script bytecode into EWRAM scratch `0x0203FD00`, hijack-call `ScriptContext1_SetupScript` (save/restore full register file), and the game runs it next frame. No rebuild needed per experiment. Battle-UI facts learned: `gActionSelectionCursor` (0x02023FF8) can be POKED to 1 then A opens the bag regardless of visual layout; battle-bag pockets cycle right Items→Key Items→Poké Balls; item 1 = Master Ball (vanilla `gItems` 0x083DB028 intact); `gMain.inBattle` = bit1 of 0x03003529; `gBattleOutcome` 0x02023E8A (7 = caught); caught mon joins the party only at the END of the exp/dex/nickname chain — escape the naming screen with Start+A; setwildbattle copies vars 0x8000-0x8007 as move overrides (zero them first).
+
+All suites green: unit 24/24, boot smoke 4/4, live opt-in 4/4, live catch block + control. Remaining feature work (not bugs): character-select menu (special 0x1B6 reserved), starter grant, trade/storage sweep call site, sprites, flag-persistence runtime caveat.
+
 ## Status (2026-07-14 v9) — OPT-IN VERIFIED LIVE IN THE GAME'S SCRIPT ENGINE; ALL AUTOMATED TESTS GREEN
 
 Everything in v8 below still holds; this pass took testing from "unit-tested at reset state" to "verified inside live gameplay", found and fixed two real bugs, and added the debug primitives:
