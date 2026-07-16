@@ -38,6 +38,17 @@ Porting the "Character Mode" feature from the Pokemon ROWE project (`/home/jbfis
 
 ~1.46 MiB confirmed free (0xFF-padded) across 264 runs; three big blocks (337 KiB @ 0x015FBC90, 147 KiB @ 0x00B2B280, 101 KiB @ 0x01FE6C64) are the primary injection targets. This was flagged as an open risk in the plan and is now resolved — free space is not the bottleneck.
 
+## Status (2026-07-16 v11) — CHARACTER-SELECT MENU WORKING END-TO-END LIVE
+
+The player can now pick any of the 156 characters at new game. Final design (v3, after two failed approaches taught real lessons):
+
+1. **Flow**: opt-in yesno → "enter your character's number (1-156)" → CFRU's ChooseNumberScreen (`special 0x0B3`, result → 0x800D, 0xFFFF = cancel/empty) with a script-side validation loop (0 or >156 re-asks, cancel = No) → **`special 0x1B6`** (repointed dead gSpecials slot → injected `CharacterMode_BufferNameSpecial`, copies `gCharacterNamePtrs[id-1]` into gStringVar1) → "Play as {STR_VAR_1}?" confirm yesno → `copyvar 0x51FC` + `setflag 0x18F8` → enabled message → replay of the displaced enhancement prompt. Live-verified end to end (number_select_test: flag=1, id valid, game healthy, flow resumes Unbound's own intro sequence).
+2. **Two abandoned approaches (docs/ROUTINE_MAP.md v8.2)**: CFRU's scrolling multichoice (`special 0x158`) is a trap for extension — gScrollingSets (0x09FB196C, 31 entries, NOT 32: "entry 31" is the next sibling structure) is read by at least 3 Unbound-custom code sites with raw unclamped Var8000, and likely with end-pointer loop bounds. A magic OOB set index caused run-dependent chaos (SIGILL wedges, a spurious trainer battle); relocating the table intermittently froze the game. Sets 9/11 are BP-shop menus (referenced from afar — don't trust nearby-setvar scans alone).
+3. **Harness lessons (all fixed in tools/test_harness/)**: (a) mgba-qt on the private Xvfb needs `-C audioSync=0 -C videoSync=0 -C fpsTarget=60` or emulation crawls sub-realtime when the audio backend stalls; (b) NEVER poke code/scripts into high EWRAM (0x0203FC00+) — live list-menu buffers clobber it intermittently; the script-queue shim is now ROM-resident (`CharacterMode_QueueIntroScriptCb1`: install as gMain.callback1 for one frame, constants only); (c) choreography must be state-machine-driven off `sScriptContext1.scriptPtr`/call stack (block offsets are static) — fixed timings desync; (d) key injection: xdotool presses verified via gMain.heldKeysRaw readback with retries, gMain new-key pokes only as fallback (naming screens drop pokes ~50%); retry nudges can move menu cursors — assert ranges, not exact picks.
+4. Unit tests 29/29 (incl. name-buffer special I1-I5); all v10 suites still green on the final build.
+
+Remaining: character STARTER grant (roster[0..starter_count) — next big feature), trade/storage sweep call site, organic reach of the intro prompt (unchanged), sprites (Phase 3), flag-persistence runtime caveat.
+
 ## Status (2026-07-15 v10) — CATCH GATE VERIFIED IN LIVE GAMEPLAY, BOTH DIRECTIONS
 
 The core enforcement mechanic is now proven end-to-end in real battles (`tools/test_harness/run_battle_catch_test.sh`), on top of v9's live opt-in verification:

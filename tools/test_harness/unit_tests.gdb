@@ -76,11 +76,11 @@ printf "F3 party count (want 1): %d\n", *(unsigned char*)(0x0203FE00 + 17)
 printf "G1 GiveMon(Mewtwo) kept out of party (want 1): %d\n", *(unsigned char*)(0x0203FE00 + 18)
 printf "H1 GiveMon(Mewtwo) empty party accepted (want 0): %d\n", *(unsigned char*)(0x0203FE00 + 19)
 printf "H2 party[0] is Mewtwo (softlock guard) (want 1): %d\n", *(unsigned char*)(0x0203FE00 + 20)
-printf "I1 multilist size magic set (want 156): %d\n", *(unsigned char*)(0x0203FE00 + 21)
-printf "I2 multilist ptr magic set (want 1): %d\n", *(unsigned char*)(0x0203FE00 + 22)
-printf "I3 name ptrs sane (want 1): %d\n", *(unsigned char*)(0x0203FE00 + 23)
-printf "I4 multilist size set 0 passthrough (want 7): %d\n", *(unsigned char*)(0x0203FE00 + 24)
-printf "I5 multilist size clamp >31 (want 7): %d\n", *(unsigned char*)(0x0203FE00 + 25)
+printf "I1 buffer name id=1 nonempty (want 1): %d\n", *(unsigned char*)(0x0203FE00 + 21)
+printf "I2 buffer name id=1 first char R (want 204): %d\n", *(unsigned char*)(0x0203FE00 + 22)
+printf "I3 buffer name id=156 nonempty (want 1): %d\n", *(unsigned char*)(0x0203FE00 + 23)
+printf "I4 buffer name id=0 empty (want 1): %d\n", *(unsigned char*)(0x0203FE00 + 24)
+printf "I5 buffer name id=999 empty (want 1): %d\n", *(unsigned char*)(0x0203FE00 + 25)
 
 echo \n=== TESTS DONE ===\n
 # mGBA's stub doesn't implement the detach packet (E07) — just drop the link

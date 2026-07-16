@@ -43,7 +43,7 @@ SCRATCH = 0x0203FD00
 # box MUST be on screen first — every ROM usage of special 0x158 shows one,
 # and without it the list task crashes. preparemsg+waitmsg shows text and
 # lets the script continue without an A-press.
-SET_INDEX = int(os.environ.get("SCROLL_SET", "32"), 0)
+SET_INDEX = int(os.environ.get("SCROLL_SET", "31"), 0)
 script = bytearray()
 script += bytes([0x67]) + struct.pack("<I", 0x09F1065C)  # preparemsg (any text)
 script += bytes([0x66])                                  # waitmsg

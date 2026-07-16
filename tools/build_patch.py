@@ -47,20 +47,11 @@ CATCH_BL_FILE_OFF = 0x9C8CA6          # bl call_via_r6 (FlagGet) inside atkEF_ha
 CATCH_BL_ORIG = bytes.fromhex("00F0E6FE")
 GMTP_FILE_OFF = 0x9C905C              # GiveMonToPlayer entry
 GMTP_ORIG = bytes.fromhex("70B504001CF0CEFE")
-# CFRU scrolling-multichoice list getters (docs/ROUTINE_MAP.md v8.1) —
-# trampolined so set index 32 serves the 156 character names
-SCROLL_SIZE_FILE_OFF = 0x1EB48B8      # GetSizeOfMultiList
-SCROLL_SIZE_ORIG = bytes.fromhex("044b1a881f2a00d9")
-SCROLL_LIST_FILE_OFF = 0x1EB48D4      # GetScrollingMultiList
-SCROLL_LIST_ORIG = bytes.fromhex("044b1b881f2b00d9")
-# gScrollingSets (0x09FB196C, 32 entries x 8) is ALSO read by Unbound-custom
-# code with an unclamped Var8000 index, so the table is relocated into
-# injection space with the character list appended as entry 32, and every
-# pool word referencing the old table is repointed to the relocation.
-SCROLLSETS_FILE_OFF = 0x1FB196C
-SCROLLSETS_COUNT = 32
-SCROLLSETS_ADDR = 0x09FB196C
-SCROLLSETS_POOL_REFS = (0x1EB48D0, 0x1EB48EC, 0x1EB7C6C, 0x1EB80B4, 0x1ED4FD8)
+# Character-select (v3): the reserved gSpecials[0x1B6] slot (script-
+# unreachable stale entry, docs/ROUTINE_MAP.md v8.1) is repointed to the
+# injected name-buffering special used by the number-entry select flow.
+SPECIAL_1B6_FILE_OFF = 0x160438
+SPECIAL_1B6_ORIG = bytes.fromhex("c1371508")  # stale 0x081537C1
 
 
 def sha1(data):
@@ -113,8 +104,7 @@ def main():
     off_rosters = off_characters + len(characters)
     off_names = off_rosters + len(rosters)
     off_nameptrs = (off_names + len(names) + 3) & ~3
-    off_scrollsets = off_nameptrs + n_chars * 4
-    off_count = off_scrollsets + (SCROLLSETS_COUNT + 1) * 8
+    off_count = off_nameptrs + n_chars * 4
     off_code = (off_count + 2 + 3) & ~3
 
     addr = lambda off: INJECT_ROM_ADDR + off
@@ -125,10 +115,6 @@ def main():
         struct.pack("<I", addr(off_names) + struct.unpack_from("<I", characters, 16 * i)[0])
         for i in range(n_chars))
 
-    # relocated gScrollingSets: the 32 original entries + ours as entry 32
-    scrollsets = rom[SCROLLSETS_FILE_OFF:SCROLLSETS_FILE_OFF + SCROLLSETS_COUNT * 8]
-    scrollsets += struct.pack("<IB3x", addr(off_nameptrs), n_chars)
-
     # 4. link (unbound.ld as an input script augments the default one)
     elf = os.path.join(BUILD, "character_mode.elf")
     run(["arm-none-eabi-ld",
@@ -137,7 +123,6 @@ def main():
          "--defsym", f"gCharacterRosters={addr(off_rosters):#x}",
          "--defsym", f"gCharacterNames={addr(off_names):#x}",
          "--defsym", f"gCharacterNamePtrs={addr(off_nameptrs):#x}",
-         "--defsym", f"gCharacterScrollSets={addr(off_scrollsets):#x}",
          "--defsym", f"gCharacterCount={addr(off_count):#x}",
          "-o", elf, obj, os.path.join(ROOT, "src", "unbound.ld")])
     code_bin = os.path.join(BUILD, "character_mode.bin")
@@ -178,17 +163,14 @@ def main():
                optin_script.SPLICE_FILE_OFF + len(optin_script.SPLICE_ORIG)] \
         == optin_script.SPLICE_ORIG, \
         "opt-in splice site bytes changed — wrong ROM?"
-    assert rom[SCROLL_SIZE_FILE_OFF:SCROLL_SIZE_FILE_OFF + 8] == SCROLL_SIZE_ORIG, \
-        "GetSizeOfMultiList entry bytes changed — wrong ROM?"
-    assert rom[SCROLL_LIST_FILE_OFF:SCROLL_LIST_FILE_OFF + 8] == SCROLL_LIST_ORIG, \
-        "GetScrollingMultiList entry bytes changed — wrong ROM?"
+    assert rom[SPECIAL_1B6_FILE_OFF:SPECIAL_1B6_FILE_OFF + 4] == SPECIAL_1B6_ORIG, \
+        "gSpecials[0x1B6] bytes changed — wrong ROM?"
 
     # 5. splice data + code
     rom[INJECT_FILE_OFF + off_characters:INJECT_FILE_OFF + off_characters + len(characters)] = characters
     rom[INJECT_FILE_OFF + off_rosters:INJECT_FILE_OFF + off_rosters + len(rosters)] = rosters
     rom[INJECT_FILE_OFF + off_names:INJECT_FILE_OFF + off_names + len(names)] = names
     rom[INJECT_FILE_OFF + off_nameptrs:INJECT_FILE_OFF + off_nameptrs + len(nameptrs)] = nameptrs
-    rom[INJECT_FILE_OFF + off_scrollsets:INJECT_FILE_OFF + off_scrollsets + len(scrollsets)] = scrollsets
     rom[INJECT_FILE_OFF + off_count:INJECT_FILE_OFF + off_count + 2] = struct.pack("<H", n_chars)
     rom[INJECT_FILE_OFF + off_code:INJECT_FILE_OFF + off_code + len(code)] = code
     rom[INJECT_FILE_OFF + off_optin:INJECT_FILE_OFF + off_optin + len(optin_blob)] = optin_blob
@@ -208,34 +190,16 @@ def main():
         optin_script.SPLICE_FILE_OFF + len(optin_splice)] = optin_splice
     print(f"opt-in splice @{ROM_BASE + optin_script.SPLICE_FILE_OFF:#x}  bytes={optin_splice.hex()}")
 
-    # 6d'. repoint every pool reference of the old gScrollingSets to the
-    # relocated+extended copy (entry 32 = the character list)
-    for ref in SCROLLSETS_POOL_REFS:
-        got = struct.unpack_from("<I", rom, ref)[0]
-        assert got == SCROLLSETS_ADDR, \
-            f"pool ref at {ref:#x} is {got:#x}, expected gScrollingSets — wrong ROM?"
-        rom[ref:ref + 4] = struct.pack("<I", addr(off_scrollsets))
-    print(f"gScrollingSets relocated -> {addr(off_scrollsets):#010x} "
-          f"({SCROLLSETS_COUNT}+1 sets, {len(SCROLLSETS_POOL_REFS)} pool refs repointed)")
-
-    # 6d. scrolling-multichoice getter trampolines (character-select list)
-    scroll_size_hook = syms["CharacterMode_GetSizeOfMultiList"]
-    scroll_list_hook = syms["CharacterMode_GetScrollingMultiList"]
-    for site, hook, name in ((SCROLL_SIZE_FILE_OFF, scroll_size_hook, "GetSizeOfMultiList"),
-                             (SCROLL_LIST_FILE_OFF, scroll_list_hook, "GetScrollingMultiList")):
-        tr = struct.pack("<HHI", 0x4900, 0x4708, hook | 1)
-        rom[site:site + 8] = tr
-        print(f"scroll hook: {name} trampoline @{ROM_BASE + site:#x} -> {hook | 1:#x}")
+    # 6d. character-select: wire the name-buffering special into slot 0x1B6
+    buf_special = syms["CharacterMode_BufferNameSpecial"]
+    rom[SPECIAL_1B6_FILE_OFF:SPECIAL_1B6_FILE_OFF + 4] = struct.pack("<I", buf_special | 1)
+    print(f"gSpecials[0x1B6] -> CharacterMode_BufferNameSpecial {buf_special | 1:#010x}")
 
     # 7b. disassemble both patched sites back and check shape
     verify_disasm(bytes(rom[CATCH_BL_FILE_OFF:CATCH_BL_FILE_OFF + 4]),
                   ROM_BASE + CATCH_BL_FILE_OFF, ["bl"])
     verify_disasm(bytes(rom[GMTP_FILE_OFF:GMTP_FILE_OFF + 4]),
                   ROM_BASE + GMTP_FILE_OFF, ["ldr", "bx"])
-    verify_disasm(bytes(rom[SCROLL_SIZE_FILE_OFF:SCROLL_SIZE_FILE_OFF + 4]),
-                  ROM_BASE + SCROLL_SIZE_FILE_OFF, ["ldr", "bx"])
-    verify_disasm(bytes(rom[SCROLL_LIST_FILE_OFF:SCROLL_LIST_FILE_OFF + 4]),
-                  ROM_BASE + SCROLL_LIST_FILE_OFF, ["ldr", "bx"])
 
     # 8. outputs
     out = os.path.join(BUILD, "unbound-cm.gba")

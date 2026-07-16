@@ -18,6 +18,8 @@ VarGet    = 0x0806E568 | 1;
 VarSet    = 0x0806E584 | 1;
 
 ScriptContext1_SetupScript = 0x08069AE4 | 1;
+GetSizeOfMultiList = 0x09EB48B8 | 1;
+GetScrollingMultiList = 0x09EB48D4 | 1;
 
 GetMonData  = 0x0803FBE8 | 1;
 SetMonData  = 0x0804037C | 1;
@@ -41,3 +43,4 @@ gBattleMons       = 0x02023BE4;
 gBattleTypeFlags  = 0x02022B4C;
 gMainInBattleByte = 0x030030F0 + 0x439; /* gMain.inBattle byte */
 gSaveBlock2Ptr    = 0x0300500C;
+gStringVar1       = 0x02021CD0;

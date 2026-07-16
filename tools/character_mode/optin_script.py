@@ -45,21 +45,25 @@ VAR_CHARACTER_ID = 0x51FC
 VAR_RESULT = 0x800D
 
 PROMPT_TEXT = "Would you like to enable Character\nMode and pick your character?"
+NUMBER_TEXT = "Enter your character's number\n(1-{count}, listed in the patch notes)."
+CONFIRM_TEXT = "Play as {NAME}?"
 ENABLED_TEXT = "Character Mode has been enabled\nfor your chosen character!"
 
-# scrolling-multichoice contract (docs/ROUTINE_MAP.md v8.1)
-VAR_SETINDEX = 0x8000
-VAR_ROWS = 0x8001
-VAR_CURSOR = 0x8004
-SPECIAL_SCROLLMULTI = 0x158
-CM_SCROLLSET_INDEX = 32   # entry appended to the relocated gScrollingSets
+# v3 select flow: CFRU ChooseNumberScreen special -> number in 0x800D
+# (0xFFFF on empty/cancel); our special 0x1B6 buffers the chosen name.
+SPECIAL_CHOOSE_NUMBER = 0x0B3
+SPECIAL_BUFFER_NAME = 0x1B6
 
 NEWLINE = 0xFE  # in-msgbox line break
+STR_VAR_1 = b"\xFD\x02"  # {STR_VAR_1} placeholder
 
 
 def encode_msg(text, charmap):
-    lines = [encode_text(line, charmap)[:-1] for line in text.split("\n")]
-    return bytes([NEWLINE]).join(lines) + b"\xFF"
+    parts = []
+    for chunk in text.split("{NAME}"):
+        lines = [encode_text(line, charmap)[:-1] for line in chunk.split("\n")]
+        parts.append(bytes([NEWLINE]).join(lines))
+    return STR_VAR_1.join(parts) + b"\xFF"
 
 
 def build(block_rom_addr, char_count):
@@ -75,14 +79,20 @@ def build(block_rom_addr, char_count):
     # simple regex misses — add it directly
     charmap["'"] = 0xB4
     prompt = encode_msg(PROMPT_TEXT, charmap)
+    numtext = encode_msg(NUMBER_TEXT.replace("{count}", str(char_count)), charmap)
+    confirm = encode_msg(CONFIRM_TEXT, charmap)
     enabled = encode_msg(ENABLED_TEXT, charmap)
 
     # fixed-size body, so label offsets are static
-    OFF_NO = 75      # the No/cancel branch (clears mode state, falls into replay)
-    OFF_REPLAY = 83  # replay of the displaced enhancement prompt
-    OFF_TEXT = 92    # first text byte (right after the `return`)
+    OFF_PICK = 19    # the number-entry loop head
+    OFF_NO = 107     # the No/cancel branch (clears mode state, falls into replay)
+    OFF_REPLAY = 115 # replay of the displaced enhancement prompt
+    OFF_TEXT = 124   # first text byte (right after the `return`)
     p_prompt = block_rom_addr + OFF_TEXT
-    p_enabled = p_prompt + len(prompt)
+    p_numtext = p_prompt + len(prompt)
+    p_confirm = p_numtext + len(numtext)
+    p_enabled = p_confirm + len(confirm)
+    p_pick = block_rom_addr + OFF_PICK
     p_no = block_rom_addr + OFF_NO
     p_replay = block_rom_addr + OFF_REPLAY
 
@@ -91,20 +101,29 @@ def build(block_rom_addr, char_count):
     body += bytes([0x09, 0x05])                                        # callstd MSGBOX_YESNO
     body += bytes([0x21]) + struct.pack("<HH", VAR_RESULT, 1)          # compare 0x800D, 1
     body += bytes([0x06, 0x05]) + struct.pack("<I", p_no)              # goto_if NE -> no
-    # Yes: open the scrolling character list
-    body += bytes([0x16]) + struct.pack("<HH", VAR_SETINDEX, CM_SCROLLSET_INDEX)
-    body += bytes([0x16]) + struct.pack("<HH", VAR_ROWS, 6)
-    body += bytes([0x16]) + struct.pack("<HH", VAR_CURSOR, 0)          # stale cursor crashes!
-    body += bytes([0x25]) + struct.pack("<H", SPECIAL_SCROLLMULTI)
+    # pick: number-entry loop
+    assert len(body) == OFF_PICK, f"OFF_PICK drifted: {len(body)}"
+    body += bytes([0x0F, 0x00]) + struct.pack("<I", p_numtext)         # loadword 0, numtext
+    body += bytes([0x09, 0x04])                                        # callstd MSGBOX_DEFAULT
+    body += bytes([0x25]) + struct.pack("<H", SPECIAL_CHOOSE_NUMBER)   # ChooseNumberScreen
     body += bytes([0x27])                                              # waitstate
-    body += bytes([0x21]) + struct.pack("<HH", VAR_RESULT, char_count) # cancel/overflow?
-    body += bytes([0x06, 0x04]) + struct.pack("<I", p_no)              # goto_if >= -> no
+    body += bytes([0x21]) + struct.pack("<HH", VAR_RESULT, 0xFFFF)     # empty/cancelled?
+    body += bytes([0x06, 0x01]) + struct.pack("<I", p_no)              # goto_if == -> no
+    body += bytes([0x21]) + struct.pack("<HH", VAR_RESULT, 1)          # < 1 ?
+    body += bytes([0x06, 0x00]) + struct.pack("<I", p_pick)            # goto_if < -> pick
+    body += bytes([0x21]) + struct.pack("<HH", VAR_RESULT, char_count + 1)  # > count ?
+    body += bytes([0x06, 0x04]) + struct.pack("<I", p_pick)            # goto_if >= -> pick
     body += bytes([0x19]) + struct.pack("<HH", VAR_CHARACTER_ID, VAR_RESULT)  # copyvar
-    body += bytes([0x17]) + struct.pack("<HH", VAR_CHARACTER_ID, 1)    # addvar (id = idx+1)
+    # (ids are 1-based and the player enters 1..count: no +1 adjustment)
+    body += bytes([0x25]) + struct.pack("<H", SPECIAL_BUFFER_NAME)     # name -> gStringVar1
+    body += bytes([0x0F, 0x00]) + struct.pack("<I", p_confirm)         # loadword 0, confirm
+    body += bytes([0x09, 0x05])                                        # callstd MSGBOX_YESNO
+    body += bytes([0x21]) + struct.pack("<HH", VAR_RESULT, 1)          # confirmed?
+    body += bytes([0x06, 0x05]) + struct.pack("<I", p_pick)            # goto_if NE -> pick
     body += bytes([0x29]) + struct.pack("<H", FLAG_CHARACTER_MODE)     # setflag
     body += bytes([0x0F, 0x00]) + struct.pack("<I", p_enabled)         # loadword 0, enabled
     body += bytes([0x09, 0x04])                                        # callstd MSGBOX_DEFAULT
-    body += bytes([0x05]) + struct.pack("<I", p_replay)                # goto replay (must
+    body += bytes([0x05]) + struct.pack("<I", p_replay)                # goto replay (MUST
     # skip the No branch — a fall-through here once cleared the flag right
     # after setting it; caught live by tools/test_harness/live_script_test)
     assert len(body) == OFF_NO, f"OFF_NO drifted: {len(body)}"
@@ -117,7 +136,7 @@ def build(block_rom_addr, char_count):
     body += bytes([0x09, 0x05])
     body += bytes([0x03])                                              # return
     assert len(body) == OFF_TEXT, f"OFF_TEXT drifted: {len(body)}"
-    body += prompt + enabled
+    body += prompt + numtext + confirm + enabled
 
     splice = bytes([0x04]) + struct.pack("<I", block_rom_addr) + b"\x00\x00\x00"
     assert len(splice) == len(SPLICE_ORIG)

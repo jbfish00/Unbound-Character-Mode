@@ -293,45 +293,33 @@ __attribute__((noinline)) void CharacterMode_SelfTestDone(void)
  *   (0x8004 MUST be set: a stale value crashes the vanilla task.)
  */
 
-#define VAR_8000 (*(volatile u16 *)0x020370B8)
-
-struct ScrollingMulti
-{
-    const u8 *const *set;
-    u8 count;
-    u8 pad[3];
-};
-
-/* The ORIGINAL table (0x09FB196C, 32 sets) is read not only by the two
- * getters but by at least 3 more Unbound-custom code sites that index it
- * with a raw, unclamped Var8000 — a magic out-of-range index caused
- * run-dependent chaos (SIGILL wedges, even a spurious trainer battle).
- * Fix: tools/build_patch.py relocates the table into injection space with
- * OUR character list appended as entry 32 (gCharacterScrollSets) and
- * repoints all 5 pool references, so index 32 is valid for EVERY reader.
- * These trampolined getters extend the original idx>31->0 clamp to >32. */
-extern const struct ScrollingMulti gCharacterScrollSets[];
-#define CM_SCROLLSET_INDEX 32
-#define GSCROLLING_SETS_MAX CM_SCROLLSET_INDEX
+/* ---- character-select support (see docs/ROUTINE_MAP.md v8.2 for why the
+ * scrolling-multichoice approaches were abandoned: the sets table is read
+ * by unknown Unbound-custom code with raw indices AND likely end-pointer
+ * loop bounds, so neither magic indices nor relocation are safe). The v3
+ * select flow uses CFRU's ChooseNumberScreen (special 0x0B3) + this
+ * name-buffering special, wired into the reserved gSpecials[0x1B6]. ---- */
 
 extern const u8 *const gCharacterNamePtrs[];
 
-u32 CharacterMode_GetSizeOfMultiList(void)
+/* special 0x1B6: copy the character name for the id currently in VAR_RESULT
+ * (0x800D — the number the player just entered, validated 1..count by the
+ * script BEFORE this special runs) into gStringVar1 so the confirmation
+ * msgbox can say "play as {STR_VAR_1}?". Invalid id -> empty string. */
+void CharacterMode_BufferNameSpecial(void)
 {
-    u16 idx = VAR_8000;
+    u16 id = VarGet(0x800D);
+    u8 *dst = gStringVar1;
 
-    if (idx > GSCROLLING_SETS_MAX)
-        idx = 0;
-    return gCharacterScrollSets[idx].count;
-}
+    if (id >= 1 && id <= gCharacterCount)
+    {
+        const u8 *src = gCharacterNamePtrs[id - 1];
 
-const u8 *const *CharacterMode_GetScrollingMultiList(void)
-{
-    u16 idx = VAR_8000;
-
-    if (idx > GSCROLLING_SETS_MAX)
-        idx = 0;
-    return gCharacterScrollSets[idx].set;
+        while ((*dst++ = *src++) != 0xFF)
+            ;
+    }
+    else
+        *dst = 0xFF;
 }
 
 /* Debug/test primitive (the ROWE debug-menu equivalent for a binary hack):
@@ -344,6 +332,21 @@ void CharacterMode_TriggerIntroScript(void)
 {
     ScriptContext1_SetupScript((const u8 *)0x09E70000);
     CharacterMode_SelfTestDone();
+}
+
+/* One-frame gMain.callback1 stand-in for the live test harness: restores
+ * the overworld CB1 and queues the new-game difficulty script (which flows
+ * through the opt-in splice). Constants only — earlier harness versions
+ * poked shim code into high EWRAM at runtime, which intermittently got
+ * clobbered by live list-menu buffers (0x0203F37C+) and crashed/reset the
+ * game. ROM-resident code + zero runtime RAM = deterministic. The harness
+ * installs it by writing gMain.callback1 (0x030030F0) once while stopped;
+ * the game itself calls it next frame with correct interworking. Never
+ * called by the game otherwise. */
+void CharacterMode_QueueIntroScriptCb1(void)
+{
+    *(volatile u32 *)0x030030F0 = 0x08056535;      /* CB1_Overworld|1 */
+    ScriptContext1_SetupScript((const u8 *)0x09E70000);
 }
 
 void CharacterMode_RunSelfTest(void)
@@ -431,17 +434,21 @@ void CharacterMode_RunSelfTest(void)
         r[n++] = *(u16 *)(gPlayerParty[0].raw + 0x20) == 150; /* H2 want 1 */
     }
 
-    /* I: scrolling-multichoice list hooks (character-select menu) */
-    VAR_8000 = CM_SCROLLSET_INDEX;
-    r[n++] = (u8)CharacterMode_GetSizeOfMultiList();                /* I1 want 156 */
-    r[n++] = CharacterMode_GetScrollingMultiList() == gCharacterNamePtrs; /* I2 want 1 */
-    r[n++] = (gCharacterNamePtrs[0] != 0 && gCharacterNamePtrs[0][0] != 0xFF
-              && gCharacterNamePtrs[155] != 0);                     /* I3 want 1 */
-    VAR_8000 = 0;
-    r[n++] = (u8)CharacterMode_GetSizeOfMultiList();                /* I4 want 7 (set 0) */
-    VAR_8000 = 999; /* out of range -> clamp -> set 0 */
-    r[n++] = (u8)CharacterMode_GetSizeOfMultiList();                /* I5 want 7 */
-    VAR_8000 = 0;
+    /* I: character-name buffering for the select flow (special 0x1B6) */
+    VarSet(0x800D, 1);
+    CharacterMode_BufferNameSpecial();
+    r[n++] = gStringVar1[0] != 0xFF;   /* I1 want 1: char 1 has a name */
+    r[n++] = gStringVar1[0];           /* I2 want 204 ('R' of Red) */
+    VarSet(0x800D, 156);
+    CharacterMode_BufferNameSpecial();
+    r[n++] = gStringVar1[0] != 0xFF;   /* I3 want 1: last char has a name */
+    VarSet(0x800D, 0);
+    CharacterMode_BufferNameSpecial();
+    r[n++] = gStringVar1[0] == 0xFF;   /* I4 want 1: 0 -> empty */
+    VarSet(0x800D, 999);
+    CharacterMode_BufferNameSpecial();
+    r[n++] = gStringVar1[0] == 0xFF;   /* I5 want 1: out of range -> empty */
+    VarSet(0x800D, 0);
 
     /* leave the expanded save state clean */
     FlagClear(FLAG_CHARACTER_MODE);

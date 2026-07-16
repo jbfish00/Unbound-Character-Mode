@@ -16,7 +16,7 @@ LOG="$ROOT/build/scroll_select_test.log"
 rm -f "$ROOT/build/unbound-cm.sav" "$ROOT"/build/unbound-cm-*.png
 pkill -f "mgba-qt -g .*unbound-cm\.gba" 2>/dev/null && sleep 1
 
-mgba-qt -g "$ROM" &
+mgba-qt -g -C audioSync=0 -C videoSync=0 -C fpsTarget=60 "$ROM" &
 MGBA_PID=$!
 MASH_PID=""
 trap 'kill $MGBA_PID $MASH_PID 2>/dev/null; headless_display_stop' EXIT

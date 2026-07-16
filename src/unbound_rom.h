@@ -47,6 +47,8 @@ struct Pokemon
 
 /* ---- engine functions (addresses in unbound.ld) ---- */
 void ScriptContext1_SetupScript(const u8 *script);
+u32 GetSizeOfMultiList(void);              /* CFRU scroll-multichoice getters */
+const u8 *const *GetScrollingMultiList(void);
 u8 FlagGet(u16 flagId);
 u8 FlagSet(u16 flagId);
 u8 FlagClear(u16 flagId);
@@ -75,6 +77,7 @@ extern u8 gBattleMons[];              /* stride 0x58, species u16 at +0 */
 extern u32 gBattleTypeFlags;
 extern u8 gMainInBattleByte;          /* gMain + 0x439 */
 extern u8 *gSaveBlock2Ptr;            /* 0x0300500C holds the live pointer */
+extern u8 gStringVar1[];              /* 0x02021CD0 */
 
 #define BATTLEMON_SPECIES(bank) (*(u16 *)(gBattleMons + (bank) * 0x58))
 

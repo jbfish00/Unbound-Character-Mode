@@ -168,6 +168,18 @@ Results:
 - **The script's entry is `0x1E70000`** (3 bytes before the splice), referenced as `0x09E70000` from three native/data tables at file `0x0253FDE`, `0x038F94A`, `0x0A7A19E` (record shape not yet decoded — this is how the new-game difficulty flow is invoked from code). The whole difficulty spaghetti `0x1E6FF00`–`0x1E70003` gates on `0x50DF` compares and funnels into the enhancement prompt.
 - Practical probe: `VAR_UNBOUND_GAME_DIFFICULTY 0x50DF` (EWRAM `0x0203B532`) is written by the difficulty selection just upstream of the splice — nonzero is strong evidence the intro reached our region (but 0 is inconclusive: the default choice may map to 0).
 
+### Scrolling multichoice (special 0x158) — MAPPED, and why it must NOT be extended (2026-07-16, v8.2)
+
+Full contract (from Unbound's own scripts, 54 call sites): `setvar 0x8000 <set>`, `setvar 0x8001 <rows>`, `setvar 0x8004 <initial cursor — MUST be set, stale value crashes>`, `special 0x158`, `waitstate` → selection index in `0x800D` (`0x7F` observed as cancel from the vanilla-side path; scripts also compare `0xFFFF`/`0xFFFE`). Machinery: vanilla handler `0x080CB7C4` + task `0x080CB904`, CFRU hooks at `080CB94C/080CB82A/80CBAC8` feeding lists via `GetSizeOfMultiList` **0x09EB48B8** / `GetScrollingMultiList` **0x09EB48D4** (both clamp idx>31→0), `gScrollingSets` = **0x09FB196C** with **31 real entries** (slot "31" is already the next sibling structure — two consecutive 0x09FCxxxx pointers). Sets 9/11 look script-unreferenced by nearby-setvar scanning but are the BP-shop menus (distant setvar/goto chains).
+
+**Do not extend/relocate this table.** gScrollingSets has at least 3 more pool references in Unbound-custom code (`0x9EB7C6C`, `0x9EB80B4`, `0x9ED4FD8`) that index with raw unclamped Var8000 and sit among sibling-table pointer pools; an out-of-range magic index produced run-dependent chaos (SIGILL wedges, one spurious trainer battle from garbage data), and relocating the table (all 5 exact-base pool refs repointed) intermittently froze the game — consistent with iterators using separate end-pointer constants that exact-word scanning cannot find. The character-select uses ChooseNumberScreen instead (below).
+
+### Character-select v3 wiring (2026-07-16, v8.2)
+
+- `special 0x0B3` = CFRU `sp0B3_DoChooseNumberScreen` (0x08A0926D in this ROM): naming screen in number mode, result → `0x800D` (`0xFFFF` on empty/cancel). 11 existing script uses.
+- `gSpecials[0x1B6]` (file `0x160438`, stale `0x081537C1`) repointed by the build to injected `CharacterMode_BufferNameSpecial` — copies `gCharacterNamePtrs[0x800D - 1]` to `gStringVar1` for `{STR_VAR_1}` text.
+- Test-harness facts: gMain key fields (`heldKeysRaw +0x28 = 0x03003118`, `newKeysRaw +0x2A`, `newKeys +0x2E`, `newAndRepeated +0x30`); naming screens drop poked new-key writes ~half the time (input processed before the stop point) — use real host input verified by heldKeysRaw readback. High EWRAM (`0x0203FC00+`) is clobbered by live list-menu buffers (donor symbols end at `sBerryPouchListMenuItems 0x203F37C` but buffers grow upward) — never stage runtime code/scripts there; audited-clean expanded vars: `0x51F8/0x51F9/0x51FA` (0 hits), `0x51FB` (1 probable-false hit).
+
 ### Specials table — FOUND + hijack slot reserved (2026-07-14, v8.1)
 
 Opcode `0x25` (`special`) handler `0x08069EFD` / `0x26` (`special2`) `0x08069F3D` validate the id then fetch `gSpecials[id]`:

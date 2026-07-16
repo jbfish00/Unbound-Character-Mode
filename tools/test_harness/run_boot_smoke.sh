@@ -11,7 +11,7 @@ LOG="$ROOT/build/boot_smoke.log"
 
 pkill -f "mgba-qt -g .*unbound-cm\.gba" 2>/dev/null && sleep 1
 
-mgba-qt -g "$ROM" &
+mgba-qt -g -C audioSync=0 -C videoSync=0 -C fpsTarget=60 "$ROM" &
 MGBA_PID=$!
 trap 'kill $MGBA_PID 2>/dev/null; headless_display_stop' EXIT
 sleep 5
