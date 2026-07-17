@@ -45,6 +45,17 @@ Two tools landed in the sibling projects that apply to this one if/when more RE 
 1. **`../Lazarus-Character-Mode/tools/find_script_cmd_table.py`** — finds the script command table in ANY pokeemerald/pokefirered-family binary (CFRU included) in seconds, by scanning for the ScriptContext-init signature (cmdTable + cmdTableEnd as adjacent literal-pool words pointing at a dense run of odd Thumb pointers). One clean hit on both Lazarus and Seaglass; entry 0x2B (checkflag) → FlagGet → flags offset, entry 0x16 (setvar) → GetVarPointer → vars offset, in one static pass each. Useful here for any future script-command work without live tracing.
 2. **Headless breakpoints fixed**: stock `mgba-headless` (Seaglass's build, `../Seaglass-Character-Mode/tools/mgba_src/build/mgba-headless`) never fired `emu:setBreakpoint` (returns -1 — `core->debugger` was never created). Now patched: set **`MGBA_HEADLESS_DEBUGGER=1`** and script breakpoints work headlessly (no GUI/Xvfb/xdotool needed). If a future Unbound task needs PC-level tracing, this is strictly less painful than the mgba-qt/Xvfb harness — no audio-stall workarounds, deterministic input, and breakpoint callbacks with full register access.
 
+## Status (2026-07-17 v13) — TRADE ENFORCEMENT WORKING END-TO-END LIVE; ALL ENFORCEMENT PATHS NOW COVERED
+
+The last enforcement gap (in-game trades) is closed. Full RE + design in docs/ROUTINE_MAP.md v10 (top section); summary:
+
+1. **RE**: Unbound's trades run on vanilla FR natives CFRU never repointed (specials 0x9F/0xFC/0xFD/0xFE/0xFF; `sIngameTrades` at vanilla `0x0826CF8C`, 9 entries overwritten in place — all decoded). Every trade funnels through exactly 3 `special 0xFD; special 0xFE; waitstate` junctions (high-ROM shared sub `0x1E9459C` w/ 32 callers, low-ROM twin `0x1A8CD9` w/ 4, one inline at `0x16E3A8`).
+2. **Hook** (`tools/character_mode/trade_hook.py`): each junction tail overlaid with a `goto` into an injected tail that replays `special 0xFE; waitstate` then runs **`special 0x1AF`** — a dead gSpecials slot repointed to `CharacterMode_SweepPartyToPC` (off-roster non-egg → PC, never empties party, eggs exempt, no-op when mode off). The scene finalizes the party before its waitstate ends, so the sweep sees the final state.
+3. **Tests all green on this build**: unit **39/39** (new K1-K5 sweep matrix), boot smoke 4/4, **new live trade test 8/8 × 2 cases** (`tools/test_harness/run_trade_test.sh`: fresh save → free-roam → real patched junction executes trade 2 "The Top" Hitmontop←Lickitung; **Red**: Hitmontop swept to PC box 0 slot 0, party [Pikachu]; **Bruno** control: Hitmontop on-roster, stays in party; game healthy both), starter 7/7, battle catch 8/8, number-select 5/5 re-verified.
+4. **Harness lessons** (docs/ROUTINE_MAP.md v10): the trade-anim state machine has press-A waits (state 71 polls newKeys) — the driver runs a second masher through the scene, stopped by a sentinel file; PC storage boxes start at `*gPokemonStoragePtr`+0 (no currentBox prefix), BoxPokemon stride 80 species @+0x20; health checks must accept IWRAM/BIOS PC values (audio engine), not just ROM.
+
+Remaining: organic reach of the intro prompt (unchanged), Mystery Gift sweep call site if ever needed (same `special 0x1AF` is reusable from any script), sprites (Phase 3), flag-persistence runtime caveat, packaging/docs (Phase 6).
+
 ## Status (2026-07-17 v12) — STARTER GRANT WORKING END-TO-END LIVE
 
 The chosen character's signature Pokémon now replaces the starter. Design and verification:

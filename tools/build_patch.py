@@ -34,6 +34,7 @@ CM_DIR = os.path.join(HERE, "character_mode")
 
 sys.path.insert(0, CM_DIR)
 import optin_script
+import trade_hook
 
 ROM_BASE = 0x08000000
 
@@ -185,6 +186,15 @@ def main():
     assert all(b == 0xFF for b in
                rom[GIVEMON_VENEER_FILE_OFF:GIVEMON_VENEER_FILE_OFF + 8]), \
         "givemon veneer target not 0xFF-free!"
+    assert rom[trade_hook.SPECIAL_SWEEP_FILE_OFF:
+               trade_hook.SPECIAL_SWEEP_FILE_OFF + 4] == trade_hook.SPECIAL_SWEEP_ORIG, \
+        "gSpecials[0x1AF] bytes changed — wrong ROM?"
+    for label, off in trade_hook.SUB_SITES.items():
+        assert rom[off:off + len(trade_hook.SUB_TAIL_ORIG)] == trade_hook.SUB_TAIL_ORIG, \
+            f"trade junction bytes changed at {label} — wrong ROM?"
+    assert rom[trade_hook.INLINE_SITE_OFF:
+               trade_hook.INLINE_SITE_OFF + len(trade_hook.INLINE_ORIG)] == trade_hook.INLINE_ORIG, \
+        "inline trade junction bytes changed — wrong ROM?"
 
     # 5. splice data + code
     rom[INJECT_FILE_OFF + off_characters:INJECT_FILE_OFF + off_characters + len(characters)] = characters
@@ -251,26 +261,70 @@ def main():
         s += bytes([0x02])
         return bytes(s)
 
+    # in-game trade sweep live test: party is set up with Character Mode OFF
+    # (Pikachu + Lickitung — no starter substitution, no gift PC-routing),
+    # then mode is enabled for char_id and trade 2 (The Top the Hitmontop
+    # for Lickitung) is executed through the real patched shared junction.
+    # Red (1): Hitmontop off-roster -> swept to PC, party ends [Pikachu].
+    # Bruno (6): Hitmontop on-roster -> stays, party ends [Pikachu, Hitmontop].
+    def trade_debug_script(char_id):
+        s = bytearray()
+        s += bytes([0x2A]) + struct.pack("<H", 0x18F8)               # clearflag CM
+        for v in range(0x8000, 0x8008):
+            s += bytes([0x16]) + struct.pack("<HH", v, 0)
+        s += bytes([0x79]) + struct.pack("<HBH", 25, 20, 0) + b"\x00" * 9   # Pikachu
+        s += bytes([0x79]) + struct.pack("<HBH", 108, 20, 0) + b"\x00" * 9  # Lickitung
+        s += bytes([0x29]) + struct.pack("<H", 0x18F8)               # setflag CM
+        s += bytes([0x16]) + struct.pack("<HH", 0x51FC, char_id)
+        s += bytes([0x16]) + struct.pack("<HH", 0x8008, 2)           # trade index 2
+        s += bytes([0x16]) + struct.pack("<HH", 0x800A, 1)           # party slot 1
+        s += bytes([0x04]) + struct.pack("<I", 0x09E9459C)           # patched junction
+        s += bytes([0x02])
+        return bytes(s)
+
     off_dbg_block = (off_optin + len(optin_blob) + 3) & ~3
     dbg_block = battle_debug_script(150)
     off_dbg_catch = off_dbg_block + len(dbg_block)
     dbg_catch = battle_debug_script(6)
     off_dbg_starter = off_dbg_catch + len(dbg_catch)
     dbg_starter = starter_debug_script()
-    total_len = off_dbg_starter + len(dbg_starter)
+    off_trade_tails = off_dbg_starter + len(dbg_starter)
+    trade_blob, trade_patches = trade_hook.build(addr(off_trade_tails))
+    off_dbg_trade_red = off_trade_tails + len(trade_blob)
+    dbg_trade_red = trade_debug_script(1)
+    off_dbg_trade_bruno = off_dbg_trade_red + len(dbg_trade_red)
+    dbg_trade_bruno = trade_debug_script(6)
+    total_len = off_dbg_trade_bruno + len(dbg_trade_bruno)
     assert total_len <= INJECT_BLOCK_LEN, "injection block overflow (debug scripts)"
     span2 = rom[INJECT_FILE_OFF + off_dbg_block:INJECT_FILE_OFF + total_len]
     assert all(b == 0xFF for b in span2), "debug-script target not 0xFF-free!"
     rom[INJECT_FILE_OFF + off_dbg_block:INJECT_FILE_OFF + off_dbg_block + len(dbg_block)] = dbg_block
     rom[INJECT_FILE_OFF + off_dbg_catch:INJECT_FILE_OFF + off_dbg_catch + len(dbg_catch)] = dbg_catch
     rom[INJECT_FILE_OFF + off_dbg_starter:INJECT_FILE_OFF + off_dbg_starter + len(dbg_starter)] = dbg_starter
+    rom[INJECT_FILE_OFF + off_trade_tails:INJECT_FILE_OFF + off_trade_tails + len(trade_blob)] = trade_blob
+    rom[INJECT_FILE_OFF + off_dbg_trade_red:INJECT_FILE_OFF + off_dbg_trade_red + len(dbg_trade_red)] = dbg_trade_red
+    rom[INJECT_FILE_OFF + off_dbg_trade_bruno:INJECT_FILE_OFF + off_dbg_trade_bruno + len(dbg_trade_bruno)] = dbg_trade_bruno
     import json
     with open(os.path.join(BUILD, "debug_addrs.json"), "w") as f:
         json.dump({"battle_block_script": addr(off_dbg_block),
                    "battle_catch_script": addr(off_dbg_catch),
-                   "starter_test_script": addr(off_dbg_starter)}, f)
+                   "starter_test_script": addr(off_dbg_starter),
+                   "trade_test_script_red": addr(off_dbg_trade_red),
+                   "trade_test_script_bruno": addr(off_dbg_trade_bruno)}, f)
     print(f"debug scripts: block @ {addr(off_dbg_block):#010x}, catch @ {addr(off_dbg_catch):#010x}, "
           f"starter @ {addr(off_dbg_starter):#010x}")
+    print(f"trade tails @ {addr(off_trade_tails):#010x}, trade tests red/bruno @ "
+          f"{addr(off_dbg_trade_red):#010x}/{addr(off_dbg_trade_bruno):#010x}")
+
+    # 6c''. trade-junction overlays + sweep special (gSpecials[0x1AF])
+    sweep_fn = syms["CharacterMode_SweepPartyToPC"]
+    rom[trade_hook.SPECIAL_SWEEP_FILE_OFF:trade_hook.SPECIAL_SWEEP_FILE_OFF + 4] = \
+        struct.pack("<I", sweep_fn | 1)
+    print(f"gSpecials[0x1AF] -> CharacterMode_SweepPartyToPC {sweep_fn | 1:#010x}")
+    for label, off, orig, new in trade_patches:
+        assert rom[off:off + len(orig)] == orig  # rechecked against pre-write state above
+        rom[off:off + len(new)] = new
+        print(f"trade hook: {label} @{ROM_BASE + off:#x}  {orig.hex()} -> {new.hex()}")
 
     # 6d. character-select: wire the name-buffering special into slot 0x1B6
     buf_special = syms["CharacterMode_BufferNameSpecial"]
@@ -302,7 +356,7 @@ def main():
     print(f"\nwrote {out}")
     print(f"  sha1 {out_sha}")
     print(f"  changed bytes: {changed} "
-          f"(data+code {total_len}, hooks 12)")
+          f"(data+code {total_len}, hooks 12 + specials 8 + trade overlays 19)")
 
     flips = os.path.join(HERE, "bin", "flips")
     if os.path.exists(flips):

@@ -535,6 +535,65 @@ void CharacterMode_RunSelfTest(void)
     r[n++] = CharacterMode_SubstituteGiftSpecies(246) == 246; /* J4 mode off: passthrough, want 1 */
     r[n++] = CharacterMode_GetStarterSpecies() == 0;     /* J5 mode off: no starter, want 1 */
 
+    /* K: trade sweep (CharacterMode_SweepPartyToPC, special 0x1AF).
+     * Only reset-deterministic assertions here: the actual PC delivery of a
+     * swept mon is proven by the live trade test (SendMonToPC's return at
+     * reset state is not meaningful, same caveat as G1). Party mons are
+     * built raw: species u16 at +0x20 (growth substruct), egg bit is IV
+     * word bit 30 at +0x48 (misc substruct) — CFRU unencrypted layout. */
+    {
+        /* K1: mode off -> sweep is a no-op even with an off-roster mon */
+        FlagClear(FLAG_CHARACTER_MODE);
+        VarSet(VAR_CHARACTER_ID, 0);
+        for (i = 0; i < PARTY_SIZE; i++)
+            ZeroMonData(&gPlayerParty[i]);
+        *(u16 *)(gPlayerParty[0].raw + 0x20) = 150;          /* Mewtwo */
+        gPlayerPartyCount = 1;
+        CharacterMode_SweepPartyToPC();
+        r[n++] = *(u16 *)(gPlayerParty[0].raw + 0x20) == 150; /* K1 want 1 */
+
+        /* K2: never-empty guard — sole off-roster mon is kept (this path
+         * never even calls SendMonToPC, so it's fully deterministic) */
+        FlagSet(FLAG_CHARACTER_MODE);
+        VarSet(VAR_CHARACTER_ID, 1);                          /* Red */
+        CharacterMode_SweepPartyToPC();
+        r[n++] = *(u16 *)(gPlayerParty[0].raw + 0x20) == 150; /* K2 want 1 */
+
+        /* K3: all-on-roster party untouched */
+        for (i = 0; i < PARTY_SIZE; i++)
+            ZeroMonData(&gPlayerParty[i]);
+        *(u16 *)(gPlayerParty[0].raw + 0x20) = 25;            /* Pikachu */
+        gPlayerPartyCount = 1;
+        CharacterMode_SweepPartyToPC();
+        r[n++] = (*(u16 *)(gPlayerParty[0].raw + 0x20) == 25
+                  && gPlayerPartyCount == 1);                 /* K3 want 1 */
+
+        /* K4: mixed party — the on-roster mon survives in slot 0 whatever
+         * SendMonToPC returned for the off-roster one (swept -> compacted
+         * to [Pikachu]; boxes-full path -> [Pikachu, Mewtwo]) */
+        for (i = 0; i < PARTY_SIZE; i++)
+            ZeroMonData(&gPlayerParty[i]);
+        *(u16 *)(gPlayerParty[0].raw + 0x20) = 25;
+        *(u16 *)(gPlayerParty[1].raw + 0x20) = 150;
+        gPlayerPartyCount = 2;
+        CharacterMode_SweepPartyToPC();
+        r[n++] = *(u16 *)(gPlayerParty[0].raw + 0x20) == 25;  /* K4 want 1 */
+
+        /* K5: egg exemption — an off-roster egg is never swept */
+        for (i = 0; i < PARTY_SIZE; i++)
+            ZeroMonData(&gPlayerParty[i]);
+        *(u16 *)(gPlayerParty[0].raw + 0x20) = 25;
+        *(u16 *)(gPlayerParty[1].raw + 0x20) = 150;
+        *(u32 *)(gPlayerParty[1].raw + 0x48) |= (1u << 30);   /* isEgg */
+        gPlayerPartyCount = 2;
+        CharacterMode_SweepPartyToPC();
+        r[n++] = *(u16 *)(gPlayerParty[1].raw + 0x20) == 150; /* K5 want 1 */
+
+        for (i = 0; i < PARTY_SIZE; i++)
+            ZeroMonData(&gPlayerParty[i]);
+        gPlayerPartyCount = 0;
+    }
+
     /* leave the expanded save state clean */
     FlagClear(FLAG_CHARACTER_MODE);
     VarSet(VAR_CHARACTER_ID, 0);

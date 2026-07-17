@@ -54,7 +54,7 @@ printf "parked in SelfTestDone (want 1): %d\n", ((unsigned int)$pc >= (((unsigne
 
 echo \n=== results ===\n
 printf "MAGIC ok (want 1): %d\n", (*(unsigned int*)0x0203FEFC == 0xC0DED00D)
-printf "COUNT checks ran (want 31): %d\n", *(unsigned int*)0x0203FEF8
+printf "COUNT checks ran (want 36): %d\n", *(unsigned int*)0x0203FEF8
 printf "A1 InCharacterMode mode-off (want 0): %d\n", *(unsigned char*)(0x0203FE00 + 0)
 printf "A2 IsSpeciesAllowed(150) mode-off (want 1): %d\n", *(unsigned char*)(0x0203FE00 + 1)
 printf "A3 CatchFlagGet mode-off (want 0): %d\n", *(unsigned char*)(0x0203FE00 + 2)
@@ -86,6 +86,11 @@ printf "J2 substitute Larvitar empty party (want 25): %d\n", *(unsigned char*)(0
 printf "J3 substitute passthrough non-empty party (want 1): %d\n", *(unsigned char*)(0x0203FE00 + 28)
 printf "J4 substitute passthrough mode off (want 1): %d\n", *(unsigned char*)(0x0203FE00 + 29)
 printf "J5 GetStarterSpecies mode off is 0 (want 1): %d\n", *(unsigned char*)(0x0203FE00 + 30)
+printf "K1 sweep no-op mode off (want 1): %d\n", *(unsigned char*)(0x0203FE00 + 31)
+printf "K2 sweep never-empty guard (want 1): %d\n", *(unsigned char*)(0x0203FE00 + 32)
+printf "K3 sweep on-roster untouched (want 1): %d\n", *(unsigned char*)(0x0203FE00 + 33)
+printf "K4 sweep keeps on-roster in mixed party (want 1): %d\n", *(unsigned char*)(0x0203FE00 + 34)
+printf "K5 sweep egg exemption (want 1): %d\n", *(unsigned char*)(0x0203FE00 + 35)
 
 echo \n=== TESTS DONE ===\n
 # mGBA's stub doesn't implement the detach packet (E07) — just drop the link

@@ -1,5 +1,34 @@
 # Routine Map — Pokemon Unbound (v2.1.1.1).gba
 
+## In-game trades — FULLY RESOLVED + HOOKED (2026-07-17 v10)
+
+The last enforcement gap is closed. Unbound's in-game trades (the Borrius Trade Quest) run through **vanilla FireRed trade natives that CFRU never repointed**, wired via specials (resolved through `gSpecials` 0x0815FD60):
+
+| special | native | address |
+|---|---|---|
+| 0x9F | ChoosePartyMon (slot → 0x8004) | `0x080BF8FD` |
+| 0xFC | GetInGameTradeSpeciesInfo (requested species ← trade idx) | `0x08053A9D` |
+| 0xFF | GetTradeSpecies (species of party slot 0x8005) | `0x08053D2D` |
+| 0xFD | CreateInGameTradePokemon (0x8004=trade idx, 0x8005=slot) | `0x08053D69` |
+| 0xFE | DoInGameTradeScene | `0x08054441` |
+
+**`sIngameTrades` survives at vanilla `0x0826CF8C`** — 9 entries × 60 bytes, overwritten in place with Unbound's pairs (received species u16 @+12, requested u16 @+0x38; nickname[11] @+0 charmap): 0 Squirry/Pachirisu 470←Manectric 338, 1 Quacker/Ducklett 633←Alolan Sandshrew 1023, 2 The Top/Hitmontop 237←Lickitung 108, 3 Roly-Poly/Electrode 101←Onix 95, 4 Shin/Shiinotic 973←Amoonguss 644, 5 Among Us/Amoonguss 644←Shiinotic 973, 6 Torch/Lampent 661←Blaziken 282, 7-8 UNUSED (Tangela/Seel). Entries 9+ are unrelated data — the count was NOT expanded.
+
+**Every trade in the ROM executes through exactly three `special 0xFD; special 0xFE; waitstate` junctions** (exhaustive scan; all other 25FD00/25FE00 byte hits are Thumb-code false positives):
+1. **`0x1E945A6`** — high-ROM shared execute-trade subroutine `0x1E9459C` (`copyvar 8004←8008; copyvar 8005←800A; special FD; special FE; waitstate; lock; faceplayer; return`), 32 script call sites (`04 9C 45 E9 09`). Sibling subs: picker `0x1E94580` (special 0x9F), requested-species getter `0x1E94570` (special2 0xFC → copied to 0x8009), chosen-species getter `0x1E9458C` (special2 0xFF). NPC scripts branch on `compare 0x800D vs 0x8009` (wrong-species decline) before executing.
+2. **`0x1A8CE3`** — identical low-ROM shared subroutine `0x1A8CD9`, 4 call sites (incl. the Master Ball house trade NPC at `0x7C2BE6`).
+3. **`0x16E3A8`** — inline junction in a low-ROM script (`setflag 0x275` after; fall-through entry only).
+
+**Hook (tools/character_mode/trade_hook.py, wired by build_patch.py)**: each junction's `25 FE 00 27 …` tail is overlaid with a `goto` into an injected tail script that replays `special 0xFE; waitstate`, inserts **`special 0x1AF`** (dead gSpecials slot, stale `0x0815D835`, repointed to `CharacterMode_SweepPartyToPC`), then finishes the original tail. The scene writes the incoming mon into the traded-away party slot before its waitstate completes, so the sweep sees the final party. ROWE semantics: off-roster non-egg party members → PC, never empties the party, eggs exempt, no-op with Character Mode off.
+
+**Live-verified both directions** (`tools/test_harness/run_trade_test.sh`, 8/8 × 2): trade 2 executed through the real patched junction on a fresh save — as Red (Hitmontop off-roster): party ends [Pikachu], Hitmontop delivered to PC box 0 slot 0; as Bruno (Hitmontop on-roster): party ends [Pikachu, Hitmontop], nothing PC-routed; game healthy after both.
+
+**Facts learned for future harness/RE work**:
+- The trade-anim state machine (CB2 `0x08050949` → dispatcher `0x08050F14`; branches on `sTradeData+0x108`, u16 state @+0x94, `sTradeData` ptr at `0x02031DAC`) has **press-A wait states** (state 71 handler polls `gMain.newKeys & A_BUTTON`) — automated runs must keep mashing A through the scene or it wedges forever at state 71.
+- **PC storage layout (CFRU dynamic saveblocks)**: `gPokemonStoragePtr` = `0x03005010` (vanilla addr); the box array starts at **storage+0** (no leading currentBox byte); BoxPokemon stride 80, species u16 @+0x20 (unencrypted). Confirmed live by the swept mon landing at storage+0x20.
+- `pkill -f` patterns containing the ROM filename kill the invoking shell if the pattern text appears in its own command line — keep such patterns inside script files, not inline bash.
+
+
 ## THE BIG ONE — script & battle dispatch tables located, engine symbol map unlocked (2026-07-12 v8)
 
 **This section supersedes most of the hunting below.** The script-command dispatch table (`gScriptCmdTable`) survives at **vanilla FireRed's exact address `0x0815F9B4`** (file `0x15F9B4`), 0xD6 entries, followed immediately by the special-vars pointer table — byte-identical layout to pret/pokefirered. Found by scanning the ROM for ≥150-entry runs of consecutive Thumb function pointers. From there everything unlocked, because **Unbound leaves the vanilla FR engine core intact and CFRU hooks it surgically** — and `tools/cfru_donor/BPRE.ld` is a full FR symbol map that names every address we extract.
