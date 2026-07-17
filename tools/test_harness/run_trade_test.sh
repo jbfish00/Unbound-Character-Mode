@@ -37,18 +37,15 @@ for CASE in $CASES; do
         sleep 0.1
         xdotool keyup --window "$WID" "$1" 2>/dev/null
     }
-    rm -f "$ROOT/build/.trade_done"
+    # phase 1 is driven by the gdb script (intro_drive.py answers No at the
+    # CM prompt deterministically). The trade-scene masher (the scene has
+    # press-A prompts) starts only when the gdb script touches .mash_now
+    # after queueing the trade script, and stops on .trade_done.
+    export MGBA_WID="$WID"
+    rm -f "$ROOT/build/.trade_done" "$ROOT/build/.mash_now"
     (
-        # phase-1 masher: plays through the opening to free-roam
-        sleep 8
-        end=$((SECONDS + 168))
-        while [ $SECONDS -lt $end ]; do
-            press x
-            sleep 0.3
-        done
-        # trade-phase masher: the trade scene has press-A message prompts;
-        # keep pressing until the gdb script signals completion (or 200s cap)
-        end=$((SECONDS + 200))
+        while [ ! -f "$ROOT/build/.mash_now" ]; do sleep 0.5; done
+        end=$((SECONDS + 220))
         while [ $SECONDS -lt $end ] && [ ! -f "$ROOT/build/.trade_done" ]; do
             press x
             sleep 0.4
@@ -56,7 +53,7 @@ for CASE in $CASES; do
     ) &
     MASH_PID=$!
 
-    TRADE_CASE="$CASE" timeout 500 gdb-multiarch -batch -x "$HERE/trade_test.gdb" "$ELF" >"$LOG" 2>&1
+    TRADE_CASE="$CASE" timeout 600 gdb-multiarch -batch -x "$HERE/trade_test.gdb" "$ELF" >"$LOG" 2>&1
 
     kill $MASH_PID $MGBA_PID 2>/dev/null
     trap - EXIT

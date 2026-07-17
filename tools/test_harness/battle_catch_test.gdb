@@ -63,8 +63,9 @@ TEST_WANT = os.environ.get("TEST_WANT", "block")            # block | catch
 script += bytes([0xB6]) + struct.pack("<HBH", TEST_SPECIES, 5, 0)  # setwildbattle
 script += bytes([0xB7, 0x27, 0x02])                         # dowildbattle; waitstate; end
 
-print("phase1: playing through opening...")
-run(170)
+print("phase1: driving the opening (answers No at the CM prompt)...")
+exec(open("/home/jbfish00/Documents/Character Hacks/Unbound-Character-Mode/tools/test_harness/intro_drive.py").read())
+drive_intro_to_freeroam()
 
 ok = False
 for attempt in range(30):

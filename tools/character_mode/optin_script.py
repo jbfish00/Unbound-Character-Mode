@@ -1,23 +1,30 @@
 #!/usr/bin/env python3
-"""Assemble the Character Mode opt-in prompt script (Phase 4 menu hook, v1).
+"""Assemble the Character Mode opt-in prompt script (Phase 4 menu hook).
 
-Splices into Unbound's new-game "enhancement options" flow, whose grammar was
-fully decoded in docs/ROUTINE_MAP.md (opcodes cross-validated against the
-dispatch table at 0x0815F9B4; the Yes/No answer lands in VAR_RESULT 0x800D).
+Splice site v2 (2026-07-17, organic-reach fix): the original v1 splice at
+0x1E70003 (the "view game enhancement options?" prompt) turned out to be
+UNREACHABLE on a first-run new game — the intro questionnaire sets temp
+flag 0x0001 at its start (setflag @0x1E6FBE6), and a checkflag right before
+the enhancement region skips past it whenever that flag is set (i.e. on
+every fresh playthrough; the enhancement region only runs on settings-NPC /
+New-Game-Plus re-entry, where the temp flag has since been cleared).
+Proven live: breadcrumbed mashed intro never set the breadcrumb at the old
+site; screenshots show questionnaire -> story cutscene directly.
 
-Splice site (file 0x1E70003, the start of the enhancement-options prompt):
-    original: 0F 00 5C 06 F1 09  loadword 0, 0x09F1065C   ("...enhancement
-              09 05              callstd 5 (MSGBOX_YESNO)   options?")
-    patched:  04 <u32 block>     call  <our block in free space>
-              00 00 00           nop nop nop
-Our block asks the Character Mode question first, then REPLAYS the exact
-loadword+callstd pair it displaced and returns, so the original compare at
-0x1E7000B still reads 0x800D from the enhancement prompt — the surrounding
-flow is byte-for-byte unaffected in behavior.
-
-v1 limitation (deliberate): answering Yes enables Character Mode as Red
-(character id 1). The full 156-character select menu is a later phase; this
-gets a playable, testable opt-in wired end to end first.
+New splice site: the checkflag gate itself (file 0x1E6FF2D, 9 bytes):
+    original: 2B 01 00             checkflag 0x0001
+              06 01 9D 01 E7 09    goto_if TRUE -> 0x09E7019D (first-run skip)
+    patched:  04 <u32 block>       call  <our block in free space>
+              00 00 00 00          nops
+Both paths cross this gate, so the block runs exactly once in the intro
+(right after difficulty is chosen) AND on any re-entry it replays the
+original checkflag+goto_if semantics byte-for-byte: after the prompt the
+block does `checkflag 0x0001; goto_if TRUE -> 0x09E7019D; return`.
+(When the goto_if fires inside the called block, the call frame's return
+slot leaks until the script ends — harmless, the context stack is reset
+per script run.) The enhancement-options region itself is left untouched:
+Character Mode is deliberately NOT offered on mid-game re-entry, so a
+player's mode state can't be toggled after new game.
 
 Byte grammar used (all confirmed in this ROM, same idiom as the randomizer
 prompts at 0x1E7002C-0x1E70052):
@@ -36,13 +43,19 @@ import sys
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from emit_characters import CHARMAP_PATH, load_charmap, encode_text
 
-SPLICE_FILE_OFF = 0x1E70003
-SPLICE_ORIG = bytes.fromhex("0F005C06F1090905")
-ENHANCEMENT_PROMPT_PTR = 0x09F1065C
+SPLICE_FILE_OFF = 0x1E6FF2D
+SPLICE_ORIG = bytes.fromhex("2B0100" "06019D01E709")  # checkflag 1; goto_if TRUE -> 0x09E7019D
+FIRSTRUN_SKIP_PTR = 0x09E7019D
 
 FLAG_CHARACTER_MODE = 0x18F8
 VAR_CHARACTER_ID = 0x51FC
 VAR_RESULT = 0x800D
+# Breadcrumb: set the moment the spliced block runs, BEFORE any prompt.
+# Proves organic reach of the splice in blind/mashed playthroughs even when
+# the prompt ends up answered No. 0x51FA is audited-unused (ROUTINE_MAP
+# v8.2); EWRAM shadow 0x0203B768.
+VAR_REACHED_BREADCRUMB = 0x51FA
+BREADCRUMB_VALUE = 0xCA11
 
 PROMPT_TEXT = "Would you like to enable Character\nMode and pick your character?"
 NUMBER_TEXT = "Enter your character's number\n(1-{count}, listed in the patch notes)."
@@ -83,11 +96,11 @@ def build(block_rom_addr, char_count):
     confirm = encode_msg(CONFIRM_TEXT, charmap)
     enabled = encode_msg(ENABLED_TEXT, charmap)
 
-    # fixed-size body, so label offsets are static
-    OFF_PICK = 19    # the number-entry loop head
-    OFF_NO = 107     # the No/cancel branch (clears mode state, falls into replay)
-    OFF_REPLAY = 115 # replay of the displaced enhancement prompt
-    OFF_TEXT = 124   # first text byte (right after the `return`)
+    # fixed-size body, so label offsets are static (+5: breadcrumb setvar)
+    OFF_PICK = 24    # the number-entry loop head
+    OFF_NO = 112     # the No/cancel branch (clears mode state, falls into replay)
+    OFF_REPLAY = 120 # replay of the displaced checkflag+goto_if gate
+    OFF_TEXT = 130   # first text byte (right after the `return`)
     p_prompt = block_rom_addr + OFF_TEXT
     p_numtext = p_prompt + len(prompt)
     p_confirm = p_numtext + len(numtext)
@@ -97,6 +110,8 @@ def build(block_rom_addr, char_count):
     p_replay = block_rom_addr + OFF_REPLAY
 
     body = bytearray()
+    body += bytes([0x16]) + struct.pack("<HH", VAR_REACHED_BREADCRUMB,
+                                        BREADCRUMB_VALUE)              # breadcrumb: splice reached
     body += bytes([0x0F, 0x00]) + struct.pack("<I", p_prompt)          # loadword 0, prompt
     body += bytes([0x09, 0x05])                                        # callstd MSGBOX_YESNO
     body += bytes([0x21]) + struct.pack("<HH", VAR_RESULT, 1)          # compare 0x800D, 1
@@ -132,13 +147,13 @@ def build(block_rom_addr, char_count):
     body += bytes([0x2A]) + struct.pack("<H", FLAG_CHARACTER_MODE)     # clearflag
     body += bytes([0x16]) + struct.pack("<HH", VAR_CHARACTER_ID, 0)    # setvar id, 0
     assert len(body) == OFF_REPLAY, f"OFF_REPLAY drifted: {len(body)}"
-    body += bytes([0x0F, 0x00]) + struct.pack("<I", ENHANCEMENT_PROMPT_PTR)  # replay original
-    body += bytes([0x09, 0x05])
-    body += bytes([0x03])                                              # return
+    body += bytes([0x2B]) + struct.pack("<H", 0x0001)                  # replay: checkflag 1
+    body += bytes([0x06, 0x01]) + struct.pack("<I", FIRSTRUN_SKIP_PTR) # goto_if TRUE -> skip
+    body += bytes([0x03])                                              # return (re-entry path)
     assert len(body) == OFF_TEXT, f"OFF_TEXT drifted: {len(body)}"
     body += prompt + numtext + confirm + enabled
 
-    splice = bytes([0x04]) + struct.pack("<I", block_rom_addr) + b"\x00\x00\x00"
+    splice = bytes([0x04]) + struct.pack("<I", block_rom_addr) + b"\x00\x00\x00\x00"
     assert len(splice) == len(SPLICE_ORIG)
     return bytes(body), splice
 

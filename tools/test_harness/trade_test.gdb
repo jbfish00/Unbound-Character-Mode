@@ -84,8 +84,9 @@ def pc_raw_scan(species):
     return f"storage={storage:08x} raw hits at storage+{hits}"
 
 print(f"case: {CASE}")
-print("phase1: playing through opening...")
-run(170)
+print("phase1: driving the opening (answers No at the CM prompt)...")
+exec(open("/home/jbfish00/Documents/Character Hacks/Unbound-Character-Mode/tools/test_harness/intro_drive.py").read())
+drive_intro_to_freeroam()
 
 ok = False
 for attempt in range(30):
@@ -108,6 +109,8 @@ if ok:
     QUEUE_SHIM = int(gdb.parse_and_eval("(unsigned int)CharacterMode_QueueScriptCb1")) & ~1
     wr(0x0203B764, struct.pack("<I", script_addr))
     wr(CB1, struct.pack("<I", QUEUE_SHIM | 1))
+    # wake the driver's trade-scene masher (press-A prompts in the scene)
+    open("/home/jbfish00/Documents/Character Hacks/Unbound-Character-Mode/build/.mash_now", "w").close()
 
     # the trade scene is a full CB2 takeover (~40s of animation) with
     # several press-A message prompts (state 71 of the anim state machine

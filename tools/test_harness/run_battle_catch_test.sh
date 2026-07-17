@@ -27,22 +27,11 @@ WID=$(xdotool search --pid $MGBA_PID 2>/dev/null | tail -1)
 xdotool windowfocus --sync "$WID" 2>/dev/null
 export MGBA_WID="$WID"
 
-press() {
-    xdotool keydown --window "$WID" "$1" 2>/dev/null
-    sleep 0.1
-    xdotool keyup --window "$WID" "$1" 2>/dev/null
-}
-(
-    sleep 8
-    end=$((SECONDS + 168))
-    while [ $SECONDS -lt $end ]; do
-        press x
-        sleep 0.3
-    done
-) &
-MASH_PID=$!
+# phase 1 is driven entirely by the gdb script (intro_drive.py answers No
+# at the CM prompt deterministically) — no background masher
+MASH_PID=""
 
-timeout 420 gdb-multiarch -batch -x "$HERE/battle_catch_test.gdb" "$ELF" >"$LOG" 2>&1
+timeout 520 gdb-multiarch -batch -x "$HERE/battle_catch_test.gdb" "$ELF" >"$LOG" 2>&1
 
 kill $MASH_PID $MGBA_PID 2>/dev/null
 trap - EXIT

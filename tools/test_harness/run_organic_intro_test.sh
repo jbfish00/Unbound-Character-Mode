@@ -1,19 +1,17 @@
 #!/bin/bash
-# Live opt-in script test (see live_script_test.gdb). Fresh save, masher
-# A-mashes through the opening cutscene into free-roam, then keeps answering
-# whatever msgboxes appear after the gdb hijack queues the difficulty script.
+# Organic intro-reach driver (see organic_intro.gdb): fresh save, blind
+# x-masher (same pattern that reaches free-roam in the live-test harnesses),
+# periodic F12 screenshots for visual evidence of the prompt.
 set -u
 HERE="$(cd "$(dirname "$0")" && pwd)"
 ROOT="$(cd "$HERE/../.." && pwd)"
 . "$HERE/headless_display.sh"
 ROM="$ROOT/build/unbound-cm.gba"
-ELF="$ROOT/build/character_mode.elf"
-LOG="$ROOT/build/live_script_test.log"
+LOG="$ROOT/build/organic_intro.log"
 
 [ -f "$ROM" ] || { echo "patched ROM missing — run tools/build_patch.py first"; exit 1; }
-[ -f "$ELF" ] || { echo "ELF missing — run tools/build_patch.py first"; exit 1; }
 
-rm -f "$ROOT/build/unbound-cm.sav"
+rm -f "$ROOT/build/unbound-cm.sav" "$ROOT"/build/unbound-cm-*.png
 pkill -f "mgba-qt -g .*unbound-cm\.gba" 2>/dev/null && sleep 1
 
 mgba-qt -g -C audioSync=0 -C videoSync=0 -C fpsTarget=60 "$ROM" &
@@ -33,28 +31,35 @@ press() {
 }
 (
     sleep 8
-    while true; do
+    i=0
+    end=$((SECONDS + 240))
+    while [ $SECONDS -lt $end ]; do
+        i=$((i + 1))
         press x
         sleep 0.3
+        if [ $((i % 12)) -eq 0 ]; then
+            press F12   # screenshot -> build/unbound-cm-N.png
+        fi
     done
 ) &
 MASH_PID=$!
 
-timeout 500 gdb-multiarch -batch -x "$HERE/live_script_test.gdb" "$ELF" >"$LOG" 2>&1
+timeout 400 gdb-multiarch -batch -x "$HERE/organic_intro.gdb" >"$LOG" 2>&1
 
 kill $MASH_PID $MGBA_PID 2>/dev/null
 trap - EXIT
 
 echo "--- log ---"
-grep -v "^warning:" "$LOG"
+grep -av "^warning:" "$LOG" | grep -av "SIGINT\|^0x\|^$"
 echo "-----------"
+ls "$ROOT"/build/unbound-cm-*.png 2>/dev/null | head -5
 
 python3 - "$LOG" <<'EOF'
 import re, sys
 fails = 0
 checks = 0
-for line in open(sys.argv[1]):
-    m = re.search(r"\(want (\d+)(?:=[a-z]+)?\): (\d+)", line)
+for line in open(sys.argv[1], errors="replace"):
+    m = re.search(r"\(want (\d+)\): (\d+)", line)
     if m:
         checks += 1
         if m.group(1) != m.group(2):

@@ -45,6 +45,17 @@ Two tools landed in the sibling projects that apply to this one if/when more RE 
 1. **`../Lazarus-Character-Mode/tools/find_script_cmd_table.py`** — finds the script command table in ANY pokeemerald/pokefirered-family binary (CFRU included) in seconds, by scanning for the ScriptContext-init signature (cmdTable + cmdTableEnd as adjacent literal-pool words pointing at a dense run of odd Thumb pointers). One clean hit on both Lazarus and Seaglass; entry 0x2B (checkflag) → FlagGet → flags offset, entry 0x16 (setvar) → GetVarPointer → vars offset, in one static pass each. Useful here for any future script-command work without live tracing.
 2. **Headless breakpoints fixed**: stock `mgba-headless` (Seaglass's build, `../Seaglass-Character-Mode/tools/mgba_src/build/mgba-headless`) never fired `emu:setBreakpoint` (returns -1 — `core->debugger` was never created). Now patched: set **`MGBA_HEADLESS_DEBUGGER=1`** and script breakpoints work headlessly (no GUI/Xvfb/xdotool needed). If a future Unbound task needs PC-level tracing, this is strictly less painful than the mgba-qt/Xvfb harness — no audio-stall workarounds, deterministic input, and breakpoint callbacks with full register access.
 
+## Status (2026-07-17 v14) — ORGANIC INTRO REACH SOLVED: OPT-IN NOW LIVE IN THE REAL NEW-GAME FLOW
+
+The last correctness gap in the opt-in is closed: **the v1 splice at 0x1E70003 was never reachable on a fresh playthrough** (Unbound's intro questionnaire sets temp flag 0x0001, and a checkflag gate skips the whole enhancement-options region — that region only runs on settings-NPC/NG+ re-entry). Full decode + fix in docs/ROUTINE_MAP.md v11 (top). Summary:
+
+1. **Splice moved to the first-run gate itself (0x1E6FF2D, 9 bytes)**: `call` into the opt-in block, which sets a breadcrumb (var 0x51FA=0xCA11), runs the prompt+number-select, then replays the displaced `checkflag 1; goto_if TRUE` byte-for-byte. The prompt now appears exactly once per new game, right after difficulty selection; it is deliberately NOT offered on mid-game re-entry (mode can't be toggled after new game).
+2. **New gold test `run_organic_select_test.sh` 6/6**: fresh save → real un-hijacked intro → prompt appears organically → number typed → Character Mode enabled with a valid id → intro continues to the overworld with state intact. Plus `run_organic_intro_test.sh` 3/3 (blind-mash run: breadcrumb proves reach; cancel/No continues cleanly).
+3. **Harness overhaul forced by the move**: all live tests now share `tools/test_harness/intro_drive.py` (state-machine intro drive answering No deterministically — a blind A-mash can wedge in the number-entry validation loop); the naming screen garbles gdb-sliced presses (keys register in heldKeysRaw but the screen ignores them) — number typing must happen via wall-clock background typer during one uninterrupted continue (sentinel-file handoff). Superseded harnesses deleted (number_select, live_script, intro_playthrough — their entry path no longer exists).
+4. **All suites green on this build**: unit 39/39, boot smoke 4/4, organic select 6/6, organic intro 3/3, starter 7/7, trade 8/8 both cases, battle catch 8/8.
+
+Remaining: sprites (Phase 3), flag-persistence runtime caveat, Mystery Gift sweep call site if ever needed (special 0x1AF reusable), packaging/docs (Phase 6).
+
 ## Status (2026-07-17 v13) — TRADE ENFORCEMENT WORKING END-TO-END LIVE; ALL ENFORCEMENT PATHS NOW COVERED
 
 The last enforcement gap (in-game trades) is closed. Full RE + design in docs/ROUTINE_MAP.md v10 (top section); summary:

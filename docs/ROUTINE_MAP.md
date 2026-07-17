@@ -1,5 +1,22 @@
 # Routine Map — Pokemon Unbound (v2.1.1.1).gba
 
+## New-game intro flow + opt-in splice v2 — ORGANIC REACH SOLVED (2026-07-17 v11)
+
+**CORRECTION to v8.1/v9**: the "3 native tables referencing script entry 0x09E70000" (file 0x0253FDE / 0x038F94A / 0x0A7A19E) are **false positives** — two are adjacent-entry straddles inside a monotonically increasing exp-curve table (`… 00 00 | E7 09 00 00 | …`), one is compressed-graphics garbage. There are NO real code/data references to 0x09E70000. Trust repeated exact-target pointer hits; distrust one-off unaligned hits inside data-looking regions.
+
+**The difficulty flow is Unbound's new-game intro speech** (script complex ~0x1E6F9xx–0x1E701xx; neighbors below ~0x1E6F800 are unrelated Game Corner scripts): "Welcome to Pokémon Unbound!" → appearance/trim pick → player naming → **`setflag 0x0001` @0x1E6FBE6** → play-style questionnaire → difficulty recommendation + pick (Vanilla/Difficult/Expert/Insane/Challenging) → converges at the gate below. Key structure at the gate region (hand-decoded, 0x1E6FEF0–0x1E70003):
+- level-cap note msg → `compare 0x50DF,0; goto_if NE -> 0x1E6FF2A` (optional-cap yesno only for difficulty 0)
+- **0x1E6FF2D: `checkflag 0x0001; goto_if TRUE -> 0x09E7019D`** — flag 1 was just set by the questionnaire, so EVERY first-run new game takes this skip; the fall-through (level-cap/Sandbox/enhancement-options region incl. the old v1 splice site 0x1E70003) only runs on settings-NPC / New-Game-Plus re-entry (temp flag 1 cleared by then). **This is why the v1 splice was never organically reachable** — the enhancement prompt is NOT part of a fresh playthrough.
+- 0x1E7019D (first-run continuation): `callasm 0x09ED12E9; goto 0x09E7015B` → story cutscene ("Long ago…").
+
+**Splice v2 (tools/character_mode/optin_script.py)**: the 9 bytes at 0x1E6FF2D are replaced with `call <block>` + 4 nops. The block sets breadcrumb var **0x51FA=0xCA11** (proves reach in blind runs), runs the opt-in yesno → number entry → confirm flow, and both outcomes replay the displaced gate (`checkflag 1; goto_if TRUE -> 0x09E7019D; return`) — byte-identical behavior for both first-run and re-entry paths. Character Mode is deliberately NOT offered on re-entry (the enhancement region is untouched), so mode state can't be toggled mid-game.
+
+**Live-verified**: `run_organic_select_test.sh` 6/6 (fresh save → real intro → prompt appears organically → number typed → mode enabled with valid id → intro continues to overworld with state intact) and `run_organic_intro_test.sh` 3/3 (blind mash: breadcrumb proves reach; cancel/No path continues the intro cleanly).
+
+**Harness facts (hard-won)**:
+- The CFRU naming/number screen (sp0B3) **garbles gdb-sliced key presses** (keys register in `heldKeysRaw` but the screen ignores/mangles them — the SIGINT stop/resume around each press breaks its input handling). Yesnos/msgboxes tolerate sliced presses fine. Fix: press keys with clean wall-clock timing during ONE long uninterrupted `continue` (sentinel-file handoff to a background shell typer — see organic_select.gdb / run_organic_select_test.sh).
+- Since the splice moved into the first-run path, a blind A-mash intro can wedge in the number-entry validation loop. All live tests now share `tools/test_harness/intro_drive.py` (exec'd from each .gdb): state-machine intro drive that answers **No** at the prompt deterministically; no phase-1 background masher.
+
 ## In-game trades — FULLY RESOLVED + HOOKED (2026-07-17 v10)
 
 The last enforcement gap is closed. Unbound's in-game trades (the Borrius Trade Quest) run through **vanilla FireRed trade natives that CFRU never repointed**, wired via specials (resolved through `gSpecials` 0x0815FD60):

@@ -39,8 +39,9 @@ CB1 = 0x030030F0
 CB2 = 0x030030F4
 CB1_OVERWORLD = 0x08056535
 
-print("phase1: playing through opening...")
-run(170)
+print("phase1: driving the opening (answers No at the CM prompt)...")
+exec(open("/home/jbfish00/Documents/Character Hacks/Unbound-Character-Mode/tools/test_harness/intro_drive.py").read())
+drive_intro_to_freeroam()
 
 ok = False
 for attempt in range(30):
@@ -74,12 +75,20 @@ if ok:
     print(f"S4 second Larvitar kept out of party (want 1): {1 if sp1 == 0 else 0}")
     print(f"S5 gStringVar1 rebuffered to Pikachu 'P' (want 202): {sv1}")
 
-    # game still healthy: CB1 restored, overworld CB2, PC executing ROM
-    run(3)
-    cb1 = rd(CB1, 4)
-    cb2 = rd(CB2, 4)
-    pc = reg("pc")
-    healthy = cb1 == CB1_OVERWORLD and cb2 == 0x080565B5 and 0x08000000 <= pc < 0x0A000000
+    # game still healthy: CB1 restored, overworld CB2, PC in any executable
+    # region (ROM, IWRAM — audio engine runs there — EWRAM, BIOS); requiring
+    # ROM specifically was a flake source (same fix as trade_test.gdb)
+    healthy = False
+    for attempt in range(3):
+        run(3)
+        cb1 = rd(CB1, 4)
+        cb2 = rd(CB2, 4)
+        pc = reg("pc")
+        pc_ok = (pc < 0x4000 or 0x02000000 <= pc < 0x02040000
+                 or 0x03000000 <= pc < 0x03008000 or 0x08000000 <= pc < 0x0A000000)
+        if cb1 == CB1_OVERWORLD and cb2 == 0x080565B5 and pc_ok:
+            healthy = True
+            break
     print(f"S6 game healthy after test (want 1): {1 if healthy else 0}")
 end
 
