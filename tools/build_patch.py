@@ -47,6 +47,19 @@ CATCH_BL_FILE_OFF = 0x9C8CA6          # bl call_via_r6 (FlagGet) inside atkEF_ha
 CATCH_BL_ORIG = bytes.fromhex("00F0E6FE")
 GMTP_FILE_OFF = 0x9C905C              # GiveMonToPlayer entry
 GMTP_ORIG = bytes.fromhex("70B504001CF0CEFE")
+# Starter grant: the givemon(0x79) handler's `bl ScriptGiveMon 0x080A011C`
+# (docs/ROUTINE_MAP.md v9) — retargeted to CharacterMode_ScriptGiveMon so the
+# first mon given while Character Mode is active becomes the character's
+# roster[0] starter.
+GIVEMON_BL_FILE_OFF = 0x6C030
+GIVEMON_BL_ORIG = bytes.fromhex("34F074F8")
+# The handler is ~11MB below the injection block — out of Thumb bl range
+# (±4MB) — so the bl goes through an 8-byte near veneer placed in a
+# separate confirmed-0xFF block: `ldr r3,[pc,#0]; bx r3; .word wrapper|1`.
+# r3 carries ScriptGiveMon's unused1 arg, which CFRU itself documents as
+# the hook-in arg ("don't use it for anything") — clobbering it is safe,
+# and the wrapper forwards it unread.
+GIVEMON_VENEER_FILE_OFF = 0x1B2940  # inside the 34KB 0xFF run @ 0x1B2938
 # Character-select (v3): the reserved gSpecials[0x1B6] slot (script-
 # unreachable stale entry, docs/ROUTINE_MAP.md v8.1) is repointed to the
 # injected name-buffering special used by the number-entry select flow.
@@ -141,8 +154,10 @@ def main():
             syms[parts[2]] = int(parts[0], 16)
     catch_hook = syms["CharacterMode_CatchFlagGet"]
     gmtp_hook = syms["CharacterMode_GiveMonToPlayer"]
+    sgm_hook = syms["CharacterMode_ScriptGiveMon"]
     print(f"CharacterMode_CatchFlagGet   @ {catch_hook:#010x}")
     print(f"CharacterMode_GiveMonToPlayer@ {gmtp_hook:#010x}")
+    print(f"CharacterMode_ScriptGiveMon  @ {sgm_hook:#010x}")
 
     # opt-in prompt script block, appended after the code
     off_optin = (off_code + len(code) + 3) & ~3
@@ -165,6 +180,11 @@ def main():
         "opt-in splice site bytes changed — wrong ROM?"
     assert rom[SPECIAL_1B6_FILE_OFF:SPECIAL_1B6_FILE_OFF + 4] == SPECIAL_1B6_ORIG, \
         "gSpecials[0x1B6] bytes changed — wrong ROM?"
+    assert rom[GIVEMON_BL_FILE_OFF:GIVEMON_BL_FILE_OFF + 4] == GIVEMON_BL_ORIG, \
+        "givemon-handler bl site bytes changed — wrong ROM?"
+    assert all(b == 0xFF for b in
+               rom[GIVEMON_VENEER_FILE_OFF:GIVEMON_VENEER_FILE_OFF + 8]), \
+        "givemon veneer target not 0xFF-free!"
 
     # 5. splice data + code
     rom[INJECT_FILE_OFF + off_characters:INJECT_FILE_OFF + off_characters + len(characters)] = characters
@@ -179,6 +199,15 @@ def main():
     bl = thumb_bl(ROM_BASE + CATCH_BL_FILE_OFF, catch_hook & ~1)
     rom[CATCH_BL_FILE_OFF:CATCH_BL_FILE_OFF + 4] = bl
     print(f"catch hook: bl @{ROM_BASE + CATCH_BL_FILE_OFF:#x} -> {catch_hook & ~1:#x}  bytes={bl.hex()}")
+
+    # 6a'. starter grant: bl -> near veneer -> far wrapper
+    veneer = struct.pack("<HHI", 0x4B00, 0x4718, sgm_hook | 1)  # ldr r3,[pc,#0]; bx r3
+    rom[GIVEMON_VENEER_FILE_OFF:GIVEMON_VENEER_FILE_OFF + 8] = veneer
+    bl2 = thumb_bl(ROM_BASE + GIVEMON_BL_FILE_OFF, ROM_BASE + GIVEMON_VENEER_FILE_OFF)
+    rom[GIVEMON_BL_FILE_OFF:GIVEMON_BL_FILE_OFF + 4] = bl2
+    print(f"starter hook: bl @{ROM_BASE + GIVEMON_BL_FILE_OFF:#x} -> veneer "
+          f"@{ROM_BASE + GIVEMON_VENEER_FILE_OFF:#x} -> {sgm_hook | 1:#010x}  "
+          f"bl={bl2.hex()} veneer={veneer.hex()}")
 
     # 6b. entry trampoline: ldr r1,[pc,#0]; bx r1; .word hook|1
     tramp = struct.pack("<HHI", 0x4900, 0x4708, gmtp_hook | 1)
@@ -206,21 +235,42 @@ def main():
         s += bytes([0xB7, 0x27, 0x02])
         return bytes(s)
 
+    # starter-grant live test: enable Character Mode as Red on an empty
+    # party, then run the exact shape of Unbound's own starter scripts
+    # (givemon Larvitar). The wrapper must deliver Pikachu (Red roster[0]).
+    # A second Larvitar give must pass through untouched and get PC-routed
+    # by the gift rule (party stays at 1).
+    def starter_debug_script():
+        s = bytearray()
+        for v in range(0x8000, 0x8008):
+            s += bytes([0x16]) + struct.pack("<HH", v, 0)
+        s += bytes([0x29]) + struct.pack("<H", 0x18F8)          # setflag CM
+        s += bytes([0x16]) + struct.pack("<HH", 0x51FC, 1)      # Red
+        s += bytes([0x79]) + struct.pack("<HBH", 246, 5, 0) + b"\x00" * 9   # Larvitar -> Pikachu
+        s += bytes([0x79]) + struct.pack("<HBH", 246, 5, 0) + b"\x00" * 9   # Larvitar -> PC
+        s += bytes([0x02])
+        return bytes(s)
+
     off_dbg_block = (off_optin + len(optin_blob) + 3) & ~3
     dbg_block = battle_debug_script(150)
     off_dbg_catch = off_dbg_block + len(dbg_block)
     dbg_catch = battle_debug_script(6)
-    total_len = off_dbg_catch + len(dbg_catch)
+    off_dbg_starter = off_dbg_catch + len(dbg_catch)
+    dbg_starter = starter_debug_script()
+    total_len = off_dbg_starter + len(dbg_starter)
     assert total_len <= INJECT_BLOCK_LEN, "injection block overflow (debug scripts)"
     span2 = rom[INJECT_FILE_OFF + off_dbg_block:INJECT_FILE_OFF + total_len]
     assert all(b == 0xFF for b in span2), "debug-script target not 0xFF-free!"
     rom[INJECT_FILE_OFF + off_dbg_block:INJECT_FILE_OFF + off_dbg_block + len(dbg_block)] = dbg_block
     rom[INJECT_FILE_OFF + off_dbg_catch:INJECT_FILE_OFF + off_dbg_catch + len(dbg_catch)] = dbg_catch
+    rom[INJECT_FILE_OFF + off_dbg_starter:INJECT_FILE_OFF + off_dbg_starter + len(dbg_starter)] = dbg_starter
     import json
     with open(os.path.join(BUILD, "debug_addrs.json"), "w") as f:
         json.dump({"battle_block_script": addr(off_dbg_block),
-                   "battle_catch_script": addr(off_dbg_catch)}, f)
-    print(f"debug scripts: block @ {addr(off_dbg_block):#010x}, catch @ {addr(off_dbg_catch):#010x}")
+                   "battle_catch_script": addr(off_dbg_catch),
+                   "starter_test_script": addr(off_dbg_starter)}, f)
+    print(f"debug scripts: block @ {addr(off_dbg_block):#010x}, catch @ {addr(off_dbg_catch):#010x}, "
+          f"starter @ {addr(off_dbg_starter):#010x}")
 
     # 6d. character-select: wire the name-buffering special into slot 0x1B6
     buf_special = syms["CharacterMode_BufferNameSpecial"]
@@ -232,6 +282,10 @@ def main():
                   ROM_BASE + CATCH_BL_FILE_OFF, ["bl"])
     verify_disasm(bytes(rom[GMTP_FILE_OFF:GMTP_FILE_OFF + 4]),
                   ROM_BASE + GMTP_FILE_OFF, ["ldr", "bx"])
+    verify_disasm(bytes(rom[GIVEMON_BL_FILE_OFF:GIVEMON_BL_FILE_OFF + 4]),
+                  ROM_BASE + GIVEMON_BL_FILE_OFF, ["bl"])
+    verify_disasm(bytes(rom[GIVEMON_VENEER_FILE_OFF:GIVEMON_VENEER_FILE_OFF + 4]),
+                  ROM_BASE + GIVEMON_VENEER_FILE_OFF, ["ldr", "bx"])
 
     # 8. outputs
     out = os.path.join(BUILD, "unbound-cm.gba")

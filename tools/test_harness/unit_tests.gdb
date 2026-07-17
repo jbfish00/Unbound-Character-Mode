@@ -54,7 +54,7 @@ printf "parked in SelfTestDone (want 1): %d\n", ((unsigned int)$pc >= (((unsigne
 
 echo \n=== results ===\n
 printf "MAGIC ok (want 1): %d\n", (*(unsigned int*)0x0203FEFC == 0xC0DED00D)
-printf "COUNT checks ran (want 26): %d\n", *(unsigned int*)0x0203FEF8
+printf "COUNT checks ran (want 31): %d\n", *(unsigned int*)0x0203FEF8
 printf "A1 InCharacterMode mode-off (want 0): %d\n", *(unsigned char*)(0x0203FE00 + 0)
 printf "A2 IsSpeciesAllowed(150) mode-off (want 1): %d\n", *(unsigned char*)(0x0203FE00 + 1)
 printf "A3 CatchFlagGet mode-off (want 0): %d\n", *(unsigned char*)(0x0203FE00 + 2)
@@ -81,6 +81,11 @@ printf "I2 buffer name id=1 first char R (want 204): %d\n", *(unsigned char*)(0x
 printf "I3 buffer name id=156 nonempty (want 1): %d\n", *(unsigned char*)(0x0203FE00 + 23)
 printf "I4 buffer name id=0 empty (want 1): %d\n", *(unsigned char*)(0x0203FE00 + 24)
 printf "I5 buffer name id=999 empty (want 1): %d\n", *(unsigned char*)(0x0203FE00 + 25)
+printf "J1 GetStarterSpecies Red (want 25): %d\n", *(unsigned char*)(0x0203FE00 + 26)
+printf "J2 substitute Larvitar empty party (want 25): %d\n", *(unsigned char*)(0x0203FE00 + 27)
+printf "J3 substitute passthrough non-empty party (want 1): %d\n", *(unsigned char*)(0x0203FE00 + 28)
+printf "J4 substitute passthrough mode off (want 1): %d\n", *(unsigned char*)(0x0203FE00 + 29)
+printf "J5 GetStarterSpecies mode off is 0 (want 1): %d\n", *(unsigned char*)(0x0203FE00 + 30)
 
 echo \n=== TESTS DONE ===\n
 # mGBA's stub doesn't implement the detach packet (E07) — just drop the link

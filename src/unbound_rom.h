@@ -62,6 +62,13 @@ u8 CalculatePlayerPartyCount(void);
 void CompactPartySlots(void);
 u8 SendMonToPC(struct Pokemon *mon); /* CFRU's compiled version (0x08A04CB0) */
 
+/* CFRU src/build_pokemon.c:4007 — the givemon(0x79) handler's callee.
+ * unused1 is CFRU's own hook-in arg; customGivePokemon nonzero makes it
+ * read vars 0x8000-0x800B as move/nature/IV overrides. */
+u8 ScriptGiveMon(u16 species, u8 level, u16 item,
+                 u32 unused1, u32 customGivePokemon, u8 ballType);
+void GetSpeciesName(u8 *name, u16 species);
+
 /* CFRU form-handling calls GiveMonToPlayer performs before storing a mon —
  * our replacement must keep making them (docs/ROUTINE_MAP.md v8) */
 void TryFormRevert(struct Pokemon *mon);

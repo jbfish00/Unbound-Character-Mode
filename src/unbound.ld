@@ -21,6 +21,9 @@ ScriptContext1_SetupScript = 0x08069AE4 | 1;
 GetSizeOfMultiList = 0x09EB48B8 | 1;
 GetScrollingMultiList = 0x09EB48D4 | 1;
 
+ScriptGiveMon  = 0x080A011C | 1;  /* CFRU build_pokemon.c:4007; bl at 0x0806C030 retargeted to our wrapper */
+GetSpeciesName = 0x08040FD0 | 1;  /* reads the live (DPE-repointed) gSpeciesNames 0x0966A98C */
+
 GetMonData  = 0x0803FBE8 | 1;
 SetMonData  = 0x0804037C | 1;
 ZeroMonData = 0x0803D994 | 1;

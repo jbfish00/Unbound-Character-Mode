@@ -250,6 +250,66 @@ u8 IsPlayerInCharacterMode(void)
     return InCharacterMode();
 }
 
+/* ---- starter grant ----
+ *
+ * Unbound's starter (Larvitar/Beldum/Gible) is granted by script via
+ * givemon: three sites found (docs/ROUTINE_MAP.md v9: multichoice ->
+ * setvar 0x4001,<species> -> givemon 0x4001 at 0x1E6E77A lv1 / 0x1E90CC5
+ * lv10 / prologue 0x75CB8F via 0x8000 lv10). Rather than patching each
+ * script, the single `bl ScriptGiveMon` inside the givemon(0x79) handler
+ * (0x0806C030) is retargeted to the wrapper below: the FIRST mon the
+ * player ever receives while Character Mode is active becomes the
+ * character's own starter — roster[0], which the emitter orders
+ * signature-first. Level/item/overrides are the script's own; the engine
+ * builds the mon natively for the substituted species (moves, ability,
+ * stats), because substitution happens before CreateMon runs. */
+
+u16 CharacterMode_GetStarterSpecies(void)
+{
+    const struct CharacterRecordBin *character = GetActiveCharacter();
+
+    if (character == 0)
+        return SPECIES_NONE;
+    /* roster[0]: signature-first starter ordering; every emitted roster is
+     * non-empty (verified at build time) */
+    return *(const u16 *)((const u8 *)gCharacterRosters + character->rosterOffset);
+}
+
+/* Decision core (factored out so the self-test can exercise it): which
+ * species should a scripted givemon actually deliver? Party slots are kept
+ * compacted, so an empty slot 0 means the player owns no mons yet. */
+u16 CharacterMode_SubstituteGiftSpecies(u16 species)
+{
+    u16 starter;
+
+    if (*(u16 *)(gPlayerParty[0].raw + 0x20) != SPECIES_NONE)
+        return species; /* not the first mon — gift rules handle the rest */
+    if (!InCharacterMode())
+        return species;
+    starter = CharacterMode_GetStarterSpecies();
+    if (starter == SPECIES_NONE)
+        return species;
+    return starter;
+}
+
+/* Wrapper the givemon handler's bl is retargeted to. On substitution the
+ * species name is re-buffered into gStringVar1: giving scripts buffer the
+ * name BEFORE givemon runs (bufferspecies from the same var), so the
+ * "received X!" follow-up text would otherwise show the pre-substitution
+ * species. */
+u8 CharacterMode_ScriptGiveMon(u16 species, u8 level, u16 item,
+                               u32 unused1, u32 customGivePokemon, u8 ballType)
+{
+    u16 substituted = CharacterMode_SubstituteGiftSpecies(species);
+
+    if (substituted != species)
+    {
+        species = substituted;
+        GetSpeciesName(gStringVar1, species);
+    }
+    return ScriptGiveMon(species, level, item, unused1, customGivePokemon, ballType);
+}
+
 /* ---- GDB-driven self-test (tools/test_harness) ----
  *
  * ROWE tests via an in-game debug menu; the binary-hack equivalent is this
@@ -459,6 +519,21 @@ void CharacterMode_RunSelfTest(void)
     CharacterMode_BufferNameSpecial();
     r[n++] = gStringVar1[0] == 0xFF;   /* I5 want 1: out of range -> empty */
     VarSet(0x800D, 0);
+
+    /* J: starter grant — first-mon species substitution */
+    FlagSet(FLAG_CHARACTER_MODE);
+    VarSet(VAR_CHARACTER_ID, 1);                        /* Red */
+    for (i = 0; i < PARTY_SIZE; i++)
+        ZeroMonData(&gPlayerParty[i]);
+    gPlayerPartyCount = 0;
+    r[n++] = (u8)CharacterMode_GetStarterSpecies();      /* J1 want 25 (Pikachu) */
+    r[n++] = (u8)CharacterMode_SubstituteGiftSpecies(246); /* J2 empty party: Larvitar->25 */
+    *(u16 *)(gPlayerParty[0].raw + 0x20) = 25;
+    r[n++] = CharacterMode_SubstituteGiftSpecies(246) == 246; /* J3 non-empty: passthrough, want 1 */
+    *(u16 *)(gPlayerParty[0].raw + 0x20) = 0;
+    FlagClear(FLAG_CHARACTER_MODE);
+    r[n++] = CharacterMode_SubstituteGiftSpecies(246) == 246; /* J4 mode off: passthrough, want 1 */
+    r[n++] = CharacterMode_GetStarterSpecies() == 0;     /* J5 mode off: no starter, want 1 */
 
     /* leave the expanded save state clean */
     FlagClear(FLAG_CHARACTER_MODE);
