@@ -5,6 +5,8 @@ rom/
 *.ups
 *.bps
 build/
+# dist zip bundles the .bps — same rule; the dist .md docs ARE committed
+dist/*.zip
 __pycache__/
 *.pyc
 
