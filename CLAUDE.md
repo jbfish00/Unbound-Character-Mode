@@ -56,6 +56,14 @@ The last correctness gap in the opt-in is closed: **the v1 splice at 0x1E70003 w
 
 Remaining: sprites (Phase 3), flag-persistence runtime caveat, Mystery Gift sweep call site if ever needed (special 0x1AF reusable), packaging/docs (Phase 6).
 
+## Status (2026-07-17 v15) — FLAG-PERSISTENCE CAVEAT CLOSED
+
+The last open correctness question is resolved (docs/ROUTINE_MAP.md v12 section):
+1. **Static**: every flag range-clear loop in the shipped binary screened (all 38 FlagClear literal sites disassembled). Daily sweeps clear 0xE00–0xEFF and 0x1800–0x186C (raid loop bound literal 0x186D read from compiled `ClearAllRaidBattleFlags` @0x089DC0F4 — Unbound kept stock CFRU's count). 0x18F8 / 0x51FC untouched by any loop; no daily var range-clears.
+2. **Live**: `run_persistence_test.sh` 9/9 — set flag 0x18F8 + vars 0x51FC/0x51FA at free-roam, in-game save via hijacked vanilla `TrySavingData` (0x080DA364, 0 damaged sectors), emulator reboot, CONTINUE: all state intact.
+
+Remaining: sprites (Phase 3), packaging/docs (Phase 6), Mystery Gift sweep call site if ever needed (special 0x1AF reusable).
+
 ## Status (2026-07-17 v13) — TRADE ENFORCEMENT WORKING END-TO-END LIVE; ALL ENFORCEMENT PATHS NOW COVERED
 
 The last enforcement gap (in-game trades) is closed. Full RE + design in docs/ROUTINE_MAP.md v10 (top section); summary:

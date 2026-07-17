@@ -1,5 +1,19 @@
 # Routine Map — Pokemon Unbound (v2.1.1.1).gba
 
+## Flag/var persistence — CAVEAT CLOSED (2026-07-17 v12)
+
+The v8-era worry ("range-clearing loops wouldn't show in static reference scans; do 0x18F8/0x51FC survive day-rollover and save/load?") is resolved both ways:
+
+**Static — every flag range-clear loop in the shipped binary is bounded away from 0x18F8:**
+- Daily events: `ClearDailyEventFlags` clears `0xE00`–`0xEFF` (CFRU `FLAG_DAILY_EVENTS_START` + 0x100; donor `src/wild_encounter.c`).
+- Raid flags (the close call): CFRU clears `FIRST_RAID_BATTLE_FLAG 0x1800 + KANTO_MAPSEC_COUNT` daily. **Shipped bound read from the binary**: compiled `ClearAllRaidBattleFlags` at ROM `0x089DC0F4` — loop from 0x1800, exit compare literal **0x186D** (= stock count 0x6D, Unbound did NOT extend it). Clears `0x1800`–`0x186C`; our 0x18F8 has 0x8B headroom. A second Unbound-custom copy (file 0x1EC2250 region) uses the same 0x6D count.
+- Method: all 38 `FlagClear|1` (0x0806E6A9) literal-pool sites were disassembled and screened for inc+compare+back-branch loop shapes; no other loop's bound reaches 0x18F8. No daily/rollover var range-clears exist (only individual VarSets on 0x5009/0x500E etc.).
+- Useful trick: compiled code builds constants like 0x1800/0xE00 via `movs`+`lsls`, NOT pool literals — scan for function-pointer literals (who is called) rather than range constants (what is passed).
+
+**Live — full save/load round trip green** (`tools/test_harness/run_persistence_test.sh`, 9/9): free-roam → flag 0x18F8 + var 0x51FC=42 + var 0x51FA=0x1234 set in the expanded-save EWRAM → **vanilla `TrySavingData(SAVE_NORMAL)` = `0x080DA364`** (BPRE.ld) called via register hijack (r0=0, lr parked at CharacterMode_SelfTestDone) → 0 damaged sectors → emulator killed (SIGTERM flushes .sav) → rebooted → CONTINUE → all three values intact. Confirms CFRU's expanded flag/var save region covers our allocations across a real save file.
+
+New-game clearing is a non-issue by construction: the expanded-save init runs before the intro prompt sets our state (proven by the organic gold test reaching the overworld with state intact).
+
 ## New-game intro flow + opt-in splice v2 — ORGANIC REACH SOLVED (2026-07-17 v11)
 
 **CORRECTION to v8.1/v9**: the "3 native tables referencing script entry 0x09E70000" (file 0x0253FDE / 0x038F94A / 0x0A7A19E) are **false positives** — two are adjacent-entry straddles inside a monotonically increasing exp-curve table (`… 00 00 | E7 09 00 00 | …`), one is compressed-graphics garbage. There are NO real code/data references to 0x09E70000. Trust repeated exact-target pointer hits; distrust one-off unaligned hits inside data-looking regions.
