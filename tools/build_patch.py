@@ -7,11 +7,15 @@ Pipeline (all addresses from docs/ROUTINE_MAP.md v8, double-confirmed):
   3. lay out data blobs + code in the confirmed-free block at file 0x00B2B280
   4. link at the real injection address (src/unbound.ld pins engine symbols)
   5. splice data + code into a ROM copy
-  6. apply the two hooks:
+  6. apply the hooks:
        a. bl retarget at 0x089C8CA6 (atkEF_handleballthrow's
           FlagGet(FLAG_NO_CATCHING) call -> CharacterMode_CatchFlagGet)
        b. 8-byte entry trampoline at 0x089C905C (GiveMonToPlayer ->
           CharacterMode_GiveMonToPlayer)
+       c. bl retarget of all 7 real `bl CreateWildMon` call sites inside
+          the compiled wild_encounter.c unit -> CharacterMode_CreateWildMon
+          (10% chance to override the wild-roll species with a roster
+          member; docs/ROUTINE_MAP.md v17)
   7. self-verify: original-byte preconditions, free-space precondition,
      disassemble the patched sites back and check the expected shape
   8. write build/unbound-cm.gba (+ .sha1) and, if flips is present,
@@ -67,6 +71,24 @@ GIVEMON_VENEER_FILE_OFF = 0x1B2940  # inside the 34KB 0xFF run @ 0x1B2938
 SPECIAL_1B6_FILE_OFF = 0x160438
 SPECIAL_1B6_ORIG = bytes.fromhex("c1371508")  # stale 0x081537C1
 
+# Wild-encounter roster override (docs/ROUTINE_MAP.md v17): CreateWildMon's
+# real body (0x08A14838, behind the low-ROM veneer at 0x080829FC) is left
+# 100% untouched; instead all 7 real `bl CreateWildMon` call sites inside
+# the same compiled wild_encounter.c unit (land/water/rock-smash/headbutt
+# via TryGenerateWildMon, both fishing-rod slots via GenerateFishingWildMon,
+# plus the raid/DexNav paths sharing this compiled unit) are retargeted to
+# CharacterMode_CreateWildMon, which are near calls (well within Thumb bl's
+# +-4MB range of the 0x00B2B280 injection block) — no veneer needed.
+WILD_CALL_SITES = {
+    "site1_0x8a14a4a": (0xA14A4A, bytes.fromhex("fff7f5fe")),
+    "site2_0x8a14c3a": (0xA14C3A, bytes.fromhex("fff7fdfd")),
+    "site3_0x8a14eac": (0xA14EAC, bytes.fromhex("fff7c4fc")),
+    "site4_0x8a14fe6": (0xA14FE6, bytes.fromhex("fff727fc")),
+    "site5_0x8a150c4": (0xA150C4, bytes.fromhex("fff7b8fb")),
+    "site6_0x8a15c20": (0xA15C20, bytes.fromhex("fef70afe")),
+    "site7_0x8a15c54": (0xA15C54, bytes.fromhex("fef7f0fd")),
+}
+
 
 def sha1(data):
     return hashlib.sha1(data).hexdigest()
@@ -105,13 +127,16 @@ def main():
          "-O2", "-ffreestanding", "-fno-builtin", "-mlong-calls", "-Wall", "-Wextra",
          "-Werror", "-o", obj, os.path.join(ROOT, "src", "character_mode.c")])
 
-    # 3. layout: [characters.bin][rosters.bin][names.bin][u16 count][pad][code]
+    # 3. layout: [characters.bin][rosters.bin][names.bin][u16 count][pad]
+    #            [wild_species_meta.bin][pad][code]
     with open(os.path.join(CM_DIR, "characters.bin"), "rb") as f:
         characters = f.read()
     with open(os.path.join(CM_DIR, "rosters.bin"), "rb") as f:
         rosters = f.read()
     with open(os.path.join(CM_DIR, "names.bin"), "rb") as f:
         names = f.read()
+    with open(os.path.join(CM_DIR, "wild_species_meta.bin"), "rb") as f:
+        wild_meta = f.read()
     n_chars = len(characters) // 16
 
     off_characters = 0
@@ -119,7 +144,8 @@ def main():
     off_names = off_rosters + len(rosters)
     off_nameptrs = (off_names + len(names) + 3) & ~3
     off_count = off_nameptrs + n_chars * 4
-    off_code = (off_count + 2 + 3) & ~3
+    off_wild_meta = (off_count + 2 + 3) & ~3
+    off_code = (off_wild_meta + len(wild_meta) + 3) & ~3
 
     addr = lambda off: INJECT_ROM_ADDR + off
 
@@ -138,6 +164,7 @@ def main():
          "--defsym", f"gCharacterNames={addr(off_names):#x}",
          "--defsym", f"gCharacterNamePtrs={addr(off_nameptrs):#x}",
          "--defsym", f"gCharacterCount={addr(off_count):#x}",
+         "--defsym", f"gWildSpeciesMeta={addr(off_wild_meta):#x}",
          "-o", elf, obj, os.path.join(ROOT, "src", "unbound.ld")])
     code_bin = os.path.join(BUILD, "character_mode.bin")
     run(["arm-none-eabi-objcopy", "-O", "binary", "--only-section=.text",
@@ -156,9 +183,11 @@ def main():
     catch_hook = syms["CharacterMode_CatchFlagGet"]
     gmtp_hook = syms["CharacterMode_GiveMonToPlayer"]
     sgm_hook = syms["CharacterMode_ScriptGiveMon"]
+    wild_hook = syms["CharacterMode_CreateWildMon"]
     print(f"CharacterMode_CatchFlagGet   @ {catch_hook:#010x}")
     print(f"CharacterMode_GiveMonToPlayer@ {gmtp_hook:#010x}")
     print(f"CharacterMode_ScriptGiveMon  @ {sgm_hook:#010x}")
+    print(f"CharacterMode_CreateWildMon  @ {wild_hook:#010x}")
 
     # opt-in prompt script block, appended after the code
     off_optin = (off_code + len(code) + 3) & ~3
@@ -195,6 +224,9 @@ def main():
     assert rom[trade_hook.INLINE_SITE_OFF:
                trade_hook.INLINE_SITE_OFF + len(trade_hook.INLINE_ORIG)] == trade_hook.INLINE_ORIG, \
         "inline trade junction bytes changed — wrong ROM?"
+    for label, (off, orig) in WILD_CALL_SITES.items():
+        assert rom[off:off + 4] == orig, \
+            f"wild-encounter call site bytes changed at {label} — wrong ROM?"
 
     # 5. splice data + code
     rom[INJECT_FILE_OFF + off_characters:INJECT_FILE_OFF + off_characters + len(characters)] = characters
@@ -202,6 +234,7 @@ def main():
     rom[INJECT_FILE_OFF + off_names:INJECT_FILE_OFF + off_names + len(names)] = names
     rom[INJECT_FILE_OFF + off_nameptrs:INJECT_FILE_OFF + off_nameptrs + len(nameptrs)] = nameptrs
     rom[INJECT_FILE_OFF + off_count:INJECT_FILE_OFF + off_count + 2] = struct.pack("<H", n_chars)
+    rom[INJECT_FILE_OFF + off_wild_meta:INJECT_FILE_OFF + off_wild_meta + len(wild_meta)] = wild_meta
     rom[INJECT_FILE_OFF + off_code:INJECT_FILE_OFF + off_code + len(code)] = code
     rom[INJECT_FILE_OFF + off_optin:INJECT_FILE_OFF + off_optin + len(optin_blob)] = optin_blob
 
@@ -331,6 +364,12 @@ def main():
     rom[SPECIAL_1B6_FILE_OFF:SPECIAL_1B6_FILE_OFF + 4] = struct.pack("<I", buf_special | 1)
     print(f"gSpecials[0x1B6] -> CharacterMode_BufferNameSpecial {buf_special | 1:#010x}")
 
+    # 6e. wild-encounter roster override: retarget all 7 real call sites
+    for label, (off, orig) in WILD_CALL_SITES.items():
+        bl_wild = thumb_bl(ROM_BASE + off, wild_hook & ~1)
+        rom[off:off + 4] = bl_wild
+        print(f"wild hook: {label} bl @{ROM_BASE + off:#x}  {orig.hex()} -> {bl_wild.hex()}")
+
     # 7b. disassemble both patched sites back and check shape
     verify_disasm(bytes(rom[CATCH_BL_FILE_OFF:CATCH_BL_FILE_OFF + 4]),
                   ROM_BASE + CATCH_BL_FILE_OFF, ["bl"])
@@ -340,6 +379,8 @@ def main():
                   ROM_BASE + GIVEMON_BL_FILE_OFF, ["bl"])
     verify_disasm(bytes(rom[GIVEMON_VENEER_FILE_OFF:GIVEMON_VENEER_FILE_OFF + 4]),
                   ROM_BASE + GIVEMON_VENEER_FILE_OFF, ["ldr", "bx"])
+    for label, (off, _orig) in WILD_CALL_SITES.items():
+        verify_disasm(bytes(rom[off:off + 4]), ROM_BASE + off, ["bl"])
 
     # 8. outputs
     out = os.path.join(BUILD, "unbound-cm.gba")
@@ -356,7 +397,8 @@ def main():
     print(f"\nwrote {out}")
     print(f"  sha1 {out_sha}")
     print(f"  changed bytes: {changed} "
-          f"(data+code {total_len}, hooks 12 + specials 8 + trade overlays 19)")
+          f"(data+code {total_len}, hooks 12 + specials 8 + trade overlays 19 "
+          f"+ wild-encounter call sites {4 * len(WILD_CALL_SITES)})")
 
     flips = os.path.join(HERE, "bin", "flips")
     if os.path.exists(flips):

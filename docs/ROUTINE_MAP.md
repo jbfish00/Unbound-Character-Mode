@@ -1,5 +1,116 @@
 # Routine Map — Pokemon Unbound (v2.1.1.1).gba
 
+## Wild-encounter roster override — RE + hook (2026-07-17 v17)
+
+New feature: after CFRU's normal wild-encounter species+level roll, a 10%
+chance to override the species with a member of the active character's
+roster (legendaries/mythicals excluded, best level-matched evolution stage).
+Full RE + design:
+
+1. **CFRU's `wild_encounter.c` compiled unit found via its own low-ROM
+   veneer table.** The CFRU donor's `hooks` file / `BPRE.ld` (vanilla-BPRE-
+   relative addresses, e.g. `CreateWildMon 80829FC`) turned out to still be
+   directly meaningful in the REAL Unbound binary: at every one of those
+   addresses sits an 8-byte `ldr r2,[pc,#0]; bx r2; .word <target>` veneer
+   (or `ldr r0/r1,...` variants) — CFRU/Unbound relocated the whole
+   compiled `wild_encounter.c` unit to high ROM and left low-ROM veneers at
+   the donor's canonical addresses for any far/external caller. Decoding
+   each veneer's literal gives the real body:
+   - `CreateWildMon` (donor 0x80829FC) → **real body 0x08A14838**. Confirmed
+     by full decode of the prologue: params r0=species, r1=level,
+     r2=monHeaderIndex, r3=purgeParty match the C signature exactly; the
+     body computes `&gEnemyParty[i] + i*100` (100 = POKEMON_SIZE), checks
+     `gBaseStats[species].genderRatio` for Cute Charm, and structurally
+     matches donor `src/wild_encounter.c` line-for-line.
+   - `StandardWildEncounter` → 0x08A1593A, `RockSmashWildEncounter` →
+     0x08A158A4, `SweetScentWildEncounter` → 0x08A1578C,
+     `FishingWildEncounter` → 0x08A15BE8, `TryStandardWildEncounter` →
+     0x08A15B2C, `GetLocalWildMon`/`GetLocalWaterMon`/
+     `GetAbilityEncounterRateModType`/`GetMapBaseEncounterCooldown` all
+     resolve into the same tight ~0x08A14800–0x08A16200 block. Four donor
+     names (`ChooseWildMonIndex_Land/WaterRock/Fishing`,
+     `GetCurrentMapWildMonHeaderId`) are NOT veneers — real code sits
+     directly at their donor-canonical low-ROM addresses (0x0808274C etc.),
+     i.e. those specific helpers were NOT relocated.
+2. **All 7 real `bl CreateWildMon` call sites found by disassembling the
+   whole 0x08A14800–0x08A16200 block and grepping for `bl 0x8a14838`**:
+   0x8A14A4A, 0x8A14C3A, 0x8A14EAC, 0x8A14FE6, 0x8A150C4, 0x8A15C20,
+   0x8A15C54. All are NEAR calls (well inside the same compiled unit, not
+   through the low-ROM veneer), consistent with TryGenerateWildMon's 2
+   internal calls (land/water) × its 4 callers (Standard/RockSmash/
+   Headbutt/SweetScent — same function, so still only 2 call sites),
+   GenerateFishingWildMon's 2 (single/double rod), plus up to 3 more
+   (most likely `sp117_CreateRaidMon` and/or the 2 `dexnav.c` call sites,
+   if DexNav/raids share this compiled unit — not individually attributed;
+   see "Known scope" below).
+3. **Hook: retarget all 7 call sites to `CharacterMode_CreateWildMon`**
+   (tools/build_patch.py `WILD_CALL_SITES`), a plain 4-byte `bl` retarget
+   exactly like the existing `CatchFlagGet`/`ScriptGiveMon` hooks — no
+   entry-trampoline or register-preserving veneer needed, because a plain
+   Thumb `BL` never touches r0-r3 (all 4 of CreateWildMon's args are live
+   registers at every call site, so an entry-hook there would have needed
+   one; retargeting the call site instead sidesteps that entirely). The
+   injection block (0x00B2B280, ~1.1 MiB away) is comfortably inside Thumb
+   `bl`'s ±4 MiB range of 0x08A1xxxx, so no near-veneer was needed either.
+   `CharacterMode_CreateWildMon` does the override then tail-calls the
+   real, byte-for-byte-untouched `CreateWildMon`.
+4. **`Random()` found via the shared far-call thunk table at 0x8A15CC0**
+   (a `bx r3`/`r4`/`r5`/`r6` thunk quartet the compiled unit uses for every
+   external call, each call site loading its own target into the
+   matching register first). The literal feeding the thunk right before
+   `CreateWildMon`'s Cute-Charm roll (`(Random() % 3) > 0` in source)
+   decodes to **0x08044EC8**; disassembly confirms a textbook LCG
+   (`gRngValue = gRngValue*MULT+INC; return gRngValue>>16; bx lr`).
+5. **Per-species metadata** (`tools/character_mode/emit_wild_meta.py` →
+   `wild_species_meta.bin`, dense array indexed by species id, donor
+   NUM_SPECIES=1294 entries × 6 bytes): levelMin/levelMax derived from the
+   DPE donor's real `Evolution Table.c` EVO_LEVEL*-family edges (verified:
+   Charmander 1-15 / Charmeleon 16-35 / Charizard 36-100, Larvitar 1-29 /
+   Pupitar 30-47 / Tyranitar 48-100); familyRoot (walk incoming-edge chain
+   to the true base, ignoring EVO_MEGA/EVO_GIGANTAMAX) used at runtime to
+   group a roster's flat family-expanded species list back into distinct
+   lines; legendary/mythical flag from the exact same `LEGENDARY_BASES` set
+   `emit_characters.py` already uses for starter eligibility, expanded to
+   full families (86 bases → 94 total members) so wild-encounter exclusion
+   and starter exclusion never disagree.
+6. **Decision algorithm** (`src/character_mode.c`
+   `CharacterMode_PickWildRosterSpecies`): collect the distinct non-
+   legendary family roots present in the roster, pick one at random
+   (`Random()`), then within that line pick the member whose canon level
+   range contains the rolled level, or the nearest one otherwise.
+   `CharacterMode_MaybeOverrideWildSpecies` gates this behind
+   `InCharacterMode()` and a 10% `Random()%100` roll. No libgcc division
+   helpers are linked (freestanding build) — a manual `CharacterMode_UMod`
+   subtract-loop replaces `%` for the (small, <=100) moduli needed.
+7. **Known scope note (not fully resolved this session)**: 3 of the 7
+   patched call sites were not individually attributed to a specific donor
+   function name (see point 2). If any turn out to be raid
+   (`sp117_CreateRaidMon`) or DexNav call sites rather than table-rolled
+   land/water/rock-smash/fishing ones, they would also receive the 10%
+   override — a real but minor scope overreach beyond the requested grass/
+   surf/rock-smash/fishing set, deliberately accepted rather than spending
+   more RE effort to split out 7 individual call-site patches for 4
+   confirmed + 3 uncertain sites (same "shared choke point, deliberately
+   inclusive" reasoning already used for the trade-sweep hook). Static/
+   scripted encounters (`setwildbattle` → `CreateScriptedWildMon`) are
+   unaffected regardless — that is a completely separate function this
+   hook never touches.
+8. **Tests**: unit self-test L1-L10 (data-plumbing checks against the
+   injected metadata table, a 200-pick invariant loop against Red's real
+   roster — which genuinely includes legendary family members
+   Articuno/Raikou/Entei/Suicune/etc., so the exclusion path is actually
+   exercised — and an empirical 10%-rate check with a wide pass band),
+   boot smoke, and a round-trip disassembly verify of all 7 patched call
+   sites, all green on this build. **Not done this session**: an organic
+   live-gameplay trigger (walking into real grass/surfing/fishing and
+   observing the override actually fire) — would need map-navigation
+   automation this session didn't build. A `run_battle_catch_test.sh`
+   regression pass did not complete cleanly in this session (failed during
+   intro-driving, before any wild-encounter code would even run) — most
+   likely environment/timing flakiness in that specific long automated
+   suite (consistent with prior notes on its fragility), not attributed to
+   this change, but not conclusively isolated either.
+
 ## Flag/var persistence — CAVEAT CLOSED (2026-07-17 v12)
 
 The v8-era worry ("range-clearing loops wouldn't show in static reference scans; do 0x18F8/0x51FC survive day-rollover and save/load?") is resolved both ways:

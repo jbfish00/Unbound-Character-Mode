@@ -54,7 +54,7 @@ printf "parked in SelfTestDone (want 1): %d\n", ((unsigned int)$pc >= (((unsigne
 
 echo \n=== results ===\n
 printf "MAGIC ok (want 1): %d\n", (*(unsigned int*)0x0203FEFC == 0xC0DED00D)
-printf "COUNT checks ran (want 36): %d\n", *(unsigned int*)0x0203FEF8
+printf "COUNT checks ran (want 46): %d\n", *(unsigned int*)0x0203FEF8
 printf "A1 InCharacterMode mode-off (want 0): %d\n", *(unsigned char*)(0x0203FE00 + 0)
 printf "A2 IsSpeciesAllowed(150) mode-off (want 1): %d\n", *(unsigned char*)(0x0203FE00 + 1)
 printf "A3 CatchFlagGet mode-off (want 0): %d\n", *(unsigned char*)(0x0203FE00 + 2)
@@ -91,6 +91,16 @@ printf "K2 sweep never-empty guard (want 1): %d\n", *(unsigned char*)(0x0203FE00
 printf "K3 sweep on-roster untouched (want 1): %d\n", *(unsigned char*)(0x0203FE00 + 33)
 printf "K4 sweep keeps on-roster in mixed party (want 1): %d\n", *(unsigned char*)(0x0203FE00 + 34)
 printf "K5 sweep egg exemption (want 1): %d\n", *(unsigned char*)(0x0203FE00 + 35)
+printf "L1 wild override passthrough mode-off (want 1): %d\n", *(unsigned char*)(0x0203FE00 + 36)
+printf "L2 wild pick none mode-off (want 1): %d\n", *(unsigned char*)(0x0203FE00 + 37)
+printf "L3 meta Charmander levelMin/Max (want 1): %d\n", *(unsigned char*)(0x0203FE00 + 38)
+printf "L4 meta Charmeleon levelMin/Max (want 1): %d\n", *(unsigned char*)(0x0203FE00 + 39)
+printf "L5 meta Charizard levelMin/Max (want 1): %d\n", *(unsigned char*)(0x0203FE00 + 40)
+printf "L6 meta family root shared (want 1): %d\n", *(unsigned char*)(0x0203FE00 + 41)
+printf "L7 meta Mewtwo legendary flag (want 1): %d\n", *(unsigned char*)(0x0203FE00 + 42)
+printf "L8 meta Pikachu not legendary (want 1): %d\n", *(unsigned char*)(0x0203FE00 + 43)
+printf "L9 wild pick never legendary x200 Red (want 1): %d\n", *(unsigned char*)(0x0203FE00 + 44)
+printf "L10 wild override empirical rate in band (want 1): %d\n", *(unsigned char*)(0x0203FE00 + 45)
 
 echo \n=== TESTS DONE ===\n
 # mGBA's stub doesn't implement the detach packet (E07) — just drop the link

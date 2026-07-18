@@ -69,6 +69,20 @@ u8 ScriptGiveMon(u16 species, u8 level, u16 item,
                  u32 unused1, u32 customGivePokemon, u8 ballType);
 void GetSpeciesName(u8 *name, u16 species);
 
+/* CFRU's LCG RNG (src/random.c equivalent); confirmed 2026-07-17 for the
+ * wild-encounter roster override (docs/ROUTINE_MAP.md v17). */
+u16 Random(void);
+
+/* Real CreateWildMon (donor src/wild_encounter.c): builds the rolled
+ * species+level into gEnemyParty[monHeaderIndex==0 ? 0 : 1]. Confirmed
+ * 2026-07-17 via the low-ROM veneer at 0x080829FC (CFRU BPRE.ld/hooks name
+ * "CreateWildMon") -> real body 0x08A14838; the 7 real callers inside the
+ * same compiled unit (land/water/rock-smash/headbutt via TryGenerateWildMon,
+ * both fishing-rod slots via GenerateFishingWildMon, plus the raid/DexNav
+ * paths that share this same compiled unit) all `bl` here directly. Left
+ * 100% unmodified — only the 7 call sites are retargeted, never this body. */
+void CreateWildMon(u16 species, u8 level, u8 monHeaderIndex, bool8 purgeParty);
+
 /* CFRU form-handling calls GiveMonToPlayer performs before storing a mon —
  * our replacement must keep making them (docs/ROUTINE_MAP.md v8) */
 void TryFormRevert(struct Pokemon *mon);

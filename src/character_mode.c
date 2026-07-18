@@ -310,6 +310,170 @@ u8 CharacterMode_ScriptGiveMon(u16 species, u8 level, u16 item,
     return ScriptGiveMon(species, level, item, unused1, customGivePokemon, ballType);
 }
 
+/* ---- wild-encounter roster override ----
+ *
+ * Spec: after CFRU's normal wild-encounter species+level roll, there is a
+ * 10% chance to replace the rolled species with a member of the active
+ * character's roster, picking whichever evolution stage best matches the
+ * rolled level (legendaries/mythicals excluded entirely). Covers every
+ * table-rolled encounter type (grass/cave, surf, rock smash, fishing) in
+ * one hook, because every one of them funnels through the same real
+ * CreateWildMon (docs/ROUTINE_MAP.md v17: real body 0x08A14838, 7 internal
+ * `bl` call sites inside the same compiled unit — all 7 retargeted by
+ * tools/build_patch.py to CharacterMode_CreateWildMon below, which does the
+ * override then tail-calls the real, byte-for-byte-untouched CreateWildMon).
+ * Static/scripted encounters (setwildbattle -> CreateScriptedWildMon) are a
+ * completely separate function this never touches, so they are
+ * unaffected by construction, matching the "never touch gift/scripted
+ * encounters" requirement.
+ *
+ * Per-species metadata (tools/character_mode/emit_wild_meta.py,
+ * wild_species_meta.bin, injected alongside the character/roster tables):
+ * a dense array indexed by species id, one record per species covering the
+ * donor's entire species range, giving each species' canon level range for
+ * ITS evolutionary stage (derived from the DPE donor's real Evolution
+ * Table.c) plus its evolution-line "family root" id and a legendary/
+ * mythical flag (the exact same LEGENDARY_BASES set emit_characters.py
+ * already uses for starter eligibility, expanded to full families, so wild-
+ * encounter exclusion and starter exclusion never disagree).
+ */
+
+/* Freestanding build (-ffreestanding -fno-builtin, no libgcc linked) has no
+ * __aeabi_uidivmod/__aeabi_idivmod — the wild-encounter picker only ever
+ * needs small moduli (<=100), so a plain subtract loop avoids that
+ * dependency entirely rather than pulling in libgcc. */
+static u32 CharacterMode_UMod(u32 value, u32 modulus)
+{
+    if (modulus == 0)
+        return 0;
+    while (value >= modulus)
+        value -= modulus;
+    return value;
+}
+
+#define WILD_META_COUNT 1294 /* donor include/species.h NUM_SPECIES, 2026-07-17 */
+#define WILD_META_LEGENDARY 0x1
+#define WILD_OVERRIDE_CHANCE_PERCENT 10
+#define MAX_WILD_FAMILY_ROOTS 48 /* generous cap: no roster has this many distinct lines */
+
+struct WildSpeciesMetaBin
+{
+    u8 levelMin;
+    u8 levelMax;
+    u8 flags; /* bit0 = legendary/mythical family */
+    u8 reserved;
+    u16 familyRoot;
+};
+
+extern const struct WildSpeciesMetaBin gWildSpeciesMeta[]; /* WILD_META_COUNT entries */
+
+/* Decision core (factored out so the self-test can drive it directly, same
+ * pattern as CharacterMode_SubstituteGiftSpecies). Picks a random non-
+ * legendary evolution LINE present in the active character's roster, then
+ * within that line the stage whose canon level range best matches
+ * rolledLevel (exact containment first, else nearest boundary). Returns
+ * SPECIES_NONE if there's no character active, the roster is empty, or
+ * every roster member is legendary/mythical (leaves the vanilla roll
+ * alone in that case — an all-legendary override would either be
+ * impossible or would violate the "never a legendary" rule). */
+u16 CharacterMode_PickWildRosterSpecies(u16 rolledLevel)
+{
+    const struct CharacterRecordBin *character = GetActiveCharacter();
+    const u16 *roster;
+    u16 roots[MAX_WILD_FAMILY_ROOTS];
+    u8 rootCount = 0;
+    u32 i;
+    u16 chosenRoot;
+    u16 best = SPECIES_NONE;
+    int bestDist = 0;
+
+    if (character == 0)
+        return SPECIES_NONE;
+
+    roster = (const u16 *)((const u8 *)gCharacterRosters + character->rosterOffset);
+
+    for (i = 0; roster[i] != SPECIES_NONE; i++)
+    {
+        u16 sp = roster[i];
+        u16 root;
+        u32 j;
+        bool8 dup;
+
+        if (sp >= WILD_META_COUNT || (gWildSpeciesMeta[sp].flags & WILD_META_LEGENDARY))
+            continue;
+        root = gWildSpeciesMeta[sp].familyRoot;
+        dup = FALSE;
+        for (j = 0; j < rootCount; j++)
+        {
+            if (roots[j] == root)
+            {
+                dup = TRUE;
+                break;
+            }
+        }
+        if (!dup && rootCount < MAX_WILD_FAMILY_ROOTS)
+            roots[rootCount++] = root;
+    }
+
+    if (rootCount == 0)
+        return SPECIES_NONE;
+
+    chosenRoot = roots[CharacterMode_UMod(Random(), rootCount)];
+
+    for (i = 0; roster[i] != SPECIES_NONE; i++)
+    {
+        u16 sp = roster[i];
+        int dist;
+
+        if (sp >= WILD_META_COUNT || (gWildSpeciesMeta[sp].flags & WILD_META_LEGENDARY))
+            continue;
+        if (gWildSpeciesMeta[sp].familyRoot != chosenRoot)
+            continue;
+
+        if (rolledLevel >= gWildSpeciesMeta[sp].levelMin && rolledLevel <= gWildSpeciesMeta[sp].levelMax)
+            dist = 0;
+        else if (rolledLevel < gWildSpeciesMeta[sp].levelMin)
+            dist = gWildSpeciesMeta[sp].levelMin - rolledLevel;
+        else
+            dist = rolledLevel - gWildSpeciesMeta[sp].levelMax;
+
+        if (best == SPECIES_NONE || dist < bestDist)
+        {
+            best = sp;
+            bestDist = dist;
+        }
+    }
+    return best;
+}
+
+/* Gate: mode off -> untouched passthrough; else 10% roll, and only replace
+ * on a successful roster pick (SPECIES_NONE from the core above means
+ * "leave the vanilla species alone", never a substitution to species 0). */
+u16 CharacterMode_MaybeOverrideWildSpecies(u16 species, u8 level)
+{
+    u16 replacement;
+
+    if (!InCharacterMode())
+        return species;
+    if (CharacterMode_UMod(Random(), 100) >= WILD_OVERRIDE_CHANCE_PERCENT)
+        return species;
+    replacement = CharacterMode_PickWildRosterSpecies(level);
+    if (replacement == SPECIES_NONE)
+        return species;
+    return replacement;
+}
+
+/* Retarget of all 7 real `bl CreateWildMon` call sites inside the compiled
+ * wild_encounter.c unit (tools/build_patch.py). Runs the override, then
+ * tail-calls the real CreateWildMon — which is never itself modified, so
+ * nature/ability/shiny-lock/custom-move/hidden-ability logic all still run
+ * exactly as vanilla, just against the (possibly) substituted species. */
+void CharacterMode_CreateWildMon(u16 species, u8 level, u8 monHeaderIndex, bool8 purgeParty)
+{
+    species = CharacterMode_MaybeOverrideWildSpecies(species, level);
+    CreateWildMon(species, level, monHeaderIndex, purgeParty);
+}
+
 /* ---- GDB-driven self-test (tools/test_harness) ----
  *
  * ROWE tests via an in-game debug menu; the binary-hack equivalent is this
@@ -593,6 +757,62 @@ void CharacterMode_RunSelfTest(void)
             ZeroMonData(&gPlayerParty[i]);
         gPlayerPartyCount = 0;
     }
+
+    /* L: wild-encounter roster override (CharacterMode_CreateWildMon /
+     * CharacterMode_MaybeOverrideWildSpecies / CharacterMode_PickWildRosterSpecies).
+     * L1-L2 exercise the gate; L3-L7 verify the injected per-species metadata
+     * table (levelMin/levelMax/familyRoot/legendary flag) round-tripped
+     * correctly through the build+injection pipeline for a known family
+     * (Charmander(4)/Charmeleon(5)/Charizard(6)) and a known legendary
+     * (Mewtwo, 150) vs. non-legendary (Pikachu, 25); L8-L9 are live
+     * invariant/statistical checks against Red's real roster (character 1,
+     * whose family-expanded roster genuinely includes legendary members —
+     * Articuno/Raikou/Entei/Suicune/among others — so the exclusion path is
+     * actually exercised, not vacuously true). */
+    FlagClear(FLAG_CHARACTER_MODE);
+    VarSet(VAR_CHARACTER_ID, 0);
+    r[n++] = CharacterMode_MaybeOverrideWildSpecies(150, 50) == 150; /* L1 mode off: passthrough, want 1 */
+    r[n++] = CharacterMode_PickWildRosterSpecies(50) == SPECIES_NONE; /* L2 mode off: no pick, want 1 */
+
+    r[n++] = (gWildSpeciesMeta[4].levelMin == 1 && gWildSpeciesMeta[4].levelMax == 15);   /* L3 Charmander want 1 */
+    r[n++] = (gWildSpeciesMeta[5].levelMin == 16 && gWildSpeciesMeta[5].levelMax == 35);  /* L4 Charmeleon want 1 */
+    r[n++] = (gWildSpeciesMeta[6].levelMin == 36 && gWildSpeciesMeta[6].levelMax == 100); /* L5 Charizard want 1 */
+    r[n++] = (gWildSpeciesMeta[4].familyRoot == 4 && gWildSpeciesMeta[5].familyRoot == 4
+              && gWildSpeciesMeta[6].familyRoot == 4);                                   /* L6 same line want 1 */
+    r[n++] = (gWildSpeciesMeta[150].flags & WILD_META_LEGENDARY) != 0;                    /* L7 Mewtwo legendary want 1 */
+    r[n++] = (gWildSpeciesMeta[25].flags & WILD_META_LEGENDARY) == 0;                      /* L8 Pikachu not want 1 */
+
+    FlagSet(FLAG_CHARACTER_MODE);
+    VarSet(VAR_CHARACTER_ID, 1); /* Red: roster genuinely includes legendary family members */
+    {
+        u32 pick;
+        u32 neverLegendary = 1;
+        u32 overrideHits = 0;
+        const u32 trials = 200;
+
+        for (pick = 0; pick < trials; pick++)
+        {
+            u16 lvl = 1 + CharacterMode_UMod(pick * 7, 100); /* deterministic spread 1..100 */
+            u16 sp = CharacterMode_PickWildRosterSpecies(lvl);
+
+            if (sp != SPECIES_NONE
+                && (sp >= WILD_META_COUNT || (gWildSpeciesMeta[sp].flags & WILD_META_LEGENDARY)))
+                neverLegendary = 0;
+
+            if (CharacterMode_MaybeOverrideWildSpecies(9999, lvl) != 9999)
+                overrideHits++;
+        }
+        r[n++] = neverLegendary; /* L9: 200 picks, none ever legendary, want 1 */
+        /* L10: empirical override rate near 10% (species 9999 can never be a
+         * real roster member, so any change is definitely our 10% path).
+         * Wide band (2%-25% of 200 = 4-50 hits) — this is a real RNG
+         * consumer (CFRU's LCG), not a mocked/seeded one, so the band is
+         * deliberately generous to avoid flaking while still catching a
+         * badly wrong rate (e.g. always-on or never-firing). */
+        r[n++] = (overrideHits >= 4 && overrideHits <= 50);
+    }
+    FlagClear(FLAG_CHARACTER_MODE);
+    VarSet(VAR_CHARACTER_ID, 0);
 
     /* leave the expanded save state clean */
     FlagClear(FLAG_CHARACTER_MODE);

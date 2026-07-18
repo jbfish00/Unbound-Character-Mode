@@ -23,6 +23,8 @@ GetScrollingMultiList = 0x09EB48D4 | 1;
 
 ScriptGiveMon  = 0x080A011C | 1;  /* CFRU build_pokemon.c:4007; bl at 0x0806C030 retargeted to our wrapper */
 GetSpeciesName = 0x08040FD0 | 1;  /* reads the live (DPE-repointed) gSpeciesNames 0x0966A98C */
+Random         = 0x08044EC8 | 1;  /* LCG: gRngValue = gRngValue*MULT+INC; return >>16; confirmed by decompiled shape */
+CreateWildMon  = 0x08A14838 | 1;  /* wild_encounter.c; real body behind the 0x080829FC veneer (docs/ROUTINE_MAP.md v17) */
 
 GetMonData  = 0x0803FBE8 | 1;
 SetMonData  = 0x0804037C | 1;

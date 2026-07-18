@@ -1,0 +1,4803 @@
+{
+ "num_species": 1294,
+ "record_size_bytes": 6,
+ "legendary_base_count": 86,
+ "legendary_family_total": 94,
+ "entries_with_data": [
+  {
+   "species": 1,
+   "levelMin": 1,
+   "levelMax": 15,
+   "legendary": false,
+   "familyRoot": 1
+  },
+  {
+   "species": 2,
+   "levelMin": 16,
+   "levelMax": 31,
+   "legendary": false,
+   "familyRoot": 1
+  },
+  {
+   "species": 3,
+   "levelMin": 32,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 1
+  },
+  {
+   "species": 4,
+   "levelMin": 1,
+   "levelMax": 15,
+   "legendary": false,
+   "familyRoot": 4
+  },
+  {
+   "species": 5,
+   "levelMin": 16,
+   "levelMax": 35,
+   "legendary": false,
+   "familyRoot": 4
+  },
+  {
+   "species": 6,
+   "levelMin": 36,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 4
+  },
+  {
+   "species": 7,
+   "levelMin": 1,
+   "levelMax": 15,
+   "legendary": false,
+   "familyRoot": 7
+  },
+  {
+   "species": 8,
+   "levelMin": 16,
+   "levelMax": 35,
+   "legendary": false,
+   "familyRoot": 7
+  },
+  {
+   "species": 9,
+   "levelMin": 36,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 7
+  },
+  {
+   "species": 10,
+   "levelMin": 1,
+   "levelMax": 6,
+   "legendary": false,
+   "familyRoot": 10
+  },
+  {
+   "species": 11,
+   "levelMin": 7,
+   "levelMax": 9,
+   "legendary": false,
+   "familyRoot": 10
+  },
+  {
+   "species": 12,
+   "levelMin": 10,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 10
+  },
+  {
+   "species": 13,
+   "levelMin": 1,
+   "levelMax": 6,
+   "legendary": false,
+   "familyRoot": 13
+  },
+  {
+   "species": 14,
+   "levelMin": 7,
+   "levelMax": 9,
+   "legendary": false,
+   "familyRoot": 13
+  },
+  {
+   "species": 15,
+   "levelMin": 10,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 13
+  },
+  {
+   "species": 16,
+   "levelMin": 1,
+   "levelMax": 17,
+   "legendary": false,
+   "familyRoot": 16
+  },
+  {
+   "species": 17,
+   "levelMin": 18,
+   "levelMax": 35,
+   "legendary": false,
+   "familyRoot": 16
+  },
+  {
+   "species": 18,
+   "levelMin": 36,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 16
+  },
+  {
+   "species": 19,
+   "levelMin": 1,
+   "levelMax": 19,
+   "legendary": false,
+   "familyRoot": 19
+  },
+  {
+   "species": 20,
+   "levelMin": 20,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 19
+  },
+  {
+   "species": 21,
+   "levelMin": 1,
+   "levelMax": 19,
+   "legendary": false,
+   "familyRoot": 21
+  },
+  {
+   "species": 22,
+   "levelMin": 20,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 21
+  },
+  {
+   "species": 23,
+   "levelMin": 1,
+   "levelMax": 21,
+   "legendary": false,
+   "familyRoot": 23
+  },
+  {
+   "species": 24,
+   "levelMin": 22,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 23
+  },
+  {
+   "species": 27,
+   "levelMin": 1,
+   "levelMax": 21,
+   "legendary": false,
+   "familyRoot": 27
+  },
+  {
+   "species": 28,
+   "levelMin": 22,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 27
+  },
+  {
+   "species": 29,
+   "levelMin": 1,
+   "levelMax": 15,
+   "legendary": false,
+   "familyRoot": 29
+  },
+  {
+   "species": 30,
+   "levelMin": 16,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 29
+  },
+  {
+   "species": 32,
+   "levelMin": 1,
+   "levelMax": 15,
+   "legendary": false,
+   "familyRoot": 32
+  },
+  {
+   "species": 33,
+   "levelMin": 16,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 32
+  },
+  {
+   "species": 41,
+   "levelMin": 1,
+   "levelMax": 21,
+   "legendary": false,
+   "familyRoot": 41
+  },
+  {
+   "species": 42,
+   "levelMin": 22,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 41
+  },
+  {
+   "species": 43,
+   "levelMin": 1,
+   "levelMax": 20,
+   "legendary": false,
+   "familyRoot": 43
+  },
+  {
+   "species": 44,
+   "levelMin": 21,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 43
+  },
+  {
+   "species": 46,
+   "levelMin": 1,
+   "levelMax": 23,
+   "legendary": false,
+   "familyRoot": 46
+  },
+  {
+   "species": 47,
+   "levelMin": 24,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 46
+  },
+  {
+   "species": 48,
+   "levelMin": 1,
+   "levelMax": 30,
+   "legendary": false,
+   "familyRoot": 48
+  },
+  {
+   "species": 49,
+   "levelMin": 31,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 48
+  },
+  {
+   "species": 50,
+   "levelMin": 1,
+   "levelMax": 25,
+   "legendary": false,
+   "familyRoot": 50
+  },
+  {
+   "species": 51,
+   "levelMin": 26,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 50
+  },
+  {
+   "species": 52,
+   "levelMin": 1,
+   "levelMax": 27,
+   "legendary": false,
+   "familyRoot": 52
+  },
+  {
+   "species": 53,
+   "levelMin": 28,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 52
+  },
+  {
+   "species": 54,
+   "levelMin": 1,
+   "levelMax": 32,
+   "legendary": false,
+   "familyRoot": 54
+  },
+  {
+   "species": 55,
+   "levelMin": 33,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 54
+  },
+  {
+   "species": 56,
+   "levelMin": 1,
+   "levelMax": 27,
+   "legendary": false,
+   "familyRoot": 56
+  },
+  {
+   "species": 57,
+   "levelMin": 28,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 56
+  },
+  {
+   "species": 60,
+   "levelMin": 1,
+   "levelMax": 24,
+   "legendary": false,
+   "familyRoot": 60
+  },
+  {
+   "species": 61,
+   "levelMin": 25,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 60
+  },
+  {
+   "species": 63,
+   "levelMin": 1,
+   "levelMax": 15,
+   "legendary": false,
+   "familyRoot": 63
+  },
+  {
+   "species": 64,
+   "levelMin": 16,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 63
+  },
+  {
+   "species": 66,
+   "levelMin": 1,
+   "levelMax": 27,
+   "legendary": false,
+   "familyRoot": 66
+  },
+  {
+   "species": 67,
+   "levelMin": 28,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 66
+  },
+  {
+   "species": 69,
+   "levelMin": 1,
+   "levelMax": 20,
+   "legendary": false,
+   "familyRoot": 69
+  },
+  {
+   "species": 70,
+   "levelMin": 21,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 69
+  },
+  {
+   "species": 72,
+   "levelMin": 1,
+   "levelMax": 29,
+   "legendary": false,
+   "familyRoot": 72
+  },
+  {
+   "species": 73,
+   "levelMin": 30,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 72
+  },
+  {
+   "species": 74,
+   "levelMin": 1,
+   "levelMax": 24,
+   "legendary": false,
+   "familyRoot": 74
+  },
+  {
+   "species": 75,
+   "levelMin": 25,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 74
+  },
+  {
+   "species": 77,
+   "levelMin": 1,
+   "levelMax": 39,
+   "legendary": false,
+   "familyRoot": 77
+  },
+  {
+   "species": 78,
+   "levelMin": 40,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 77
+  },
+  {
+   "species": 79,
+   "levelMin": 1,
+   "levelMax": 36,
+   "legendary": false,
+   "familyRoot": 79
+  },
+  {
+   "species": 80,
+   "levelMin": 37,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 79
+  },
+  {
+   "species": 81,
+   "levelMin": 1,
+   "levelMax": 29,
+   "legendary": false,
+   "familyRoot": 81
+  },
+  {
+   "species": 82,
+   "levelMin": 30,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 81
+  },
+  {
+   "species": 84,
+   "levelMin": 1,
+   "levelMax": 30,
+   "legendary": false,
+   "familyRoot": 84
+  },
+  {
+   "species": 85,
+   "levelMin": 31,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 84
+  },
+  {
+   "species": 86,
+   "levelMin": 1,
+   "levelMax": 33,
+   "legendary": false,
+   "familyRoot": 86
+  },
+  {
+   "species": 87,
+   "levelMin": 34,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 86
+  },
+  {
+   "species": 88,
+   "levelMin": 1,
+   "levelMax": 37,
+   "legendary": false,
+   "familyRoot": 88
+  },
+  {
+   "species": 89,
+   "levelMin": 38,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 88
+  },
+  {
+   "species": 92,
+   "levelMin": 1,
+   "levelMax": 24,
+   "legendary": false,
+   "familyRoot": 92
+  },
+  {
+   "species": 93,
+   "levelMin": 25,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 92
+  },
+  {
+   "species": 96,
+   "levelMin": 1,
+   "levelMax": 25,
+   "legendary": false,
+   "familyRoot": 96
+  },
+  {
+   "species": 97,
+   "levelMin": 26,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 96
+  },
+  {
+   "species": 98,
+   "levelMin": 1,
+   "levelMax": 27,
+   "legendary": false,
+   "familyRoot": 98
+  },
+  {
+   "species": 99,
+   "levelMin": 28,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 98
+  },
+  {
+   "species": 100,
+   "levelMin": 1,
+   "levelMax": 29,
+   "legendary": false,
+   "familyRoot": 100
+  },
+  {
+   "species": 101,
+   "levelMin": 30,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 100
+  },
+  {
+   "species": 104,
+   "levelMin": 1,
+   "levelMax": 27,
+   "legendary": false,
+   "familyRoot": 104
+  },
+  {
+   "species": 105,
+   "levelMin": 28,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 104
+  },
+  {
+   "species": 106,
+   "levelMin": 20,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 236
+  },
+  {
+   "species": 107,
+   "levelMin": 20,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 236
+  },
+  {
+   "species": 109,
+   "levelMin": 1,
+   "levelMax": 34,
+   "legendary": false,
+   "familyRoot": 109
+  },
+  {
+   "species": 110,
+   "levelMin": 35,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 109
+  },
+  {
+   "species": 111,
+   "levelMin": 1,
+   "levelMax": 41,
+   "legendary": false,
+   "familyRoot": 111
+  },
+  {
+   "species": 112,
+   "levelMin": 42,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 111
+  },
+  {
+   "species": 116,
+   "levelMin": 1,
+   "levelMax": 31,
+   "legendary": false,
+   "familyRoot": 116
+  },
+  {
+   "species": 117,
+   "levelMin": 32,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 116
+  },
+  {
+   "species": 118,
+   "levelMin": 1,
+   "levelMax": 32,
+   "legendary": false,
+   "familyRoot": 118
+  },
+  {
+   "species": 119,
+   "levelMin": 33,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 118
+  },
+  {
+   "species": 124,
+   "levelMin": 30,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 238
+  },
+  {
+   "species": 125,
+   "levelMin": 30,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 239
+  },
+  {
+   "species": 126,
+   "levelMin": 30,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 240
+  },
+  {
+   "species": 129,
+   "levelMin": 1,
+   "levelMax": 19,
+   "legendary": false,
+   "familyRoot": 129
+  },
+  {
+   "species": 130,
+   "levelMin": 20,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 129
+  },
+  {
+   "species": 138,
+   "levelMin": 1,
+   "levelMax": 39,
+   "legendary": false,
+   "familyRoot": 138
+  },
+  {
+   "species": 139,
+   "levelMin": 40,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 138
+  },
+  {
+   "species": 140,
+   "levelMin": 1,
+   "levelMax": 39,
+   "legendary": false,
+   "familyRoot": 140
+  },
+  {
+   "species": 141,
+   "levelMin": 40,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 140
+  },
+  {
+   "species": 144,
+   "levelMin": 1,
+   "levelMax": 100,
+   "legendary": true,
+   "familyRoot": 144
+  },
+  {
+   "species": 145,
+   "levelMin": 1,
+   "levelMax": 100,
+   "legendary": true,
+   "familyRoot": 145
+  },
+  {
+   "species": 146,
+   "levelMin": 1,
+   "levelMax": 100,
+   "legendary": true,
+   "familyRoot": 146
+  },
+  {
+   "species": 147,
+   "levelMin": 1,
+   "levelMax": 29,
+   "legendary": false,
+   "familyRoot": 147
+  },
+  {
+   "species": 148,
+   "levelMin": 30,
+   "levelMax": 54,
+   "legendary": false,
+   "familyRoot": 147
+  },
+  {
+   "species": 149,
+   "levelMin": 55,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 147
+  },
+  {
+   "species": 150,
+   "levelMin": 1,
+   "levelMax": 100,
+   "legendary": true,
+   "familyRoot": 150
+  },
+  {
+   "species": 151,
+   "levelMin": 1,
+   "levelMax": 100,
+   "legendary": true,
+   "familyRoot": 151
+  },
+  {
+   "species": 152,
+   "levelMin": 1,
+   "levelMax": 15,
+   "legendary": false,
+   "familyRoot": 152
+  },
+  {
+   "species": 153,
+   "levelMin": 16,
+   "levelMax": 31,
+   "legendary": false,
+   "familyRoot": 152
+  },
+  {
+   "species": 154,
+   "levelMin": 32,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 152
+  },
+  {
+   "species": 155,
+   "levelMin": 1,
+   "levelMax": 13,
+   "legendary": false,
+   "familyRoot": 155
+  },
+  {
+   "species": 156,
+   "levelMin": 14,
+   "levelMax": 35,
+   "legendary": false,
+   "familyRoot": 155
+  },
+  {
+   "species": 157,
+   "levelMin": 36,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 155
+  },
+  {
+   "species": 158,
+   "levelMin": 1,
+   "levelMax": 17,
+   "legendary": false,
+   "familyRoot": 158
+  },
+  {
+   "species": 159,
+   "levelMin": 18,
+   "levelMax": 29,
+   "legendary": false,
+   "familyRoot": 158
+  },
+  {
+   "species": 160,
+   "levelMin": 30,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 158
+  },
+  {
+   "species": 161,
+   "levelMin": 1,
+   "levelMax": 14,
+   "legendary": false,
+   "familyRoot": 161
+  },
+  {
+   "species": 162,
+   "levelMin": 15,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 161
+  },
+  {
+   "species": 163,
+   "levelMin": 1,
+   "levelMax": 19,
+   "legendary": false,
+   "familyRoot": 163
+  },
+  {
+   "species": 164,
+   "levelMin": 20,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 163
+  },
+  {
+   "species": 165,
+   "levelMin": 1,
+   "levelMax": 17,
+   "legendary": false,
+   "familyRoot": 165
+  },
+  {
+   "species": 166,
+   "levelMin": 18,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 165
+  },
+  {
+   "species": 167,
+   "levelMin": 1,
+   "levelMax": 21,
+   "legendary": false,
+   "familyRoot": 167
+  },
+  {
+   "species": 168,
+   "levelMin": 22,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 167
+  },
+  {
+   "species": 170,
+   "levelMin": 1,
+   "levelMax": 26,
+   "legendary": false,
+   "familyRoot": 170
+  },
+  {
+   "species": 171,
+   "levelMin": 27,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 170
+  },
+  {
+   "species": 177,
+   "levelMin": 1,
+   "levelMax": 24,
+   "legendary": false,
+   "familyRoot": 177
+  },
+  {
+   "species": 178,
+   "levelMin": 25,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 177
+  },
+  {
+   "species": 179,
+   "levelMin": 1,
+   "levelMax": 14,
+   "legendary": false,
+   "familyRoot": 179
+  },
+  {
+   "species": 180,
+   "levelMin": 15,
+   "levelMax": 29,
+   "legendary": false,
+   "familyRoot": 179
+  },
+  {
+   "species": 181,
+   "levelMin": 30,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 179
+  },
+  {
+   "species": 183,
+   "levelMin": 1,
+   "levelMax": 17,
+   "legendary": false,
+   "familyRoot": 350
+  },
+  {
+   "species": 184,
+   "levelMin": 18,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 350
+  },
+  {
+   "species": 187,
+   "levelMin": 1,
+   "levelMax": 17,
+   "legendary": false,
+   "familyRoot": 187
+  },
+  {
+   "species": 188,
+   "levelMin": 18,
+   "levelMax": 26,
+   "legendary": false,
+   "familyRoot": 187
+  },
+  {
+   "species": 189,
+   "levelMin": 27,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 187
+  },
+  {
+   "species": 194,
+   "levelMin": 1,
+   "levelMax": 19,
+   "legendary": false,
+   "familyRoot": 194
+  },
+  {
+   "species": 195,
+   "levelMin": 20,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 194
+  },
+  {
+   "species": 202,
+   "levelMin": 15,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 360
+  },
+  {
+   "species": 204,
+   "levelMin": 1,
+   "levelMax": 30,
+   "legendary": false,
+   "familyRoot": 204
+  },
+  {
+   "species": 205,
+   "levelMin": 31,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 204
+  },
+  {
+   "species": 209,
+   "levelMin": 1,
+   "levelMax": 22,
+   "legendary": false,
+   "familyRoot": 209
+  },
+  {
+   "species": 210,
+   "levelMin": 23,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 209
+  },
+  {
+   "species": 216,
+   "levelMin": 1,
+   "levelMax": 29,
+   "legendary": false,
+   "familyRoot": 216
+  },
+  {
+   "species": 217,
+   "levelMin": 30,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 216
+  },
+  {
+   "species": 218,
+   "levelMin": 1,
+   "levelMax": 29,
+   "legendary": false,
+   "familyRoot": 218
+  },
+  {
+   "species": 219,
+   "levelMin": 30,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 218
+  },
+  {
+   "species": 220,
+   "levelMin": 1,
+   "levelMax": 32,
+   "legendary": false,
+   "familyRoot": 220
+  },
+  {
+   "species": 221,
+   "levelMin": 33,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 220
+  },
+  {
+   "species": 223,
+   "levelMin": 1,
+   "levelMax": 24,
+   "legendary": false,
+   "familyRoot": 223
+  },
+  {
+   "species": 224,
+   "levelMin": 25,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 223
+  },
+  {
+   "species": 228,
+   "levelMin": 1,
+   "levelMax": 23,
+   "legendary": false,
+   "familyRoot": 228
+  },
+  {
+   "species": 229,
+   "levelMin": 24,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 228
+  },
+  {
+   "species": 231,
+   "levelMin": 1,
+   "levelMax": 24,
+   "legendary": false,
+   "familyRoot": 231
+  },
+  {
+   "species": 232,
+   "levelMin": 25,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 231
+  },
+  {
+   "species": 236,
+   "levelMin": 1,
+   "levelMax": 19,
+   "legendary": false,
+   "familyRoot": 236
+  },
+  {
+   "species": 237,
+   "levelMin": 20,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 236
+  },
+  {
+   "species": 238,
+   "levelMin": 1,
+   "levelMax": 29,
+   "legendary": false,
+   "familyRoot": 238
+  },
+  {
+   "species": 239,
+   "levelMin": 1,
+   "levelMax": 29,
+   "legendary": false,
+   "familyRoot": 239
+  },
+  {
+   "species": 240,
+   "levelMin": 1,
+   "levelMax": 29,
+   "legendary": false,
+   "familyRoot": 240
+  },
+  {
+   "species": 243,
+   "levelMin": 1,
+   "levelMax": 100,
+   "legendary": true,
+   "familyRoot": 243
+  },
+  {
+   "species": 244,
+   "levelMin": 1,
+   "levelMax": 100,
+   "legendary": true,
+   "familyRoot": 244
+  },
+  {
+   "species": 245,
+   "levelMin": 1,
+   "levelMax": 100,
+   "legendary": true,
+   "familyRoot": 245
+  },
+  {
+   "species": 246,
+   "levelMin": 1,
+   "levelMax": 29,
+   "legendary": false,
+   "familyRoot": 246
+  },
+  {
+   "species": 247,
+   "levelMin": 30,
+   "levelMax": 47,
+   "legendary": false,
+   "familyRoot": 246
+  },
+  {
+   "species": 248,
+   "levelMin": 48,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 246
+  },
+  {
+   "species": 249,
+   "levelMin": 1,
+   "levelMax": 100,
+   "legendary": true,
+   "familyRoot": 249
+  },
+  {
+   "species": 250,
+   "levelMin": 1,
+   "levelMax": 100,
+   "legendary": true,
+   "familyRoot": 250
+  },
+  {
+   "species": 251,
+   "levelMin": 1,
+   "levelMax": 100,
+   "legendary": true,
+   "familyRoot": 251
+  },
+  {
+   "species": 277,
+   "levelMin": 1,
+   "levelMax": 15,
+   "legendary": false,
+   "familyRoot": 277
+  },
+  {
+   "species": 278,
+   "levelMin": 16,
+   "levelMax": 35,
+   "legendary": false,
+   "familyRoot": 277
+  },
+  {
+   "species": 279,
+   "levelMin": 36,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 277
+  },
+  {
+   "species": 280,
+   "levelMin": 1,
+   "levelMax": 15,
+   "legendary": false,
+   "familyRoot": 280
+  },
+  {
+   "species": 281,
+   "levelMin": 16,
+   "levelMax": 35,
+   "legendary": false,
+   "familyRoot": 280
+  },
+  {
+   "species": 282,
+   "levelMin": 36,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 280
+  },
+  {
+   "species": 283,
+   "levelMin": 1,
+   "levelMax": 15,
+   "legendary": false,
+   "familyRoot": 283
+  },
+  {
+   "species": 284,
+   "levelMin": 16,
+   "levelMax": 35,
+   "legendary": false,
+   "familyRoot": 283
+  },
+  {
+   "species": 285,
+   "levelMin": 36,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 283
+  },
+  {
+   "species": 286,
+   "levelMin": 1,
+   "levelMax": 17,
+   "legendary": false,
+   "familyRoot": 286
+  },
+  {
+   "species": 287,
+   "levelMin": 18,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 286
+  },
+  {
+   "species": 288,
+   "levelMin": 1,
+   "levelMax": 19,
+   "legendary": false,
+   "familyRoot": 288
+  },
+  {
+   "species": 289,
+   "levelMin": 20,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 288
+  },
+  {
+   "species": 290,
+   "levelMin": 1,
+   "levelMax": 6,
+   "legendary": false,
+   "familyRoot": 290
+  },
+  {
+   "species": 291,
+   "levelMin": 7,
+   "levelMax": 9,
+   "legendary": false,
+   "familyRoot": 290
+  },
+  {
+   "species": 292,
+   "levelMin": 10,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 290
+  },
+  {
+   "species": 293,
+   "levelMin": 7,
+   "levelMax": 9,
+   "legendary": false,
+   "familyRoot": 290
+  },
+  {
+   "species": 294,
+   "levelMin": 10,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 290
+  },
+  {
+   "species": 295,
+   "levelMin": 1,
+   "levelMax": 13,
+   "legendary": false,
+   "familyRoot": 295
+  },
+  {
+   "species": 296,
+   "levelMin": 14,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 295
+  },
+  {
+   "species": 298,
+   "levelMin": 1,
+   "levelMax": 13,
+   "legendary": false,
+   "familyRoot": 298
+  },
+  {
+   "species": 299,
+   "levelMin": 14,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 298
+  },
+  {
+   "species": 301,
+   "levelMin": 1,
+   "levelMax": 19,
+   "legendary": false,
+   "familyRoot": 301
+  },
+  {
+   "species": 302,
+   "levelMin": 20,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 301
+  },
+  {
+   "species": 303,
+   "levelMin": 20,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 301
+  },
+  {
+   "species": 304,
+   "levelMin": 1,
+   "levelMax": 21,
+   "legendary": false,
+   "familyRoot": 304
+  },
+  {
+   "species": 305,
+   "levelMin": 22,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 304
+  },
+  {
+   "species": 306,
+   "levelMin": 1,
+   "levelMax": 22,
+   "legendary": false,
+   "familyRoot": 306
+  },
+  {
+   "species": 307,
+   "levelMin": 23,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 306
+  },
+  {
+   "species": 309,
+   "levelMin": 1,
+   "levelMax": 24,
+   "legendary": false,
+   "familyRoot": 309
+  },
+  {
+   "species": 310,
+   "levelMin": 25,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 309
+  },
+  {
+   "species": 311,
+   "levelMin": 1,
+   "levelMax": 21,
+   "legendary": false,
+   "familyRoot": 311
+  },
+  {
+   "species": 312,
+   "levelMin": 22,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 311
+  },
+  {
+   "species": 313,
+   "levelMin": 1,
+   "levelMax": 39,
+   "legendary": false,
+   "familyRoot": 313
+  },
+  {
+   "species": 314,
+   "levelMin": 40,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 313
+  },
+  {
+   "species": 318,
+   "levelMin": 1,
+   "levelMax": 35,
+   "legendary": false,
+   "familyRoot": 318
+  },
+  {
+   "species": 319,
+   "levelMin": 36,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 318
+  },
+  {
+   "species": 323,
+   "levelMin": 1,
+   "levelMax": 29,
+   "legendary": false,
+   "familyRoot": 323
+  },
+  {
+   "species": 324,
+   "levelMin": 30,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 323
+  },
+  {
+   "species": 326,
+   "levelMin": 1,
+   "levelMax": 29,
+   "legendary": false,
+   "familyRoot": 326
+  },
+  {
+   "species": 327,
+   "levelMin": 30,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 326
+  },
+  {
+   "species": 330,
+   "levelMin": 1,
+   "levelMax": 29,
+   "legendary": false,
+   "familyRoot": 330
+  },
+  {
+   "species": 331,
+   "levelMin": 30,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 330
+  },
+  {
+   "species": 332,
+   "levelMin": 1,
+   "levelMax": 34,
+   "legendary": false,
+   "familyRoot": 332
+  },
+  {
+   "species": 333,
+   "levelMin": 35,
+   "levelMax": 44,
+   "legendary": false,
+   "familyRoot": 332
+  },
+  {
+   "species": 334,
+   "levelMin": 45,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 332
+  },
+  {
+   "species": 335,
+   "levelMin": 1,
+   "levelMax": 23,
+   "legendary": false,
+   "familyRoot": 335
+  },
+  {
+   "species": 336,
+   "levelMin": 24,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 335
+  },
+  {
+   "species": 337,
+   "levelMin": 1,
+   "levelMax": 25,
+   "legendary": false,
+   "familyRoot": 337
+  },
+  {
+   "species": 338,
+   "levelMin": 26,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 337
+  },
+  {
+   "species": 339,
+   "levelMin": 1,
+   "levelMax": 32,
+   "legendary": false,
+   "familyRoot": 339
+  },
+  {
+   "species": 340,
+   "levelMin": 33,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 339
+  },
+  {
+   "species": 341,
+   "levelMin": 1,
+   "levelMax": 31,
+   "legendary": false,
+   "familyRoot": 341
+  },
+  {
+   "species": 342,
+   "levelMin": 32,
+   "levelMax": 43,
+   "legendary": false,
+   "familyRoot": 341
+  },
+  {
+   "species": 343,
+   "levelMin": 44,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 341
+  },
+  {
+   "species": 344,
+   "levelMin": 1,
+   "levelMax": 31,
+   "legendary": false,
+   "familyRoot": 344
+  },
+  {
+   "species": 345,
+   "levelMin": 32,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 344
+  },
+  {
+   "species": 346,
+   "levelMin": 1,
+   "levelMax": 29,
+   "legendary": false,
+   "familyRoot": 346
+  },
+  {
+   "species": 347,
+   "levelMin": 30,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 346
+  },
+  {
+   "species": 351,
+   "levelMin": 1,
+   "levelMax": 31,
+   "legendary": false,
+   "familyRoot": 351
+  },
+  {
+   "species": 352,
+   "levelMin": 32,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 351
+  },
+  {
+   "species": 356,
+   "levelMin": 1,
+   "levelMax": 36,
+   "legendary": false,
+   "familyRoot": 356
+  },
+  {
+   "species": 357,
+   "levelMin": 37,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 356
+  },
+  {
+   "species": 358,
+   "levelMin": 1,
+   "levelMax": 34,
+   "legendary": false,
+   "familyRoot": 358
+  },
+  {
+   "species": 359,
+   "levelMin": 35,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 358
+  },
+  {
+   "species": 360,
+   "levelMin": 1,
+   "levelMax": 14,
+   "legendary": false,
+   "familyRoot": 360
+  },
+  {
+   "species": 361,
+   "levelMin": 1,
+   "levelMax": 36,
+   "legendary": false,
+   "familyRoot": 361
+  },
+  {
+   "species": 362,
+   "levelMin": 37,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 361
+  },
+  {
+   "species": 364,
+   "levelMin": 1,
+   "levelMax": 17,
+   "legendary": false,
+   "familyRoot": 364
+  },
+  {
+   "species": 365,
+   "levelMin": 18,
+   "levelMax": 35,
+   "legendary": false,
+   "familyRoot": 364
+  },
+  {
+   "species": 366,
+   "levelMin": 36,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 364
+  },
+  {
+   "species": 367,
+   "levelMin": 1,
+   "levelMax": 25,
+   "legendary": false,
+   "familyRoot": 367
+  },
+  {
+   "species": 368,
+   "levelMin": 26,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 367
+  },
+  {
+   "species": 370,
+   "levelMin": 1,
+   "levelMax": 19,
+   "legendary": false,
+   "familyRoot": 370
+  },
+  {
+   "species": 371,
+   "levelMin": 20,
+   "levelMax": 39,
+   "legendary": false,
+   "familyRoot": 370
+  },
+  {
+   "species": 372,
+   "levelMin": 40,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 370
+  },
+  {
+   "species": 377,
+   "levelMin": 1,
+   "levelMax": 36,
+   "legendary": false,
+   "familyRoot": 377
+  },
+  {
+   "species": 378,
+   "levelMin": 37,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 377
+  },
+  {
+   "species": 382,
+   "levelMin": 1,
+   "levelMax": 31,
+   "legendary": false,
+   "familyRoot": 382
+  },
+  {
+   "species": 383,
+   "levelMin": 32,
+   "levelMax": 41,
+   "legendary": false,
+   "familyRoot": 382
+  },
+  {
+   "species": 384,
+   "levelMin": 42,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 382
+  },
+  {
+   "species": 388,
+   "levelMin": 1,
+   "levelMax": 39,
+   "legendary": false,
+   "familyRoot": 388
+  },
+  {
+   "species": 389,
+   "levelMin": 40,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 388
+  },
+  {
+   "species": 390,
+   "levelMin": 1,
+   "levelMax": 39,
+   "legendary": false,
+   "familyRoot": 390
+  },
+  {
+   "species": 391,
+   "levelMin": 40,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 390
+  },
+  {
+   "species": 392,
+   "levelMin": 1,
+   "levelMax": 19,
+   "legendary": false,
+   "familyRoot": 392
+  },
+  {
+   "species": 393,
+   "levelMin": 20,
+   "levelMax": 29,
+   "legendary": false,
+   "familyRoot": 392
+  },
+  {
+   "species": 394,
+   "levelMin": 30,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 392
+  },
+  {
+   "species": 395,
+   "levelMin": 1,
+   "levelMax": 29,
+   "legendary": false,
+   "familyRoot": 395
+  },
+  {
+   "species": 396,
+   "levelMin": 30,
+   "levelMax": 49,
+   "legendary": false,
+   "familyRoot": 395
+  },
+  {
+   "species": 397,
+   "levelMin": 50,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 395
+  },
+  {
+   "species": 398,
+   "levelMin": 1,
+   "levelMax": 19,
+   "legendary": false,
+   "familyRoot": 398
+  },
+  {
+   "species": 399,
+   "levelMin": 20,
+   "levelMax": 44,
+   "legendary": false,
+   "familyRoot": 398
+  },
+  {
+   "species": 400,
+   "levelMin": 45,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 398
+  },
+  {
+   "species": 401,
+   "levelMin": 1,
+   "levelMax": 100,
+   "legendary": true,
+   "familyRoot": 401
+  },
+  {
+   "species": 402,
+   "levelMin": 1,
+   "levelMax": 100,
+   "legendary": true,
+   "familyRoot": 402
+  },
+  {
+   "species": 403,
+   "levelMin": 1,
+   "levelMax": 100,
+   "legendary": true,
+   "familyRoot": 403
+  },
+  {
+   "species": 404,
+   "levelMin": 1,
+   "levelMax": 100,
+   "legendary": true,
+   "familyRoot": 404
+  },
+  {
+   "species": 405,
+   "levelMin": 1,
+   "levelMax": 100,
+   "legendary": true,
+   "familyRoot": 405
+  },
+  {
+   "species": 406,
+   "levelMin": 1,
+   "levelMax": 100,
+   "legendary": true,
+   "familyRoot": 406
+  },
+  {
+   "species": 407,
+   "levelMin": 1,
+   "levelMax": 100,
+   "legendary": true,
+   "familyRoot": 407
+  },
+  {
+   "species": 408,
+   "levelMin": 1,
+   "levelMax": 100,
+   "legendary": true,
+   "familyRoot": 408
+  },
+  {
+   "species": 409,
+   "levelMin": 1,
+   "levelMax": 100,
+   "legendary": true,
+   "familyRoot": 409
+  },
+  {
+   "species": 410,
+   "levelMin": 1,
+   "levelMax": 100,
+   "legendary": true,
+   "familyRoot": 410
+  },
+  {
+   "species": 440,
+   "levelMin": 1,
+   "levelMax": 17,
+   "legendary": false,
+   "familyRoot": 440
+  },
+  {
+   "species": 441,
+   "levelMin": 18,
+   "levelMax": 31,
+   "legendary": false,
+   "familyRoot": 440
+  },
+  {
+   "species": 442,
+   "levelMin": 32,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 440
+  },
+  {
+   "species": 443,
+   "levelMin": 1,
+   "levelMax": 13,
+   "legendary": false,
+   "familyRoot": 443
+  },
+  {
+   "species": 444,
+   "levelMin": 14,
+   "levelMax": 35,
+   "legendary": false,
+   "familyRoot": 443
+  },
+  {
+   "species": 445,
+   "levelMin": 36,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 443
+  },
+  {
+   "species": 446,
+   "levelMin": 1,
+   "levelMax": 15,
+   "legendary": false,
+   "familyRoot": 446
+  },
+  {
+   "species": 447,
+   "levelMin": 16,
+   "levelMax": 35,
+   "legendary": false,
+   "familyRoot": 446
+  },
+  {
+   "species": 448,
+   "levelMin": 36,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 446
+  },
+  {
+   "species": 449,
+   "levelMin": 1,
+   "levelMax": 13,
+   "legendary": false,
+   "familyRoot": 449
+  },
+  {
+   "species": 450,
+   "levelMin": 14,
+   "levelMax": 33,
+   "legendary": false,
+   "familyRoot": 449
+  },
+  {
+   "species": 451,
+   "levelMin": 34,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 449
+  },
+  {
+   "species": 452,
+   "levelMin": 1,
+   "levelMax": 14,
+   "legendary": false,
+   "familyRoot": 452
+  },
+  {
+   "species": 453,
+   "levelMin": 15,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 452
+  },
+  {
+   "species": 454,
+   "levelMin": 1,
+   "levelMax": 9,
+   "legendary": false,
+   "familyRoot": 454
+  },
+  {
+   "species": 455,
+   "levelMin": 10,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 454
+  },
+  {
+   "species": 456,
+   "levelMin": 1,
+   "levelMax": 14,
+   "legendary": false,
+   "familyRoot": 456
+  },
+  {
+   "species": 457,
+   "levelMin": 15,
+   "levelMax": 29,
+   "legendary": false,
+   "familyRoot": 456
+  },
+  {
+   "species": 458,
+   "levelMin": 30,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 456
+  },
+  {
+   "species": 461,
+   "levelMin": 1,
+   "levelMax": 29,
+   "legendary": false,
+   "familyRoot": 461
+  },
+  {
+   "species": 462,
+   "levelMin": 30,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 461
+  },
+  {
+   "species": 463,
+   "levelMin": 1,
+   "levelMax": 29,
+   "legendary": false,
+   "familyRoot": 463
+  },
+  {
+   "species": 464,
+   "levelMin": 30,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 463
+  },
+  {
+   "species": 471,
+   "levelMin": 1,
+   "levelMax": 25,
+   "legendary": false,
+   "familyRoot": 471
+  },
+  {
+   "species": 472,
+   "levelMin": 26,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 471
+  },
+  {
+   "species": 473,
+   "levelMin": 1,
+   "levelMax": 24,
+   "legendary": false,
+   "familyRoot": 473
+  },
+  {
+   "species": 474,
+   "levelMin": 25,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 473
+  },
+  {
+   "species": 475,
+   "levelMin": 1,
+   "levelMax": 29,
+   "legendary": false,
+   "familyRoot": 475
+  },
+  {
+   "species": 476,
+   "levelMin": 30,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 475
+  },
+  {
+   "species": 478,
+   "levelMin": 1,
+   "levelMax": 27,
+   "legendary": false,
+   "familyRoot": 478
+  },
+  {
+   "species": 479,
+   "levelMin": 28,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 478
+  },
+  {
+   "species": 484,
+   "levelMin": 1,
+   "levelMax": 33,
+   "legendary": false,
+   "familyRoot": 484
+  },
+  {
+   "species": 485,
+   "levelMin": 34,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 484
+  },
+  {
+   "species": 487,
+   "levelMin": 1,
+   "levelMax": 33,
+   "legendary": false,
+   "familyRoot": 487
+  },
+  {
+   "species": 488,
+   "levelMin": 34,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 487
+  },
+  {
+   "species": 489,
+   "levelMin": 1,
+   "levelMax": 32,
+   "legendary": false,
+   "familyRoot": 489
+  },
+  {
+   "species": 490,
+   "levelMin": 33,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 489
+  },
+  {
+   "species": 496,
+   "levelMin": 1,
+   "levelMax": 23,
+   "legendary": false,
+   "familyRoot": 496
+  },
+  {
+   "species": 497,
+   "levelMin": 24,
+   "levelMax": 47,
+   "legendary": false,
+   "familyRoot": 496
+  },
+  {
+   "species": 498,
+   "levelMin": 48,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 496
+  },
+  {
+   "species": 502,
+   "levelMin": 1,
+   "levelMax": 33,
+   "legendary": false,
+   "familyRoot": 502
+  },
+  {
+   "species": 503,
+   "levelMin": 34,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 502
+  },
+  {
+   "species": 504,
+   "levelMin": 1,
+   "levelMax": 39,
+   "legendary": false,
+   "familyRoot": 504
+  },
+  {
+   "species": 505,
+   "levelMin": 40,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 504
+  },
+  {
+   "species": 506,
+   "levelMin": 1,
+   "levelMax": 36,
+   "legendary": false,
+   "familyRoot": 506
+  },
+  {
+   "species": 507,
+   "levelMin": 37,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 506
+  },
+  {
+   "species": 509,
+   "levelMin": 1,
+   "levelMax": 30,
+   "legendary": false,
+   "familyRoot": 509
+  },
+  {
+   "species": 510,
+   "levelMin": 31,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 509
+  },
+  {
+   "species": 512,
+   "levelMin": 1,
+   "levelMax": 39,
+   "legendary": false,
+   "familyRoot": 512
+  },
+  {
+   "species": 513,
+   "levelMin": 40,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 512
+  },
+  {
+   "species": 533,
+   "levelMin": 1,
+   "levelMax": 100,
+   "legendary": true,
+   "familyRoot": 533
+  },
+  {
+   "species": 534,
+   "levelMin": 1,
+   "levelMax": 100,
+   "legendary": true,
+   "familyRoot": 534
+  },
+  {
+   "species": 535,
+   "levelMin": 1,
+   "levelMax": 100,
+   "legendary": true,
+   "familyRoot": 535
+  },
+  {
+   "species": 536,
+   "levelMin": 1,
+   "levelMax": 100,
+   "legendary": true,
+   "familyRoot": 536
+  },
+  {
+   "species": 537,
+   "levelMin": 1,
+   "levelMax": 100,
+   "legendary": true,
+   "familyRoot": 537
+  },
+  {
+   "species": 538,
+   "levelMin": 1,
+   "levelMax": 100,
+   "legendary": true,
+   "familyRoot": 538
+  },
+  {
+   "species": 539,
+   "levelMin": 1,
+   "levelMax": 100,
+   "legendary": true,
+   "familyRoot": 539
+  },
+  {
+   "species": 540,
+   "levelMin": 1,
+   "levelMax": 100,
+   "legendary": true,
+   "familyRoot": 540
+  },
+  {
+   "species": 541,
+   "levelMin": 1,
+   "levelMax": 100,
+   "legendary": true,
+   "familyRoot": 541
+  },
+  {
+   "species": 542,
+   "levelMin": 1,
+   "levelMax": 100,
+   "legendary": true,
+   "familyRoot": 542
+  },
+  {
+   "species": 543,
+   "levelMin": 1,
+   "levelMax": 100,
+   "legendary": true,
+   "familyRoot": 543
+  },
+  {
+   "species": 544,
+   "levelMin": 1,
+   "levelMax": 100,
+   "legendary": true,
+   "familyRoot": 544
+  },
+  {
+   "species": 545,
+   "levelMin": 1,
+   "levelMax": 100,
+   "legendary": true,
+   "familyRoot": 545
+  },
+  {
+   "species": 546,
+   "levelMin": 1,
+   "levelMax": 100,
+   "legendary": true,
+   "familyRoot": 546
+  },
+  {
+   "species": 547,
+   "levelMin": 1,
+   "levelMax": 100,
+   "legendary": true,
+   "familyRoot": 547
+  },
+  {
+   "species": 548,
+   "levelMin": 1,
+   "levelMax": 16,
+   "legendary": false,
+   "familyRoot": 548
+  },
+  {
+   "species": 549,
+   "levelMin": 17,
+   "levelMax": 35,
+   "legendary": false,
+   "familyRoot": 548
+  },
+  {
+   "species": 550,
+   "levelMin": 36,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 548
+  },
+  {
+   "species": 551,
+   "levelMin": 1,
+   "levelMax": 16,
+   "legendary": false,
+   "familyRoot": 551
+  },
+  {
+   "species": 552,
+   "levelMin": 17,
+   "levelMax": 35,
+   "legendary": false,
+   "familyRoot": 551
+  },
+  {
+   "species": 553,
+   "levelMin": 36,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 551
+  },
+  {
+   "species": 554,
+   "levelMin": 1,
+   "levelMax": 16,
+   "legendary": false,
+   "familyRoot": 554
+  },
+  {
+   "species": 555,
+   "levelMin": 17,
+   "levelMax": 35,
+   "legendary": false,
+   "familyRoot": 554
+  },
+  {
+   "species": 556,
+   "levelMin": 36,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 554
+  },
+  {
+   "species": 557,
+   "levelMin": 1,
+   "levelMax": 19,
+   "legendary": false,
+   "familyRoot": 557
+  },
+  {
+   "species": 558,
+   "levelMin": 20,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 557
+  },
+  {
+   "species": 559,
+   "levelMin": 1,
+   "levelMax": 15,
+   "legendary": false,
+   "familyRoot": 559
+  },
+  {
+   "species": 560,
+   "levelMin": 16,
+   "levelMax": 31,
+   "legendary": false,
+   "familyRoot": 559
+  },
+  {
+   "species": 561,
+   "levelMin": 32,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 559
+  },
+  {
+   "species": 562,
+   "levelMin": 1,
+   "levelMax": 19,
+   "legendary": false,
+   "familyRoot": 562
+  },
+  {
+   "species": 563,
+   "levelMin": 20,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 562
+  },
+  {
+   "species": 572,
+   "levelMin": 1,
+   "levelMax": 20,
+   "legendary": false,
+   "familyRoot": 572
+  },
+  {
+   "species": 573,
+   "levelMin": 21,
+   "levelMax": 31,
+   "legendary": false,
+   "familyRoot": 572
+  },
+  {
+   "species": 574,
+   "levelMin": 32,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 572
+  },
+  {
+   "species": 575,
+   "levelMin": 1,
+   "levelMax": 26,
+   "legendary": false,
+   "familyRoot": 575
+  },
+  {
+   "species": 576,
+   "levelMin": 27,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 575
+  },
+  {
+   "species": 577,
+   "levelMin": 1,
+   "levelMax": 24,
+   "legendary": false,
+   "familyRoot": 577
+  },
+  {
+   "species": 578,
+   "levelMin": 25,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 577
+  },
+  {
+   "species": 582,
+   "levelMin": 1,
+   "levelMax": 30,
+   "legendary": false,
+   "familyRoot": 582
+  },
+  {
+   "species": 583,
+   "levelMin": 31,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 582
+  },
+  {
+   "species": 585,
+   "levelMin": 1,
+   "levelMax": 24,
+   "legendary": false,
+   "familyRoot": 585
+  },
+  {
+   "species": 586,
+   "levelMin": 25,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 585
+  },
+  {
+   "species": 588,
+   "levelMin": 1,
+   "levelMax": 24,
+   "legendary": false,
+   "familyRoot": 588
+  },
+  {
+   "species": 589,
+   "levelMin": 25,
+   "levelMax": 35,
+   "legendary": false,
+   "familyRoot": 588
+  },
+  {
+   "species": 590,
+   "levelMin": 36,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 588
+  },
+  {
+   "species": 593,
+   "levelMin": 1,
+   "levelMax": 19,
+   "legendary": false,
+   "familyRoot": 593
+  },
+  {
+   "species": 594,
+   "levelMin": 20,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 593
+  },
+  {
+   "species": 596,
+   "levelMin": 1,
+   "levelMax": 21,
+   "legendary": false,
+   "familyRoot": 596
+  },
+  {
+   "species": 597,
+   "levelMin": 22,
+   "levelMax": 29,
+   "legendary": false,
+   "familyRoot": 596
+  },
+  {
+   "species": 598,
+   "levelMin": 30,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 596
+  },
+  {
+   "species": 604,
+   "levelMin": 1,
+   "levelMax": 28,
+   "legendary": false,
+   "familyRoot": 604
+  },
+  {
+   "species": 605,
+   "levelMin": 29,
+   "levelMax": 39,
+   "legendary": false,
+   "familyRoot": 604
+  },
+  {
+   "species": 606,
+   "levelMin": 40,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 604
+  },
+  {
+   "species": 607,
+   "levelMin": 1,
+   "levelMax": 34,
+   "legendary": false,
+   "familyRoot": 607
+  },
+  {
+   "species": 608,
+   "levelMin": 35,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 607
+  },
+  {
+   "species": 610,
+   "levelMin": 1,
+   "levelMax": 33,
+   "legendary": false,
+   "familyRoot": 610
+  },
+  {
+   "species": 611,
+   "levelMin": 34,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 610
+  },
+  {
+   "species": 612,
+   "levelMin": 1,
+   "levelMax": 38,
+   "legendary": false,
+   "familyRoot": 612
+  },
+  {
+   "species": 613,
+   "levelMin": 39,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 612
+  },
+  {
+   "species": 615,
+   "levelMin": 1,
+   "levelMax": 33,
+   "legendary": false,
+   "familyRoot": 615
+  },
+  {
+   "species": 616,
+   "levelMin": 34,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 615
+  },
+  {
+   "species": 617,
+   "levelMin": 1,
+   "levelMax": 36,
+   "legendary": false,
+   "familyRoot": 617
+  },
+  {
+   "species": 618,
+   "levelMin": 37,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 617
+  },
+  {
+   "species": 619,
+   "levelMin": 1,
+   "levelMax": 36,
+   "legendary": false,
+   "familyRoot": 619
+  },
+  {
+   "species": 620,
+   "levelMin": 37,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 619
+  },
+  {
+   "species": 621,
+   "levelMin": 1,
+   "levelMax": 35,
+   "legendary": false,
+   "familyRoot": 621
+  },
+  {
+   "species": 622,
+   "levelMin": 36,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 621
+  },
+  {
+   "species": 623,
+   "levelMin": 1,
+   "levelMax": 29,
+   "legendary": false,
+   "familyRoot": 623
+  },
+  {
+   "species": 624,
+   "levelMin": 30,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 623
+  },
+  {
+   "species": 627,
+   "levelMin": 1,
+   "levelMax": 31,
+   "legendary": false,
+   "familyRoot": 627
+  },
+  {
+   "species": 628,
+   "levelMin": 32,
+   "levelMax": 40,
+   "legendary": false,
+   "familyRoot": 627
+  },
+  {
+   "species": 629,
+   "levelMin": 41,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 627
+  },
+  {
+   "species": 630,
+   "levelMin": 1,
+   "levelMax": 31,
+   "legendary": false,
+   "familyRoot": 630
+  },
+  {
+   "species": 631,
+   "levelMin": 32,
+   "levelMax": 40,
+   "legendary": false,
+   "familyRoot": 630
+  },
+  {
+   "species": 632,
+   "levelMin": 41,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 630
+  },
+  {
+   "species": 633,
+   "levelMin": 1,
+   "levelMax": 29,
+   "legendary": false,
+   "familyRoot": 633
+  },
+  {
+   "species": 634,
+   "levelMin": 30,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 633
+  },
+  {
+   "species": 635,
+   "levelMin": 1,
+   "levelMax": 23,
+   "legendary": false,
+   "familyRoot": 635
+  },
+  {
+   "species": 636,
+   "levelMin": 24,
+   "levelMax": 41,
+   "legendary": false,
+   "familyRoot": 635
+  },
+  {
+   "species": 637,
+   "levelMin": 42,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 635
+  },
+  {
+   "species": 638,
+   "levelMin": 1,
+   "levelMax": 33,
+   "legendary": false,
+   "familyRoot": 638
+  },
+  {
+   "species": 639,
+   "levelMin": 34,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 638
+  },
+  {
+   "species": 643,
+   "levelMin": 1,
+   "levelMax": 38,
+   "legendary": false,
+   "familyRoot": 643
+  },
+  {
+   "species": 644,
+   "levelMin": 39,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 643
+  },
+  {
+   "species": 645,
+   "levelMin": 1,
+   "levelMax": 39,
+   "legendary": false,
+   "familyRoot": 645
+  },
+  {
+   "species": 646,
+   "levelMin": 40,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 645
+  },
+  {
+   "species": 648,
+   "levelMin": 1,
+   "levelMax": 35,
+   "legendary": false,
+   "familyRoot": 648
+  },
+  {
+   "species": 649,
+   "levelMin": 36,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 648
+  },
+  {
+   "species": 650,
+   "levelMin": 1,
+   "levelMax": 39,
+   "legendary": false,
+   "familyRoot": 650
+  },
+  {
+   "species": 651,
+   "levelMin": 40,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 650
+  },
+  {
+   "species": 652,
+   "levelMin": 1,
+   "levelMax": 34,
+   "legendary": false,
+   "familyRoot": 652
+  },
+  {
+   "species": 653,
+   "levelMin": 35,
+   "levelMax": 44,
+   "legendary": false,
+   "familyRoot": 652
+  },
+  {
+   "species": 654,
+   "levelMin": 45,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 652
+  },
+  {
+   "species": 655,
+   "levelMin": 1,
+   "levelMax": 38,
+   "legendary": false,
+   "familyRoot": 655
+  },
+  {
+   "species": 656,
+   "levelMin": 39,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 655
+  },
+  {
+   "species": 658,
+   "levelMin": 1,
+   "levelMax": 41,
+   "legendary": false,
+   "familyRoot": 658
+  },
+  {
+   "species": 659,
+   "levelMin": 42,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 658
+  },
+  {
+   "species": 660,
+   "levelMin": 1,
+   "levelMax": 40,
+   "legendary": false,
+   "familyRoot": 660
+  },
+  {
+   "species": 661,
+   "levelMin": 41,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 660
+  },
+  {
+   "species": 663,
+   "levelMin": 1,
+   "levelMax": 37,
+   "legendary": false,
+   "familyRoot": 663
+  },
+  {
+   "species": 664,
+   "levelMin": 38,
+   "levelMax": 47,
+   "legendary": false,
+   "familyRoot": 663
+  },
+  {
+   "species": 665,
+   "levelMin": 48,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 663
+  },
+  {
+   "species": 666,
+   "levelMin": 1,
+   "levelMax": 36,
+   "legendary": false,
+   "familyRoot": 666
+  },
+  {
+   "species": 667,
+   "levelMin": 37,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 666
+  },
+  {
+   "species": 672,
+   "levelMin": 1,
+   "levelMax": 45,
+   "legendary": false,
+   "familyRoot": 672
+  },
+  {
+   "species": 673,
+   "levelMin": 46,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 672
+  },
+  {
+   "species": 675,
+   "levelMin": 1,
+   "levelMax": 42,
+   "legendary": false,
+   "familyRoot": 675
+  },
+  {
+   "species": 676,
+   "levelMin": 43,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 675
+  },
+  {
+   "species": 677,
+   "levelMin": 1,
+   "levelMax": 51,
+   "legendary": false,
+   "familyRoot": 677
+  },
+  {
+   "species": 678,
+   "levelMin": 52,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 677
+  },
+  {
+   "species": 680,
+   "levelMin": 1,
+   "levelMax": 49,
+   "legendary": false,
+   "familyRoot": 680
+  },
+  {
+   "species": 681,
+   "levelMin": 50,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 680
+  },
+  {
+   "species": 682,
+   "levelMin": 1,
+   "levelMax": 49,
+   "legendary": false,
+   "familyRoot": 682
+  },
+  {
+   "species": 683,
+   "levelMin": 50,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 682
+  },
+  {
+   "species": 686,
+   "levelMin": 1,
+   "levelMax": 49,
+   "legendary": false,
+   "familyRoot": 686
+  },
+  {
+   "species": 687,
+   "levelMin": 50,
+   "levelMax": 63,
+   "legendary": false,
+   "familyRoot": 686
+  },
+  {
+   "species": 688,
+   "levelMin": 64,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 686
+  },
+  {
+   "species": 689,
+   "levelMin": 1,
+   "levelMax": 58,
+   "legendary": false,
+   "familyRoot": 689
+  },
+  {
+   "species": 690,
+   "levelMin": 59,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 689
+  },
+  {
+   "species": 691,
+   "levelMin": 1,
+   "levelMax": 100,
+   "legendary": true,
+   "familyRoot": 691
+  },
+  {
+   "species": 692,
+   "levelMin": 1,
+   "levelMax": 100,
+   "legendary": true,
+   "familyRoot": 692
+  },
+  {
+   "species": 693,
+   "levelMin": 1,
+   "levelMax": 100,
+   "legendary": true,
+   "familyRoot": 693
+  },
+  {
+   "species": 694,
+   "levelMin": 1,
+   "levelMax": 100,
+   "legendary": true,
+   "familyRoot": 694
+  },
+  {
+   "species": 695,
+   "levelMin": 1,
+   "levelMax": 100,
+   "legendary": true,
+   "familyRoot": 695
+  },
+  {
+   "species": 696,
+   "levelMin": 1,
+   "levelMax": 100,
+   "legendary": true,
+   "familyRoot": 696
+  },
+  {
+   "species": 697,
+   "levelMin": 1,
+   "levelMax": 100,
+   "legendary": true,
+   "familyRoot": 697
+  },
+  {
+   "species": 698,
+   "levelMin": 1,
+   "levelMax": 100,
+   "legendary": true,
+   "familyRoot": 698
+  },
+  {
+   "species": 699,
+   "levelMin": 1,
+   "levelMax": 100,
+   "legendary": true,
+   "familyRoot": 699
+  },
+  {
+   "species": 700,
+   "levelMin": 1,
+   "levelMax": 100,
+   "legendary": true,
+   "familyRoot": 700
+  },
+  {
+   "species": 701,
+   "levelMin": 1,
+   "levelMax": 100,
+   "legendary": true,
+   "familyRoot": 701
+  },
+  {
+   "species": 702,
+   "levelMin": 1,
+   "levelMax": 100,
+   "legendary": true,
+   "familyRoot": 702
+  },
+  {
+   "species": 704,
+   "levelMin": 1,
+   "levelMax": 39,
+   "legendary": false,
+   "familyRoot": 704
+  },
+  {
+   "species": 705,
+   "levelMin": 40,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 704
+  },
+  {
+   "species": 711,
+   "levelMin": 1,
+   "levelMax": 29,
+   "legendary": false,
+   "familyRoot": 711
+  },
+  {
+   "species": 712,
+   "levelMin": 30,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 711
+  },
+  {
+   "species": 738,
+   "levelMin": 1,
+   "levelMax": 33,
+   "legendary": false,
+   "familyRoot": 738
+  },
+  {
+   "species": 739,
+   "levelMin": 1,
+   "levelMax": 33,
+   "legendary": false,
+   "familyRoot": 739
+  },
+  {
+   "species": 740,
+   "levelMin": 1,
+   "levelMax": 33,
+   "legendary": false,
+   "familyRoot": 740
+  },
+  {
+   "species": 741,
+   "levelMin": 34,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 738
+  },
+  {
+   "species": 742,
+   "levelMin": 34,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 739
+  },
+  {
+   "species": 743,
+   "levelMin": 34,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 740
+  },
+  {
+   "species": 744,
+   "levelMin": 1,
+   "levelMax": 33,
+   "legendary": false,
+   "familyRoot": 744
+  },
+  {
+   "species": 745,
+   "levelMin": 34,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 744
+  },
+  {
+   "species": 758,
+   "levelMin": 1,
+   "levelMax": 15,
+   "legendary": false,
+   "familyRoot": 758
+  },
+  {
+   "species": 759,
+   "levelMin": 16,
+   "levelMax": 35,
+   "legendary": false,
+   "familyRoot": 758
+  },
+  {
+   "species": 760,
+   "levelMin": 36,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 758
+  },
+  {
+   "species": 761,
+   "levelMin": 1,
+   "levelMax": 15,
+   "legendary": false,
+   "familyRoot": 761
+  },
+  {
+   "species": 762,
+   "levelMin": 16,
+   "levelMax": 35,
+   "legendary": false,
+   "familyRoot": 761
+  },
+  {
+   "species": 763,
+   "levelMin": 36,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 761
+  },
+  {
+   "species": 764,
+   "levelMin": 1,
+   "levelMax": 15,
+   "legendary": false,
+   "familyRoot": 764
+  },
+  {
+   "species": 765,
+   "levelMin": 16,
+   "levelMax": 35,
+   "legendary": false,
+   "familyRoot": 764
+  },
+  {
+   "species": 766,
+   "levelMin": 36,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 764
+  },
+  {
+   "species": 767,
+   "levelMin": 1,
+   "levelMax": 19,
+   "legendary": false,
+   "familyRoot": 767
+  },
+  {
+   "species": 768,
+   "levelMin": 20,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 767
+  },
+  {
+   "species": 769,
+   "levelMin": 1,
+   "levelMax": 16,
+   "legendary": false,
+   "familyRoot": 769
+  },
+  {
+   "species": 770,
+   "levelMin": 17,
+   "levelMax": 34,
+   "legendary": false,
+   "familyRoot": 769
+  },
+  {
+   "species": 771,
+   "levelMin": 35,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 769
+  },
+  {
+   "species": 772,
+   "levelMin": 1,
+   "levelMax": 8,
+   "legendary": false,
+   "familyRoot": 772
+  },
+  {
+   "species": 773,
+   "levelMin": 9,
+   "levelMax": 11,
+   "legendary": false,
+   "familyRoot": 772
+  },
+  {
+   "species": 774,
+   "levelMin": 12,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 772
+  },
+  {
+   "species": 775,
+   "levelMin": 1,
+   "levelMax": 34,
+   "legendary": false,
+   "familyRoot": 775
+  },
+  {
+   "species": 776,
+   "levelMin": 35,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 775
+  },
+  {
+   "species": 777,
+   "levelMin": 1,
+   "levelMax": 18,
+   "legendary": false,
+   "familyRoot": 777
+  },
+  {
+   "species": 778,
+   "levelMin": 19,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 777
+  },
+  {
+   "species": 780,
+   "levelMin": 1,
+   "levelMax": 31,
+   "legendary": false,
+   "familyRoot": 780
+  },
+  {
+   "species": 781,
+   "levelMin": 32,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 780
+  },
+  {
+   "species": 787,
+   "levelMin": 1,
+   "levelMax": 34,
+   "legendary": false,
+   "familyRoot": 787
+  },
+  {
+   "species": 788,
+   "levelMin": 35,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 787
+  },
+  {
+   "species": 794,
+   "levelMin": 1,
+   "levelMax": 29,
+   "legendary": false,
+   "familyRoot": 794
+  },
+  {
+   "species": 795,
+   "levelMin": 30,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 794
+  },
+  {
+   "species": 796,
+   "levelMin": 1,
+   "levelMax": 35,
+   "legendary": false,
+   "familyRoot": 796
+  },
+  {
+   "species": 797,
+   "levelMin": 36,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 796
+  },
+  {
+   "species": 798,
+   "levelMin": 1,
+   "levelMax": 47,
+   "legendary": false,
+   "familyRoot": 798
+  },
+  {
+   "species": 799,
+   "levelMin": 48,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 798
+  },
+  {
+   "species": 800,
+   "levelMin": 1,
+   "levelMax": 36,
+   "legendary": false,
+   "familyRoot": 800
+  },
+  {
+   "species": 801,
+   "levelMin": 37,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 800
+  },
+  {
+   "species": 804,
+   "levelMin": 1,
+   "levelMax": 38,
+   "legendary": false,
+   "familyRoot": 804
+  },
+  {
+   "species": 805,
+   "levelMin": 39,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 804
+  },
+  {
+   "species": 806,
+   "levelMin": 1,
+   "levelMax": 38,
+   "legendary": false,
+   "familyRoot": 806
+  },
+  {
+   "species": 807,
+   "levelMin": 39,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 806
+  },
+  {
+   "species": 812,
+   "levelMin": 1,
+   "levelMax": 39,
+   "legendary": false,
+   "familyRoot": 812
+  },
+  {
+   "species": 813,
+   "levelMin": 40,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 812
+  },
+  {
+   "species": 820,
+   "levelMin": 1,
+   "levelMax": 36,
+   "legendary": false,
+   "familyRoot": 820
+  },
+  {
+   "species": 821,
+   "levelMin": 37,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 820
+  },
+  {
+   "species": 822,
+   "levelMin": 1,
+   "levelMax": 47,
+   "legendary": false,
+   "familyRoot": 822
+  },
+  {
+   "species": 823,
+   "levelMin": 48,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 822
+  },
+  {
+   "species": 824,
+   "levelMin": 1,
+   "levelMax": 100,
+   "legendary": true,
+   "familyRoot": 824
+  },
+  {
+   "species": 825,
+   "levelMin": 1,
+   "levelMax": 100,
+   "legendary": true,
+   "familyRoot": 825
+  },
+  {
+   "species": 826,
+   "levelMin": 1,
+   "levelMax": 100,
+   "legendary": true,
+   "familyRoot": 826
+  },
+  {
+   "species": 827,
+   "levelMin": 1,
+   "levelMax": 100,
+   "legendary": true,
+   "familyRoot": 827
+  },
+  {
+   "species": 828,
+   "levelMin": 1,
+   "levelMax": 100,
+   "legendary": true,
+   "familyRoot": 828
+  },
+  {
+   "species": 830,
+   "levelMin": 1,
+   "levelMax": 100,
+   "legendary": true,
+   "familyRoot": 830
+  },
+  {
+   "species": 840,
+   "levelMin": 1,
+   "levelMax": 18,
+   "legendary": false,
+   "familyRoot": 840
+  },
+  {
+   "species": 841,
+   "levelMin": 1,
+   "levelMax": 18,
+   "legendary": false,
+   "familyRoot": 841
+  },
+  {
+   "species": 842,
+   "levelMin": 1,
+   "levelMax": 18,
+   "legendary": false,
+   "familyRoot": 842
+  },
+  {
+   "species": 843,
+   "levelMin": 1,
+   "levelMax": 18,
+   "legendary": false,
+   "familyRoot": 843
+  },
+  {
+   "species": 844,
+   "levelMin": 19,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 840
+  },
+  {
+   "species": 845,
+   "levelMin": 19,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 841
+  },
+  {
+   "species": 846,
+   "levelMin": 19,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 842
+  },
+  {
+   "species": 847,
+   "levelMin": 19,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 843
+  },
+  {
+   "species": 939,
+   "levelMin": 1,
+   "levelMax": 16,
+   "legendary": false,
+   "familyRoot": 939
+  },
+  {
+   "species": 940,
+   "levelMin": 17,
+   "levelMax": 33,
+   "legendary": false,
+   "familyRoot": 939
+  },
+  {
+   "species": 941,
+   "levelMin": 34,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 939
+  },
+  {
+   "species": 942,
+   "levelMin": 1,
+   "levelMax": 16,
+   "legendary": false,
+   "familyRoot": 942
+  },
+  {
+   "species": 943,
+   "levelMin": 17,
+   "levelMax": 33,
+   "legendary": false,
+   "familyRoot": 942
+  },
+  {
+   "species": 944,
+   "levelMin": 34,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 942
+  },
+  {
+   "species": 945,
+   "levelMin": 1,
+   "levelMax": 16,
+   "legendary": false,
+   "familyRoot": 945
+  },
+  {
+   "species": 946,
+   "levelMin": 17,
+   "levelMax": 33,
+   "legendary": false,
+   "familyRoot": 945
+  },
+  {
+   "species": 947,
+   "levelMin": 34,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 945
+  },
+  {
+   "species": 948,
+   "levelMin": 1,
+   "levelMax": 13,
+   "legendary": false,
+   "familyRoot": 948
+  },
+  {
+   "species": 949,
+   "levelMin": 14,
+   "levelMax": 27,
+   "legendary": false,
+   "familyRoot": 948
+  },
+  {
+   "species": 950,
+   "levelMin": 28,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 948
+  },
+  {
+   "species": 951,
+   "levelMin": 1,
+   "levelMax": 19,
+   "legendary": false,
+   "familyRoot": 951
+  },
+  {
+   "species": 952,
+   "levelMin": 20,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 951
+  },
+  {
+   "species": 953,
+   "levelMin": 1,
+   "levelMax": 19,
+   "legendary": false,
+   "familyRoot": 953
+  },
+  {
+   "species": 954,
+   "levelMin": 20,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 953
+  },
+  {
+   "species": 959,
+   "levelMin": 1,
+   "levelMax": 24,
+   "legendary": false,
+   "familyRoot": 959
+  },
+  {
+   "species": 960,
+   "levelMin": 25,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 959
+  },
+  {
+   "species": 961,
+   "levelMin": 1,
+   "levelMax": 24,
+   "legendary": false,
+   "familyRoot": 961
+  },
+  {
+   "species": 962,
+   "levelMin": 25,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 961
+  },
+  {
+   "species": 964,
+   "levelMin": 1,
+   "levelMax": 37,
+   "legendary": false,
+   "familyRoot": 964
+  },
+  {
+   "species": 965,
+   "levelMin": 38,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 964
+  },
+  {
+   "species": 966,
+   "levelMin": 1,
+   "levelMax": 29,
+   "legendary": false,
+   "familyRoot": 966
+  },
+  {
+   "species": 967,
+   "levelMin": 30,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 966
+  },
+  {
+   "species": 968,
+   "levelMin": 1,
+   "levelMax": 21,
+   "legendary": false,
+   "familyRoot": 968
+  },
+  {
+   "species": 969,
+   "levelMin": 22,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 968
+  },
+  {
+   "species": 970,
+   "levelMin": 1,
+   "levelMax": 33,
+   "legendary": false,
+   "familyRoot": 970
+  },
+  {
+   "species": 971,
+   "levelMin": 34,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 970
+  },
+  {
+   "species": 972,
+   "levelMin": 1,
+   "levelMax": 23,
+   "legendary": false,
+   "familyRoot": 972
+  },
+  {
+   "species": 973,
+   "levelMin": 24,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 972
+  },
+  {
+   "species": 976,
+   "levelMin": 1,
+   "levelMax": 26,
+   "legendary": false,
+   "familyRoot": 976
+  },
+  {
+   "species": 977,
+   "levelMin": 27,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 976
+  },
+  {
+   "species": 978,
+   "levelMin": 1,
+   "levelMax": 17,
+   "legendary": false,
+   "familyRoot": 978
+  },
+  {
+   "species": 979,
+   "levelMin": 18,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 978
+  },
+  {
+   "species": 984,
+   "levelMin": 1,
+   "levelMax": 29,
+   "legendary": false,
+   "familyRoot": 984
+  },
+  {
+   "species": 985,
+   "levelMin": 30,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 984
+  },
+  {
+   "species": 986,
+   "levelMin": 1,
+   "levelMax": 41,
+   "legendary": false,
+   "familyRoot": 986
+  },
+  {
+   "species": 987,
+   "levelMin": 42,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 986
+  },
+  {
+   "species": 989,
+   "levelMin": 1,
+   "levelMax": 100,
+   "legendary": true,
+   "familyRoot": 989
+  },
+  {
+   "species": 990,
+   "levelMin": 1,
+   "levelMax": 100,
+   "legendary": true,
+   "familyRoot": 989
+  },
+  {
+   "species": 999,
+   "levelMin": 1,
+   "levelMax": 34,
+   "legendary": false,
+   "familyRoot": 999
+  },
+  {
+   "species": 1000,
+   "levelMin": 35,
+   "levelMax": 44,
+   "legendary": false,
+   "familyRoot": 999
+  },
+  {
+   "species": 1001,
+   "levelMin": 45,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 999
+  },
+  {
+   "species": 1002,
+   "levelMin": 1,
+   "levelMax": 100,
+   "legendary": true,
+   "familyRoot": 1002
+  },
+  {
+   "species": 1003,
+   "levelMin": 1,
+   "levelMax": 100,
+   "legendary": true,
+   "familyRoot": 1003
+  },
+  {
+   "species": 1004,
+   "levelMin": 1,
+   "levelMax": 100,
+   "legendary": true,
+   "familyRoot": 1004
+  },
+  {
+   "species": 1005,
+   "levelMin": 1,
+   "levelMax": 100,
+   "legendary": true,
+   "familyRoot": 1005
+  },
+  {
+   "species": 1006,
+   "levelMin": 1,
+   "levelMax": 42,
+   "legendary": true,
+   "familyRoot": 1006
+  },
+  {
+   "species": 1007,
+   "levelMin": 43,
+   "levelMax": 52,
+   "legendary": true,
+   "familyRoot": 1006
+  },
+  {
+   "species": 1008,
+   "levelMin": 53,
+   "levelMax": 100,
+   "legendary": true,
+   "familyRoot": 1006
+  },
+  {
+   "species": 1009,
+   "levelMin": 53,
+   "levelMax": 100,
+   "legendary": true,
+   "familyRoot": 1006
+  },
+  {
+   "species": 1010,
+   "levelMin": 1,
+   "levelMax": 100,
+   "legendary": true,
+   "familyRoot": 1010
+  },
+  {
+   "species": 1011,
+   "levelMin": 1,
+   "levelMax": 100,
+   "legendary": true,
+   "familyRoot": 1011
+  },
+  {
+   "species": 1012,
+   "levelMin": 1,
+   "levelMax": 100,
+   "legendary": true,
+   "familyRoot": 1012
+  },
+  {
+   "species": 1013,
+   "levelMin": 1,
+   "levelMax": 100,
+   "legendary": true,
+   "familyRoot": 1013
+  },
+  {
+   "species": 1014,
+   "levelMin": 1,
+   "levelMax": 100,
+   "legendary": true,
+   "familyRoot": 1014
+  },
+  {
+   "species": 1015,
+   "levelMin": 1,
+   "levelMax": 100,
+   "legendary": true,
+   "familyRoot": 1015
+  },
+  {
+   "species": 1016,
+   "levelMin": 1,
+   "levelMax": 100,
+   "legendary": true,
+   "familyRoot": 1016
+  },
+  {
+   "species": 1017,
+   "levelMin": 1,
+   "levelMax": 100,
+   "legendary": true,
+   "familyRoot": 1017
+  },
+  {
+   "species": 1018,
+   "levelMin": 1,
+   "levelMax": 100,
+   "legendary": true,
+   "familyRoot": 1018
+  },
+  {
+   "species": 1019,
+   "levelMin": 1,
+   "levelMax": 100,
+   "legendary": true,
+   "familyRoot": 1019
+  },
+  {
+   "species": 1020,
+   "levelMin": 1,
+   "levelMax": 19,
+   "legendary": false,
+   "familyRoot": 1020
+  },
+  {
+   "species": 1021,
+   "levelMin": 20,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 1020
+  },
+  {
+   "species": 1027,
+   "levelMin": 1,
+   "levelMax": 25,
+   "legendary": false,
+   "familyRoot": 1027
+  },
+  {
+   "species": 1028,
+   "levelMin": 26,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 1027
+  },
+  {
+   "species": 1031,
+   "levelMin": 1,
+   "levelMax": 24,
+   "legendary": false,
+   "familyRoot": 1031
+  },
+  {
+   "species": 1032,
+   "levelMin": 25,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 1031
+  },
+  {
+   "species": 1034,
+   "levelMin": 1,
+   "levelMax": 37,
+   "legendary": false,
+   "familyRoot": 1034
+  },
+  {
+   "species": 1035,
+   "levelMin": 38,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 1034
+  },
+  {
+   "species": 1038,
+   "levelMin": 1,
+   "levelMax": 27,
+   "legendary": false,
+   "familyRoot": 1038
+  },
+  {
+   "species": 1039,
+   "levelMin": 28,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 104
+  },
+  {
+   "species": 1046,
+   "levelMin": 25,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 961
+  },
+  {
+   "species": 1074,
+   "levelMin": 1,
+   "levelMax": 100,
+   "legendary": true,
+   "familyRoot": 1074
+  },
+  {
+   "species": 1075,
+   "levelMin": 1,
+   "levelMax": 100,
+   "legendary": true,
+   "familyRoot": 1074
+  },
+  {
+   "species": 1076,
+   "levelMin": 1,
+   "levelMax": 100,
+   "legendary": true,
+   "familyRoot": 1076
+  },
+  {
+   "species": 1077,
+   "levelMin": 1,
+   "levelMax": 100,
+   "legendary": true,
+   "familyRoot": 1077
+  },
+  {
+   "species": 1078,
+   "levelMin": 1,
+   "levelMax": 100,
+   "legendary": true,
+   "familyRoot": 1078
+  },
+  {
+   "species": 1083,
+   "levelMin": 1,
+   "levelMax": 100,
+   "legendary": true,
+   "familyRoot": 1083
+  },
+  {
+   "species": 1084,
+   "levelMin": 1,
+   "levelMax": 100,
+   "legendary": true,
+   "familyRoot": 1083
+  },
+  {
+   "species": 1102,
+   "levelMin": 1,
+   "levelMax": 15,
+   "legendary": false,
+   "familyRoot": 1102
+  },
+  {
+   "species": 1103,
+   "levelMin": 16,
+   "levelMax": 34,
+   "legendary": false,
+   "familyRoot": 1102
+  },
+  {
+   "species": 1104,
+   "levelMin": 35,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 1102
+  },
+  {
+   "species": 1105,
+   "levelMin": 1,
+   "levelMax": 15,
+   "legendary": false,
+   "familyRoot": 1105
+  },
+  {
+   "species": 1106,
+   "levelMin": 16,
+   "levelMax": 34,
+   "legendary": false,
+   "familyRoot": 1105
+  },
+  {
+   "species": 1107,
+   "levelMin": 35,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 1105
+  },
+  {
+   "species": 1108,
+   "levelMin": 1,
+   "levelMax": 15,
+   "legendary": false,
+   "familyRoot": 1108
+  },
+  {
+   "species": 1109,
+   "levelMin": 16,
+   "levelMax": 34,
+   "legendary": false,
+   "familyRoot": 1108
+  },
+  {
+   "species": 1110,
+   "levelMin": 35,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 1108
+  },
+  {
+   "species": 1111,
+   "levelMin": 1,
+   "levelMax": 23,
+   "legendary": false,
+   "familyRoot": 1111
+  },
+  {
+   "species": 1112,
+   "levelMin": 24,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 1111
+  },
+  {
+   "species": 1113,
+   "levelMin": 1,
+   "levelMax": 17,
+   "legendary": false,
+   "familyRoot": 1113
+  },
+  {
+   "species": 1114,
+   "levelMin": 18,
+   "levelMax": 37,
+   "legendary": false,
+   "familyRoot": 1113
+  },
+  {
+   "species": 1115,
+   "levelMin": 38,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 1113
+  },
+  {
+   "species": 1116,
+   "levelMin": 1,
+   "levelMax": 9,
+   "legendary": false,
+   "familyRoot": 1116
+  },
+  {
+   "species": 1117,
+   "levelMin": 10,
+   "levelMax": 29,
+   "legendary": false,
+   "familyRoot": 1116
+  },
+  {
+   "species": 1118,
+   "levelMin": 30,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 1116
+  },
+  {
+   "species": 1119,
+   "levelMin": 1,
+   "levelMax": 17,
+   "legendary": false,
+   "familyRoot": 1119
+  },
+  {
+   "species": 1120,
+   "levelMin": 18,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 1119
+  },
+  {
+   "species": 1121,
+   "levelMin": 1,
+   "levelMax": 19,
+   "legendary": false,
+   "familyRoot": 1121
+  },
+  {
+   "species": 1122,
+   "levelMin": 20,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 1121
+  },
+  {
+   "species": 1123,
+   "levelMin": 1,
+   "levelMax": 23,
+   "legendary": false,
+   "familyRoot": 1123
+  },
+  {
+   "species": 1124,
+   "levelMin": 24,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 1123
+  },
+  {
+   "species": 1125,
+   "levelMin": 1,
+   "levelMax": 21,
+   "legendary": false,
+   "familyRoot": 1125
+  },
+  {
+   "species": 1126,
+   "levelMin": 22,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 1125
+  },
+  {
+   "species": 1127,
+   "levelMin": 1,
+   "levelMax": 24,
+   "legendary": false,
+   "familyRoot": 1127
+  },
+  {
+   "species": 1128,
+   "levelMin": 25,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 1127
+  },
+  {
+   "species": 1129,
+   "levelMin": 1,
+   "levelMax": 17,
+   "legendary": false,
+   "familyRoot": 1129
+  },
+  {
+   "species": 1130,
+   "levelMin": 18,
+   "levelMax": 33,
+   "legendary": false,
+   "familyRoot": 1129
+  },
+  {
+   "species": 1131,
+   "levelMin": 34,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 1129
+  },
+  {
+   "species": 1135,
+   "levelMin": 1,
+   "levelMax": 35,
+   "legendary": false,
+   "familyRoot": 1135
+  },
+  {
+   "species": 1136,
+   "levelMin": 36,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 1135
+  },
+  {
+   "species": 1138,
+   "levelMin": 1,
+   "levelMax": 25,
+   "legendary": false,
+   "familyRoot": 1138
+  },
+  {
+   "species": 1139,
+   "levelMin": 26,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 1138
+  },
+  {
+   "species": 1142,
+   "levelMin": 1,
+   "levelMax": 27,
+   "legendary": false,
+   "familyRoot": 1142
+  },
+  {
+   "species": 1143,
+   "levelMin": 28,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 1142
+  },
+  {
+   "species": 1148,
+   "levelMin": 1,
+   "levelMax": 31,
+   "legendary": false,
+   "familyRoot": 1148
+  },
+  {
+   "species": 1149,
+   "levelMin": 32,
+   "levelMax": 41,
+   "legendary": false,
+   "familyRoot": 1148
+  },
+  {
+   "species": 1150,
+   "levelMin": 42,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 1148
+  },
+  {
+   "species": 1151,
+   "levelMin": 1,
+   "levelMax": 31,
+   "legendary": false,
+   "familyRoot": 1151
+  },
+  {
+   "species": 1152,
+   "levelMin": 32,
+   "levelMax": 41,
+   "legendary": false,
+   "familyRoot": 1151
+  },
+  {
+   "species": 1153,
+   "levelMin": 42,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 1151
+  },
+  {
+   "species": 1154,
+   "levelMin": 35,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 1226
+  },
+  {
+   "species": 1155,
+   "levelMin": 28,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 1212
+  },
+  {
+   "species": 1156,
+   "levelMin": 38,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 1225
+  },
+  {
+   "species": 1158,
+   "levelMin": 42,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 1228
+  },
+  {
+   "species": 1159,
+   "levelMin": 35,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 1232
+  },
+  {
+   "species": 1170,
+   "levelMin": 1,
+   "levelMax": 33,
+   "legendary": false,
+   "familyRoot": 1170
+  },
+  {
+   "species": 1171,
+   "levelMin": 34,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 1170
+  },
+  {
+   "species": 1177,
+   "levelMin": 1,
+   "levelMax": 49,
+   "legendary": false,
+   "familyRoot": 1177
+  },
+  {
+   "species": 1178,
+   "levelMin": 50,
+   "levelMax": 59,
+   "legendary": false,
+   "familyRoot": 1177
+  },
+  {
+   "species": 1179,
+   "levelMin": 60,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 1177
+  },
+  {
+   "species": 1180,
+   "levelMin": 1,
+   "levelMax": 100,
+   "legendary": true,
+   "familyRoot": 1180
+  },
+  {
+   "species": 1181,
+   "levelMin": 1,
+   "levelMax": 100,
+   "legendary": true,
+   "familyRoot": 1181
+  },
+  {
+   "species": 1182,
+   "levelMin": 1,
+   "levelMax": 100,
+   "legendary": true,
+   "familyRoot": 1182
+  },
+  {
+   "species": 1183,
+   "levelMin": 1,
+   "levelMax": 100,
+   "legendary": true,
+   "familyRoot": 1183
+  },
+  {
+   "species": 1184,
+   "levelMin": 1,
+   "levelMax": 100,
+   "legendary": true,
+   "familyRoot": 1183
+  },
+  {
+   "species": 1185,
+   "levelMin": 1,
+   "levelMax": 100,
+   "legendary": true,
+   "familyRoot": 1185
+  },
+  {
+   "species": 1186,
+   "levelMin": 1,
+   "levelMax": 100,
+   "legendary": true,
+   "familyRoot": 1186
+  },
+  {
+   "species": 1187,
+   "levelMin": 1,
+   "levelMax": 100,
+   "legendary": true,
+   "familyRoot": 1187
+  },
+  {
+   "species": 1188,
+   "levelMin": 1,
+   "levelMax": 100,
+   "legendary": true,
+   "familyRoot": 1188
+  },
+  {
+   "species": 1189,
+   "levelMin": 1,
+   "levelMax": 100,
+   "legendary": true,
+   "familyRoot": 1189
+  },
+  {
+   "species": 1190,
+   "levelMin": 1,
+   "levelMax": 100,
+   "legendary": true,
+   "familyRoot": 1190
+  },
+  {
+   "species": 1208,
+   "levelMin": 1,
+   "levelMax": 100,
+   "legendary": true,
+   "familyRoot": 1183
+  },
+  {
+   "species": 1212,
+   "levelMin": 1,
+   "levelMax": 27,
+   "legendary": false,
+   "familyRoot": 1212
+  },
+  {
+   "species": 1213,
+   "levelMin": 1,
+   "levelMax": 39,
+   "legendary": false,
+   "familyRoot": 1213
+  },
+  {
+   "species": 1214,
+   "levelMin": 40,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 1213
+  },
+  {
+   "species": 1218,
+   "levelMin": 1,
+   "levelMax": 34,
+   "legendary": false,
+   "familyRoot": 1218
+  },
+  {
+   "species": 1219,
+   "levelMin": 35,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 1218
+  },
+  {
+   "species": 1220,
+   "levelMin": 1,
+   "levelMax": 41,
+   "legendary": false,
+   "familyRoot": 1228
+  },
+  {
+   "species": 1225,
+   "levelMin": 1,
+   "levelMax": 37,
+   "legendary": false,
+   "familyRoot": 1225
+  },
+  {
+   "species": 1226,
+   "levelMin": 1,
+   "levelMax": 19,
+   "legendary": false,
+   "familyRoot": 1226
+  },
+  {
+   "species": 1227,
+   "levelMin": 20,
+   "levelMax": 34,
+   "legendary": false,
+   "familyRoot": 1226
+  },
+  {
+   "species": 1232,
+   "levelMin": 1,
+   "levelMax": 34,
+   "legendary": false,
+   "familyRoot": 1232
+  },
+  {
+   "species": 1238,
+   "levelMin": 36,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 155
+  },
+  {
+   "species": 1241,
+   "levelMin": 36,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 554
+  },
+  {
+   "species": 1244,
+   "levelMin": 1,
+   "levelMax": 29,
+   "legendary": false,
+   "familyRoot": 1244
+  },
+  {
+   "species": 1245,
+   "levelMin": 30,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 1244
+  },
+  {
+   "species": 1246,
+   "levelMin": 50,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 680
+  },
+  {
+   "species": 1247,
+   "levelMin": 40,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 812
+  },
+  {
+   "species": 1249,
+   "levelMin": 37,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 820
+  },
+  {
+   "species": 1250,
+   "levelMin": 34,
+   "levelMax": 100,
+   "legendary": false,
+   "familyRoot": 939
+  },
+  {
+   "species": 1258,
+   "levelMin": 1,
+   "levelMax": 100,
+   "legendary": true,
+   "familyRoot": 1258
+  }
+ ]
+}
