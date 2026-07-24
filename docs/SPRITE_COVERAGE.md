@@ -53,3 +53,14 @@ decode-back from the built ROM byte-exact; `gTrainerFrontPicTable`
 consumption confirmed (12 literal-pool code refs incl. battle engine); the
 all-slots test build boots to free-roam. The blob-copy + table-repoint
 technique transfers to this project once its own table addresses are located.
+
+### Outstanding (2026-07-24)
+
+1. Confirm Unbound uses standard 4bpp+LZ77 trainer pics and locate its trainer-pic/OW tables
+   (open risk #7 in this doc still stands; CFRU donor BPRE.ld candidates + XREF verification is
+   the cheap first probe — that exact approach proved out on Radical Red).
+2. Then reuse RadicalRed's pilot (`RadicalRed-Character-Mode/tools/inject_sprites_pilot.py`) —
+   blob-copy + table-repoint, only addresses change.
+3. Per-character wiring: natural surface is the number-entry select prompt (show mugshot at the
+   "Play as {name}?" confirm).
+4. Missing art: Drew, Paul, Zoey, Nando, Trip, Lyra; James solo pic (duo-only).
