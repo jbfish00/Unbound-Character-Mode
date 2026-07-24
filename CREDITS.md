@@ -49,3 +49,13 @@ handful of anime-only Gen 1-5 characters) have no GBA-style pixel art
 anywhere, official or fan-made — per user-confirmed policy, these get a
 trainer-card/menu-select portrait only, with a generic/default overworld
 costume fallback. See `docs/SPRITE_COVERAGE.md` for the full breakdown.
+
+## Ash Gray donor art (added 2026-07-23)
+
+- **Pokemon Ash Gray** (FireRed hack) by **metapod23** — anime-character
+  trainer sprites (Jessie & James duo, Ritchie, Tracey, Duplica, Todd,
+  Giselle, A.J., Otoshi, Samurai, Damian, Gary, Orange Islands leaders,
+  anime-style Kanto leaders) and Ash player art, staged in
+  `sprites/donors/ashgray/`. Ripped from a locally-built copy (BPS patch on
+  a source-built clean FireRed). Credit metapod23 in any distribution that
+  ships this art.
