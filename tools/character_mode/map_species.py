@@ -129,6 +129,10 @@ def first_stage_map():
 # are deliberately NOT included here — Unbound has no Gen 9 species at all
 # (confirmed via tools/search_gametext.py), so those must stay unmatched.
 NAME_FIXES = {
+    # roster_additions.json (the shared cross-game overlay) spells the gendered
+    # Nidoran with an ASCII suffix; this pipeline's names use the symbol form.
+    "Nidoran-M": "Nidoran♂",
+    "Nidoran-F": "Nidoran♀",
     "Fletchinder": "Fletchindr",
     "Crabominable": "Crabminble",
     "Corvisquire": "Corvsquire",
@@ -197,9 +201,37 @@ SIGNATURES = {
 SIGNATURES_EXACT = {"Red", "Lt. Surge", "Ash", "Ritchie"}
 
 
+def merge_additions(raw):
+    """Union-merge the user-approved roster additions overlay into raw.
+
+    The additions (2026-07-23 Bulbapedia completeness audit; partner pools +
+    edge cases included, manga excluded) live in a separate overlay file rather
+    than baked into rosters_raw.json so a future re-scrape can't silently drop
+    them. Idempotent. See roster_additions.json's _comment.
+    """
+    path = os.path.join(HERE, "roster_additions.json")
+    if not os.path.isfile(path):
+        return
+    with open(path) as f:
+        additions = json.load(f)["additions"]
+    added = skipped = 0
+    for char_name, extra in additions.items():
+        if char_name not in raw:
+            # character isn't playable in this game (trimmed for dex reasons)
+            skipped += 1
+            continue
+        have = set(raw[char_name]["species"])
+        new = [s for s in extra if s not in have]
+        raw[char_name]["species"] = sorted(have | set(new))
+        added += len(new)
+    print(f"roster_additions.json: merged {added} species across "
+          f"{len(additions) - skipped} characters ({skipped} not in this game)")
+
+
 def main():
     with open(os.path.join(HERE, "rosters_raw.json")) as f:
         raw = json.load(f)
+    merge_additions(raw)
 
     name_id = name_to_id()
     ids = species_ids()

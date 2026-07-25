@@ -463,15 +463,114 @@ u16 CharacterMode_MaybeOverrideWildSpecies(u16 species, u8 level)
     return replacement;
 }
 
-/* Retarget of all 7 real `bl CreateWildMon` call sites inside the compiled
- * wild_encounter.c unit (tools/build_patch.py). Runs the override, then
- * tail-calls the real CreateWildMon — which is never itself modified, so
- * nature/ability/shiny-lock/custom-move/hidden-ability logic all still run
- * exactly as vanilla, just against the (possibly) substituted species. */
+/* Retarget of the 4 real random-table-roll `bl CreateWildMon` call sites
+ * inside the compiled wild_encounter.c unit (tools/build_patch.py). Runs the
+ * override, then tail-calls the real CreateWildMon — which is never itself
+ * modified, so nature/ability/shiny-lock/custom-move/hidden-ability logic all
+ * still run exactly as vanilla, just against the (possibly) substituted
+ * species. */
 void CharacterMode_CreateWildMon(u16 species, u8 level, u8 monHeaderIndex, bool8 purgeParty)
 {
     species = CharacterMode_MaybeOverrideWildSpecies(species, level);
     CreateWildMon(species, level, monHeaderIndex, purgeParty);
+}
+
+/* ---- live-gameplay probe (tools/test_harness/run_wild_encounter_test.sh) ----
+ *
+ * Reliability note: driving hundreds of individual GDB register-hijacks at a
+ * running free-roam state is flaky on mGBA's QT stub (the same limitation
+ * unit_tests.gdb documents). So the live test enables Character Mode in the
+ * real save, then makes ONE hijack into this routine, which runs the whole
+ * observation loop INSIDE the emulated CPU: it calls the REAL, live
+ * TryGenerateWildMon (0x08A14EC4 — the actual grass/cave/surf generator, which
+ * physically contains our hooked `bl` at 0x08A14FE6) against a controlled land
+ * table, reads back each produced wild mon via the engine's own GetMonData,
+ * and tallies the results into EWRAM. Every override therefore travels the
+ * exact live code path a grass step does: TryGenerateWildMon -> hooked bl ->
+ * CharacterMode_CreateWildMon -> override -> real CreateWildMon.
+ *
+ * Filler species 19 (Rattata) is off every character's roster, so any produced
+ * species other than 19/SPECIES_NONE is unambiguously our override; the routine
+ * self-verifies each override is on the active roster and non-legendary. */
+
+struct CMWildPokemon
+{
+    u8 minLevel;
+    u8 maxLevel;
+    u16 species;
+};
+
+/* NOTE: in this ROM's build TryGenerateWildMon reads wildMonInfo->wildPokemon
+ * at OFFSET 0 (confirmed by disasm: `ldr r0,[r5,#0]` feeding the ability-index
+ * helper), i.e. the pointer is the struct's first field — not the donor's
+ * {encounterRate; wildPokemon}. encounterRate is consumed earlier by the
+ * caller's rate test, not by TryGenerateWildMon, so we only need the pointer. */
+struct CMWildPokemonInfo
+{
+    const struct CMWildPokemon *wildPokemon;
+    u8 encounterRate;
+    u8 pad0;
+    u8 pad1;
+    u8 pad2;
+};
+
+extern struct Pokemon gEnemyParty[];
+extern bool8 TryGenerateWildMon(const struct CMWildPokemonInfo *info, u8 area, u8 flags);
+void CharacterMode_SelfTestDone(void);   /* defined in the self-test section below */
+
+#define WILD_PROBE_FILLER 19   /* Rattata: on no character's roster */
+#define WILD_PROBE_LEVEL 25
+#define WILD_PROBE_N 64
+#define WILD_PROBE_RESULTS ((volatile u16 *)0x02030100)  /* N result species */
+#define WILD_PROBE_META    ((volatile u32 *)0x02030200)  /* [0]=N [1]=overrides
+                              [2]=off_roster_hits [3]=legendary_hits [4]=magic */
+
+void CharacterMode_RunWildLiveProbe(void)
+{
+    struct CMWildPokemon mons[12];
+    struct CMWildPokemonInfo info;
+    u32 overrides = 0, off_roster = 0, legendary = 0;
+    u32 i;
+
+    for (i = 0; i < 12; i++)
+    {
+        mons[i].minLevel = WILD_PROBE_LEVEL;
+        mons[i].maxLevel = WILD_PROBE_LEVEL;
+        mons[i].species = WILD_PROBE_FILLER;
+    }
+    info.encounterRate = 10;
+    info.pad0 = info.pad1 = info.pad2 = 0;
+    info.wildPokemon = mons;
+
+    WILD_PROBE_META[4] = 0xE47E5ED0; /* entry marker */
+    for (i = 0; i < WILD_PROBE_N; i++)
+    {
+        u16 species;
+
+        WILD_PROBE_META[5] = i;      /* progress marker */
+        /* the REAL live generator; area 0 = WILD_AREA_LAND, flags 0 = no
+         * repel/keen-eye gate. Builds the mon into gEnemyParty[0]. */
+        TryGenerateWildMon(&info, 0, 0);
+        species = GetMonData(&gEnemyParty[0], MON_DATA_SPECIES, 0);
+        WILD_PROBE_RESULTS[i] = species;
+
+        if (species != WILD_PROBE_FILLER && species != SPECIES_NONE)
+        {
+            overrides++;
+            if (!IsSpeciesAllowedForCharacter(species))
+                off_roster++;
+            if (species < WILD_META_COUNT
+                && (gWildSpeciesMeta[species].flags & WILD_META_LEGENDARY))
+                legendary++;
+        }
+    }
+
+    WILD_PROBE_META[0] = WILD_PROBE_N;
+    WILD_PROBE_META[1] = overrides;
+    WILD_PROBE_META[2] = off_roster;
+    WILD_PROBE_META[3] = legendary;
+    WILD_PROBE_META[4] = 0xB0DEBEEF;
+    CharacterMode_SelfTestDone();
 }
 
 /* ---- GDB-driven self-test (tools/test_harness) ----
@@ -507,7 +606,7 @@ __attribute__((noinline)) void CharacterMode_SelfTestDone(void)
  * list machinery at 0x080CB7C4 asks two tiny CFRU getters for the list.
  * We trampoline BOTH getters (0x09EB48B8 / 0x09EB48D4, wired in
  * tools/build_patch.py) to these replacements: a magic set index returns
- * the 156 character names; anything else reproduces the originals exactly
+ * the 168 character names; anything else reproduces the originals exactly
  * (including Unbound's own idx>31 clamp-to-0), so every existing menu in
  * the game behaves identically.
  *
@@ -601,7 +700,7 @@ void CharacterMode_RunSelfTest(void)
     FlagSet(FLAG_CHARACTER_MODE);
     VarSet(VAR_CHARACTER_ID, 1);
     r[n++] = InCharacterMode();                      /* B1 want 1 */
-    r[n++] = (u8)GetCharacterCount();                /* B2 want 156 */
+    r[n++] = (u8)GetCharacterCount();                /* B2 want 168 */
     r[n++] = IsSpeciesAllowedForCharacter(25);       /* B3 Pikachu want 1 */
     r[n++] = IsSpeciesAllowedForCharacter(6);        /* B4 Charizard (family expansion) want 1 */
     r[n++] = IsSpeciesAllowedForCharacter(150);      /* B5 Mewtwo want 0 */
@@ -673,7 +772,7 @@ void CharacterMode_RunSelfTest(void)
     CharacterMode_BufferNameSpecial();
     r[n++] = gStringVar1[0] != 0xFF;   /* I1 want 1: char 1 has a name */
     r[n++] = gStringVar1[0];           /* I2 want 204 ('R' of Red) */
-    VarSet(0x800D, 156);
+    VarSet(0x800D, GetCharacterCount());   /* last character id */
     CharacterMode_BufferNameSpecial();
     r[n++] = gStringVar1[0] != 0xFF;   /* I3 want 1: last char has a name */
     VarSet(0x800D, 0);

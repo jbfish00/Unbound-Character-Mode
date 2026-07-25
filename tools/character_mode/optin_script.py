@@ -159,5 +159,5 @@ def build(block_rom_addr, char_count):
 
 
 if __name__ == "__main__":
-    blob, splice = build(0x08B2B280, 156)
+    blob, splice = build(0x08B2B280, 168)
     print(f"block: {len(blob)} bytes; splice: {splice.hex(' ')}")

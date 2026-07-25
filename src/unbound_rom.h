@@ -76,11 +76,13 @@ u16 Random(void);
 /* Real CreateWildMon (donor src/wild_encounter.c): builds the rolled
  * species+level into gEnemyParty[monHeaderIndex==0 ? 0 : 1]. Confirmed
  * 2026-07-17 via the low-ROM veneer at 0x080829FC (CFRU BPRE.ld/hooks name
- * "CreateWildMon") -> real body 0x08A14838; the 7 real callers inside the
- * same compiled unit (land/water/rock-smash/headbutt via TryGenerateWildMon,
- * both fishing-rod slots via GenerateFishingWildMon, plus the raid/DexNav
- * paths that share this same compiled unit) all `bl` here directly. Left
- * 100% unmodified — only the 7 call sites are retargeted, never this body. */
+ * "CreateWildMon") -> real body 0x08A14838. Full-ROM caller census
+ * (docs/ROUTINE_MAP.md v17, 2026-07-18): 9 near `bl` callers + 2 dead low-ROM
+ * veneer callers + 1 function pointer, each attributed by argument shape.
+ * Only the 4 RANDOM-TABLE-ROLL sites are retargeted (TryGenerateWildMon
+ * primary+double, GenerateFishingWildMon primary+double); raid/swarm/
+ * scripted/DexNav callers are deliberately left alone. This body itself is
+ * left 100% unmodified — only those 4 call sites are retargeted. */
 void CreateWildMon(u16 species, u8 level, u8 monHeaderIndex, bool8 purgeParty);
 
 /* CFRU form-handling calls GiveMonToPlayer performs before storing a mon —

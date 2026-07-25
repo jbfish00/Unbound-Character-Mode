@@ -1,5 +1,5 @@
 # Live character-list test: inject a minimal script that opens the scrolling
-# multichoice on the MAGIC character set (0xFE -> 156 names via our
+# multichoice on the MAGIC character set (0xFE -> all character names via our
 # trampolined getters), scroll down 3, select, and verify 0x800D == 3.
 # Also exercises cancel (B) on a second pass -> 0x800D == 0xFFFF.
 # Env: MGBA_WID.

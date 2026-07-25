@@ -12,10 +12,12 @@ Pipeline (all addresses from docs/ROUTINE_MAP.md v8, double-confirmed):
           FlagGet(FLAG_NO_CATCHING) call -> CharacterMode_CatchFlagGet)
        b. 8-byte entry trampoline at 0x089C905C (GiveMonToPlayer ->
           CharacterMode_GiveMonToPlayer)
-       c. bl retarget of all 7 real `bl CreateWildMon` call sites inside
-          the compiled wild_encounter.c unit -> CharacterMode_CreateWildMon
-          (10% chance to override the wild-roll species with a roster
-          member; docs/ROUTINE_MAP.md v17)
+       c. bl retarget of the 4 real random-table-roll `bl CreateWildMon`
+          call sites (TryGenerateWildMon primary+double, GenerateFishingWildMon
+          primary+double) -> CharacterMode_CreateWildMon (10% chance to
+          override the wild-roll species with a roster member;
+          docs/ROUTINE_MAP.md v17 — raid/swarm/scripted/DexNav sites
+          deliberately NOT hooked)
   7. self-verify: original-byte preconditions, free-space precondition,
      disassemble the patched sites back and check the expected shape
   8. write build/unbound-cm.gba (+ .sha1) and, if flips is present,
@@ -73,20 +75,43 @@ SPECIAL_1B6_ORIG = bytes.fromhex("c1371508")  # stale 0x081537C1
 
 # Wild-encounter roster override (docs/ROUTINE_MAP.md v17): CreateWildMon's
 # real body (0x08A14838, behind the low-ROM veneer at 0x080829FC) is left
-# 100% untouched; instead all 7 real `bl CreateWildMon` call sites inside
-# the same compiled wild_encounter.c unit (land/water/rock-smash/headbutt
-# via TryGenerateWildMon, both fishing-rod slots via GenerateFishingWildMon,
-# plus the raid/DexNav paths sharing this compiled unit) are retargeted to
-# CharacterMode_CreateWildMon, which are near calls (well within Thumb bl's
-# +-4MB range of the 0x00B2B280 injection block) — no veneer needed.
+# 100% untouched; instead ONLY the 4 real table-roll `bl CreateWildMon` call
+# sites inside the compiled wild_encounter.c unit are retargeted to
+# CharacterMode_CreateWildMon. They are near calls (well within Thumb bl's
+# ±4MB range of the 0x00B2B280 injection block), so no veneer is needed.
+#
+# Per-site attribution (docs/ROUTINE_MAP.md v17): every `bl` to 0x08A14838
+# in the whole ROM was located (9 near callers + 2 low-ROM veneer callers +
+# 1 function pointer) and each was decoded by argument shape + surrounding
+# calls against the CFRU donor's wild_encounter.c source. Of the 9 near
+# callers, exactly these 4 are genuine random-table rolls; the other
+# CreateWildMon reachers are deliberately EXCLUDED:
+#   - 0x8A14A4A  CreateScriptedWildMon (setwildbattle; r2=0, r3=firstMon) —
+#                a SCRIPTED encounter, spec says never touch it.
+#   - 0x8A14C3A  sp117_CreateRaidMon (r2=0, r3=1, FlagSet raid/hidden-ability
+#                flags, species+level from two globals) — raid, not a roll.
+#   - 0x8A14EAC  TryGenerateSwarmMon (guarded by Random()%100 < SWARM_CHANCE)
+#                — swarm, matches the RadicalRed sibling's own exclusion.
+#   - 0x89D7B48 / 0x89D863E  DexNav (FindHeaderIndexWithLetter for r2) — not
+#                a table roll.
+#   - 0x8082B52 / 0x8082B8E  DEAD low-ROM vanilla TryGenerateWildMon /
+#                GenerateFishingWildMon copies: their entry points were
+#                overwritten with veneers pointing at the live high-ROM
+#                versions below, so this old code is unreachable.
+#   - function pointer at 0x09EC354C -> the veneer (0x080829FD), a direct
+#                pointer call that bypasses these call sites entirely and so
+#                never sees the override — correct (not a random roll).
+# All four kept sites cover the required set: grass/cave, surf, and rock
+# smash all funnel through the single high-ROM TryGenerateWildMon
+# (0x08A14EC4, called by Standard/RockSmash/SweetScent/StartRandom
+# encounter entries), whose two CreateWildMon calls are the primary +
+# double-battle sites; both fishing-rod tiers funnel through
+# GenerateFishingWildMon (inlined into FishingWildEncounter 0x08A15BE8).
 WILD_CALL_SITES = {
-    "site1_0x8a14a4a": (0xA14A4A, bytes.fromhex("fff7f5fe")),
-    "site2_0x8a14c3a": (0xA14C3A, bytes.fromhex("fff7fdfd")),
-    "site3_0x8a14eac": (0xA14EAC, bytes.fromhex("fff7c4fc")),
-    "site4_0x8a14fe6": (0xA14FE6, bytes.fromhex("fff727fc")),
-    "site5_0x8a150c4": (0xA150C4, bytes.fromhex("fff7b8fb")),
-    "site6_0x8a15c20": (0xA15C20, bytes.fromhex("fef70afe")),
-    "site7_0x8a15c54": (0xA15C54, bytes.fromhex("fef7f0fd")),
+    "trygenwild_primary_0x8a14fe6": (0xA14FE6, bytes.fromhex("fff727fc")),
+    "trygenwild_double_0x8a150c4":  (0xA150C4, bytes.fromhex("fff7b8fb")),
+    "fishing_primary_0x8a15c20":    (0xA15C20, bytes.fromhex("fef70afe")),
+    "fishing_double_0x8a15c54":     (0xA15C54, bytes.fromhex("fef7f0fd")),
 }
 
 

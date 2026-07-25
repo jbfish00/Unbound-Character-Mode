@@ -480,6 +480,44 @@
    "Zorua"
   ]
  },
+ "Birch": {
+  "category": "professor",
+  "gen": 3,
+  "page": "Professor Birch + Birch (anime)",
+  "species": [
+   "Aron",
+   "Bulbasaur",
+   "Charmander",
+   "Chikorita",
+   "Chimchar",
+   "Clamperl",
+   "Cleffa",
+   "Cyndaquil",
+   "Giratina",
+   "Grimer",
+   "Jirachi",
+   "Magikarp",
+   "Mudkip",
+   "Nincada",
+   "Oshawott",
+   "Piplup",
+   "Poochyena",
+   "Rayquaza",
+   "Seedot",
+   "Snivy",
+   "Squirtle",
+   "Tepig",
+   "Torchic",
+   "Totodile",
+   "Treecko",
+   "Tropius",
+   "Turtwig",
+   "Wailmer",
+   "Wingull",
+   "Wurmple",
+   "Zigzagoon"
+  ]
+ },
  "Blaine": {
   "category": "gymleader",
   "gen": 1,
@@ -677,7 +715,7 @@
    "Magnemite",
    "Metapod",
    "Mime Jr.",
-   "Nidoran\u2642",
+   "Nidoran♂",
    "Ninetales",
    "Nuzleaf",
    "Omanyte",
@@ -872,6 +910,23 @@
    "Whirlipede"
   ]
  },
+ "Burnet": {
+  "category": "professor",
+  "gen": 7,
+  "page": "Professor Burnet + Burnet (anime)",
+  "species": [
+   "Bruxish",
+   "Cosmog",
+   "Guzzlord",
+   "Jangmo-o",
+   "Mantyke",
+   "Munchlax",
+   "Necrozma",
+   "Rockruff",
+   "Tapu Bulu",
+   "Type: Null"
+  ]
+ },
  "Byron": {
   "category": "gymleader",
   "gen": 4,
@@ -962,6 +1017,25 @@
    "Turtwig",
    "Uxie",
    "Weavile"
+  ]
+ },
+ "Cerise": {
+  "category": "professor",
+  "gen": 8,
+  "page": "Professor Cerise + Cerise (anime)",
+  "species": [
+   "Bulbasaur",
+   "Charmander",
+   "Cleffa",
+   "Eevee",
+   "Lugia",
+   "Mew",
+   "Piplup",
+   "Rotom",
+   "Squirtle",
+   "Weedle",
+   "Yamper",
+   "Zubat"
   ]
  },
  "Cheren": {
@@ -1661,6 +1735,30 @@
    "Zorua"
   ]
  },
+ "Elm": {
+  "category": "professor",
+  "gen": 2,
+  "page": "Professor Elm + Elm (anime)",
+  "species": [
+   "Arceus",
+   "Azurill",
+   "Bellsprout",
+   "Bonsly",
+   "Chikorita",
+   "Cleffa",
+   "Corsola",
+   "Cyndaquil",
+   "Ekans",
+   "Giratina",
+   "Gligar",
+   "Koffing",
+   "Larvitar",
+   "Sentret",
+   "Togepi",
+   "Totodile",
+   "Whismur"
+  ]
+ },
  "Erika": {
   "category": "gymleader",
   "gen": 1,
@@ -2142,7 +2240,7 @@
    "Eevee",
    "Eternatus",
    "Exeggutor",
-   "Flab\u00e9b\u00e9",
+   "Flabébé",
    "Floette",
    "Garbodor",
    "Golurk",
@@ -2669,6 +2767,28 @@
    "Wingull"
   ]
  },
+ "Juniper": {
+  "category": "professor",
+  "gen": 5,
+  "page": "Professor Juniper + Juniper (anime)",
+  "species": [
+   "Archen",
+   "Darumaka",
+   "Dwebble",
+   "Karrablast",
+   "Minccino",
+   "Munna",
+   "Oshawott",
+   "Patrat",
+   "Pichu",
+   "Shelmet",
+   "Snivy",
+   "Tepig",
+   "Venipede",
+   "Victini",
+   "Zekrom"
+  ]
+ },
  "Jupiter": {
   "category": "villain",
   "gen": 4,
@@ -3066,6 +3186,18 @@
    "Steelix",
    "Suicune",
    "Tyranitar"
+  ]
+ },
+ "Laventon": {
+  "category": "professor",
+  "gen": 8,
+  "page": "Professor Laventon + Laventon (anime)",
+  "species": [
+   "Cyndaquil",
+   "Oshawott",
+   "Riolu",
+   "Rowlet",
+   "Unown"
   ]
  },
  "Leaf": {
@@ -3474,6 +3606,22 @@
    "Xerneas",
    "Yveltal",
    "Zygarde"
+  ]
+ },
+ "Magnolia": {
+  "category": "professor",
+  "gen": 8,
+  "page": "Professor Magnolia + Magnolia (anime)",
+  "species": [
+   "Bronzor",
+   "Chewtle",
+   "Dracovish",
+   "Eternatus",
+   "Grookey",
+   "Pancham",
+   "Sinistea",
+   "Sobble",
+   "Wimpod"
   ]
  },
  "Mallow (anime)": {
@@ -4070,6 +4218,25 @@
    "Zigzagoon"
   ]
  },
+ "Oak": {
+  "category": "professor",
+  "gen": 1,
+  "page": "Professor Oak + Oak (anime)",
+  "species": [
+   "Articuno",
+   "Bulbasaur",
+   "Charmander",
+   "Ditto",
+   "Eevee",
+   "Meltan",
+   "Mew",
+   "Mewtwo",
+   "Nidoran♂",
+   "Pichu",
+   "Pidgey",
+   "Squirtle"
+  ]
+ },
  "Olivia": {
   "category": "elite4",
   "gen": 7,
@@ -4453,6 +4620,28 @@
    "Zamazenta"
   ]
  },
+ "Rowan": {
+  "category": "professor",
+  "gen": 4,
+  "page": "Professor Rowan + Rowan (anime)",
+  "species": [
+   "Aipom",
+   "Chimchar",
+   "Cyndaquil",
+   "Dialga",
+   "Giratina",
+   "Mesprit",
+   "Onix",
+   "Palkia",
+   "Piplup",
+   "Shieldon",
+   "Shuckle",
+   "Spinarak",
+   "Starly",
+   "Turtwig",
+   "Yveltal"
+  ]
+ },
  "Roxanne": {
   "category": "gymleader",
   "gen": 3,
@@ -4550,6 +4739,37 @@
    "Zapdos"
   ]
  },
+ "Samson Oak": {
+  "category": "professor",
+  "gen": 7,
+  "page": "Samson Oak + Samson Oak (anime)",
+  "species": [
+   "Bronzor",
+   "Cubone",
+   "Cutiefly",
+   "Dewpider",
+   "Diglett",
+   "Exeggcute",
+   "Fomantis",
+   "Geodude",
+   "Grimer",
+   "Grubbin",
+   "Jangmo-o",
+   "Komala",
+   "Meowth",
+   "Mimikyu",
+   "Minior",
+   "Necrozma",
+   "Nihilego",
+   "Pichu",
+   "Porygon",
+   "Rattata",
+   "Salandit",
+   "Togedemaru",
+   "Vulpix",
+   "Yungoos"
+  ]
+ },
  "Saturn": {
   "category": "villain",
   "gen": 4,
@@ -4631,7 +4851,7 @@
    "Delphox",
    "Eevee",
    "Fennekin",
-   "Flab\u00e9b\u00e9",
+   "Flabébé",
    "Froakie",
    "Furfrou",
    "Goodra",
@@ -4761,6 +4981,23 @@
    "Unfezant"
   ]
  },
+ "Sonia": {
+  "category": "professor",
+  "gen": 8,
+  "page": "Sonia + Sonia (anime)",
+  "species": [
+   "Bounsweet",
+   "Charmander",
+   "Eternatus",
+   "Klink",
+   "Oranguru",
+   "Rookidee",
+   "Scorbunny",
+   "Yamper",
+   "Zacian",
+   "Zamazenta"
+  ]
+ },
  "Sophocles": {
   "category": "anime",
   "gen": 7,
@@ -4832,6 +5069,30 @@
    "Torchic",
    "Treecko",
    "Wailord"
+  ]
+ },
+ "Sycamore": {
+  "category": "professor",
+  "gen": 6,
+  "page": "Professor Sycamore + Sycamore (anime)",
+  "species": [
+   "Absol",
+   "Bulbasaur",
+   "Charmander",
+   "Chespin",
+   "Druddigon",
+   "Fennekin",
+   "Froakie",
+   "Gible",
+   "Hawlucha",
+   "Pinsir",
+   "Ralts",
+   "Skiddo",
+   "Skorupi",
+   "Squirtle",
+   "Torchic",
+   "Xerneas",
+   "Yveltal"
   ]
  },
  "Tate": {

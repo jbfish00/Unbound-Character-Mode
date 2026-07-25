@@ -45,7 +45,8 @@ for CASE in $CASES; do
     rm -f "$ROOT/build/.trade_done" "$ROOT/build/.mash_now"
     (
         while [ ! -f "$ROOT/build/.mash_now" ]; do sleep 0.5; done
-        end=$((SECONDS + 220))
+        # must outlast trade_test.gdb's scene poll (see its comment)
+        end=$((SECONDS + 1500))
         while [ $SECONDS -lt $end ] && [ ! -f "$ROOT/build/.trade_done" ]; do
             press x
             sleep 0.4
@@ -53,7 +54,7 @@ for CASE in $CASES; do
     ) &
     MASH_PID=$!
 
-    TRADE_CASE="$CASE" timeout 600 gdb-multiarch -batch -x "$HERE/trade_test.gdb" "$ELF" >"$LOG" 2>&1
+    TRADE_CASE="$CASE" timeout 1800 gdb-multiarch -batch -x "$HERE/trade_test.gdb" "$ELF" >"$LOG" 2>&1
 
     kill $MASH_PID $MGBA_PID 2>/dev/null
     trap - EXIT

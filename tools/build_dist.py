@@ -4,7 +4,7 @@
 Contents of dist/:
   unbound-character-mode.bps   the patch (copy of build/unbound-cm.bps)
   README.md                    what it is + how to apply + limitations
-  CHARACTERS.md                the numbered 156-character list
+  CHARACTERS.md                the numbered 168-character list
   unbound-character-mode.zip   all of the above
 
 Never includes a ROM. The BPS applies to Pokemon Unbound v2.1.1.1 (which
@@ -28,7 +28,7 @@ import emit_character_list
 
 README = """# Character Mode for Pokemon Unbound v2.1.1.1
 
-An opt-in game mode: at the start of a new game, pick one of 156 iconic
+An opt-in game mode: at the start of a new game, pick one of 168 iconic
 Pokemon characters (protagonists, rivals, gym leaders, Elite Four,
 champions, villains, and anime cast, Generations 1-8) and play the whole
 game restricted to that character's canon Pokemon.

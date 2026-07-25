@@ -32,18 +32,54 @@ Full RE + design:
      `GetCurrentMapWildMonHeaderId`) are NOT veneers — real code sits
      directly at their donor-canonical low-ROM addresses (0x0808274C etc.),
      i.e. those specific helpers were NOT relocated.
-2. **All 7 real `bl CreateWildMon` call sites found by disassembling the
-   whole 0x08A14800–0x08A16200 block and grepping for `bl 0x8a14838`**:
-   0x8A14A4A, 0x8A14C3A, 0x8A14EAC, 0x8A14FE6, 0x8A150C4, 0x8A15C20,
-   0x8A15C54. All are NEAR calls (well inside the same compiled unit, not
-   through the low-ROM veneer), consistent with TryGenerateWildMon's 2
-   internal calls (land/water) × its 4 callers (Standard/RockSmash/
-   Headbutt/SweetScent — same function, so still only 2 call sites),
-   GenerateFishingWildMon's 2 (single/double rod), plus up to 3 more
-   (most likely `sp117_CreateRaidMon` and/or the 2 `dexnav.c` call sites,
-   if DexNav/raids share this compiled unit — not individually attributed;
-   see "Known scope" below).
-3. **Hook: retarget all 7 call sites to `CharacterMode_CreateWildMon`**
+2. **Every `bl`/reference to CreateWildMon in the WHOLE ROM enumerated and
+   attributed by argument shape** (2026-07-18, resolving v17's earlier
+   "3 unattributed sites" gap the same way RadicalRed attributed its 10
+   sites). A full-ROM scan found 9 near `bl 0x8A14838` callers + 2 low-ROM
+   veneer (`bl 0x080829FC`) callers + 1 function pointer. Each was decoded
+   against the donor `wild_encounter.c` source (distinguishers: r2 = a
+   computed wildMonIndex vs. constant #0; r3 = constant TRUE/FALSE vs. a
+   variable; species source = a WildPokemon-table `ldrh` vs. globals vs.
+   Var8004; and the surrounding calls). Verdict per site:
+   - **0x8A14FE6** — TryGenerateWildMon **primary** roll (r2=index, r3=#1,
+     species from `[wildPokemon+idx+2]`, guarded by `!TryGenerateSwarmMon(
+     …,TRUE)`). **TABLE ROLL → hooked.** Covers grass/cave, surf, and rock
+     smash: Standard/RockSmash/SweetScent/StartRandom encounter entries all
+     funnel through this one TryGenerateWildMon (0x08A14EC4, 8 callers).
+   - **0x8A150C4** — TryGenerateWildMon **double-battle** roll (r3=#0).
+     **TABLE ROLL → hooked.**
+   - **0x8A15C20** — GenerateFishingWildMon **primary** (all rod tiers;
+     `ldr r3,[r4,#4]` = fishingInfo->wildPokemon, `bl ChooseWildMonLevel`,
+     r3=#1). **TABLE ROLL → hooked.**
+   - **0x8A15C54** — GenerateFishingWildMon **double-battle** (r3=#0).
+     **TABLE ROLL → hooked.**
+   - **0x8A14A4A** — CreateScriptedWildMon (r2=#0, r3=firstMon variable,
+     around FlagClear/FlagGet(WILD_CUSTOM_MOVES)). **SCRIPTED (setwildbattle)
+     → NOT hooked** (spec: never touch scripted encounters).
+   - **0x8A14C3A** — sp117_CreateRaidMon (r2=#0, r3=#1, `FlagSet 0x943`
+     raid/hidden-ability flags, species+level from two separate globals).
+     **RAID → NOT hooked.**
+   - **0x8A14EAC** — TryGenerateSwarmMon (guarded by `Random()%100 <
+     SWARM_CHANCE`, r3 = purgeParty variable). **SWARM → NOT hooked**
+     (matches RadicalRed's own swarm exclusion).
+   - **0x89D7B48 / 0x89D863E** — DexNav (`bl FindHeaderIndexWithLetter
+     0x89D54DC` computes r2 from `sDexNavHudPtr->unownLetter`). **DexNav →
+     NOT hooked.**
+   - **0x8082B52 / 0x8082B8E** — the DEAD low-ROM vanilla TryGenerateWildMon
+     / GenerateFishingWildMon copies. Confirmed dead: their live entry
+     points were overwritten with veneers pointing at the high-ROM versions
+     (the 4 low-ROM callers 0x8082D64/E2C/E8C/F5A all sit in function bodies
+     headed by the StandardWildEncounter/RockSmash/SweetScent/Fishing
+     veneers), and nothing references 0x8082AEC/0x8082B64 by pointer.
+   - **function pointer @0x09EC354C → 0x080829FD** (the veneer) — a direct
+     pointer call (in a table alongside Random|1 and gEnemyParty) that
+     bypasses these call sites entirely and so never sees the override;
+     correct to leave (not a random roll).
+   Net: **exactly the 4 table-roll sites are hooked**; raid, swarm,
+   scripted, DexNav, and dead code are all correctly excluded — matching the
+   RadicalRed sibling's set (TryGenerateWildMon primary+double,
+   GenerateFishingWildMon primary+double).
+3. **Hook: retarget the 4 table-roll call sites to `CharacterMode_CreateWildMon`**
    (tools/build_patch.py `WILD_CALL_SITES`), a plain 4-byte `bl` retarget
    exactly like the existing `CatchFlagGet`/`ScriptGiveMon` hooks — no
    entry-trampoline or register-preserving veneer needed, because a plain
@@ -82,34 +118,49 @@ Full RE + design:
    `InCharacterMode()` and a 10% `Random()%100` roll. No libgcc division
    helpers are linked (freestanding build) — a manual `CharacterMode_UMod`
    subtract-loop replaces `%` for the (small, <=100) moduli needed.
-7. **Known scope note (not fully resolved this session)**: 3 of the 7
-   patched call sites were not individually attributed to a specific donor
-   function name (see point 2). If any turn out to be raid
-   (`sp117_CreateRaidMon`) or DexNav call sites rather than table-rolled
-   land/water/rock-smash/fishing ones, they would also receive the 10%
-   override — a real but minor scope overreach beyond the requested grass/
-   surf/rock-smash/fishing set, deliberately accepted rather than spending
-   more RE effort to split out 7 individual call-site patches for 4
-   confirmed + 3 uncertain sites (same "shared choke point, deliberately
-   inclusive" reasoning already used for the trade-sweep hook). Static/
-   scripted encounters (`setwildbattle` → `CreateScriptedWildMon`) are
-   unaffected regardless — that is a completely separate function this
-   hook never touches.
-8. **Tests**: unit self-test L1-L10 (data-plumbing checks against the
-   injected metadata table, a 200-pick invariant loop against Red's real
-   roster — which genuinely includes legendary family members
-   Articuno/Raikou/Entei/Suicune/etc., so the exclusion path is actually
-   exercised — and an empirical 10%-rate check with a wide pass band),
-   boot smoke, and a round-trip disassembly verify of all 7 patched call
-   sites, all green on this build. **Not done this session**: an organic
-   live-gameplay trigger (walking into real grass/surfing/fishing and
-   observing the override actually fire) — would need map-navigation
-   automation this session didn't build. A `run_battle_catch_test.sh`
-   regression pass did not complete cleanly in this session (failed during
-   intro-driving, before any wild-encounter code would even run) — most
-   likely environment/timing flakiness in that specific long automated
-   suite (consistent with prior notes on its fragility), not attributed to
-   this change, but not conclusively isolated either.
+7. **Scope: resolved (2026-07-18).** The struct-level RE (point 2) settled
+   the earlier "3 unattributed sites" question: exactly the 4 table-roll
+   sites are hooked, and raid/swarm/scripted/DexNav/dead-code are all
+   confirmed excluded — so there is NO scope overreach. Static/scripted
+   encounters (`setwildbattle` → `CreateScriptedWildMon`, site 0x8A14A4A)
+   are explicitly among the excluded, as the spec requires.
+8. **Tests (all green on the final 4-site build):**
+   - **Unit self-test L1-L10** (49/49 total): metadata plumbing
+     (Charmander/Charmeleon/Charizard level ranges, family-root grouping,
+     Mewtwo legendary / Pikachu not), a 200-pick invariant loop against
+     Red's real roster (which genuinely includes legendary family members
+     Articuno/Raikou/Entei/Suicune/etc., so the exclusion path is actually
+     exercised) asserting the pick is NEVER legendary, and an empirical
+     10%-rate check.
+   - **Boot smoke** 4/4; **round-trip disasm verify** of all 4 patched
+     call sites.
+   - **Live-gameplay test** `run_wild_encounter_test.sh` **8/8** (NEW): the
+     intro drive reaches REAL free-roam, Character Mode is enabled as Red in
+     the live save, then one reliable hijack runs the in-ROM probe
+     `CharacterMode_RunWildLiveProbe`, which calls the REAL live
+     `TryGenerateWildMon` (0x08A14EC4 — through the hooked bl at 0x08A14FE6)
+     64× against a Rattata-only land table and tallies results via the
+     engine's own `GetMonData`. Observed on the running game: all 64 calls
+     produced a wild mon; **5 real overrides fired (7.8%, in the 2-25%
+     band)**; 0 off-roster, 0 legendary; overrides were species 58/131/159/
+     195/313 (all non-legendary Red-roster members). This is the real live
+     code path a grass step runs, differing only in trigger (a single
+     reliable hijack into an in-ROM loop instead of hundreds of flaky
+     per-call hijacks — mGBA's QT stub is unreliable for repeated hijacks,
+     the same limitation unit_tests.gdb documents). Struct gotcha found and
+     fixed here: in this build `wildMonInfo->wildPokemon` is at OFFSET 0, not
+     the donor's offset-4 (confirmed by the `ldr r0,[r5,#0]` feeding
+     TryGetAbilityInfluencedWildMonIndex).
+   - **`run_battle_catch_test.sh` re-run: 8/8 GREEN** — the off-roster catch
+     block still works and Character Mode activates correctly; the earlier
+     "failure during intro-driving" was purely environmental (a `pkill -f
+     mgba-qt` in the invoking shell matched its OWN command line and killed
+     the wrapper, plus stale Xvfb displays colliding with the harness's
+     display picker), NOT a regression from this change.
+   - **Not attempted**: physically walking the avatar into a grass tile
+     (no save/state reaches walkable grass, and map navigation automation
+     was out of scope this session); the free-roam live probe above
+     exercises the identical function + hooked call site instead.
 
 ## Flag/var persistence — CAVEAT CLOSED (2026-07-17 v12)
 

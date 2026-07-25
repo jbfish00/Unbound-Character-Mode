@@ -118,7 +118,11 @@ if ok:
     # masher until we touch the sentinel file below. Poll for completion:
     # script context idle again, overworld CB2 back, party populated.
     done = False
-    for attempt in range(40):
+    # Wall-clock budget, not emulated-frame budget: run(4) is 4 REAL seconds.
+    # The trade scene is ~40 s of in-game animation, so on a loaded machine
+    # (another emulator competing for CPU) 40 x 4 s can expire mid-scene and
+    # report a false "scene never completed". 120 attempts = up to 8 min.
+    for attempt in range(120):
         run(4)
         if (rd(CTX2, 1) == 0 and rd(CB2, 4) == CB2_OVERWORLD
                 and rd(PARTY_COUNT, 1) != 0):

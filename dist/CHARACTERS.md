@@ -26,8 +26,8 @@ of your party; off-roster wild Pokemon cannot be caught.
 | 12 | Erika | Gym Leader | Oddish | 82 |
 | 13 | Sabrina | Gym Leader | Abra | 82 |
 | 14 | Blaine | Gym Leader | Growlithe | 75 |
-| 15 | Giovanni | Villain | Rhyhorn | 105 |
-| 16 | Ash | Anime | Pikachu | 90 |
+| 15 | Giovanni | Villain | Rhyhorn | 107 |
+| 16 | Ash | Anime | Pikachu | 92 |
 | 17 | Gary | Anime | Squirtle | 97 |
 | 18 | Ritchie | Anime | Pikachu | 54 |
 | 19 | Tracey | Anime | Scyther | 28 |
@@ -91,20 +91,20 @@ of your party; off-roster wild Pokemon cannot be caught.
 | 62 | Cynthia | Champion | Gible | 107 |
 | 63 | Aaron | Elite Four | Skorupi | 33 |
 | 64 | Bertha | Elite Four | Hippopotas | 33 |
-| 65 | Flint | Elite Four | Chimchar | 53 |
+| 65 | Flint | Elite Four | Chimchar | 59 |
 | 66 | Lucian | Elite Four | Bronzor | 40 |
-| 67 | Roark | Gym Leader | Cranidos | 50 |
-| 68 | Gardenia | Gym Leader | Budew | 62 |
-| 69 | Maylene | Gym Leader | Riolu | 42 |
+| 67 | Roark | Gym Leader | Cranidos | 58 |
+| 68 | Gardenia | Gym Leader | Budew | 72 |
+| 69 | Maylene | Gym Leader | Riolu | 48 |
 | 70 | Crasher Wake | Gym Leader | Buizel | 35 |
-| 71 | Fantina | Gym Leader | Misdreavus | 35 |
-| 72 | Byron | Gym Leader | Shieldon | 42 |
+| 71 | Fantina | Gym Leader | Misdreavus | 44 |
+| 72 | Byron | Gym Leader | Shieldon | 52 |
 | 73 | Candice | Gym Leader | Snorunt | 63 |
-| 74 | Volkner | Gym Leader | Shinx | 59 |
+| 74 | Volkner | Gym Leader | Shinx | 68 |
 | 75 | Barry | Rival | Piplup | 54 |
-| 76 | Cyrus | Villain | Sneasel | 55 |
-| 77 | Mars | Villain | Glameow | 44 |
-| 78 | Jupiter | Villain | Stunky | 49 |
+| 76 | Cyrus | Villain | Sneasel | 56 |
+| 77 | Mars | Villain | Glameow | 56 |
+| 78 | Jupiter | Villain | Stunky | 58 |
 | 79 | Saturn | Villain | Croagunk | 51 |
 | 80 | Paul | Anime | Elekid | 72 |
 | 81 | Zoey | Anime | Glameow | 49 |
@@ -175,12 +175,12 @@ of your party; off-roster wild Pokemon cannot be caught.
 | 131 | Gladion | Rival | Type:　Null | 85 |
 | 132 | Guzma | Villain | Wimpod | 42 |
 | 133 | Plumeria | Villain | Salandit | 38 |
-| 134 | Lusamine | Villain | Stufful | 74 |
-| 135 | Lillie (anime) | Anime | Vulpix | 71 |
+| 134 | Lusamine | Villain | Stufful | 98 |
+| 135 | Lillie (anime) | Anime | Vulpix | 72 |
 | 136 | Kiawe (anime) | Anime | Turtonator | 52 |
 | 137 | Lana (anime) | Anime | Popplio | 63 |
 | 138 | Mallow (anime) | Anime | Bounsweet | 38 |
-| 139 | Sophocles | Anime | Togedemaru | 51 |
+| 139 | Sophocles | Anime | Togedemaru | 60 |
 
 ## Generation 8
 
@@ -203,3 +203,55 @@ of your party; off-roster wild Pokemon cannot be caught.
 | 154 | Rose | Villain | Cufant | 27 |
 | 155 | Goh | Anime | Scorbunny | 95 |
 | 156 | Chloe | Anime | Eevee | 58 |
+
+## Generation 1
+
+| # | Character | Category | Starter | Roster size |
+|---|-----------|----------|---------|-------------|
+| 157 | Oak | Professor | Bulbasaur | 34 |
+
+## Generation 2
+
+| # | Character | Category | Starter | Roster size |
+|---|-----------|----------|---------|-------------|
+| 158 | Elm | Professor | Ekans | 41 |
+
+## Generation 3
+
+| # | Character | Category | Starter | Roster size |
+|---|-----------|----------|---------|-------------|
+| 159 | Birch | Professor | Bulbasaur | 83 |
+
+## Generation 4
+
+| # | Character | Category | Starter | Roster size |
+|---|-----------|----------|---------|-------------|
+| 160 | Rowan | Professor | Onix | 30 |
+
+## Generation 5
+
+| # | Character | Category | Starter | Roster size |
+|---|-----------|----------|---------|-------------|
+| 161 | Juniper | Professor | Pichu | 35 |
+
+## Generation 6
+
+| # | Character | Category | Starter | Roster size |
+|---|-----------|----------|---------|-------------|
+| 162 | Sycamore | Professor | Bulbasaur | 38 |
+
+## Generation 7
+
+| # | Character | Category | Starter | Roster size |
+|---|-----------|----------|---------|-------------|
+| 163 | Burnet | Professor | Munchlax | 21 |
+| 164 | Samson Oak | Professor | Rattata | 50 |
+
+## Generation 8
+
+| # | Character | Category | Starter | Roster size |
+|---|-----------|----------|---------|-------------|
+| 165 | Magnolia | Professor | Bronzor | 18 |
+| 166 | Sonia | Professor | Charmander | 21 |
+| 167 | Laventon | Professor | Cyndaquil | 15 |
+| 168 | Cerise | Professor | Bulbasaur | 35 |
