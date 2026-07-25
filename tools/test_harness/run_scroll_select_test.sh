@@ -2,6 +2,10 @@
 # Live catch-gate test driver (see scroll_select_test.gdb). Phase-1 masher
 # plays to free-roam, then the gdb script takes over ALL input (choreographed
 # presses), so the masher is killed before the injection.
+# Bash-only (uses $SECONDS, and set -u makes a wrong shell fail silently in
+# a background subshell -- that is exactly how a dead key-masher once looked
+# like a stuck trade scene). Re-exec under bash if invoked as `sh <script>`.
+[ -n "${BASH_VERSION:-}" ] || exec bash "$0" "$@"
 set -u
 HERE="$(cd "$(dirname "$0")" && pwd)"
 ROOT="$(cd "$HERE/../.." && pwd)"

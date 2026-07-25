@@ -2,6 +2,10 @@
 # Organic intro-reach driver (see organic_intro.gdb): fresh save, blind
 # x-masher (same pattern that reaches free-roam in the live-test harnesses),
 # periodic F12 screenshots for visual evidence of the prompt.
+# Bash-only (uses $SECONDS, and set -u makes a wrong shell fail silently in
+# a background subshell -- that is exactly how a dead key-masher once looked
+# like a stuck trade scene). Re-exec under bash if invoked as `sh <script>`.
+[ -n "${BASH_VERSION:-}" ] || exec bash "$0" "$@"
 set -u
 HERE="$(cd "$(dirname "$0")" && pwd)"
 ROOT="$(cd "$HERE/../.." && pwd)"

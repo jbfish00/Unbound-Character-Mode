@@ -121,24 +121,37 @@ if ok:
         return (rd(CTX2, 1) == 0 and rd(CB2, 4) == CB2_OVERWORLD
                 and rd(PARTY_COUNT, 1) != 0)
 
-    # Phase 1: ONE long uninterrupted continue. run(N) chops execution with a
-    # SIGINT every N seconds, and CFRU input handling is unreliable across
-    # those slices (docs/ROUTINE_MAP.md: the naming/number screen ignores
-    # sliced presses; organic_select.gdb solves it the same way). The masher
-    # is already pressing on wall-clock time, so give the scene one clean run.
-    run(int(os.environ.get("TRADE_SCENE_SECS", "150")))
-    done = scene_done()
-    # Phase 2: short polls, in case the scene just needed a little longer.
-    if not done:
-        for attempt in range(30):
-            run(4)
-            if scene_done():
-                done = True
-                break
+    # Poll for completion while the runner's background masher answers the
+    # scene's press-A prompts. keys_seen proves that input is actually
+    # reaching the emulator: if the masher dies (e.g. the runner is invoked
+    # with `sh` instead of bash, so $SECONDS is unset under set -u), the scene
+    # simply waits forever at a prompt and every check below fails in a way
+    # that looks like a broken ROM. Assert the input path, don't assume it.
+    done = False
+    keys_seen = 0
+    for attempt in range(40):
+        run(4)
+        keys_seen |= rd(0x03003118, 2)
+        if scene_done():
+            done = True
+            break
+    print(f"T2a scene input path alive (key bits seen, want 1): "
+          f"{1 if keys_seen else 0}  [{keys_seen:#06x}]")
     if not done:
         print(f"diag stuck: cb1={rd(CB1,4):#010x} cb2={rd(CB2,4):#010x} "
               f"ctx2={rd(CTX2,1)} heldRaw={rd(0x03003118,2):#06x} "
               f"newKeys={rd(0x0300311E,2):#06x} count={rd(PARTY_COUNT,1)}")
+        # The in-game trade animation dispatches on a u16 state at
+        # *(0x02031DAC) + 0x94 (bound 0x10B, jump table 0x08050F6C); +0x108
+        # picks the in-game vs link path (0 -> link handler 0x0805232C).
+        # Reading it says exactly which animation step never advances.
+        tp = rd(0x02031DAC, 4)
+        if 0x02000000 <= tp < 0x02040000:
+            print(f"diag trade anim: struct={tp:#010x} state={rd(tp + 0x94, 2)} "
+                  f"pathbyte={rd(tp + 0x108, 1)}")
+        else:
+            print(f"diag trade anim: struct ptr not set ({tp:#010x}) "
+                  "-- the animation never initialised")
         # Which task is the scene sitting in, and in which state? gTasks
         # 0x03005090 (stride 0x28: func@+0, isActive@+4, prio@+7, data@+8);
         # the in-game-trade scene task is 0x08054471, created by special 0xFE
