@@ -132,7 +132,7 @@ if reached:
     shot()
     print(f"G2 mode enabled by the organic flow (want 1): {flag}")
     print(f"info: chosen character id = {var}, typed rounds = {typed}")
-    print(f"G3 character id valid 1-168 (want 1): {1 if 1 <= var <= 168 else 0}")
+    print(f"G3 character id valid 1-178 (want 1): {1 if 1 <= var <= 178 else 0}")
 
     # keep playing: the intro must continue (story cutscene) and reach the
     # overworld with the mode state intact

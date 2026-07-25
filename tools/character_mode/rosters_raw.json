@@ -165,6 +165,24 @@
    "Yamask"
   ]
  },
+ "Anabel": {
+  "category": "frontier",
+  "gen": 3,
+  "page": "Anabel",
+  "species": [
+   "Alakazam",
+   "Entei",
+   "Espeon",
+   "Latios",
+   "Lucario",
+   "Metagross",
+   "Mismagius",
+   "Raikou",
+   "Salamence",
+   "Snorlax",
+   "Weavile"
+  ]
+ },
  "Archer": {
   "category": "villain",
   "gen": 2,
@@ -602,6 +620,23 @@
    "Tyranitar",
    "Vaporeon",
    "Venusaur",
+   "Zapdos"
+  ]
+ },
+ "Brandon": {
+  "category": "frontier",
+  "gen": 3,
+  "page": "Brandon + Brandon (anime)",
+  "species": [
+   "Articuno",
+   "Dusclops",
+   "Moltres",
+   "Ninjask",
+   "Regice",
+   "Regigigas",
+   "Regirock",
+   "Registeel",
+   "Solrock",
    "Zapdos"
   ]
  },
@@ -1525,6 +1560,31 @@
    "Weavile"
   ]
  },
+ "Dahlia": {
+  "category": "frontier",
+  "gen": 4,
+  "page": "Dahlia",
+  "species": [
+   "Blaziken",
+   "Dusknoir",
+   "Ludicolo",
+   "Medicham",
+   "Togekiss",
+   "Zapdos"
+  ]
+ },
+ "Darach": {
+  "category": "frontier",
+  "gen": 4,
+  "page": "Darach",
+  "species": [
+   "Empoleon",
+   "Entei",
+   "Gallade",
+   "Houndoom",
+   "Staraptor"
+  ]
+ },
  "Dawn": {
   "category": "protagonist",
   "gen": 4,
@@ -2311,6 +2371,20 @@
    "Tyrunt",
    "Xerneas",
    "Yveltal"
+  ]
+ },
+ "Greta": {
+  "category": "frontier",
+  "gen": 3,
+  "page": "Greta",
+  "species": [
+   "Breloom",
+   "Gengar",
+   "Hariyama",
+   "Heracross",
+   "Medicham",
+   "Shedinja",
+   "Umbreon"
   ]
  },
  "Grimsley": {
@@ -3503,6 +3577,18 @@
    "Slowbro"
   ]
  },
+ "Lucy": {
+  "category": "frontier",
+  "gen": 3,
+  "page": "Lucy",
+  "species": [
+   "Gyarados",
+   "Milotic",
+   "Seviper",
+   "Shuckle",
+   "Steelix"
+  ]
+ },
  "Lusamine": {
   "category": "villain",
   "gen": 7,
@@ -4185,6 +4271,26 @@
    "Zamazenta"
   ]
  },
+ "Noland": {
+  "category": "frontier",
+  "gen": 3,
+  "page": "Noland",
+  "species": [
+   "Articuno",
+   "Breloom",
+   "Camerupt",
+   "Golduck",
+   "Lairon",
+   "Machamp",
+   "Manectric",
+   "Pinsir",
+   "Rhydon",
+   "Rhyhorn",
+   "Sandslash",
+   "Trapinch",
+   "Venusaur"
+  ]
+ },
  "Norman": {
   "category": "gymleader",
   "gen": 3,
@@ -4296,6 +4402,19 @@
    "Sirfetch'd",
    "Togekiss",
    "Weezing"
+  ]
+ },
+ "Palmer": {
+  "category": "frontier",
+  "gen": 4,
+  "page": "Palmer",
+  "species": [
+   "Cresselia",
+   "Dragonite",
+   "Heatran",
+   "Milotic",
+   "Regigigas",
+   "Rhyperior"
   ]
  },
  "Paul": {
@@ -5031,6 +5150,24 @@
    "Wailmer"
   ]
  },
+ "Spenser": {
+  "category": "frontier",
+  "gen": 3,
+  "page": "Spenser",
+  "species": [
+   "Arcanine",
+   "Azurill",
+   "Chansey",
+   "Claydol",
+   "Crobat",
+   "Dusclops",
+   "Lapras",
+   "Shiftry",
+   "Slaking",
+   "Suicune",
+   "Venusaur"
+  ]
+ },
  "Steven": {
   "category": "champion",
   "gen": 3,
@@ -5168,6 +5305,19 @@
    "Tranquill",
    "Vanillite",
    "Venipede"
+  ]
+ },
+ "Tucker": {
+  "category": "frontier",
+  "gen": 3,
+  "page": "Tucker",
+  "species": [
+   "Arcanine",
+   "Charizard",
+   "Latias",
+   "Metagross",
+   "Salamence",
+   "Swampert"
   ]
  },
  "Valerie": {

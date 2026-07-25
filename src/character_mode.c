@@ -606,7 +606,7 @@ __attribute__((noinline)) void CharacterMode_SelfTestDone(void)
  * list machinery at 0x080CB7C4 asks two tiny CFRU getters for the list.
  * We trampoline BOTH getters (0x09EB48B8 / 0x09EB48D4, wired in
  * tools/build_patch.py) to these replacements: a magic set index returns
- * the 168 character names; anything else reproduces the originals exactly
+ * the 178 character names; anything else reproduces the originals exactly
  * (including Unbound's own idx>31 clamp-to-0), so every existing menu in
  * the game behaves identically.
  *
@@ -700,7 +700,7 @@ void CharacterMode_RunSelfTest(void)
     FlagSet(FLAG_CHARACTER_MODE);
     VarSet(VAR_CHARACTER_ID, 1);
     r[n++] = InCharacterMode();                      /* B1 want 1 */
-    r[n++] = (u8)GetCharacterCount();                /* B2 want 168 */
+    r[n++] = (u8)GetCharacterCount();                /* B2 want 178 */
     r[n++] = IsSpeciesAllowedForCharacter(25);       /* B3 Pikachu want 1 */
     r[n++] = IsSpeciesAllowedForCharacter(6);        /* B4 Charizard (family expansion) want 1 */
     r[n++] = IsSpeciesAllowedForCharacter(150);      /* B5 Mewtwo want 0 */

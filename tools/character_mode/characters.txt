@@ -211,3 +211,19 @@ Magnolia | Professor Magnolia | professor | 8
 Sonia | Sonia | professor | 8
 Laventon | Professor Laventon | professor | 8
 Cerise | Professor Cerise | professor | 8
+
+# --- Frontier Brains (added 2026-07-24, user request: all Frontier Brains from
+# every game; rosters = union of game Frontier teams + anime teams, PINNED in
+# rosters_raw.json like Tobias -- a blind re-scrape credits them with their
+# opponents' Pokemon. Thorton/Argenta excluded: rental-facility Brains with no
+# team of their own and no anime appearance -> empty roster = unplayable.
+Anabel | Anabel | frontier | 3
+Brandon | Brandon + Brandon (anime) | frontier | 3
+Greta | Greta | frontier | 3
+Lucy | Lucy | frontier | 3
+Noland | Noland | frontier | 3
+Spenser | Spenser | frontier | 3
+Tucker | Tucker | frontier | 3
+Dahlia | Dahlia | frontier | 4
+Darach | Darach | frontier | 4
+Palmer | Palmer | frontier | 4

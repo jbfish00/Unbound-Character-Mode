@@ -505,6 +505,57 @@
    }
   ]
  },
+ "Anabel": {
+  "category": "frontier",
+  "gen": 3,
+  "page": "Anabel",
+  "species": [
+   {
+    "const": "SPECIES_ABRA",
+    "id": 63
+   },
+   {
+    "const": "SPECIES_EEVEE",
+    "id": 133
+   },
+   {
+    "const": "SPECIES_MISDREAVUS",
+    "id": 200
+   },
+   {
+    "const": "SPECIES_SNEASEL",
+    "id": 215
+   },
+   {
+    "const": "SPECIES_RAIKOU",
+    "id": 243
+   },
+   {
+    "const": "SPECIES_ENTEI",
+    "id": 244
+   },
+   {
+    "const": "SPECIES_BAGON",
+    "id": 395
+   },
+   {
+    "const": "SPECIES_BELDUM",
+    "id": 398
+   },
+   {
+    "const": "SPECIES_LATIOS",
+    "id": 408
+   },
+   {
+    "const": "SPECIES_MUNCHLAX",
+    "id": 499
+   },
+   {
+    "const": "SPECIES_RIOLU",
+    "id": 500
+   }
+  ]
+ },
  "Archer": {
   "category": "villain",
   "gen": 2,
@@ -1810,6 +1861,53 @@
    {
     "const": "SPECIES_LARVITAR",
     "id": 246
+   }
+  ]
+ },
+ "Brandon": {
+  "category": "frontier",
+  "gen": 3,
+  "page": "Brandon + Brandon (anime)",
+  "species": [
+   {
+    "const": "SPECIES_ARTICUNO",
+    "id": 144
+   },
+   {
+    "const": "SPECIES_ZAPDOS",
+    "id": 145
+   },
+   {
+    "const": "SPECIES_MOLTRES",
+    "id": 146
+   },
+   {
+    "const": "SPECIES_NINCADA",
+    "id": 301
+   },
+   {
+    "const": "SPECIES_SOLROCK",
+    "id": 349
+   },
+   {
+    "const": "SPECIES_DUSKULL",
+    "id": 361
+   },
+   {
+    "const": "SPECIES_REGIROCK",
+    "id": 401
+   },
+   {
+    "const": "SPECIES_REGICE",
+    "id": 402
+   },
+   {
+    "const": "SPECIES_REGISTEEL",
+    "id": 403
+   },
+   {
+    "const": "SPECIES_REGIGIGAS",
+    "id": 539
    }
   ]
  },
@@ -4500,6 +4598,64 @@
    }
   ]
  },
+ "Dahlia": {
+  "category": "frontier",
+  "gen": 4,
+  "page": "Dahlia",
+  "species": [
+   {
+    "const": "SPECIES_ZAPDOS",
+    "id": 145
+   },
+   {
+    "const": "SPECIES_TOGEPI",
+    "id": 175
+   },
+   {
+    "const": "SPECIES_TORCHIC",
+    "id": 280
+   },
+   {
+    "const": "SPECIES_LOTAD",
+    "id": 295
+   },
+   {
+    "const": "SPECIES_MEDITITE",
+    "id": 356
+   },
+   {
+    "const": "SPECIES_DUSKULL",
+    "id": 361
+   }
+  ]
+ },
+ "Darach": {
+  "category": "frontier",
+  "gen": 4,
+  "page": "Darach",
+  "species": [
+   {
+    "const": "SPECIES_HOUNDOUR",
+    "id": 228
+   },
+   {
+    "const": "SPECIES_ENTEI",
+    "id": 244
+   },
+   {
+    "const": "SPECIES_RALTS",
+    "id": 392
+   },
+   {
+    "const": "SPECIES_PIPLUP",
+    "id": 446
+   },
+   {
+    "const": "SPECIES_STARLY",
+    "id": 449
+   }
+  ]
+ },
  "Dawn": {
   "category": "protagonist",
   "gen": 4,
@@ -6862,6 +7018,41 @@
    {
     "const": "SPECIES_YVELTAL",
     "id": 825
+   }
+  ]
+ },
+ "Greta": {
+  "category": "frontier",
+  "gen": 3,
+  "page": "Greta",
+  "species": [
+   {
+    "const": "SPECIES_GASTLY",
+    "id": 92
+   },
+   {
+    "const": "SPECIES_EEVEE",
+    "id": 133
+   },
+   {
+    "const": "SPECIES_HERACROSS",
+    "id": 214
+   },
+   {
+    "const": "SPECIES_NINCADA",
+    "id": 301
+   },
+   {
+    "const": "SPECIES_SHROOMISH",
+    "id": 306
+   },
+   {
+    "const": "SPECIES_MAKUHITA",
+    "id": 335
+   },
+   {
+    "const": "SPECIES_MEDITITE",
+    "id": 356
    }
   ]
  },
@@ -10432,6 +10623,33 @@
    }
   ]
  },
+ "Lucy": {
+  "category": "frontier",
+  "gen": 3,
+  "page": "Lucy",
+  "species": [
+   {
+    "const": "SPECIES_ONIX",
+    "id": 95
+   },
+   {
+    "const": "SPECIES_MAGIKARP",
+    "id": 129
+   },
+   {
+    "const": "SPECIES_SHUCKLE",
+    "id": 213
+   },
+   {
+    "const": "SPECIES_FEEBAS",
+    "id": 328
+   },
+   {
+    "const": "SPECIES_SEVIPER",
+    "id": 379
+   }
+  ]
+ },
  "Lusamine": {
   "category": "villain",
   "gen": 7,
@@ -12511,6 +12729,61 @@
    }
   ]
  },
+ "Noland": {
+  "category": "frontier",
+  "gen": 3,
+  "page": "Noland",
+  "species": [
+   {
+    "const": "SPECIES_BULBASAUR",
+    "id": 1
+   },
+   {
+    "const": "SPECIES_SANDSHREW",
+    "id": 27
+   },
+   {
+    "const": "SPECIES_PSYDUCK",
+    "id": 54
+   },
+   {
+    "const": "SPECIES_MACHOP",
+    "id": 66
+   },
+   {
+    "const": "SPECIES_RHYHORN",
+    "id": 111
+   },
+   {
+    "const": "SPECIES_PINSIR",
+    "id": 127
+   },
+   {
+    "const": "SPECIES_ARTICUNO",
+    "id": 144
+   },
+   {
+    "const": "SPECIES_SHROOMISH",
+    "id": 306
+   },
+   {
+    "const": "SPECIES_TRAPINCH",
+    "id": 332
+   },
+   {
+    "const": "SPECIES_ELECTRIKE",
+    "id": 337
+   },
+   {
+    "const": "SPECIES_NUMEL",
+    "id": 339
+   },
+   {
+    "const": "SPECIES_ARON",
+    "id": 382
+   }
+  ]
+ },
  "Norman": {
   "category": "gymleader",
   "gen": 3,
@@ -12843,6 +13116,37 @@
    {
     "const": "SPECIES_FARFETCHD_G",
     "id": 1217
+   }
+  ]
+ },
+ "Palmer": {
+  "category": "frontier",
+  "gen": 4,
+  "page": "Palmer",
+  "species": [
+   {
+    "const": "SPECIES_RHYHORN",
+    "id": 111
+   },
+   {
+    "const": "SPECIES_DRATINI",
+    "id": 147
+   },
+   {
+    "const": "SPECIES_FEEBAS",
+    "id": 328
+   },
+   {
+    "const": "SPECIES_HEATRAN",
+    "id": 538
+   },
+   {
+    "const": "SPECIES_REGIGIGAS",
+    "id": 539
+   },
+   {
+    "const": "SPECIES_CRESSELIA",
+    "id": 541
    }
   ]
  },
@@ -15016,6 +15320,57 @@
    }
   ]
  },
+ "Spenser": {
+  "category": "frontier",
+  "gen": 3,
+  "page": "Spenser",
+  "species": [
+   {
+    "const": "SPECIES_BULBASAUR",
+    "id": 1
+   },
+   {
+    "const": "SPECIES_ZUBAT",
+    "id": 41
+   },
+   {
+    "const": "SPECIES_GROWLITHE",
+    "id": 58
+   },
+   {
+    "const": "SPECIES_LAPRAS",
+    "id": 131
+   },
+   {
+    "const": "SPECIES_SUICUNE",
+    "id": 245
+   },
+   {
+    "const": "SPECIES_SEEDOT",
+    "id": 298
+   },
+   {
+    "const": "SPECIES_BALTOY",
+    "id": 318
+   },
+   {
+    "const": "SPECIES_AZURILL",
+    "id": 350
+   },
+   {
+    "const": "SPECIES_DUSKULL",
+    "id": 361
+   },
+   {
+    "const": "SPECIES_SLAKOTH",
+    "id": 364
+   },
+   {
+    "const": "SPECIES_HAPPINY",
+    "id": 493
+   }
+  ]
+ },
  "Steven": {
   "category": "champion",
   "gen": 3,
@@ -15404,6 +15759,37 @@
    {
     "const": "SPECIES_LITWICK",
     "id": 660
+   }
+  ]
+ },
+ "Tucker": {
+  "category": "frontier",
+  "gen": 3,
+  "page": "Tucker",
+  "species": [
+   {
+    "const": "SPECIES_CHARMANDER",
+    "id": 4
+   },
+   {
+    "const": "SPECIES_GROWLITHE",
+    "id": 58
+   },
+   {
+    "const": "SPECIES_MUDKIP",
+    "id": 283
+   },
+   {
+    "const": "SPECIES_BAGON",
+    "id": 395
+   },
+   {
+    "const": "SPECIES_BELDUM",
+    "id": 398
+   },
+   {
+    "const": "SPECIES_LATIAS",
+    "id": 407
    }
   ]
  },

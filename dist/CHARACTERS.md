@@ -255,3 +255,23 @@ of your party; off-roster wild Pokemon cannot be caught.
 | 166 | Sonia | Professor | Charmander | 21 |
 | 167 | Laventon | Professor | Cyndaquil | 15 |
 | 168 | Cerise | Professor | Bulbasaur | 35 |
+
+## Generation 3
+
+| # | Character | Category | Starter | Roster size |
+|---|-----------|----------|---------|-------------|
+| 169 | Anabel | Frontier Brain | Abra | 29 |
+| 170 | Brandon | Frontier Brain | Nincada | 14 |
+| 171 | Greta | Frontier Brain | Gastly | 22 |
+| 172 | Lucy | Frontier Brain | Onix | 8 |
+| 173 | Noland | Frontier Brain | Bulbasaur | 27 |
+| 174 | Spenser | Frontier Brain | Bulbasaur | 27 |
+| 175 | Tucker | Frontier Brain | Charmander | 15 |
+
+## Generation 4
+
+| # | Character | Category | Starter | Roster size |
+|---|-----------|----------|---------|-------------|
+| 176 | Dahlia | Frontier Brain | Togepi | 15 |
+| 177 | Darach | Frontier Brain | Houndour | 13 |
+| 178 | Palmer | Frontier Brain | Rhyhorn | 11 |

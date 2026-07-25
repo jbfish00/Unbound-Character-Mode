@@ -56,7 +56,7 @@ vb2 = rd(VBLANK, 4)
 print(f"O1 splice reached organically (breadcrumb) (want 1): {1 if crumb == 0xCA11 else 0}")
 print(f"O2 game alive after intro (want 1): {1 if vb2 > vb1 else 0}")
 print(f"O3 mode state consistent (flag=>valid id) (want 1): "
-      f"{1 if (flag == 0 or (1 <= var <= 168)) else 0}")
+      f"{1 if (flag == 0 or (1 <= var <= 178)) else 0}")
 print(f"diag: final flag={flag} var51FC={var}")
 end
 

@@ -42,7 +42,7 @@ NON_EVOLUTION_METHODS = {"EVO_MEGA", "EVO_GIGANTAMAX"}
 CATEGORY_LABEL = {
     "protagonist": "Protagonist", "rival": "Rival", "gymleader": "Gym Leader",
     "elite4": "Elite Four", "champion": "Champion", "villain": "Villain",
-    "anime": "Anime", "professor": "Professor",
+    "anime": "Anime", "professor": "Professor", "frontier": "Frontier Brain",
 }
 
 SPRITE_URL = ("https://cdn.jsdelivr.net/gh/PokeAPI/sprites@master"
