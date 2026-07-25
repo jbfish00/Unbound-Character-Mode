@@ -263,7 +263,7 @@ of your party; off-roster wild Pokemon cannot be caught.
 | 169 | Anabel | Frontier Brain | Abra | 29 |
 | 170 | Brandon | Frontier Brain | Nincada | 14 |
 | 171 | Greta | Frontier Brain | Gastly | 22 |
-| 172 | Lucy | Frontier Brain | Onix | 8 |
+| 172 | Lucy | Frontier Brain | Abra | 24 |
 | 173 | Noland | Frontier Brain | Bulbasaur | 27 |
 | 174 | Spenser | Frontier Brain | Bulbasaur | 27 |
 | 175 | Tucker | Frontier Brain | Charmander | 15 |

@@ -10629,6 +10629,10 @@
   "page": "Lucy",
   "species": [
    {
+    "const": "SPECIES_ABRA",
+    "id": 63
+   },
+   {
     "const": "SPECIES_ONIX",
     "id": 95
    },
@@ -10637,16 +10641,36 @@
     "id": 129
    },
    {
+    "const": "SPECIES_CYNDAQUIL",
+    "id": 155
+   },
+   {
     "const": "SPECIES_SHUCKLE",
     "id": 213
+   },
+   {
+    "const": "SPECIES_SWINUB",
+    "id": 220
+   },
+   {
+    "const": "SPECIES_SKITTY",
+    "id": 315
    },
    {
     "const": "SPECIES_FEEBAS",
     "id": 328
    },
    {
+    "const": "SPECIES_MAKUHITA",
+    "id": 335
+   },
+   {
     "const": "SPECIES_SEVIPER",
     "id": 379
+   },
+   {
+    "const": "SPECIES_MUNCHLAX",
+    "id": 499
    }
   ]
  },
