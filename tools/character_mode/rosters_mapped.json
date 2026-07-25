@@ -12648,6 +12648,10 @@
     "id": 144
    },
    {
+    "const": "SPECIES_DRATINI",
+    "id": 147
+   },
+   {
     "const": "SPECIES_MEWTWO",
     "id": 150
    },
@@ -12658,6 +12662,10 @@
    {
     "const": "SPECIES_PICHU",
     "id": 172
+   },
+   {
+    "const": "SPECIES_ROTOM",
+    "id": 532
    },
    {
     "const": "SPECIES_MELTAN",

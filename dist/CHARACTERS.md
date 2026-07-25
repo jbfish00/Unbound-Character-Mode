@@ -208,7 +208,7 @@ of your party; off-roster wild Pokemon cannot be caught.
 
 | # | Character | Category | Starter | Roster size |
 |---|-----------|----------|---------|-------------|
-| 157 | Oak | Professor | Bulbasaur | 34 |
+| 157 | Oak | Professor | Bulbasaur | 38 |
 
 ## Generation 2
 
