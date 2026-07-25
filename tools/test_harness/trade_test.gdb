@@ -117,17 +117,42 @@ if ok:
     # polls gMain.newKeys & A_BUTTON) — the driver script runs a second
     # masher until we touch the sentinel file below. Poll for completion:
     # script context idle again, overworld CB2 back, party populated.
-    done = False
-    # Wall-clock budget, not emulated-frame budget: run(4) is 4 REAL seconds.
-    # The trade scene is ~40 s of in-game animation, so on a loaded machine
-    # (another emulator competing for CPU) 40 x 4 s can expire mid-scene and
-    # report a false "scene never completed". 120 attempts = up to 8 min.
-    for attempt in range(120):
-        run(4)
-        if (rd(CTX2, 1) == 0 and rd(CB2, 4) == CB2_OVERWORLD
-                and rd(PARTY_COUNT, 1) != 0):
-            done = True
-            break
+    def scene_done():
+        return (rd(CTX2, 1) == 0 and rd(CB2, 4) == CB2_OVERWORLD
+                and rd(PARTY_COUNT, 1) != 0)
+
+    # Phase 1: ONE long uninterrupted continue. run(N) chops execution with a
+    # SIGINT every N seconds, and CFRU input handling is unreliable across
+    # those slices (docs/ROUTINE_MAP.md: the naming/number screen ignores
+    # sliced presses; organic_select.gdb solves it the same way). The masher
+    # is already pressing on wall-clock time, so give the scene one clean run.
+    run(int(os.environ.get("TRADE_SCENE_SECS", "150")))
+    done = scene_done()
+    # Phase 2: short polls, in case the scene just needed a little longer.
+    if not done:
+        for attempt in range(30):
+            run(4)
+            if scene_done():
+                done = True
+                break
+    if not done:
+        print(f"diag stuck: cb1={rd(CB1,4):#010x} cb2={rd(CB2,4):#010x} "
+              f"ctx2={rd(CTX2,1)} heldRaw={rd(0x03003118,2):#06x} "
+              f"newKeys={rd(0x0300311E,2):#06x} count={rd(PARTY_COUNT,1)}")
+        # Which task is the scene sitting in, and in which state? gTasks
+        # 0x03005090 (stride 0x28: func@+0, isActive@+4, prio@+7, data@+8);
+        # the in-game-trade scene task is 0x08054471, created by special 0xFE
+        # (CreateTask(func, 10) at 0x0805444C) -- data[0] is its state index.
+        GTASKS, TRADE_TASK = 0x03005090, 0x08054471
+        for t in range(16):
+            base = GTASKS + t * 0x28
+            if rd(base + 4, 1) != 1:
+                continue
+            fn = rd(base, 4)
+            data = [rd(base + 8 + 2 * k, 2) for k in range(6)]
+            tag = "  <-- trade scene" if fn == TRADE_TASK else ""
+            print(f"diag task[{t}] func={fn:#010x} prio={rd(base+7,1)} "
+                  f"data={data}{tag}")
     open("/home/jbfish00/Documents/Character Hacks/Unbound-Character-Mode/build/.trade_done", "w").close()
     print(f"T2 trade script + scene completed (want 1): {1 if done else 0}")
 
