@@ -195,10 +195,43 @@ def main():
     print(f"threshold gate: {len(_hidden_ids)} of {len(_cm)} hidden; self-test uses "
           f"hidden id {test_hidden_id or '(none)'}, selectable id {test_shown_id}")
 
+    # Legendary-encounter self-test fixtures, also DERIVED. Split each roster
+    # into legendary / non-legendary families using the SAME wild_species_meta
+    # legendary bit the picker reads, so the test and the feature can never
+    # disagree about what counts as a legendary.
+    def _split(rec):
+        legend, plain = set(), set()
+        for _sp in (rec.get("roster_species_ids") or []):
+            if _sp >= _meta_count:
+                continue
+            _lmin, _lmax, _flags, _pad, _root = struct.unpack_from("<BBBBH", _meta, _sp * 6)
+            (legend if (_flags & 1) else plain).add(_root)
+        return legend, plain
+
+    test_legend_id = test_nolegend_id = test_alllegend_id = 0
+    for _i, _c in enumerate(_cm):
+        _legend, _plain = _split(_c)
+        if _legend and _plain and not test_legend_id:
+            test_legend_id = _i + 1                 # both kinds: once-each applies
+        if not _legend and _plain and not test_nolegend_id:
+            test_nolegend_id = _i + 1               # no legendary: must be unaffected
+        if _legend and not _plain and not test_alllegend_id:
+            test_alllegend_id = _i + 1              # §1.2 exemption (Cogita/Tobias)
+    assert test_legend_id and test_nolegend_id, (
+        "cannot derive legendary-encounter fixtures: need one character with both "
+        "legendary and non-legendary families, and one with neither")
+    _n_with_legend = sum(1 for _c in _cm if _split(_c)[0])
+    print(f"legendary encounters: {_n_with_legend} of {len(_cm)} characters have one; "
+          f"self-test uses mixed id {test_legend_id}, no-legendary id {test_nolegend_id}, "
+          f"all-legendary id {test_alllegend_id or '(none)'}")
+
     run(["arm-none-eabi-gcc", "-c", "-g", "-mthumb", "-mcpu=arm7tdmi", "-mtune=arm7tdmi",
          "-O2", "-ffreestanding", "-fno-builtin", "-mlong-calls", "-Wall", "-Wextra",
          f"-DMAX_WILD_FAMILY_ROOTS={max_wild_roots}",
          f"-DTEST_HIDDEN_ID={test_hidden_id}", f"-DTEST_SHOWN_ID={test_shown_id}",
+         f"-DTEST_LEGEND_CHAR_ID={test_legend_id}",
+         f"-DTEST_NOLEGEND_CHAR_ID={test_nolegend_id}",
+         f"-DTEST_ALLLEGEND_CHAR_ID={test_alllegend_id}",
          "-Werror", "-o", obj, os.path.join(ROOT, "src", "character_mode.c")])
 
     # 3. layout: [characters.bin][rosters.bin][names.bin][u16 count][pad]

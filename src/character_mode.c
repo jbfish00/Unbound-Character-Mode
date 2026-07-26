@@ -358,6 +358,9 @@ static u32 CharacterMode_UMod(u32 value, u32 modulus)
 #define WILD_META_COUNT 1294 /* donor include/species.h NUM_SPECIES, 2026-07-17 */
 #define WILD_META_LEGENDARY 0x1
 #define WILD_OVERRIDE_CHANCE_PERCENT 10
+/* Independent of the 10% roll above, not carved out of it: carving would
+ * change the feel of an already-shipped feature. */
+#define WILD_LEGENDARY_CHANCE_PERCENT 1
 /* Supplied by the injector (-DMAX_WILD_FAMILY_ROOTS), computed from the real
  * rosters with margin. It was a hardcoded 48 described as "generous: no roster
  * has this many distinct lines" -- which stopped being true: Goh reaches 83,
@@ -379,16 +382,82 @@ struct WildSpeciesMetaBin
 
 extern const struct WildSpeciesMetaBin gWildSpeciesMeta[]; /* WILD_META_COUNT entries */
 
+/* ---- Pokedex "already caught" filter (game_plans/legendary_encounters.md
+ *      §1.3) ----
+ *
+ * Both addresses RE-VERIFIED byte-exact in THIS ROM by disassembly rather than
+ * copied from the sibling project: SpeciesToNationalPokedexNum reads a u16 from
+ * the table at 0x09A41FEC indexed by (species-1) and returns 0 for species 0;
+ * GetSetPokedexFlag does `movs r2,#0` before tail-calling its worker, which is
+ * exactly what makes it take a NATIONAL DEX NUMBER rather than a species id.
+ *
+ * ⚠️ Species id != national dex number in this ROM (species 386 is Volbeat,
+ * natdex 313). Passing a species id here would silently filter the wrong
+ * Pokemon, and would look like the feature just never firing. */
+#define FLAG_GET_CAUGHT 1
+
+extern u16 SpeciesToNationalPokedexNum(u16 species);
+/* Really returns s8 (the ROM sign-extends r0 with lsls/asrs #24); this header
+ * has no s8 typedef and the value is only ever tested against zero. */
+extern int GetSetPokedexFlag(u16 nationalDexNo, u8 caseId);
+
+static bool8 CharacterMode_AlreadyCaught(u16 species)
+{
+    u16 dexNum = SpeciesToNationalPokedexNum(species);
+
+    /* No dex entry of its own -> never offer it. The engine's own
+     * FixPokedexCheckNullSpeciesHook already guards natdex 0, but a species
+     * the dex cannot represent is not something to spawn as a "catch this
+     * once" reward either, so this is filtered here too and does not depend
+     * on that hook staying in place. */
+    if (dexNum == 0)
+        return TRUE;
+    return GetSetPokedexFlag(dexNum, FLAG_GET_CAUGHT) != 0;
+}
+
+/* Does this character have anything NON-legendary to find? Drives the §1.2
+ * exemption: a roster that is entirely legendary (Cogita, Tobias) keeps its
+ * legendaries repeatable, because otherwise catching the one family would
+ * leave that character able to catch nothing at all for the rest of the run --
+ * while still being selectable, since the playability threshold exempts them
+ * precisely FOR having a legendary.
+ *
+ * Deliberately does not reuse the picker to answer this: the picker consumes
+ * Random(), and a probe that perturbs the RNG stream would change encounter
+ * behaviour just by being asked a question. */
+static bool8 CharacterMode_HasNonLegendaryFamily(const struct CharacterRecordBin *character)
+{
+    const u16 *roster;
+    u32 i;
+
+    if (character == 0)
+        return FALSE;
+    roster = (const u16 *)((const u8 *)gCharacterRosters + character->rosterOffset);
+    for (i = 0; roster[i] != SPECIES_NONE; i++)
+    {
+        u16 sp = roster[i];
+
+        if (sp < WILD_META_COUNT && !(gWildSpeciesMeta[sp].flags & WILD_META_LEGENDARY))
+            return TRUE;
+    }
+    return FALSE;
+}
+
 /* Decision core (factored out so the self-test can drive it directly, same
- * pattern as CharacterMode_SubstituteGiftSpecies). Picks a random non-
- * legendary evolution LINE present in the active character's roster, then
- * within that line the stage whose canon level range best matches
- * rolledLevel (exact containment first, else nearest boundary). Returns
- * SPECIES_NONE if there's no character active, the roster is empty, or
- * every roster member is legendary/mythical (leaves the vanilla roll
- * alone in that case — an all-legendary override would either be
- * impossible or would violate the "never a legendary" rule). */
-u16 CharacterMode_PickWildRosterSpecies(u16 rolledLevel)
+ * pattern as CharacterMode_SubstituteGiftSpecies). Picks a random evolution
+ * LINE present in the active character's roster whose legendary-ness matches
+ * `wantLegendary`, then within that line the stage whose canon level range
+ * best matches rolledLevel (exact containment first, else nearest boundary).
+ * When skipCaught is set, members already recorded as caught in the Pokedex
+ * are excluded -- that is what makes a legendary a once-each reward.
+ *
+ * ONE family buffer, selected by flag, deliberately: a second parallel array
+ * would double a 192-byte stack allocation against the stack assert in
+ * tools/build_patch.py. Returns SPECIES_NONE if there is no character active,
+ * the roster is empty, or nothing matches -- which the caller treats as
+ * "leave the vanilla roll alone", never as a substitution to species 0. */
+static u16 CharacterMode_PickWildFamily(u16 rolledLevel, bool8 wantLegendary,
+                                        bool8 skipCaught)
 {
     const struct CharacterRecordBin *character = GetActiveCharacter();
     const u16 *roster;
@@ -411,7 +480,11 @@ u16 CharacterMode_PickWildRosterSpecies(u16 rolledLevel)
         u32 j;
         bool8 dup;
 
-        if (sp >= WILD_META_COUNT || (gWildSpeciesMeta[sp].flags & WILD_META_LEGENDARY))
+        if (sp >= WILD_META_COUNT)
+            continue;
+        if (((gWildSpeciesMeta[sp].flags & WILD_META_LEGENDARY) != 0) != wantLegendary)
+            continue;
+        if (skipCaught && CharacterMode_AlreadyCaught(sp))
             continue;
         root = gWildSpeciesMeta[sp].familyRoot;
         dup = FALSE;
@@ -437,7 +510,11 @@ u16 CharacterMode_PickWildRosterSpecies(u16 rolledLevel)
         u16 sp = roster[i];
         int dist;
 
-        if (sp >= WILD_META_COUNT || (gWildSpeciesMeta[sp].flags & WILD_META_LEGENDARY))
+        if (sp >= WILD_META_COUNT)
+            continue;
+        if (((gWildSpeciesMeta[sp].flags & WILD_META_LEGENDARY) != 0) != wantLegendary)
+            continue;
+        if (skipCaught && CharacterMode_AlreadyCaught(sp))
             continue;
         if (gWildSpeciesMeta[sp].familyRoot != chosenRoot)
             continue;
@@ -458,15 +535,56 @@ u16 CharacterMode_PickWildRosterSpecies(u16 rolledLevel)
     return best;
 }
 
-/* Gate: mode off -> untouched passthrough; else 10% roll, and only replace
- * on a successful roster pick (SPECIES_NONE from the core above means
- * "leave the vanilla species alone", never a substitution to species 0). */
+/* The existing 10% override's picker: NON-legendary only, unchanged
+ * behaviour. Kept as its own entry point rather than folded into the
+ * legendary one -- unit check L9 asserts across 200 picks that this never
+ * returns a legendary, and sharing one function would make that check fail
+ * the moment legendaries became pickable at all. */
+u16 CharacterMode_PickWildRosterSpecies(u16 rolledLevel)
+{
+    return CharacterMode_PickWildFamily(rolledLevel, FALSE, FALSE);
+}
+
+/* The 1% roll's picker: legendary families only, filtered by the Pokedex so
+ * each is offered until it is caught -- except for an all-legendary roster,
+ * which stays repeatable (§1.2). */
+u16 CharacterMode_PickWildLegendarySpecies(u16 rolledLevel)
+{
+    const struct CharacterRecordBin *character = GetActiveCharacter();
+    bool8 repeatable;
+
+    if (character == 0)
+        return SPECIES_NONE;
+    repeatable = !CharacterMode_HasNonLegendaryFamily(character);
+    return CharacterMode_PickWildFamily(rolledLevel, TRUE, !repeatable);
+}
+
+/* Gate: mode off -> untouched passthrough; else two INDEPENDENT rolls, the
+ * legendary one first (game_plans/legendary_encounters.md §1.1):
+ *
+ *     1%  -> a legendary from this character's roster
+ *     10% -> a non-legendary roster member  (the existing feature, unchanged)
+ *     else   the game's own wild table
+ *
+ * Net ~1% legendary / ~9.9% roster / ~89% vanilla. A character with no
+ * legendary is unaffected: the 1% roll finds nothing to offer and falls
+ * through to exactly the behaviour it had before, at exactly the same rate.
+ * Only replace on a successful pick -- SPECIES_NONE means "leave the vanilla
+ * species alone". */
 u16 CharacterMode_MaybeOverrideWildSpecies(u16 species, u8 level)
 {
     u16 replacement;
 
     if (!InCharacterMode())
         return species;
+
+    if (CharacterMode_UMod(Random(), 100) < WILD_LEGENDARY_CHANCE_PERCENT)
+    {
+        replacement = CharacterMode_PickWildLegendarySpecies(level);
+        if (replacement != SPECIES_NONE)
+            return replacement;
+    }
+
     if (CharacterMode_UMod(Random(), 100) >= WILD_OVERRIDE_CHANCE_PERCENT)
         return species;
     replacement = CharacterMode_PickWildRosterSpecies(level);
@@ -533,15 +651,19 @@ void CharacterMode_SelfTestDone(void);   /* defined in the self-test section bel
 #define WILD_PROBE_FILLER 19   /* Rattata: on no character's roster */
 #define WILD_PROBE_LEVEL 25
 #define WILD_PROBE_N 64
+#define WILD_PROBE_LEGEND_N 32 /* direct legendary-picker calls (positive check) */
 #define WILD_PROBE_RESULTS ((volatile u16 *)0x02030100)  /* N result species */
 #define WILD_PROBE_META    ((volatile u32 *)0x02030200)  /* [0]=N [1]=overrides
-                              [2]=off_roster_hits [3]=legendary_hits [4]=magic */
+                              [2]=off_roster_hits [3]=legendary_hits [4]=magic
+                              [5]=progress [6]=legend_ok [7]=legend_bad
+                              [8]=legend_none [9]=legend_offroster */
 
 void CharacterMode_RunWildLiveProbe(void)
 {
     struct CMWildPokemon mons[12];
     struct CMWildPokemonInfo info;
     u32 overrides = 0, off_roster = 0, legendary = 0;
+    u32 legend_ok = 0, legend_bad = 0, legend_none = 0, legend_offroster = 0;
     u32 i;
 
     for (i = 0; i < 12; i++)
@@ -577,10 +699,47 @@ void CharacterMode_RunWildLiveProbe(void)
         }
     }
 
+    /* ---- positive direction for the legendary path ----
+     *
+     * The tally above cannot prove the 1% feature works: at 64 samples it
+     * expects well under one hit, and "no legendary appeared" is satisfied
+     * just as well by the legendary path being completely dead. So drive the
+     * legendary picker directly and require that what it returns really is a
+     * legendary on this character's roster. Same live ROM, same real Pokedex
+     * reads -- only the 1-in-100 roll is bypassed.
+     *
+     * This is the assertion legendary_encounters.md §5 calls the biggest risk
+     * in the whole feature. */
+    {
+        u32 k;
+
+        for (k = 0; k < WILD_PROBE_LEGEND_N; k++)
+        {
+            u16 sp = CharacterMode_PickWildLegendarySpecies(WILD_PROBE_LEVEL);
+
+            if (sp == SPECIES_NONE)
+                legend_none++;
+            else if (sp < WILD_META_COUNT
+                     && (gWildSpeciesMeta[sp].flags & WILD_META_LEGENDARY))
+            {
+                legend_ok++;
+                if (!IsSpeciesAllowedForCharacter(sp))
+                    legend_offroster++;
+            }
+            else
+                legend_bad++;
+        }
+    }
+
     WILD_PROBE_META[0] = WILD_PROBE_N;
     WILD_PROBE_META[1] = overrides;
     WILD_PROBE_META[2] = off_roster;
     WILD_PROBE_META[3] = legendary;
+    /* [5] is the in-loop progress marker -- do not reuse it */
+    WILD_PROBE_META[6] = legend_ok;
+    WILD_PROBE_META[7] = legend_bad;
+    WILD_PROBE_META[8] = legend_none;
+    WILD_PROBE_META[9] = legend_offroster;
     WILD_PROBE_META[4] = 0xB0DEBEEF;
     CharacterMode_SelfTestDone();
 }
@@ -1006,6 +1165,65 @@ void CharacterMode_RunSelfTest(void)
     VarSet(VAR_CHARACTER_ID, 0);
     VarSet(0x800C, 0);
     VarSet(0x800D, 0);
+
+    /* ---- N: 1% legendary wild encounters ----
+     * All three character ids are derived by build_patch.py from the real
+     * rosters and passed in as defines. */
+
+    /* N1/N2: the dex conversion. Species id != national dex number in this
+     * ROM, and getting that wrong would filter the WRONG species -- which
+     * looks exactly like the feature never firing. 386 -> 313 (Volbeat) is
+     * the documented proof that the conversion is real and not identity. */
+    r[n++] = SpeciesToNationalPokedexNum(386) == 313;   /* N1 want 1 */
+    r[n++] = SpeciesToNationalPokedexNum(0) == 0;       /* N2 want 1 */
+
+    FlagSet(FLAG_CHARACTER_MODE);
+    VarSet(VAR_CHARACTER_ID, TEST_LEGEND_CHAR_ID);
+    {
+        /* N3 is the POSITIVE direction, and it is the one that matters:
+         * legendary_encounters.md §5 warns that every existing assertion here
+         * is of the form "an override never produced a legendary", which a
+         * completely dead legendary path satisfies perfectly. Assert instead
+         * that the picker DOES produce legendaries, and that they are on the
+         * roster. Nothing is caught at reset, so none are filtered out. */
+        u32 k, ok = 0, bad = 0;
+
+        for (k = 0; k < 50; k++)
+        {
+            u16 sp = CharacterMode_PickWildLegendarySpecies(30);
+
+            if (sp != SPECIES_NONE && sp < WILD_META_COUNT
+                && (gWildSpeciesMeta[sp].flags & WILD_META_LEGENDARY)
+                && IsSpeciesAllowedForCharacter(sp))
+                ok++;
+            else
+                bad++;
+        }
+        r[n++] = (ok == 50 && bad == 0);                /* N3 want 1 */
+    }
+    /* N4: an already-caught legendary is filtered. Read through the same
+     * helper the picker uses, on a species the fresh save has not caught. */
+    r[n++] = CharacterMode_AlreadyCaught(150) == FALSE; /* N5-> N4 want 1 */
+
+    /* N5: a character with NO legendary gets nothing from the 1% roll, so it
+     * falls through to exactly its previous behaviour. */
+    VarSet(VAR_CHARACTER_ID, TEST_NOLEGEND_CHAR_ID);
+    r[n++] = CharacterMode_PickWildLegendarySpecies(30) == SPECIES_NONE; /* N5 want 1 */
+    r[n++] = CharacterMode_PickWildRosterSpecies(30) != SPECIES_NONE;    /* N6 want 1 */
+
+    /* N7/N8: the §1.2 exemption. An all-legendary roster has no non-legendary
+     * family, so its legendaries stay repeatable -- without this, Cogita
+     * catches her one family and can then catch nothing for the rest of the
+     * run, while remaining selectable precisely BECAUSE she has a legendary.
+     * N8 is the case that used to return SPECIES_NONE forever. */
+#if TEST_ALLLEGEND_CHAR_ID
+    VarSet(VAR_CHARACTER_ID, TEST_ALLLEGEND_CHAR_ID);
+    r[n++] = CharacterMode_HasNonLegendaryFamily(GetActiveCharacter()) == FALSE; /* N7 want 1 */
+    r[n++] = CharacterMode_PickWildLegendarySpecies(30) != SPECIES_NONE;         /* N8 want 1 */
+#else
+    r[n++] = 1;   /* N7 want 1: no all-legendary character in this build */
+    r[n++] = 1;   /* N8 want 1 */
+#endif
 
     /* leave the expanded save state clean */
     FlagClear(FLAG_CHARACTER_MODE);

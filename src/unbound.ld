@@ -28,6 +28,19 @@ CreateWildMon  = 0x08A14838 | 1;  /* wild_encounter.c; real body behind the 0x08
 TryGenerateWildMon = 0x08A14EC4 | 1; /* live land/water/rock generator; contains the hooked bl @0x08A14FE6 (v17) */
 gEnemyParty    = 0x0202402C;       /* wild mon built here by CreateWildMon (BPRE.ld) */
 
+/* ---- Pokedex, for the 1% legendary encounter's "once each" filter
+ *      (game_plans/legendary_encounters.md §1.3). Both RE-VERIFIED byte-exact
+ *      in THIS ROM by disassembly, not copied from the Radical Red sibling:
+ *      SpeciesToNationalPokedexNum reads a u16 from the table at its own
+ *      literal 0x09A41FEC indexed by (species-1), returning 0 for species 0;
+ *      GetSetPokedexFlag does `movs r2,#0` before tail-calling 0x08104AB0,
+ *      which is exactly what makes it take a NATIONAL DEX NUMBER and not a
+ *      species id. Reading is a bare ldrb+AND+compare out of EWRAM -- no
+ *      writes, no allocation, no reentrancy -- so it is safe to call from
+ *      inside the wild-encounter hook. ---- */
+SpeciesToNationalPokedexNum = 0x08043298 | 1;
+GetSetPokedexFlag           = 0x08088E74 | 1;
+
 GetMonData  = 0x0803FBE8 | 1;
 SetMonData  = 0x0804037C | 1;
 ZeroMonData = 0x0803D994 | 1;

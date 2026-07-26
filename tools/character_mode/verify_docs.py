@@ -96,6 +96,9 @@ def main():
     off_nameptrs = (INJECT_FILE_OFF + len(chars_bin) + len(staged)
                     + names_len + 3) & ~3
     off_count = off_nameptrs + n * 4
+    # ...and the wild metadata follows the count, same derived-from-sizes rule
+    # as everything else in this block (tools/build_patch.py layout).
+    off_wild_meta = (off_count + 2 + 3) & ~3
     (rom_count,) = struct.unpack_from("<H", rom, off_count)
     if rom_count != n:
         fails.append("the ROM's own character count is %d, the manifest has %d"
@@ -231,6 +234,59 @@ def main():
         if char not in doc:
             fails.append("%s: on a sprite page but not in ROSTERS.md" % char)
 
+    # ---- ENCOUNTERS.md (game_plans/legendary_encounters.md §3) ----
+    # Recompute both pools from the BUILT ROM's roster blob plus the wild
+    # metadata the picker reads, and require the doc to describe exactly that.
+    enc_path = os.path.join(ROOT, "ENCOUNTERS.md")
+    if not os.path.isfile(enc_path):
+        fails.append("ENCOUNTERS.md missing -- run emit_encounter_tables.py")
+    else:
+        enc_text = read(enc_path)
+        enc_chars = set(re.findall(r"^### (.+?) — ", enc_text, re.M))
+        for char in selectable - enc_chars:
+            fails.append("%s: selectable but missing from ENCOUNTERS.md" % char)
+        for char in enc_chars - selectable:
+            fails.append("%s: in ENCOUNTERS.md but not selectable" % char)
+
+        with open(os.path.join(HERE, "wild_species_meta.bin"), "rb") as f:
+            meta_blob = f.read()
+        meta_in_rom = rom[off_wild_meta:off_wild_meta + len(meta_blob)] \
+            if off_wild_meta else b""
+        if off_wild_meta and meta_in_rom != meta_blob:
+            fails.append("the wild-species metadata in the built ROM differs from "
+                         "wild_species_meta.bin -- ENCOUNTERS.md describes "
+                         "encounters the ROM cannot produce")
+
+        n_legend = n_only_legend = n_empty = 0
+        for rec in manifest:
+            if rec["character"] in rom_hidden:
+                continue
+            legend, plain = set(), set()
+            for sid in rom_roster(rec):
+                if sid * 6 + 6 > len(meta_blob):
+                    continue
+                _lo, _hi, mflags, _pad, root = struct.unpack_from("<BBBBH", meta_blob, sid * 6)
+                (legend if (mflags & 1) else plain).add(root)
+            if legend:
+                n_legend += 1
+            if legend and not plain:
+                n_only_legend += 1
+            if not legend and not plain:
+                n_empty += 1
+        m = re.search(r"\*\*(\d+) of (\d+) have at least one legendary", enc_text)
+        if not m:
+            fails.append("ENCOUNTERS.md has no legendary-coverage line -- the "
+                         "check that would catch drift cannot run")
+        elif (int(m.group(1)), int(m.group(2))) != (n_legend, len(selectable)):
+            fails.append("ENCOUNTERS.md says %s of %s have a legendary; the ROM's "
+                         "own data says %d of %d"
+                         % (m.group(1), m.group(2), n_legend, len(selectable)))
+        # The catch-nothing failure mode must be reported accurately or not at
+        # all -- this is the whole point of the doc.
+        if n_empty and "NO wild pool at all" not in enc_text:
+            fails.append("%d character(s) have an empty wild pool but "
+                         "ENCOUNTERS.md does not say so" % n_empty)
+
     for path, pat in (("ROSTERS.md", r"\*\*(\d+) characters"),
                       ("ROSTERS_SPRITES.md", r"\*\*(\d+) characters"),
                       (os.path.join("dist", "README.md"), r"pick one of (\d+) iconic"),
@@ -260,6 +316,11 @@ def main():
     print("threshold:    %d characters hidden from the select screen by "
           "CHAR_FLAG_HIDDEN in the built ROM; %d selectable and documented"
           % (len(rom_hidden), len(selectable)))
+    if os.path.isfile(enc_path):
+        print("encounters:   %d characters, %d with a legendary pool, %d "
+              "legendaries-only, %d with NO pool%s"
+              % (len(enc_chars), n_legend, n_only_legend, n_empty,
+                 "" if meta_in_rom == meta_blob else "  (META MISMATCH)"))
     if fails:
         print("\n%d MISMATCHES:" % len(fails))
         for f in fails[:25]:

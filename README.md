@@ -31,6 +31,16 @@ distributed **as a patch only — never as a ROM**.
   party, so nothing is ever lost and no event is blocked.
 - **In-game trades** — every Borrius trade still completes; an off-roster
   incoming Pokémon is sent to your PC.
+- **Wild encounters** — ~10% of wild encounters are replaced by a non-legendary
+  member of your character's roster, level-matched to the area (all four
+  random-table sites: grass/cave, surf, rock smash, every fishing tier).
+- **Legendary encounters** — an independent ~1% roll offers a legendary from
+  your character's roster, level-matched the same way. Filtered by the Pokédex
+  so each is offered until caught; a roster that is *entirely* legendary keeps
+  them repeatable, so those characters always have something to catch. 93 of
+  the 208 characters have at least one legendary. Full spec:
+  [`../game_plans/legendary_encounters.md`](../game_plans/legendary_encounters.md);
+  per-character pools in [`ENCOUNTERS.md`](ENCOUNTERS.md).
 
 ## Installing
 

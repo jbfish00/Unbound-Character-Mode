@@ -49,6 +49,15 @@ game restricted to that character's canon Pokemon.
   block progress).
 - **In-game trades**: you can still complete every Borrius trade; an
   off-roster incoming Pokemon is sent to your PC after the trade.
+- **Wild encounters**: about 10% of wild encounters are replaced by a
+  Pokemon from your character's roster, at a level that fits the area,
+  so you can actually find your team instead of hunting for it. The
+  other ~90% are the game's own encounters, unchanged.
+- **Legendaries**: if your character's roster includes a legendary, it
+  has about a 1% chance of appearing in any wild encounter, at the
+  area's level. Each one is offered until you catch it, then stops
+  appearing — unless your character's roster is legendaries only, in
+  which case they keep appearing so you always have something to catch.
 - Answering "No" at the prompt (or cancelling the number entry) leaves
   the game completely vanilla. The choice is made once per save file.
 

@@ -68,7 +68,7 @@ gdb.execute("set $want_chars = %d" % NUM_CHARS)
 end
 echo \n=== results ===\n
 printf "MAGIC ok (want 1): %d\n", (*(unsigned int*)0x0203FEFC == 0xC0DED00D)
-printf "COUNT checks ran (want 54): %d\n", *(unsigned int*)0x0203FEF8
+printf "COUNT checks ran (want 62): %d\n", *(unsigned int*)0x0203FEF8
 printf "A1 InCharacterMode mode-off (want 0): %d\n", *(unsigned char*)(0x0203FE00 + 0)
 printf "A2 IsSpeciesAllowed(27) mode-off (want 1): %d\n", *(unsigned char*)(0x0203FE00 + 1)
 printf "A3 CatchFlagGet mode-off (want 0): %d\n", *(unsigned char*)(0x0203FE00 + 2)
@@ -123,6 +123,14 @@ printf "M5 native writes 1 for selectable (want 1): %d\n", *(unsigned char*)(0x0
 printf "M6 native writes 0 for hidden (want 1): %d\n", *(unsigned char*)(0x0203FE00 + 51)
 printf "M7 hidden character still loads from a save (want 1): %d\n", *(unsigned char*)(0x0203FE00 + 52)
 printf "M8 hidden character still resolves its roster (want 1): %d\n", *(unsigned char*)(0x0203FE00 + 53)
+printf "N1 species 386 -> natdex 313 (id != dex num) (want 1): %d\n", *(unsigned char*)(0x0203FE00 + 54)
+printf "N2 species 0 -> natdex 0 (want 1): %d\n", *(unsigned char*)(0x0203FE00 + 55)
+printf "N3 legendary picker DOES return roster legendaries x50 (want 1): %d\n", *(unsigned char*)(0x0203FE00 + 56)
+printf "N4 uncaught legendary not filtered (want 1): %d\n", *(unsigned char*)(0x0203FE00 + 57)
+printf "N5 no-legendary character gets no legendary (want 1): %d\n", *(unsigned char*)(0x0203FE00 + 58)
+printf "N6 no-legendary character keeps its 10%% override (want 1): %d\n", *(unsigned char*)(0x0203FE00 + 59)
+printf "N7 all-legendary roster has no non-legendary family (want 1): %d\n", *(unsigned char*)(0x0203FE00 + 60)
+printf "N8 all-legendary roster is repeatable, not empty (want 1): %d\n", *(unsigned char*)(0x0203FE00 + 61)
 
 echo \n=== TESTS DONE ===\n
 # mGBA's stub doesn't implement the detach packet (E07) — just drop the link
