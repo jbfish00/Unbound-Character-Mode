@@ -16018,6 +16018,41 @@
    }
   ]
  },
+ "Volo": {
+  "category": "villain",
+  "gen": 8,
+  "page": "Volo",
+  "species": [
+   {
+    "const": "SPECIES_GROWLITHE",
+    "id": 58
+   },
+   {
+    "const": "SPECIES_TOGEPI",
+    "id": 175
+   },
+   {
+    "const": "SPECIES_BUDEW",
+    "id": 459
+   },
+   {
+    "const": "SPECIES_SPIRITOMB",
+    "id": 495
+   },
+   {
+    "const": "SPECIES_GIBLE",
+    "id": 496
+   },
+   {
+    "const": "SPECIES_RIOLU",
+    "id": 500
+   },
+   {
+    "const": "SPECIES_GIRATINA",
+    "id": 540
+   }
+  ]
+ },
  "Wallace": {
   "category": "champion",
   "gen": 3,

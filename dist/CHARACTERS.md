@@ -255,23 +255,24 @@ of your party; off-roster wild Pokemon cannot be caught.
 | 166 | Sonia | Professor | Charmander | 21 |
 | 167 | Laventon | Professor | Cyndaquil | 15 |
 | 168 | Cerise | Professor | Bulbasaur | 35 |
+| 169 | Volo | Villain | Growlithe | 15 |
 
 ## Generation 3
 
 | # | Character | Category | Starter | Roster size |
 |---|-----------|----------|---------|-------------|
-| 169 | Anabel | Frontier Brain | Abra | 29 |
-| 170 | Brandon | Frontier Brain | Nincada | 14 |
-| 171 | Greta | Frontier Brain | Gastly | 22 |
-| 172 | Lucy | Frontier Brain | Abra | 24 |
-| 173 | Noland | Frontier Brain | Bulbasaur | 27 |
-| 174 | Spenser | Frontier Brain | Bulbasaur | 27 |
-| 175 | Tucker | Frontier Brain | Charmander | 15 |
+| 170 | Anabel | Frontier Brain | Abra | 29 |
+| 171 | Brandon | Frontier Brain | Nincada | 14 |
+| 172 | Greta | Frontier Brain | Gastly | 22 |
+| 173 | Lucy | Frontier Brain | Abra | 24 |
+| 174 | Noland | Frontier Brain | Bulbasaur | 27 |
+| 175 | Spenser | Frontier Brain | Bulbasaur | 27 |
+| 176 | Tucker | Frontier Brain | Charmander | 15 |
 
 ## Generation 4
 
 | # | Character | Category | Starter | Roster size |
 |---|-----------|----------|---------|-------------|
-| 176 | Dahlia | Frontier Brain | Togepi | 15 |
-| 177 | Darach | Frontier Brain | Houndour | 13 |
-| 178 | Palmer | Frontier Brain | Rhyhorn | 11 |
+| 177 | Dahlia | Frontier Brain | Togepi | 15 |
+| 178 | Darach | Frontier Brain | Houndour | 13 |
+| 179 | Palmer | Frontier Brain | Rhyhorn | 11 |
