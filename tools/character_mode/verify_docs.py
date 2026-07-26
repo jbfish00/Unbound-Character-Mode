@@ -207,7 +207,12 @@ def main():
 
     for path, pat in (("ROSTERS.md", r"\*\*(\d+) characters"),
                       ("ROSTERS_SPRITES.md", r"\*\*(\d+) characters"),
-                      (os.path.join("dist", "README.md"), r"pick one of (\d+) iconic")):
+                      (os.path.join("dist", "README.md"), r"pick one of (\d+) iconic"),
+                      # The repo README carries the SAME sentence and was NOT
+                      # checked -- it sat at 178 while the ROM shipped 208. The
+                      # guard existed and was pointed one path entry away from
+                      # the file that was wrong.
+                      ("README.md", r"pick one of \*\*(\d+) iconic")):
         full = os.path.join(ROOT, path)
         if not os.path.isfile(full):
             print("   note: %s not built yet, skipping its count check" % path)

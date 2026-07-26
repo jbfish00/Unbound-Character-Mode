@@ -43,3 +43,27 @@ echo "--- log ---"
 grep -av "^warning:" "$LOG" | grep -av "^0x\|SIGINT\|^$"
 echo "-----------"
 ls "$ROOT"/build/unbound-cm-*.png 2>/dev/null
+
+# The verdict used to be `ls` -- i.e. this suite structurally could not fail.
+# It guards the CATCH GATE, the core enforcement feature, and a gdb session that
+# died before printing a single check still exited 0 as long as a screenshot
+# existed. Same assertion phase every other runner here uses, including the
+# checks==0 guard that turns "the harness never ran" into a failure rather than
+# a pass.
+python3 - "$LOG" <<'PYEOF'
+import re, sys
+fails = 0
+checks = 0
+for line in open(sys.argv[1], errors="replace"):
+    m = re.search(r"\(want (\d+)\): (\d+)", line)
+    if m:
+        checks += 1
+        if m.group(1) != m.group(2):
+            print(f"FAIL: {line.strip()}")
+            fails += 1
+if checks == 0:
+    print("NO CHECKS RAN — gdb session failed?")
+    sys.exit(2)
+print(f"{checks - fails}/{checks} checks passed")
+sys.exit(1 if fails else 0)
+PYEOF

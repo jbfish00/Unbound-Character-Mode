@@ -31,7 +31,7 @@ game restricted to that character's canon Pokemon.
    `b4776b82a4c7915d0fadeaa27e013523f99dfd94`).
 2. Apply `unbound-character-mode.bps` to that ROM with Flips
    (https://github.com/Alcaro/Flips), or any BPS patcher.
-3. The result should have sha1 `0109c5af7974bf3373e8e9690a655c6d75182c40`.
+3. The result should have sha1 `25c880b73741be71768141926afea0a4a3d232e1`.
 
 ## Known limitations
 
@@ -48,5 +48,20 @@ game restricted to that character's canon Pokemon.
 - Complete FireRed Upgrade (CFRU) engine by Skeli789 et al.
 - Character rosters compiled from Bulbapedia.
 - Character Mode port: see the project repository.
+
+### Character portrait art
+
+This patch injects trainer front-pic art from several fan projects. Credit is a
+condition of use for these, so it travels with the patch:
+
+- **Pokemon Ash Gray** by **metapod23** — anime-cast portraits.
+- **Emerald Rogue** (Pokabbie) — the largest set. It ships no per-artist
+  mapping, so its whole ~42-name "Additional Sprites" credits roll travels with
+  any subset of the art; see CREDITS.md in the project repository.
+- **Team Aqua's Asset Repo** — free to use and edit **with credit to the
+  original creator** of each sprite.
+- **pokemonHnS**, **pokeemerald-platinum**, **Pokesho (ポケしょ)**, **LouLilie**.
+
+Full per-set terms and per-sprite provenance: CREDITS.md, shipped alongside.
 
 This is a fan-made, non-profit patch. Never distributed as a ROM.

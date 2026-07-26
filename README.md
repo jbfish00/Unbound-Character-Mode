@@ -1,7 +1,7 @@
 # Character Mode — Pokémon Unbound v2.1.1.1
 
 An opt-in game mode for [Pokémon Unbound](https://www.pokecommunity.com/threads/pok%C3%A9mon-unbound-completed.382178/)
-(by Skeli789): at the start of a new game you pick one of **178 iconic Pokémon
+(by Skeli789): at the start of a new game you pick one of **208 iconic Pokémon
 characters** — protagonists, rivals, gym leaders, Elite Four, champions,
 villains, and anime cast, Generations 1–8 — and play the whole game restricted
 to that character's canon roster (Bulbapedia-documented teams, expanded to full

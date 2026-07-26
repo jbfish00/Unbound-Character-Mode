@@ -1,0 +1,195 @@
+# Character Mode (Unbound) — Art Credits
+
+Character Mode's playable-character sprites are staged from donor sources
+via the ROWE Character Mode project (`assets/donor_sprites_staged/`,
+`tools/stage_donor_sprites.py`), which itself credits the following games,
+decompilation projects, and fan works. Huge thanks to every artist. This mod
+is distributed as a patch only, never as a prebuilt ROM.
+
+## Base game / engine
+
+- **Pokémon Unbound** by Skeli789 — the ROM this mod patches.
+- **Complete FireRed Upgrade (CFRU)** by Skeli789 and ghoulslash — the open-
+  source engine Unbound is built on top of; used here as a structural/shape
+  reference during reverse-engineering (not as injected code).
+- **Skeli789/Dynamic-Pokemon-Expansion** ("Unbound" branch) — species,
+  evolution, and base-stat data tables used to resolve Bulbapedia roster
+  names to Unbound's likely internal species ids (provisional pending
+  ROM-side verification).
+- **pret/pokefirered** decompilation — structural reference for the
+  underlying FireRed engine Unbound extends.
+
+## Overworld & trainer sprites (staged via the ROWE project; same original credits apply)
+
+- **pret/pokefirered** — FRLG overworld sprites and trainer fronts for
+  Kanto characters.
+- **sinnoh-remakes/pokeemerald-platinum** — Gen IV (DPPt) overworld sheets
+  and DP trainer fronts (Lucas, Dawn, Cynthia, gym leaders, Elite Four,
+  Team Galactic).
+- **PokemonHnS-Development/pokemonHnS** — HGSS-style overworld sheets and
+  trainer fronts for Johto characters, and HGSS-style walking upgrades for
+  the Kanto cast.
+- **DiegoWT — "Gen 5 Characters in Gen 4 OW style"**
+  (https://eeveeexpo.com/resources/370/) — Unova cast overworld sprites,
+  downscaled 0.5x to GBA proportions. Credit required by the resource
+  terms; please keep this notice with any redistribution.
+- **StreakOfSprites** (https://www.deviantart.com/streakofsprites) — Ash
+  Ketchum FRLG-style overworld sprite set.
+
+## Rosters
+
+- Character Pokémon rosters compiled from **Bulbapedia**
+  (https://bulbapedia.bulbagarden.net), CC BY-NC-SA.
+
+## Coverage note
+
+96 of 156 characters (Gen 1-5 cast, plus a few Gen 1 anime characters) have
+staged donor art. The remaining 60 (Gen 6-8 game-original characters, plus a
+handful of anime-only Gen 1-5 characters) have no GBA-style pixel art
+anywhere, official or fan-made — per user-confirmed policy, these get a
+trainer-card/menu-select portrait only, with a generic/default overworld
+costume fallback. See `docs/SPRITE_COVERAGE.md` for the full breakdown.
+
+## Ash Gray donor art (added 2026-07-23)
+
+- **Pokemon Ash Gray** (FireRed hack) by **metapod23** — anime-character
+  trainer sprites (Jessie & James duo, Ritchie, Tracey, Duplica, Todd,
+  Giselle, A.J., Otoshi, Samurai, Damian, Gary, Orange Islands leaders,
+  anime-style Kanto leaders) and Ash player art, staged in
+  `sprites/donors/ashgray/`. Ripped from a locally-built copy (BPS patch on
+  a source-built clean FireRed). Credit metapod23 in any distribution that
+  ships this art.
+
+
+## Emerald Rogue — trainer, back and overworld sprites (added 2026-07-25)
+
+Staged in `sprites/donors/rogue/` — 294 sprites covering 160 Character Mode
+characters (149 trainer front pics, 133 overworld sheets, 12 battle back pics),
+filtered from a 531-file harvest down to characters actually on the roster.
+
+- **Source**: https://github.com/Pokabbie/pokeemerald-rogue, branch `vanilla`,
+  commit `79c1df5f8a2ebb423c7a48d29de0cf21ef5783e7`, fetched 2026-07-25.
+- **Format**: converted from the repo's PNGs by `tools/png_to_gba.py` into
+  `.4bpp` + `.gbapal` and LZ77 (BIOS type 0x10) streams of each. Every blob was
+  round-tripped through the decompressor before staging.
+- **Licensing**: the repository has **no LICENSE file**. Its in-game credits
+  roll is the only attribution trail that exists, and it maps no artist to any
+  individual file — so the **whole list travels with any subset of the art**.
+
+**"Additional Sprites" — Emerald Rogue credits roll, reproduced in full:**
+
+AveonTrainer · PurpleZaffre · UlithiumDragon · HighNoonMoon · xDracolich ·
+ZacWeavile · Gnomowladny · Beliot419 · Brumirage · Kyledove · Kymotionian ·
+cSc-A7X · 2and2makes5 · Pokegirl4ever · Fernandojl · Silver-Skie · Kid1513 ·
+TyranitarDark · Getsuei-H · Milomilotic11 · Kyt666 · kdiamo11 · Chocosrawloid ·
+SyleDude · Gallanty · Gizamimi-Pichu · princess-phoenix · LunarDusk6 ·
+Larryturbo · Kidkatt · Zender1752 · SageDeoxys · Lasee0 · Ezerart · Wolfang62 ·
+DarkusShadow · Anarlaurendil · Lasse00 · shaderr31 · CarmaNekko · EduarPokeN ·
+TintjeMadelintje101
+
+Plus the Emerald Rogue project itself (Pokabbie) for assembling and converting
+the set.
+
+
+## Team Aqua's Asset Repo, pokemonHnS, pokeemerald-platinum (added 2026-07-25)
+
+Three more donor sets staged alongside `rogue/`, converted by
+`tools/png_to_gba.py` and filtered to characters on the Character Mode roster.
+
+### `sprites/donors/taar/` — 251 sprites, 92 characters
+- **Source**: https://github.com/TeamAquasHideout/Team-Aquas-Asset-Repo, branch
+  `main`, commit `36b619ecd1d2df95212b375c95803af78414f78a`, fetched 2026-07-25.
+- **Licence** (repo README, verbatim): *"This is a collection of free to use
+  assets that are intended to be used for Generation 3 Pokémon decomp hacking...
+  All assets are both free to use and edit by default, but if any assets
+  specifically mention not being free to edit, please respect the author's
+  wishes... provided they are submitted alongside credit to their original
+  creator."*
+- **Attribution is per-author and mandatory.** The second path element of every
+  upstream file IS the author — `Trainer Back Sprites/yoshord/…` is yoshord's
+  work. `harvest_index.json` in the staged directory preserves each file's
+  original path, so the author is always recoverable. Named contributors whose
+  work is staged here include **yoshord** (Lance back, 64x384 six-frame — his
+  README ships the matching `sAnimCmd_Lance_Back[]`), **ShinyDragonHunter**
+  (Blue/Gary back, 64x320), **spilledpizza** (Prof. Rowan overworld, Cynthia
+  mugshot), **Phantomony** (Archie mugshot), **mudskip** (Phoebe back),
+  **Kalarie** (anime front pics), **Ringloom** (HGSS Lyra), **kwenio**, **Lhea**,
+  **KyuZee**, **hyo**, **Solo993**.
+- Aggregate folders re-credit upstream creators per subfolder — read the
+  author's own README before shipping any single sprite.
+
+### `sprites/donors/hns/` — 41 sprites, 30 characters
+- **Source**: https://github.com/PokemonHnS-Development/pokemonHnS, branch
+  `main`, commit `751823abaf677020bcd72c45fe3e7cb2b8a576e4`.
+- HGSS-style 64x64 front pics; covers **Lance, Blue, Misty, Brock**, Red, Karen,
+  Clair, Giovanni, Sabrina and the Johto/Kanto leaders and Elite Four.
+- **Licence**: no LICENSE file. README, verbatim: *"it's also completely open
+  source, and is intended to be a base for a new generation of Johto rom
+  hacks"* / *"If you'd like to improve, expand upon, or make your own version of
+  HnS, feel free to take advantage of the open source!"*
+- **Sprite credit** (flat, no per-file attribution available):
+  **Cesare_CBass, AveonTrainer, PurpleZaffre, BatimaTheBat**.
+
+### `sprites/donors/platinum/` — 49 sprites, 36 characters
+- **Source**: https://github.com/sinnoh-remakes/pokeemerald-platinum, branch
+  `master`, commit `09091ed1d8c07c3353608ac91603ac59ab41fc70`.
+- Covers **Cynthia**, **Cyrus**, Dawn, Lucas, Barry, Bertha, Lucian, Volkner,
+  Candice, Maylene, Fantina, Roark, Byron, Crasher Wake, Mars/Jupiter/Saturn.
+- **⚠️ Weakest attribution of the three.** No LICENSE, no asset licence, and no
+  per-sprite attribution at all; the README is the inherited RHH one
+  (*"If you use pokeemerald-expansion, please credit RHH (Rom Hacking
+  Hideout)."*). It is a fan remake, so some art may be third-party redistributed
+  without individual credit. **Prefer the TAAR version of a character where one
+  exists with a named author**, and treat this set as the fallback for the
+  Sinnoh cast.
+
+
+## Pokesho, kalarie, LouLilie — anime and rival art (added 2026-07-25)
+
+### `sprites/donors/pokesho/` (27 front pics) and `sprites/donors/pokesho_field/` (19 frames)
+- **Source**: ポケしょ / Pokesho, by ポケモア (Pokemore) — http://www.pokesho.com
+  **Both galleries are retired from the live site**; retrieved from the Wayback
+  Machine capture of **2018-08-15** (bulk archives `img_zip/icon_battle.zip` and
+  `img_zip/f_chara.zip`), 2026-07-25.
+- **Licence, verbatim from the archived gallery**:
+  「GBA風トレーナードット絵を展示しています。**フリー素材になります**。」
+  ("GBA-style trainer pixel art is exhibited here. **These are free
+  materials.**") and 「すべて64×64サイズ。透明色合わせて最大16色です。
+  **素材としての使用も可能です**。」 Site FAQ: 「素材もらってもいいですか！？」→
+  「**どうぞどうぞ！！**」 ("May I take the materials!? — **Please, go right
+  ahead!!**")
+- **Credit as**: 「ポケしょ / Pokesho（ポケモア）」
+- **Ethical note kept deliberately**: the permission above was granted while the
+  galleries were published, and the author has since retired them, stating he
+  removes work he considers lower quality. This art is used on archived
+  permission. If he ever asks for it to be withdrawn, honour that.
+- `pokesho_field/` is **reference-only** — 16x22 single front-facing frames, not
+  tile-aligned and not injectable without someone drawing the side and back
+  frames. Staged because it is the only existing GBA-style art for **Paul,
+  Zoey, Nando** and a **solo James**. See that directory's README.txt.
+
+### `sprites/donors/kalarie/` — 69 anime overworld sheets
+- **Source**: kalarie, PokéCommunity thread 407124 ("Fire Red Overworld Sprite
+  Resource"), anime section. 144x32 (one 160x32) nine-frame FireRed NPC sheets.
+- **Licence, verbatim**: *"You're free to use any of these sprites in your hack,
+  that's the whole purpose of this resource. Be sure to give proper credit
+  though."*
+- **Credit**: **Kalarie** (all anime sprites); **Pokesho** (various first frames
+  — kalarie animated Pokesho's front frames into full sheets, and says so).
+- **Technical caveat**: these do not all fit FireRed's default palettes and need
+  Navenatox's Dynamic Overworld Palettes patch.
+- **Identification caveat**: the sprites are unlabelled at source. Only
+  **Misty, Brock, Jessie and James** are confidently matched to roster
+  characters; the other 65 are staged honestly as `anime_npc_*` rather than
+  guessed at. `CONTACT_SHEET_front_frames.png` is included for a human ID pass.
+
+### `sprites/donors/loulilie/` — 4 sprites
+- **Source**: LouLilie, DeviantArt — "FRLG Rival Green as Player" and "FRLG
+  Player Blue LGPE Design".
+- **Licence, verbatim**: *"Feel free to use in your projects with credit!"*
+- **Credit**: **LouLilie**
+- Provides a second **Blue/Gary back pic** (64x320, 16 colours) extracted from a
+  pixel-perfect 2x sheet, alongside the TAAR/ShinyDragonHunter one. One
+  documented judgement call: the five aligned frames span 68px, so the window
+  chosen keeps four frames pixel-complete and clips only the tip of a thrown
+  Poké Ball leaving frame 4 — which is how FRLG back pics behave anyway.

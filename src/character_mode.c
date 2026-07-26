@@ -354,7 +354,15 @@ static u32 CharacterMode_UMod(u32 value, u32 modulus)
 #define WILD_META_COUNT 1294 /* donor include/species.h NUM_SPECIES, 2026-07-17 */
 #define WILD_META_LEGENDARY 0x1
 #define WILD_OVERRIDE_CHANCE_PERCENT 10
-#define MAX_WILD_FAMILY_ROOTS 48 /* generous cap: no roster has this many distinct lines */
+/* Supplied by the injector (-DMAX_WILD_FAMILY_ROOTS), computed from the real
+ * rosters with margin. It was a hardcoded 48 described as "generous: no roster
+ * has this many distinct lines" -- which stopped being true: Goh reaches 83,
+ * Ash 53, Oak 50. The overflow is SILENT (the `rootCount < MAX` guard just
+ * stops adding), so those characters quietly lost evolution lines from the
+ * wild-encounter override with no error anywhere. */
+#ifndef MAX_WILD_FAMILY_ROOTS
+#define MAX_WILD_FAMILY_ROOTS 96
+#endif
 
 struct WildSpeciesMetaBin
 {

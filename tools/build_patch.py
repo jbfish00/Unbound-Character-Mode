@@ -157,8 +157,35 @@ def main():
 
     # 2. compile
     obj = os.path.join(BUILD, "character_mode.o")
+    # The wild-override picker collects one entry per DISTINCT non-legendary
+    # family root on the roster, into a fixed-size stack array. Compute the real
+    # worst case from the emitted data (same rule the shim applies: skip
+    # out-of-range and legendary-flagged species, dedupe by familyRoot) and size
+    # the array from it, rather than trusting a literal that silently truncates.
+    _meta = open(os.path.join(CM_DIR, "wild_species_meta.bin"), "rb").read()
+    _meta_count = len(_meta) // 6
+    with open(os.path.join(CM_DIR, "characters_manifest.json")) as _f:
+        _cm = json.load(_f)["characters"]
+    _worst = 0
+    for _c in _cm:
+        _roots = set()
+        for _sp in (_c.get("roster_species_ids") or []):
+            if _sp >= _meta_count:
+                continue
+            _lmin, _lmax, _flags, _pad, _root = struct.unpack_from("<BBBBH", _meta, _sp * 6)
+            if _flags & 1:
+                continue
+            _roots.add(_root)
+        _worst = max(_worst, len(_roots))
+    max_wild_roots = _worst + 16          # margin for roster growth
+    assert max_wild_roots <= 160, (
+        f"MAX_WILD_FAMILY_ROOTS {max_wild_roots} is too much stack for the "
+        f"wild picker -- switch it to a static buffer instead of growing it")
+    print(f"wild picker: worst-case family roots = {_worst} -> cap {max_wild_roots}")
+
     run(["arm-none-eabi-gcc", "-c", "-g", "-mthumb", "-mcpu=arm7tdmi", "-mtune=arm7tdmi",
          "-O2", "-ffreestanding", "-fno-builtin", "-mlong-calls", "-Wall", "-Wextra",
+         f"-DMAX_WILD_FAMILY_ROOTS={max_wild_roots}",
          "-Werror", "-o", obj, os.path.join(ROOT, "src", "character_mode.c")])
 
     # 3. layout: [characters.bin][rosters.bin][names.bin][u16 count][pad]

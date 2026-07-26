@@ -78,6 +78,21 @@ game restricted to that character's canon Pokemon.
 - Character rosters compiled from Bulbapedia.
 - Character Mode port: see the project repository.
 
+### Character portrait art
+
+This patch injects trainer front-pic art from several fan projects. Credit is a
+condition of use for these, so it travels with the patch:
+
+- **Pokemon Ash Gray** by **metapod23** — anime-cast portraits.
+- **Emerald Rogue** (Pokabbie) — the largest set. It ships no per-artist
+  mapping, so its whole ~42-name "Additional Sprites" credits roll travels with
+  any subset of the art; see CREDITS.md in the project repository.
+- **Team Aqua's Asset Repo** — free to use and edit **with credit to the
+  original creator** of each sprite.
+- **pokemonHnS**, **pokeemerald-platinum**, **Pokesho (ポケしょ)**, **LouLilie**.
+
+Full per-set terms and per-sprite provenance: CREDITS.md, shipped alongside.
+
 This is a fan-made, non-profit patch. Never distributed as a ROM.
 """
 
@@ -113,9 +128,19 @@ def main():
     chars_out = os.path.join(DIST, "CHARACTERS.md")
     emit_character_list.main(chars_out)
 
+    # CREDITS.md is not optional packaging: the patch injects third-party
+    # sprite art whose licences REQUIRE attribution, and shipping the art
+    # without it was a real obligation gap, not a documentation nicety.
+    credits_src = os.path.join(ROOT, "CREDITS.md")
+    credits_out = os.path.join(DIST, "CREDITS.md")
+    assert os.path.isfile(credits_src), (
+        "CREDITS.md missing -- refusing to build a dist that ships donor "
+        "sprite art with no attribution")
+    shutil.copyfile(credits_src, credits_out)
+
     zip_out = os.path.join(DIST, "unbound-character-mode.zip")
     with zipfile.ZipFile(zip_out, "w", zipfile.ZIP_DEFLATED) as z:
-        for p in (bps_out, readme_out, chars_out):
+        for p in (bps_out, readme_out, chars_out, credits_out):
             z.write(p, os.path.basename(p))
     print(f"dist assembled: {DIST}")
     for p in sorted(os.listdir(DIST)):
