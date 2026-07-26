@@ -43,6 +43,11 @@ def main(out_path):
     rosters = open(os.path.join(HERE, "rosters.bin"), "rb").read()
     assert len(chars) // 16 == len(lines), "characters.bin out of sync with characters.txt"
 
+    # CHAR_FLAG_HIDDEN (bit1 of the record's flags byte, offset 11) marks a
+    # character the select screen refuses. Read it from characters.bin rather
+    # than from character_drops.json: this is the byte the ROM itself checks.
+    hidden = {i for i in range(len(chars) // 16) if chars[16 * i + 11] & 0x2}
+
     out = []
     out.append("# Character Mode — Character List (Pokemon Unbound v2.1.1.1)\n")
     out.append("At the Character Mode prompt during a new game, enter the number of the")
@@ -51,9 +56,16 @@ def main(out_path):
     out.append("families). Your starter is replaced by the character's own starter,")
     out.append("listed below. Off-roster gifts and trades are sent to your PC instead")
     out.append("of your party; off-roster wild Pokemon cannot be caught.\n")
+    if hidden:
+        out.append("Some numbers are missing from this list. Those characters have fewer")
+        out.append("than six fully-evolved Pokemon obtainable in this game, so they are")
+        out.append("not offered; entering one of their numbers re-asks. The numbers below")
+        out.append("are the ones the game accepts — enter them exactly as shown.\n")
     gen_open = None
     for i, l in enumerate(lines):
         name, _pages, cat, gen = [p.strip() for p in l.split("|")]
+        if i in hidden:
+            continue
         if gen != gen_open:
             out.append(f"\n## Generation {gen}\n")
             out.append("| # | Character | Category | Starter | Roster size |")
@@ -70,7 +82,8 @@ def main(out_path):
     os.makedirs(os.path.dirname(out_path), exist_ok=True)
     with open(out_path, "w") as f:
         f.write("\n".join(out) + "\n")
-    print(f"wrote {out_path} ({len(lines)} characters)")
+    print(f"wrote {out_path} ({len(lines) - len(hidden)} selectable characters"
+          f"{f', {len(hidden)} hidden' if hidden else ''})")
 
 
 if __name__ == "__main__":

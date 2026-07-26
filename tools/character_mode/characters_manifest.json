@@ -107,6 +107,7 @@
    "starter_count": 32,
    "family_expansion_count": 54,
    "has_signature": true,
+   "hidden": false,
    "signature_id": 25,
    "sprite_asset_id": "TBD"
   },
@@ -140,6 +141,7 @@
    "starter_count": 4,
    "family_expansion_count": 14,
    "has_signature": true,
+   "hidden": false,
    "signature_id": 133,
    "sprite_asset_id": "TBD"
   },
@@ -231,6 +233,7 @@
    "starter_count": 29,
    "family_expansion_count": 47,
    "has_signature": true,
+   "hidden": false,
    "signature_id": 16,
    "sprite_asset_id": "TBD"
   },
@@ -294,6 +297,7 @@
    "starter_count": 20,
    "family_expansion_count": 28,
    "has_signature": true,
+   "hidden": false,
    "signature_id": 147,
    "sprite_asset_id": "TBD"
   },
@@ -333,6 +337,7 @@
    "starter_count": 11,
    "family_expansion_count": 13,
    "has_signature": true,
+   "hidden": false,
    "signature_id": 131,
    "sprite_asset_id": "TBD"
   },
@@ -394,6 +399,7 @@
    "starter_count": 19,
    "family_expansion_count": 28,
    "has_signature": true,
+   "hidden": false,
    "signature_id": 66,
    "sprite_asset_id": "TBD"
   },
@@ -435,6 +441,7 @@
    "starter_count": 11,
    "family_expansion_count": 16,
    "has_signature": true,
+   "hidden": false,
    "signature_id": 92,
    "sprite_asset_id": "TBD"
   },
@@ -507,6 +514,7 @@
    "starter_count": 26,
    "family_expansion_count": 31,
    "has_signature": true,
+   "hidden": false,
    "signature_id": 109,
    "sprite_asset_id": "TBD"
   },
@@ -583,6 +591,7 @@
    "starter_count": 27,
    "family_expansion_count": 35,
    "has_signature": true,
+   "hidden": false,
    "signature_id": 95,
    "sprite_asset_id": "TBD"
   },
@@ -679,6 +688,7 @@
    "starter_count": 33,
    "family_expansion_count": 48,
    "has_signature": true,
+   "hidden": false,
    "signature_id": 120,
    "sprite_asset_id": "TBD"
   },
@@ -750,6 +760,7 @@
    "starter_count": 20,
    "family_expansion_count": 35,
    "has_signature": true,
+   "hidden": false,
    "signature_id": 25,
    "sprite_asset_id": "TBD"
   },
@@ -825,6 +836,7 @@
    "starter_count": 22,
    "family_expansion_count": 39,
    "has_signature": true,
+   "hidden": false,
    "signature_id": 43,
    "sprite_asset_id": "TBD"
   },
@@ -903,6 +915,7 @@
    "starter_count": 22,
    "family_expansion_count": 40,
    "has_signature": true,
+   "hidden": false,
    "signature_id": 63,
    "sprite_asset_id": "TBD"
   },
@@ -979,6 +992,7 @@
    "starter_count": 24,
    "family_expansion_count": 36,
    "has_signature": true,
+   "hidden": false,
    "signature_id": 58,
    "sprite_asset_id": "TBD"
   },
@@ -1062,6 +1076,7 @@
    "starter_count": 29,
    "family_expansion_count": 37,
    "has_signature": true,
+   "hidden": false,
    "signature_id": 111,
    "sprite_asset_id": "TBD"
   },
@@ -1221,6 +1236,7 @@
    "starter_count": 54,
    "family_expansion_count": 88,
    "has_signature": true,
+   "hidden": false,
    "signature_id": 25,
    "sprite_asset_id": "TBD"
   },
@@ -1312,6 +1328,7 @@
    "starter_count": 27,
    "family_expansion_count": 49,
    "has_signature": true,
+   "hidden": false,
    "signature_id": 7,
    "sprite_asset_id": "TBD"
   },
@@ -1350,6 +1367,7 @@
    "starter_count": 7,
    "family_expansion_count": 17,
    "has_signature": true,
+   "hidden": false,
    "signature_id": 25,
    "sprite_asset_id": "TBD"
   },
@@ -1372,6 +1390,7 @@
    "starter_count": 3,
    "family_expansion_count": 5,
    "has_signature": true,
+   "hidden": true,
    "signature_id": 123,
    "sprite_asset_id": "TBD"
   },
@@ -1416,6 +1435,7 @@
    "starter_count": 15,
    "family_expansion_count": 15,
    "has_signature": true,
+   "hidden": false,
    "signature_id": 23,
    "sprite_asset_id": "TBD"
   },
@@ -1457,6 +1477,7 @@
    "starter_count": 14,
    "family_expansion_count": 13,
    "has_signature": true,
+   "hidden": false,
    "signature_id": 109,
    "sprite_asset_id": "TBD"
   },
@@ -1501,6 +1522,7 @@
    "starter_count": 10,
    "family_expansion_count": 17,
    "has_signature": true,
+   "hidden": false,
    "signature_id": 155,
    "sprite_asset_id": "TBD"
   },
@@ -1538,6 +1560,7 @@
    "starter_count": 5,
    "family_expansion_count": 17,
    "has_signature": true,
+   "hidden": false,
    "signature_id": 158,
    "sprite_asset_id": "TBD"
   },
@@ -1593,6 +1616,7 @@
    "starter_count": 13,
    "family_expansion_count": 26,
    "has_signature": true,
+   "hidden": false,
    "signature_id": 152,
    "sprite_asset_id": "TBD"
   },
@@ -1650,6 +1674,7 @@
    "starter_count": 15,
    "family_expansion_count": 28,
    "has_signature": true,
+   "hidden": false,
    "signature_id": 177,
    "sprite_asset_id": "TBD"
   },
@@ -1703,6 +1728,7 @@
    "starter_count": 14,
    "family_expansion_count": 25,
    "has_signature": true,
+   "hidden": false,
    "signature_id": 133,
    "sprite_asset_id": "TBD"
   },
@@ -1760,6 +1786,7 @@
    "starter_count": 17,
    "family_expansion_count": 26,
    "has_signature": true,
+   "hidden": false,
    "signature_id": 167,
    "sprite_asset_id": "TBD"
   },
@@ -1812,6 +1839,7 @@
    "starter_count": 17,
    "family_expansion_count": 18,
    "has_signature": true,
+   "hidden": false,
    "signature_id": 163,
    "sprite_asset_id": "TBD"
   },
@@ -1866,6 +1894,7 @@
    "starter_count": 19,
    "family_expansion_count": 21,
    "has_signature": true,
+   "hidden": false,
    "signature_id": 123,
    "sprite_asset_id": "TBD"
   },
@@ -1934,6 +1963,7 @@
    "starter_count": 26,
    "family_expansion_count": 28,
    "has_signature": true,
+   "hidden": false,
    "signature_id": 241,
    "sprite_asset_id": "TBD"
   },
@@ -1993,6 +2023,7 @@
    "starter_count": 20,
    "family_expansion_count": 24,
    "has_signature": true,
+   "hidden": false,
    "signature_id": 92,
    "sprite_asset_id": "TBD"
   },
@@ -2039,6 +2070,7 @@
    "starter_count": 12,
    "family_expansion_count": 20,
    "has_signature": true,
+   "hidden": false,
    "signature_id": 60,
    "sprite_asset_id": "TBD"
   },
@@ -2101,6 +2133,7 @@
    "starter_count": 21,
    "family_expansion_count": 26,
    "has_signature": true,
+   "hidden": false,
    "signature_id": 95,
    "sprite_asset_id": "TBD"
   },
@@ -2152,6 +2185,7 @@
    "starter_count": 16,
    "family_expansion_count": 19,
    "has_signature": true,
+   "hidden": false,
    "signature_id": 220,
    "sprite_asset_id": "TBD"
   },
@@ -2200,6 +2234,7 @@
    "starter_count": 15,
    "family_expansion_count": 19,
    "has_signature": true,
+   "hidden": false,
    "signature_id": 116,
    "sprite_asset_id": "TBD"
   },
@@ -2247,6 +2282,7 @@
    "starter_count": 10,
    "family_expansion_count": 20,
    "has_signature": true,
+   "hidden": false,
    "signature_id": 158,
    "sprite_asset_id": "TBD"
   },
@@ -2295,6 +2331,7 @@
    "starter_count": 15,
    "family_expansion_count": 19,
    "has_signature": true,
+   "hidden": false,
    "signature_id": 228,
    "sprite_asset_id": "TBD"
   },
@@ -2337,6 +2374,7 @@
    "starter_count": 12,
    "family_expansion_count": 16,
    "has_signature": true,
+   "hidden": false,
    "signature_id": 23,
    "sprite_asset_id": "TBD"
   },
@@ -2396,6 +2434,7 @@
    "starter_count": 17,
    "family_expansion_count": 26,
    "has_signature": true,
+   "hidden": false,
    "signature_id": 277,
    "sprite_asset_id": "TBD"
   },
@@ -2481,6 +2520,7 @@
    "starter_count": 25,
    "family_expansion_count": 42,
    "has_signature": true,
+   "hidden": false,
    "signature_id": 280,
    "sprite_asset_id": "TBD"
   },
@@ -2531,6 +2571,7 @@
    "starter_count": 15,
    "family_expansion_count": 18,
    "has_signature": true,
+   "hidden": false,
    "signature_id": 398,
    "sprite_asset_id": "TBD"
   },
@@ -2575,6 +2616,7 @@
    "starter_count": 13,
    "family_expansion_count": 16,
    "has_signature": true,
+   "hidden": false,
    "signature_id": 328,
    "sprite_asset_id": "TBD"
   },
@@ -2609,6 +2651,7 @@
    "starter_count": 10,
    "family_expansion_count": 9,
    "has_signature": true,
+   "hidden": false,
    "signature_id": 376,
    "sprite_asset_id": "TBD"
   },
@@ -2639,6 +2682,7 @@
    "starter_count": 7,
    "family_expansion_count": 8,
    "has_signature": true,
+   "hidden": false,
    "signature_id": 361,
    "sprite_asset_id": "TBD"
   },
@@ -2666,6 +2710,7 @@
    "starter_count": 5,
    "family_expansion_count": 8,
    "has_signature": true,
+   "hidden": false,
    "signature_id": 341,
    "sprite_asset_id": "TBD"
   },
@@ -2696,6 +2741,7 @@
    "starter_count": 6,
    "family_expansion_count": 10,
    "has_signature": true,
+   "hidden": false,
    "signature_id": 395,
    "sprite_asset_id": "TBD"
   },
@@ -2734,6 +2780,7 @@
    "starter_count": 12,
    "family_expansion_count": 12,
    "has_signature": true,
+   "hidden": false,
    "signature_id": 320,
    "sprite_asset_id": "TBD"
   },
@@ -2767,6 +2814,7 @@
    "starter_count": 9,
    "family_expansion_count": 10,
    "has_signature": true,
+   "hidden": false,
    "signature_id": 335,
    "sprite_asset_id": "TBD"
   },
@@ -2801,6 +2849,7 @@
    "starter_count": 9,
    "family_expansion_count": 11,
    "has_signature": true,
+   "hidden": false,
    "signature_id": 337,
    "sprite_asset_id": "TBD"
   },
@@ -2837,6 +2886,7 @@
    "starter_count": 10,
    "family_expansion_count": 12,
    "has_signature": true,
+   "hidden": false,
    "signature_id": 321,
    "sprite_asset_id": "TBD"
   },
@@ -2879,6 +2929,7 @@
    "starter_count": 15,
    "family_expansion_count": 13,
    "has_signature": true,
+   "hidden": false,
    "signature_id": 364,
    "sprite_asset_id": "TBD"
   },
@@ -2919,6 +2970,7 @@
    "starter_count": 12,
    "family_expansion_count": 13,
    "has_signature": true,
+   "hidden": false,
    "signature_id": 358,
    "sprite_asset_id": "TBD"
   },
@@ -2957,6 +3009,7 @@
    "starter_count": 10,
    "family_expansion_count": 13,
    "has_signature": true,
+   "hidden": false,
    "signature_id": 349,
    "sprite_asset_id": "TBD"
   },
@@ -2995,6 +3048,7 @@
    "starter_count": 10,
    "family_expansion_count": 13,
    "has_signature": true,
+   "hidden": false,
    "signature_id": 348,
    "sprite_asset_id": "TBD"
   },
@@ -3049,6 +3103,7 @@
    "starter_count": 19,
    "family_expansion_count": 21,
    "has_signature": true,
+   "hidden": false,
    "signature_id": 116,
    "sprite_asset_id": "TBD"
   },
@@ -3086,6 +3141,7 @@
    "starter_count": 8,
    "family_expansion_count": 15,
    "has_signature": true,
+   "hidden": false,
    "signature_id": 392,
    "sprite_asset_id": "TBD"
   },
@@ -3114,6 +3170,7 @@
    "starter_count": 6,
    "family_expansion_count": 7,
    "has_signature": true,
+   "hidden": false,
    "signature_id": 339,
    "sprite_asset_id": "TBD"
   },
@@ -3143,6 +3200,7 @@
    "starter_count": 6,
    "family_expansion_count": 8,
    "has_signature": true,
+   "hidden": false,
    "signature_id": 330,
    "sprite_asset_id": "TBD"
   },
@@ -3169,6 +3227,7 @@
    "starter_count": 5,
    "family_expansion_count": 7,
    "has_signature": true,
+   "hidden": true,
    "signature_id": 459,
    "sprite_asset_id": "TBD"
   },
@@ -3243,6 +3302,7 @@
    "starter_count": 22,
    "family_expansion_count": 37,
    "has_signature": true,
+   "hidden": false,
    "signature_id": 440,
    "sprite_asset_id": "TBD"
   },
@@ -3342,6 +3402,7 @@
    "starter_count": 30,
    "family_expansion_count": 54,
    "has_signature": true,
+   "hidden": false,
    "signature_id": 446,
    "sprite_asset_id": "TBD"
   },
@@ -3395,6 +3456,7 @@
    "starter_count": 12,
    "family_expansion_count": 26,
    "has_signature": true,
+   "hidden": false,
    "signature_id": 496,
    "sprite_asset_id": "TBD"
   },
@@ -3429,6 +3491,7 @@
    "starter_count": 8,
    "family_expansion_count": 12,
    "has_signature": true,
+   "hidden": false,
    "signature_id": 504,
    "sprite_asset_id": "TBD"
   },
@@ -3469,6 +3532,7 @@
    "starter_count": 11,
    "family_expansion_count": 15,
    "has_signature": true,
+   "hidden": false,
    "signature_id": 502,
    "sprite_asset_id": "TBD"
   },
@@ -3523,6 +3587,7 @@
    "starter_count": 14,
    "family_expansion_count": 25,
    "has_signature": true,
+   "hidden": false,
    "signature_id": 443,
    "sprite_asset_id": "TBD"
   },
@@ -3563,6 +3628,7 @@
    "starter_count": 8,
    "family_expansion_count": 18,
    "has_signature": true,
+   "hidden": false,
    "signature_id": 489,
    "sprite_asset_id": "TBD"
   },
@@ -3607,6 +3673,7 @@
    "starter_count": 15,
    "family_expansion_count": 15,
    "has_signature": true,
+   "hidden": false,
    "signature_id": 461,
    "sprite_asset_id": "TBD"
   },
@@ -3670,6 +3737,7 @@
    "starter_count": 19,
    "family_expansion_count": 30,
    "has_signature": true,
+   "hidden": false,
    "signature_id": 459,
    "sprite_asset_id": "TBD"
   },
@@ -3717,6 +3785,7 @@
    "starter_count": 13,
    "family_expansion_count": 20,
    "has_signature": true,
+   "hidden": false,
    "signature_id": 500,
    "sprite_asset_id": "TBD"
   },
@@ -3770,6 +3839,7 @@
    "starter_count": 15,
    "family_expansion_count": 23,
    "has_signature": true,
+   "hidden": false,
    "signature_id": 471,
    "sprite_asset_id": "TBD"
   },
@@ -3813,6 +3883,7 @@
    "starter_count": 13,
    "family_expansion_count": 15,
    "has_signature": true,
+   "hidden": false,
    "signature_id": 200,
    "sprite_asset_id": "TBD"
   },
@@ -3865,6 +3936,7 @@
    "starter_count": 16,
    "family_expansion_count": 20,
    "has_signature": true,
+   "hidden": false,
    "signature_id": 463,
    "sprite_asset_id": "TBD"
   },
@@ -3909,6 +3981,7 @@
    "starter_count": 9,
    "family_expansion_count": 18,
    "has_signature": true,
+   "hidden": false,
    "signature_id": 346,
    "sprite_asset_id": "TBD"
   },
@@ -3970,6 +4043,7 @@
    "starter_count": 17,
    "family_expansion_count": 29,
    "has_signature": true,
+   "hidden": false,
    "signature_id": 456,
    "sprite_asset_id": "TBD"
   },
@@ -4011,6 +4085,7 @@
    "starter_count": 11,
    "family_expansion_count": 16,
    "has_signature": true,
+   "hidden": false,
    "signature_id": 446,
    "sprite_asset_id": "TBD"
   },
@@ -4049,6 +4124,7 @@
    "starter_count": 9,
    "family_expansion_count": 11,
    "has_signature": true,
+   "hidden": false,
    "signature_id": 215,
    "sprite_asset_id": "TBD"
   },
@@ -4098,6 +4174,7 @@
    "starter_count": 11,
    "family_expansion_count": 24,
    "has_signature": true,
+   "hidden": false,
    "signature_id": 484,
    "sprite_asset_id": "TBD"
   },
@@ -4132,6 +4209,7 @@
    "starter_count": 9,
    "family_expansion_count": 11,
    "has_signature": true,
+   "hidden": false,
    "signature_id": 487,
    "sprite_asset_id": "TBD"
   },
@@ -4178,6 +4256,7 @@
    "starter_count": 13,
    "family_expansion_count": 18,
    "has_signature": true,
+   "hidden": false,
    "signature_id": 506,
    "sprite_asset_id": "TBD"
   },
@@ -4246,6 +4325,7 @@
    "starter_count": 21,
    "family_expansion_count": 33,
    "has_signature": true,
+   "hidden": false,
    "signature_id": 239,
    "sprite_asset_id": "TBD"
   },
@@ -4281,6 +4361,7 @@
    "starter_count": 6,
    "family_expansion_count": 15,
    "has_signature": true,
+   "hidden": false,
    "signature_id": 484,
    "sprite_asset_id": "TBD"
   },
@@ -4308,6 +4389,7 @@
    "starter_count": 6,
    "family_expansion_count": 7,
    "has_signature": true,
+   "hidden": false,
    "signature_id": 459,
    "sprite_asset_id": "TBD"
   },
@@ -4348,6 +4430,7 @@
    "starter_count": 11,
    "family_expansion_count": 15,
    "has_signature": true,
+   "hidden": false,
    "signature_id": 689,
    "sprite_asset_id": "TBD"
   },
@@ -4389,6 +4472,7 @@
    "starter_count": 11,
    "family_expansion_count": 15,
    "has_signature": true,
+   "hidden": false,
    "signature_id": 663,
    "sprite_asset_id": "TBD"
   },
@@ -4424,6 +4508,7 @@
    "starter_count": 9,
    "family_expansion_count": 12,
    "has_signature": true,
+   "hidden": false,
    "signature_id": 660,
    "sprite_asset_id": "TBD"
   },
@@ -4458,6 +4543,7 @@
    "starter_count": 10,
    "family_expansion_count": 10,
    "has_signature": true,
+   "hidden": false,
    "signature_id": 585,
    "sprite_asset_id": "TBD"
   },
@@ -4493,6 +4579,7 @@
    "starter_count": 10,
    "family_expansion_count": 11,
    "has_signature": true,
+   "hidden": false,
    "signature_id": 677,
    "sprite_asset_id": "TBD"
   },
@@ -4529,6 +4616,7 @@
    "starter_count": 9,
    "family_expansion_count": 13,
    "has_signature": true,
+   "hidden": false,
    "signature_id": 627,
    "sprite_asset_id": "TBD"
   },
@@ -4566,6 +4654,7 @@
    "starter_count": 11,
    "family_expansion_count": 12,
    "has_signature": true,
+   "hidden": false,
    "signature_id": 564,
    "sprite_asset_id": "TBD"
   },
@@ -4598,6 +4687,7 @@
    "starter_count": 8,
    "family_expansion_count": 10,
    "has_signature": true,
+   "hidden": false,
    "signature_id": 566,
    "sprite_asset_id": "TBD"
   },
@@ -4637,6 +4727,7 @@
    "starter_count": 10,
    "family_expansion_count": 15,
    "has_signature": true,
+   "hidden": false,
    "signature_id": 568,
    "sprite_asset_id": "TBD"
   },
@@ -4671,6 +4762,7 @@
    "starter_count": 10,
    "family_expansion_count": 10,
    "has_signature": true,
+   "hidden": false,
    "signature_id": 557,
    "sprite_asset_id": "TBD"
   },
@@ -4704,6 +4796,7 @@
    "starter_count": 9,
    "family_expansion_count": 10,
    "has_signature": true,
+   "hidden": false,
    "signature_id": 593,
    "sprite_asset_id": "TBD"
   },
@@ -4738,6 +4831,7 @@
    "starter_count": 9,
    "family_expansion_count": 10,
    "has_signature": true,
+   "hidden": false,
    "signature_id": 575,
    "sprite_asset_id": "TBD"
   },
@@ -4774,6 +4868,7 @@
    "starter_count": 9,
    "family_expansion_count": 13,
    "has_signature": true,
+   "hidden": false,
    "signature_id": 582,
    "sprite_asset_id": "TBD"
   },
@@ -4813,6 +4908,7 @@
    "starter_count": 11,
    "family_expansion_count": 13,
    "has_signature": true,
+   "hidden": false,
    "signature_id": 633,
    "sprite_asset_id": "TBD"
   },
@@ -4842,6 +4938,7 @@
    "starter_count": 7,
    "family_expansion_count": 8,
    "has_signature": true,
+   "hidden": false,
    "signature_id": 666,
    "sprite_asset_id": "TBD"
   },
@@ -4871,6 +4968,7 @@
    "starter_count": 6,
    "family_expansion_count": 9,
    "has_signature": true,
+   "hidden": false,
    "signature_id": 663,
    "sprite_asset_id": "TBD"
   },
@@ -4936,6 +5034,7 @@
    "starter_count": 22,
    "family_expansion_count": 28,
    "has_signature": true,
+   "hidden": false,
    "signature_id": 559,
    "sprite_asset_id": "TBD"
   },
@@ -4972,6 +5071,7 @@
    "starter_count": 10,
    "family_expansion_count": 12,
    "has_signature": true,
+   "hidden": false,
    "signature_id": 596,
    "sprite_asset_id": "TBD"
   },
@@ -5001,6 +5101,7 @@
    "starter_count": 8,
    "family_expansion_count": 7,
    "has_signature": true,
+   "hidden": false,
    "signature_id": 645,
    "sprite_asset_id": "TBD"
   },
@@ -5054,6 +5155,7 @@
    "starter_count": 16,
    "family_expansion_count": 22,
    "has_signature": true,
+   "hidden": false,
    "signature_id": 551,
    "sprite_asset_id": "TBD"
   },
@@ -5096,6 +5198,7 @@
    "starter_count": 11,
    "family_expansion_count": 17,
    "has_signature": false,
+   "hidden": false,
    "signature_id": null,
    "sprite_asset_id": "TBD"
   },
@@ -5213,6 +5316,7 @@
    "starter_count": 39,
    "family_expansion_count": 60,
    "has_signature": true,
+   "hidden": false,
    "signature_id": 623,
    "sprite_asset_id": "TBD"
   },
@@ -5250,6 +5354,7 @@
    "starter_count": 9,
    "family_expansion_count": 11,
    "has_signature": true,
+   "hidden": false,
    "signature_id": 686,
    "sprite_asset_id": "TBD"
   },
@@ -5285,6 +5390,7 @@
    "starter_count": 8,
    "family_expansion_count": 12,
    "has_signature": true,
+   "hidden": false,
    "signature_id": 652,
    "sprite_asset_id": "TBD"
   },
@@ -5316,6 +5422,7 @@
    "starter_count": 6,
    "family_expansion_count": 11,
    "has_signature": true,
+   "hidden": false,
    "signature_id": 548,
    "sprite_asset_id": "TBD"
   },
@@ -5348,6 +5455,7 @@
    "starter_count": 6,
    "family_expansion_count": 10,
    "has_signature": true,
+   "hidden": false,
    "signature_id": 392,
    "sprite_asset_id": "TBD"
   },
@@ -5377,6 +5485,7 @@
    "starter_count": 6,
    "family_expansion_count": 8,
    "has_signature": true,
+   "hidden": false,
    "signature_id": 769,
    "sprite_asset_id": "TBD"
   },
@@ -5404,6 +5513,7 @@
    "starter_count": 6,
    "family_expansion_count": 7,
    "has_signature": true,
+   "hidden": false,
    "signature_id": 800,
    "sprite_asset_id": "TBD"
   },
@@ -5433,6 +5543,7 @@
    "starter_count": 7,
    "family_expansion_count": 8,
    "has_signature": true,
+   "hidden": false,
    "signature_id": 787,
    "sprite_asset_id": "TBD"
   },
@@ -5454,6 +5565,7 @@
    "starter_count": 4,
    "family_expansion_count": 3,
    "has_signature": true,
+   "hidden": true,
    "signature_id": 822,
    "sprite_asset_id": "TBD"
   },
@@ -5473,6 +5585,7 @@
    "starter_count": 2,
    "family_expansion_count": 3,
    "has_signature": true,
+   "hidden": true,
    "signature_id": 772,
    "sprite_asset_id": "TBD"
   },
@@ -5493,6 +5606,7 @@
    "starter_count": 3,
    "family_expansion_count": 3,
    "has_signature": true,
+   "hidden": true,
    "signature_id": 804,
    "sprite_asset_id": "TBD"
   },
@@ -5529,6 +5643,7 @@
    "starter_count": 9,
    "family_expansion_count": 12,
    "has_signature": true,
+   "hidden": false,
    "signature_id": 500,
    "sprite_asset_id": "TBD"
   },
@@ -5559,6 +5674,7 @@
    "starter_count": 6,
    "family_expansion_count": 10,
    "has_signature": true,
+   "hidden": false,
    "signature_id": 780,
    "sprite_asset_id": "TBD"
   },
@@ -5597,6 +5713,7 @@
    "starter_count": 12,
    "family_expansion_count": 12,
    "has_signature": true,
+   "hidden": false,
    "signature_id": 802,
    "sprite_asset_id": "TBD"
   },
@@ -5625,6 +5742,7 @@
    "starter_count": 4,
    "family_expansion_count": 10,
    "has_signature": true,
+   "hidden": false,
    "signature_id": 133,
    "sprite_asset_id": "TBD"
   },
@@ -5646,6 +5764,7 @@
    "starter_count": 3,
    "family_expansion_count": 4,
    "has_signature": true,
+   "hidden": true,
    "signature_id": 785,
    "sprite_asset_id": "TBD"
   },
@@ -5666,6 +5785,7 @@
    "starter_count": 3,
    "family_expansion_count": 3,
    "has_signature": true,
+   "hidden": true,
    "signature_id": 820,
    "sprite_asset_id": "TBD"
   },
@@ -5718,6 +5838,7 @@
    "starter_count": 12,
    "family_expansion_count": 26,
    "has_signature": true,
+   "hidden": false,
    "signature_id": 758,
    "sprite_asset_id": "TBD"
   },
@@ -5752,6 +5873,7 @@
    "starter_count": 8,
    "family_expansion_count": 8,
    "has_signature": true,
+   "hidden": false,
    "signature_id": 129,
    "sprite_asset_id": "TBD"
   },
@@ -5787,6 +5909,7 @@
    "starter_count": 8,
    "family_expansion_count": 13,
    "has_signature": true,
+   "hidden": false,
    "signature_id": 4,
    "sprite_asset_id": "TBD"
   },
@@ -5817,6 +5940,7 @@
    "starter_count": 6,
    "family_expansion_count": 10,
    "has_signature": true,
+   "hidden": false,
    "signature_id": 277,
    "sprite_asset_id": "TBD"
   },
@@ -5890,6 +6014,7 @@
    "starter_count": 23,
    "family_expansion_count": 36,
    "has_signature": true,
+   "hidden": false,
    "signature_id": 942,
    "sprite_asset_id": "TBD"
   },
@@ -5936,6 +6061,7 @@
    "starter_count": 9,
    "family_expansion_count": 20,
    "has_signature": true,
+   "hidden": false,
    "signature_id": 172,
    "sprite_asset_id": "TBD"
   },
@@ -5967,6 +6093,7 @@
    "starter_count": 8,
    "family_expansion_count": 9,
    "has_signature": true,
+   "hidden": false,
    "signature_id": 50,
    "sprite_asset_id": "TBD"
   },
@@ -5995,6 +6122,7 @@
    "starter_count": 7,
    "family_expansion_count": 7,
    "has_signature": true,
+   "hidden": false,
    "signature_id": 948,
    "sprite_asset_id": "TBD"
   },
@@ -6027,6 +6155,7 @@
    "starter_count": 9,
    "family_expansion_count": 8,
    "has_signature": true,
+   "hidden": false,
    "signature_id": 986,
    "sprite_asset_id": "TBD"
   },
@@ -6061,6 +6190,7 @@
    "starter_count": 9,
    "family_expansion_count": 11,
    "has_signature": true,
+   "hidden": false,
    "signature_id": 961,
    "sprite_asset_id": "TBD"
   },
@@ -6114,6 +6244,7 @@
    "starter_count": 11,
    "family_expansion_count": 26,
    "has_signature": true,
+   "hidden": false,
    "signature_id": 989,
    "sprite_asset_id": "TBD"
   },
@@ -6152,6 +6283,7 @@
    "starter_count": 11,
    "family_expansion_count": 12,
    "has_signature": true,
+   "hidden": false,
    "signature_id": 984,
    "sprite_asset_id": "TBD"
   },
@@ -6184,6 +6316,7 @@
    "starter_count": 6,
    "family_expansion_count": 11,
    "has_signature": true,
+   "hidden": false,
    "signature_id": 974,
    "sprite_asset_id": "TBD"
   },
@@ -6262,6 +6395,7 @@
    "starter_count": 19,
    "family_expansion_count": 33,
    "has_signature": true,
+   "hidden": false,
    "signature_id": 976,
    "sprite_asset_id": "TBD"
   },
@@ -6290,6 +6424,7 @@
    "starter_count": 4,
    "family_expansion_count": 7,
    "has_signature": true,
+   "hidden": false,
    "signature_id": 37,
    "sprite_asset_id": "TBD"
   },
@@ -6322,6 +6457,7 @@
    "starter_count": 8,
    "family_expansion_count": 10,
    "has_signature": true,
+   "hidden": false,
    "signature_id": 993,
    "sprite_asset_id": "TBD"
   },
@@ -6358,6 +6494,7 @@
    "starter_count": 7,
    "family_expansion_count": 14,
    "has_signature": true,
+   "hidden": false,
    "signature_id": 945,
    "sprite_asset_id": "TBD"
   },
@@ -6392,6 +6529,7 @@
    "starter_count": 8,
    "family_expansion_count": 11,
    "has_signature": true,
+   "hidden": false,
    "signature_id": 978,
    "sprite_asset_id": "TBD"
   },
@@ -6419,6 +6557,7 @@
    "starter_count": 5,
    "family_expansion_count": 8,
    "has_signature": true,
+   "hidden": true,
    "signature_id": 994,
    "sprite_asset_id": "TBD"
   },
@@ -6470,6 +6609,7 @@
    "starter_count": 12,
    "family_expansion_count": 23,
    "has_signature": true,
+   "hidden": false,
    "signature_id": 4,
    "sprite_asset_id": "TBD"
   },
@@ -6506,6 +6646,7 @@
    "starter_count": 8,
    "family_expansion_count": 14,
    "has_signature": true,
+   "hidden": false,
    "signature_id": 1121,
    "sprite_asset_id": "TBD"
   },
@@ -6537,6 +6678,7 @@
    "starter_count": 9,
    "family_expansion_count": 8,
    "has_signature": true,
+   "hidden": false,
    "signature_id": 1125,
    "sprite_asset_id": "TBD"
   },
@@ -6562,6 +6704,7 @@
    "starter_count": 6,
    "family_expansion_count": 5,
    "has_signature": true,
+   "hidden": false,
    "signature_id": 1142,
    "sprite_asset_id": "TBD"
   },
@@ -6598,6 +6741,7 @@
    "starter_count": 11,
    "family_expansion_count": 11,
    "has_signature": true,
+   "hidden": false,
    "signature_id": 66,
    "sprite_asset_id": "TBD"
   },
@@ -6635,6 +6779,7 @@
    "starter_count": 10,
    "family_expansion_count": 13,
    "has_signature": true,
+   "hidden": false,
    "signature_id": 92,
    "sprite_asset_id": "TBD"
   },
@@ -6663,6 +6808,7 @@
    "starter_count": 4,
    "family_expansion_count": 10,
    "has_signature": true,
+   "hidden": true,
    "signature_id": 1160,
    "sprite_asset_id": "TBD"
   },
@@ -6687,6 +6833,7 @@
    "starter_count": 5,
    "family_expansion_count": 5,
    "has_signature": true,
+   "hidden": true,
    "signature_id": 1129,
    "sprite_asset_id": "TBD"
   },
@@ -6710,6 +6857,7 @@
    "starter_count": 5,
    "family_expansion_count": 4,
    "has_signature": true,
+   "hidden": true,
    "signature_id": 131,
    "sprite_asset_id": "TBD"
   },
@@ -6737,6 +6885,7 @@
    "starter_count": 6,
    "family_expansion_count": 7,
    "has_signature": true,
+   "hidden": false,
    "signature_id": 1226,
    "sprite_asset_id": "TBD"
   },
@@ -6767,6 +6916,7 @@
    "starter_count": 7,
    "family_expansion_count": 9,
    "has_signature": true,
+   "hidden": false,
    "signature_id": 1176,
    "sprite_asset_id": "TBD"
   },
@@ -6815,6 +6965,7 @@
    "starter_count": 13,
    "family_expansion_count": 15,
    "has_signature": true,
+   "hidden": false,
    "signature_id": 1123,
    "sprite_asset_id": "TBD"
   },
@@ -6861,6 +7012,7 @@
    "starter_count": 8,
    "family_expansion_count": 20,
    "has_signature": true,
+   "hidden": false,
    "signature_id": 1148,
    "sprite_asset_id": "TBD"
   },
@@ -6893,6 +7045,7 @@
    "starter_count": 7,
    "family_expansion_count": 7,
    "has_signature": true,
+   "hidden": false,
    "signature_id": 1169,
    "sprite_asset_id": "TBD"
   },
@@ -6922,6 +7075,7 @@
    "starter_count": 6,
    "family_expansion_count": 8,
    "has_signature": true,
+   "hidden": false,
    "signature_id": 1170,
    "sprite_asset_id": "TBD"
   },
@@ -7133,6 +7287,7 @@
    "starter_count": 83,
    "family_expansion_count": 111,
    "has_signature": true,
+   "hidden": false,
    "signature_id": 1105,
    "sprite_asset_id": "TBD"
   },
@@ -7164,6 +7319,7 @@
    "starter_count": 5,
    "family_expansion_count": 12,
    "has_signature": true,
+   "hidden": false,
    "signature_id": 133,
    "sprite_asset_id": "TBD"
   },
@@ -7308,6 +7464,7 @@
    "starter_count": 50,
    "family_expansion_count": 79,
    "has_signature": false,
+   "hidden": false,
    "signature_id": null,
    "sprite_asset_id": "TBD"
   },
@@ -7343,6 +7500,7 @@
    "starter_count": 8,
    "family_expansion_count": 13,
    "has_signature": false,
+   "hidden": false,
    "signature_id": null,
    "sprite_asset_id": "TBD"
   },
@@ -7415,6 +7573,7 @@
    "starter_count": 21,
    "family_expansion_count": 37,
    "has_signature": false,
+   "hidden": false,
    "signature_id": null,
    "sprite_asset_id": "TBD"
   },
@@ -7446,6 +7605,7 @@
    "starter_count": 6,
    "family_expansion_count": 11,
    "has_signature": false,
+   "hidden": false,
    "signature_id": null,
    "sprite_asset_id": "TBD"
   },
@@ -7480,6 +7640,7 @@
    "starter_count": 8,
    "family_expansion_count": 12,
    "has_signature": false,
+   "hidden": false,
    "signature_id": null,
    "sprite_asset_id": "TBD"
   },
@@ -7541,6 +7702,7 @@
    "starter_count": 17,
    "family_expansion_count": 29,
    "has_signature": false,
+   "hidden": false,
    "signature_id": null,
    "sprite_asset_id": "TBD"
   },
@@ -7557,6 +7719,7 @@
    "starter_count": 1,
    "family_expansion_count": 1,
    "has_signature": false,
+   "hidden": true,
    "signature_id": null,
    "sprite_asset_id": "TBD"
   },
@@ -7602,6 +7765,7 @@
    "starter_count": 15,
    "family_expansion_count": 16,
    "has_signature": false,
+   "hidden": false,
    "signature_id": null,
    "sprite_asset_id": "TBD"
   },
@@ -7622,6 +7786,7 @@
    "starter_count": 3,
    "family_expansion_count": 3,
    "has_signature": false,
+   "hidden": true,
    "signature_id": null,
    "sprite_asset_id": "TBD"
   },
@@ -7645,6 +7810,7 @@
    "starter_count": 4,
    "family_expansion_count": 5,
    "has_signature": false,
+   "hidden": true,
    "signature_id": null,
    "sprite_asset_id": "TBD"
   },
@@ -7671,6 +7837,7 @@
    "starter_count": 3,
    "family_expansion_count": 9,
    "has_signature": false,
+   "hidden": true,
    "signature_id": null,
    "sprite_asset_id": "TBD"
   },
@@ -7703,6 +7870,7 @@
    "starter_count": 7,
    "family_expansion_count": 11,
    "has_signature": false,
+   "hidden": false,
    "signature_id": null,
    "sprite_asset_id": "TBD"
   },
@@ -7734,6 +7902,7 @@
    "starter_count": 7,
    "family_expansion_count": 9,
    "has_signature": false,
+   "hidden": false,
    "signature_id": null,
    "sprite_asset_id": "TBD"
   },
@@ -7777,6 +7946,7 @@
    "starter_count": 8,
    "family_expansion_count": 18,
    "has_signature": false,
+   "hidden": false,
    "signature_id": null,
    "sprite_asset_id": "TBD"
   },
@@ -7805,6 +7975,7 @@
    "starter_count": 3,
    "family_expansion_count": 4,
    "has_signature": false,
+   "hidden": false,
    "signature_id": null,
    "sprite_asset_id": "TBD"
   },
@@ -7841,6 +8012,7 @@
    "starter_count": 7,
    "family_expansion_count": 15,
    "has_signature": false,
+   "hidden": false,
    "signature_id": null,
    "sprite_asset_id": "TBD"
   },
@@ -7879,6 +8051,7 @@
    "starter_count": 11,
    "family_expansion_count": 13,
    "has_signature": false,
+   "hidden": false,
    "signature_id": null,
    "sprite_asset_id": "TBD"
   },
@@ -7925,6 +8098,7 @@
    "starter_count": 14,
    "family_expansion_count": 17,
    "has_signature": false,
+   "hidden": false,
    "signature_id": null,
    "sprite_asset_id": "TBD"
   },
@@ -7966,6 +8140,7 @@
    "starter_count": 10,
    "family_expansion_count": 16,
    "has_signature": false,
+   "hidden": false,
    "signature_id": null,
    "sprite_asset_id": "TBD"
   },
@@ -7995,6 +8170,7 @@
    "starter_count": 5,
    "family_expansion_count": 9,
    "has_signature": false,
+   "hidden": false,
    "signature_id": null,
    "sprite_asset_id": "TBD"
   },
@@ -8024,6 +8200,7 @@
    "starter_count": 5,
    "family_expansion_count": 9,
    "has_signature": false,
+   "hidden": false,
    "signature_id": null,
    "sprite_asset_id": "TBD"
   },
@@ -8051,6 +8228,7 @@
    "starter_count": 4,
    "family_expansion_count": 8,
    "has_signature": false,
+   "hidden": false,
    "signature_id": null,
    "sprite_asset_id": "TBD"
   },
@@ -8078,6 +8256,7 @@
    "starter_count": 4,
    "family_expansion_count": 6,
    "has_signature": false,
+   "hidden": false,
    "signature_id": null,
    "sprite_asset_id": "TBD"
   },
@@ -8101,6 +8280,7 @@
    "starter_count": 1,
    "family_expansion_count": 8,
    "has_signature": false,
+   "hidden": false,
    "signature_id": null,
    "sprite_asset_id": "TBD"
   },
@@ -8136,6 +8316,7 @@
    "starter_count": 7,
    "family_expansion_count": 14,
    "has_signature": false,
+   "hidden": false,
    "signature_id": null,
    "sprite_asset_id": "TBD"
   },
@@ -8164,6 +8345,7 @@
    "starter_count": 5,
    "family_expansion_count": 9,
    "has_signature": false,
+   "hidden": false,
    "signature_id": null,
    "sprite_asset_id": "TBD"
   },
@@ -8194,6 +8376,7 @@
    "starter_count": 6,
    "family_expansion_count": 10,
    "has_signature": false,
+   "hidden": false,
    "signature_id": null,
    "sprite_asset_id": "TBD"
   },
@@ -8245,6 +8428,7 @@
    "starter_count": 11,
    "family_expansion_count": 24,
    "has_signature": false,
+   "hidden": false,
    "signature_id": null,
    "sprite_asset_id": "TBD"
   },
@@ -8260,6 +8444,7 @@
    "starter_count": 0,
    "family_expansion_count": 0,
    "has_signature": false,
+   "hidden": false,
    "signature_id": null,
    "sprite_asset_id": "TBD",
    "warning": "all-legendary roster, starter fallback needed"
@@ -8314,6 +8499,7 @@
    "starter_count": 6,
    "family_expansion_count": 22,
    "has_signature": false,
+   "hidden": false,
    "signature_id": null,
    "sprite_asset_id": "TBD"
   },
@@ -8346,6 +8532,7 @@
    "starter_count": 3,
    "family_expansion_count": 8,
    "has_signature": false,
+   "hidden": false,
    "signature_id": null,
    "sprite_asset_id": "TBD"
   },
@@ -8385,6 +8572,7 @@
    "starter_count": 9,
    "family_expansion_count": 16,
    "has_signature": false,
+   "hidden": false,
    "signature_id": null,
    "sprite_asset_id": "TBD"
   },
@@ -8413,6 +8601,7 @@
    "starter_count": 6,
    "family_expansion_count": 8,
    "has_signature": false,
+   "hidden": false,
    "signature_id": null,
    "sprite_asset_id": "TBD"
   },
@@ -8444,6 +8633,7 @@
    "starter_count": 7,
    "family_expansion_count": 10,
    "has_signature": false,
+   "hidden": false,
    "signature_id": null,
    "sprite_asset_id": "TBD"
   },
@@ -8560,6 +8750,7 @@
    "starter_count": 41,
    "family_expansion_count": 56,
    "has_signature": false,
+   "hidden": false,
    "signature_id": null,
    "sprite_asset_id": "TBD"
   },
@@ -8676,6 +8867,7 @@
    "starter_count": 41,
    "family_expansion_count": 56,
    "has_signature": false,
+   "hidden": false,
    "signature_id": null,
    "sprite_asset_id": "TBD"
   },
@@ -8735,6 +8927,7 @@
    "starter_count": 17,
    "family_expansion_count": 28,
    "has_signature": false,
+   "hidden": false,
    "signature_id": null,
    "sprite_asset_id": "TBD"
   },
@@ -8758,6 +8951,7 @@
    "starter_count": 1,
    "family_expansion_count": 8,
    "has_signature": false,
+   "hidden": false,
    "signature_id": null,
    "sprite_asset_id": "TBD"
   },
@@ -8789,6 +8983,7 @@
    "starter_count": 7,
    "family_expansion_count": 10,
    "has_signature": false,
+   "hidden": false,
    "signature_id": null,
    "sprite_asset_id": "TBD"
   },
@@ -8816,6 +9011,7 @@
    "starter_count": 8,
    "family_expansion_count": 5,
    "has_signature": false,
+   "hidden": false,
    "signature_id": null,
    "sprite_asset_id": "TBD"
   },
@@ -8926,6 +9122,7 @@
    "starter_count": 44,
    "family_expansion_count": 52,
    "has_signature": false,
+   "hidden": false,
    "signature_id": null,
    "sprite_asset_id": "TBD"
   },
@@ -8971,6 +9168,7 @@
    "starter_count": 11,
    "family_expansion_count": 20,
    "has_signature": false,
+   "hidden": false,
    "signature_id": null,
    "sprite_asset_id": "TBD"
   },
@@ -8994,6 +9192,7 @@
    "starter_count": 1,
    "family_expansion_count": 8,
    "has_signature": false,
+   "hidden": false,
    "signature_id": null,
    "sprite_asset_id": "TBD"
   },
@@ -9041,6 +9240,7 @@
    "starter_count": 10,
    "family_expansion_count": 23,
    "has_signature": false,
+   "hidden": false,
    "signature_id": null,
    "sprite_asset_id": "TBD"
   },
@@ -9068,6 +9268,7 @@
    "starter_count": 6,
    "family_expansion_count": 7,
    "has_signature": false,
+   "hidden": false,
    "signature_id": null,
    "sprite_asset_id": "TBD"
   },
@@ -9179,6 +9380,7 @@
    "starter_count": 44,
    "family_expansion_count": 51,
    "has_signature": false,
+   "hidden": false,
    "signature_id": null,
    "sprite_asset_id": "TBD"
   },
@@ -9230,6 +9432,7 @@
    "starter_count": 6,
    "family_expansion_count": 21,
    "has_signature": false,
+   "hidden": false,
    "signature_id": null,
    "sprite_asset_id": "TBD"
   },
@@ -9283,6 +9486,7 @@
    "starter_count": 12,
    "family_expansion_count": 24,
    "has_signature": false,
+   "hidden": false,
    "signature_id": null,
    "sprite_asset_id": "TBD"
   },
@@ -9307,6 +9511,7 @@
    "starter_count": 4,
    "family_expansion_count": 5,
    "has_signature": false,
+   "hidden": false,
    "signature_id": null,
    "sprite_asset_id": "TBD"
   },
@@ -9323,6 +9528,7 @@
    "starter_count": 0,
    "family_expansion_count": 0,
    "has_signature": false,
+   "hidden": false,
    "signature_id": null,
    "sprite_asset_id": "TBD",
    "warning": "all-legendary roster, starter fallback needed"
@@ -9358,6 +9564,7 @@
    "starter_count": 5,
    "family_expansion_count": 10,
    "has_signature": false,
+   "hidden": false,
    "signature_id": null,
    "sprite_asset_id": "TBD"
   },
@@ -9394,6 +9601,7 @@
    "starter_count": 10,
    "family_expansion_count": 12,
    "has_signature": false,
+   "hidden": false,
    "signature_id": null,
    "sprite_asset_id": "TBD"
   }

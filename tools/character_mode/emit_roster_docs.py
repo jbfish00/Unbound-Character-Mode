@@ -283,8 +283,16 @@ def main():
 
     sources = rekey_sources_onto_family_base(load_sources(), resolve_base)
 
+    # Characters the ROM refuses to let the player SELECT are not documented:
+    # the project's rule is that the docs list what is offered. They keep their
+    # table slot and their record (saves store the INDEX), so the numbering of
+    # everyone else is untouched and simply has gaps.
     chars = []
+    hidden_names = []
     for rec, ids in zip(manifest, rosters):
+        if rec.get("hidden"):
+            hidden_names.append(rec["character"])
+            continue
         finals = {}
         for sid in ids:
             if kids.get(sid):
@@ -361,13 +369,25 @@ def main():
         "2026-07-25 adversarial audit judged every roster in this file."
         % (sourced, len(all_rows), 100.0 * sourced / max(1, len(all_rows))),
     ]
-    if thin:
+    if hidden_names:
         coverage.append(
-            "- **%d characters have fewer than six fully-evolved Pokémon** in "
-            "this game's dex (%s). The project's rule hides such characters from "
-            "the menu; that gating is **not injected in this build**, so they are "
-            "still selectable here and are therefore still listed. Expect them "
-            "to be a thin playthrough." % (len(thin), ", ".join(thin)))
+            "- **%d characters are hidden from the menu** and are therefore not "
+            "listed here: %s. Each has fewer than six fully-evolved Pokémon "
+            "obtainable in this game's dex, with no legendary to exempt it, so "
+            "the character-select screen refuses the number. They keep their "
+            "table slots — character ids are save data, so the remaining numbers "
+            "are unchanged and simply skip these."
+            % (len(hidden_names), ", ".join(sorted(hidden_names))))
+    # thin (character_drops.json) and hidden (the emitted flag) must agree; if
+    # they ever diverge, the docs would describe a gate the ROM does not have.
+    if sorted(thin) != sorted(hidden_names):
+        raise SystemExit(
+            "character_drops.json and the emitted CHAR_FLAG_HIDDEN disagree:\n"
+            "  only in character_drops.json: %s\n"
+            "  only in the emitted records:  %s\n"
+            "Re-run emit_characters.py after derive_drops.py."
+            % (sorted(set(thin) - set(hidden_names)),
+               sorted(set(hidden_names) - set(thin))))
 
     out = ["# Character Mode — Final-Evolution Rosters (%s)" % GAME_TITLE, "",
            "Every playable character and the **final evolutions** their complete "

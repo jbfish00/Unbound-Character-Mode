@@ -4,13 +4,30 @@ python
 # below, which failed as "want 179, got 208" the moment the 2026-07-25 roster
 # audit landed -- a message that reads like a roster bug rather than a test that
 # had not been told the roster grew.
-import json, os
+import json, os, sys, importlib.util
 _p = os.environ.get("CM_MANIFEST", "tools/character_mode/characters_manifest.json")
 try:
-    NUM_CHARS = len(json.load(open(_p))["characters"])
+    _chars = json.load(open(_p))["characters"]
+    NUM_CHARS = len(_chars)
 except Exception as _e:
     raise SystemExit("cannot derive the character count from %s: %s" % (_p, _e))
 gdb.execute("set $want_chars = %d" % NUM_CHARS)
+
+# The script block's park positions are DERIVED from the generator that emits
+# it. They were literals (CONFIRM_POS = 90, block bound 140) and every optional
+# feature added to the block shifts them; a stale one does not fail as "the
+# offset moved", it makes the driver wait forever for a state that now lives
+# somewhere else and reports a scene that never completed.
+_spec = importlib.util.spec_from_file_location(
+    "optin_script", os.path.join(os.path.dirname(_p), "optin_script.py"))
+_optin = importlib.util.module_from_spec(_spec)
+sys.path.insert(0, os.path.dirname(_p))
+_spec.loader.exec_module(_optin)
+OFF = _optin.label_offsets()
+# The ids the gate must accept and must refuse, derived from the same manifest
+# the ROM was built from -- never hardcoded.
+HIDDEN_IDS = [i + 1 for i, c in enumerate(_chars) if c.get("hidden")]
+SHOWN_IDS = [i + 1 for i, c in enumerate(_chars) if not c.get("hidden")]
 end
 # Full organic character-select test (gold path): on a FRESH save, drive the
 # real new-game intro with verified key presses — Welcome speech, appearance,
@@ -87,10 +104,9 @@ def block_pos():
     for i in range(min(depth, 20)):
         vals.append(rd(0x03000EBC + 4*i, 4))
     for v in vals:
-        # bound = OFF_TEXT in optin_script.py (140 with the mugshot
-        # callnatives, 130 without) -- too small and the tail of the block
-        # reads as "not in block"
-        if BLOCK <= v < BLOCK + 140:
+        # bound = OFF_TEXT, derived: too small and the tail of the block reads
+        # as "not in block"
+        if BLOCK <= v < BLOCK + OFF["TEXT"]:
             return v - BLOCK
     return -1
 
@@ -134,13 +150,18 @@ print(f"G1 organic flow entered the CM block (want 1): {1 if reached else 0}")
 typed = 0
 done = False
 if reached:
-    # state-machine drive inside the block (offsets: layout in optin_script.py)
-    #   13  parked in opt-in yesno            -> A (Yes)
-    #   32  parked in number-prompt msgbox    -> A
-    #   36  parked on waitstate: ChooseNumberScreen up -> right,'1',Start,OK
-    #   90  parked in confirm yesno           -> A (Yes)   [was 85 pre-mugshot]
-    #  117  parked in enabled msgbox          -> A         [was 107]
-    CONFIRM_POS = 90
+    # state-machine drive inside the block; every offset comes from
+    # optin_script.label_offsets(), which the generator itself asserts against
+    # the bytes it emits:
+    #   OPTIN_YESNO     parked in opt-in yesno            -> A (Yes)
+    #   NUMTEXT_MSGBOX  parked in number-prompt msgbox    -> A
+    #   NUMBER_SCREEN   parked on waitstate, number screen up -> typer
+    #   CONFIRM_YESNO   parked in confirm yesno           -> A (Yes)
+    #   HIDDEN_MSGBOX   parked in "not available" msgbox  -> A (re-asks)
+    #   ENABLED_MSGBOX  parked in enabled msgbox          -> A
+    CONFIRM_POS = OFF["CONFIRM_YESNO"]
+    HIDDEN_POS = OFF["HIDDEN_MSGBOX"]
+    hidden_msgbox_seen = 0
     mug_seen = 0
     mug_checked = False
     for step in range(60):
@@ -157,7 +178,11 @@ if reached:
             mug_checked = True
             print(f"  confirm prompt up: mugshot sprites = {n}")
             shot()
-        if pos == 36:
+        if pos == HIDDEN_POS:
+            hidden_msgbox_seen += 1
+            print(f"  rejection msgbox up (hidden character refused) x{hidden_msgbox_seen}")
+            shot()
+        if pos == OFF["NUMBER_SCREEN"]:
             # The naming screen mishandles gdb-sliced key presses (keys
             # register in heldKeysRaw but the screen ignores/garbles them —
             # SIGINT stop/resume around each press breaks its input timing).
@@ -192,6 +217,22 @@ if reached:
     print(f"G7 confirm prompt was sampled (want 1): {1 if mug_checked else 0}")
     print(f"G8 mugshot drawn at the confirm prompt (want 1): {1 if mug_seen == 1 else 0}")
     print(f"G9 mugshot torn down after selection (want 0): {count_mugshot()}")
+
+    # ---- playability-threshold gate ----
+    # G10 holds on EVERY run, including the plain one: whatever the player
+    # managed to enter, the id the game committed to must be one the ROM is
+    # willing to offer. A gate that let a hidden id through would fail here
+    # even if nobody deliberately typed one.
+    print(f"info: {len(HIDDEN_IDS)} hidden ids, first = "
+          f"{HIDDEN_IDS[0] if HIDDEN_IDS else '(none)'}")
+    print(f"G10 committed id is not a hidden character (want 1): "
+          f"{1 if var not in HIDDEN_IDS else 0}")
+    # This run types '1', a selectable character, so the gate must stay out of
+    # the way entirely. A rejection here would mean the gate refuses valid
+    # characters -- the failure mode that matters most, and the one a
+    # rejection-only test could never catch.
+    print(f"G11 gate did not refuse a selectable character (want 0): "
+          f"{hidden_msgbox_seen}")
 
     # keep playing: the intro must continue (story cutscene) and reach the
     # overworld with the mode state intact

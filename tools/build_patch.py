@@ -183,9 +183,22 @@ def main():
         f"wild picker -- switch it to a static buffer instead of growing it")
     print(f"wild picker: worst-case family roots = {_worst} -> cap {max_wild_roots}")
 
+    # Threshold-gate self-test fixtures, DERIVED. Hardcoding either id is the
+    # trap this project has hit repeatedly: after a roster change a literal
+    # index silently names a different character, and the check then passes for
+    # the wrong reason rather than failing as a stale fixture.
+    _hidden_ids = [_i + 1 for _i, _c in enumerate(_cm) if _c.get("hidden")]
+    _shown_ids = [_i + 1 for _i, _c in enumerate(_cm) if not _c.get("hidden")]
+    assert _shown_ids, "every character is hidden -- nothing would be selectable"
+    test_hidden_id = _hidden_ids[0] if _hidden_ids else 0
+    test_shown_id = _shown_ids[0]
+    print(f"threshold gate: {len(_hidden_ids)} of {len(_cm)} hidden; self-test uses "
+          f"hidden id {test_hidden_id or '(none)'}, selectable id {test_shown_id}")
+
     run(["arm-none-eabi-gcc", "-c", "-g", "-mthumb", "-mcpu=arm7tdmi", "-mtune=arm7tdmi",
          "-O2", "-ffreestanding", "-fno-builtin", "-mlong-calls", "-Wall", "-Wextra",
          f"-DMAX_WILD_FAMILY_ROOTS={max_wild_roots}",
+         f"-DTEST_HIDDEN_ID={test_hidden_id}", f"-DTEST_SHOWN_ID={test_shown_id}",
          "-Werror", "-o", obj, os.path.join(ROOT, "src", "character_mode.c")])
 
     # 3. layout: [characters.bin][rosters.bin][names.bin][u16 count][pad]
@@ -275,10 +288,13 @@ def main():
     off_optin = (off_code + len(code) + 3) & ~3
     show_mugshot = syms["CharacterMode_ShowMugshot"] | 1
     hide_mugshot = syms["CharacterMode_HideMugshot"] | 1
+    check_selectable = syms["CharacterMode_CheckSelectableNative"] | 1
     print(f"CharacterMode_ShowMugshot    @ {show_mugshot:#010x}")
     print(f"CharacterMode_HideMugshot    @ {hide_mugshot:#010x}")
+    print(f"CharacterMode_CheckSelectable@ {check_selectable:#010x}")
     optin_blob, optin_splice = optin_script.build(addr(off_optin), n_chars,
-                                                  show_mugshot, hide_mugshot)
+                                                  show_mugshot, hide_mugshot,
+                                                  check_selectable)
     print(f"opt-in script block          @ {addr(off_optin):#010x} ({len(optin_blob)} bytes)")
 
     total_len = off_optin + len(optin_blob)
@@ -472,7 +488,34 @@ def main():
     dbg_trade_swept = trade_debug_script(swept_id)
     off_dbg_trade_stays = off_dbg_trade_swept + len(dbg_trade_swept)
     dbg_trade_stays = trade_debug_script(stays_id)
-    total_len = off_dbg_trade_stays + len(dbg_trade_stays)
+
+    # Threshold-gate live test. The number screen (sp0B3) is a naming screen in
+    # number mode and is hostile to automation -- it drops and reorders
+    # synthetic presses, so driving it to a two-digit id is unreliable. Instead
+    # these preset VAR_RESULT and `goto` straight into the REAL gate bytes in
+    # the REAL opt-in block, so the shipped callnative, compare and branch all
+    # execute; only the player's typing is replaced.
+    gate_off = optin_script.label_offsets()["GATE"]
+    gate_addr = addr(off_optin) + gate_off
+
+    def gate_debug_script(char_id):
+        s = bytearray()
+        s += bytes([0x16]) + struct.pack("<HH", 0x800D, char_id)  # setvar VAR_RESULT
+        s += bytes([0x05]) + struct.pack("<I", gate_addr)         # goto the gate
+        return bytes(s)
+
+    hidden_ids = [i + 1 for i, c in enumerate(manifest["characters"]) if c.get("hidden")]
+    shown_ids = [i + 1 for i, c in enumerate(manifest["characters"]) if not c.get("hidden")]
+    gate_hidden_id = hidden_ids[0] if hidden_ids else 0
+    gate_shown_id = shown_ids[0]
+    off_dbg_gate_hidden = off_dbg_trade_stays + len(dbg_trade_stays)
+    dbg_gate_hidden = gate_debug_script(gate_hidden_id)
+    off_dbg_gate_shown = off_dbg_gate_hidden + len(dbg_gate_hidden)
+    dbg_gate_shown = gate_debug_script(gate_shown_id)
+    print(f"gate fixtures (derived): hidden id {gate_hidden_id}, shown id "
+          f"{gate_shown_id}; gate @ {gate_addr:#010x} (block+{gate_off})")
+
+    total_len = off_dbg_gate_shown + len(dbg_gate_shown)
     assert total_len <= INJECT_BLOCK_LEN, "injection block overflow (debug scripts)"
     span2 = rom[INJECT_FILE_OFF + off_dbg_block:INJECT_FILE_OFF + total_len]
     assert all(b == 0xFF for b in span2), "debug-script target not 0xFF-free!"
@@ -482,6 +525,8 @@ def main():
     rom[INJECT_FILE_OFF + off_trade_tails:INJECT_FILE_OFF + off_trade_tails + len(trade_blob)] = trade_blob
     rom[INJECT_FILE_OFF + off_dbg_trade_swept:INJECT_FILE_OFF + off_dbg_trade_swept + len(dbg_trade_swept)] = dbg_trade_swept
     rom[INJECT_FILE_OFF + off_dbg_trade_stays:INJECT_FILE_OFF + off_dbg_trade_stays + len(dbg_trade_stays)] = dbg_trade_stays
+    rom[INJECT_FILE_OFF + off_dbg_gate_hidden:INJECT_FILE_OFF + off_dbg_gate_hidden + len(dbg_gate_hidden)] = dbg_gate_hidden
+    rom[INJECT_FILE_OFF + off_dbg_gate_shown:INJECT_FILE_OFF + off_dbg_gate_shown + len(dbg_gate_shown)] = dbg_gate_shown
     # json is imported at module scope (a second local import here made json
     # function-local, so the manifest load above raised UnboundLocalError)
     with open(os.path.join(BUILD, "debug_addrs.json"), "w") as f:
@@ -490,6 +535,12 @@ def main():
                    "starter_test_script": addr(off_dbg_starter),
                    "trade_test_script_swept": addr(off_dbg_trade_swept),
                    "trade_test_script_stays": addr(off_dbg_trade_stays),
+                   "gate_test_script_hidden": addr(off_dbg_gate_hidden),
+                   "gate_test_script_shown": addr(off_dbg_gate_shown),
+                   "gate_hidden_id": gate_hidden_id,
+                   "gate_shown_id": gate_shown_id,
+                   "optin_block": addr(off_optin),
+                   "optin_offsets": optin_script.label_offsets(),
                    "trade_test_swept_char": swept_name,
                    "trade_test_stays_char": stays_name}, f)
     print(f"debug scripts: block @ {addr(off_dbg_block):#010x}, catch @ {addr(off_dbg_catch):#010x}, "

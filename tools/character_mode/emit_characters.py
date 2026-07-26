@@ -30,6 +30,12 @@ and writes real 0x08xxxxxx pointers:
                              equivalent once real ids exist
     u8  generation
     u8  flags             -- bit0: hasSignature: signature ace is roster[0]
+                             bit1: hidden: below the six-fully-evolved
+                             playability threshold in this game's dex, so the
+                             SELECTION path refuses it. The record stays in the
+                             table and enforcement still works for it, because
+                             saves store the character INDEX -- hiding must
+                             never renumber anyone.
     u8  starter_count     -- roster[0..starter_count) are the base-stage,
                              non-legendary species eligible as starters
     u8  reserved          -- 0
@@ -69,6 +75,21 @@ NIHILEGO BUZZWOLE PHEROMOSA XURKITREE CELESTEELA KARTANA GUZZLORD POIPOLE STAKAT
 ZACIAN ZAMAZENTA ETERNATUS KUBFU ZARUDE REGIELEKI REGIDRAGO GLASTRIER SPECTRIER CALYREX ENAMORUS""".split()}
 
 CATEGORIES = ["protagonist", "rival", "gymleader", "elite4", "champion", "villain", "anime"]
+
+CHAR_FLAG_HAS_SIGNATURE = 0x1
+CHAR_FLAG_HIDDEN = 0x2
+
+
+def load_unselectable():
+    """Names from character_drops.json — characters below the playability
+    threshold, which derive_drops.py recomputes from THIS repo's own
+    rosters_mapped.json. Read it here rather than re-deriving so the flag, the
+    docs and the threshold can never disagree about who is thin."""
+    path = os.path.join(HERE, "character_drops.json")
+    if not os.path.isfile(path):
+        return set()
+    with open(path) as f:
+        return set(json.load(f).get("unselectable", []))
 
 
 def load_charmap(path):
@@ -173,6 +194,16 @@ def main():
             if disp in mapped:
                 order.append(disp)
 
+    # A name in character_drops.json that matches NO character would hide
+    # nobody, silently -- the same shape as every count/alias bug this project
+    # has hit. Fail on it instead. (Names are checked against `order`, since a
+    # character with no mapped species never gets a record at all.)
+    unselectable = load_unselectable()
+    unmatched = sorted(unselectable - set(order))
+    if unmatched:
+        raise SystemExit("character_drops.json names %d character(s) that are not "
+                         "in the emitted set: %s" % (len(unmatched), ", ".join(unmatched)))
+
     names_blob = bytearray()
     rosters_blob = bytearray()
     records = bytearray()
@@ -223,7 +254,9 @@ def main():
         rosters_blob += struct.pack("<H", 0)  # SPECIES_NONE terminator
 
         generation = info.get("gen", 0) or 1
-        flags = has_signature & 0x1
+        hidden = disp in unselectable
+        flags = (has_signature & CHAR_FLAG_HAS_SIGNATURE) \
+            | (CHAR_FLAG_HIDDEN if hidden else 0)
         sprite_asset_id = 0xFFFF  # TBD — Unbound OW/trainer-pic table not yet located (Phase 1/3)
 
         records += struct.pack("<IIHBBBB2x", name_off, roster_off, sprite_asset_id,
@@ -239,6 +272,7 @@ def main():
             "starter_count": len(starters),
             "family_expansion_count": len(expansion),
             "has_signature": bool(has_signature),
+            "hidden": hidden,
             "signature_id": sig.get("id") if sig else None,
             "sprite_asset_id": "TBD",
         }

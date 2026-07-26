@@ -68,7 +68,7 @@ gdb.execute("set $want_chars = %d" % NUM_CHARS)
 end
 echo \n=== results ===\n
 printf "MAGIC ok (want 1): %d\n", (*(unsigned int*)0x0203FEFC == 0xC0DED00D)
-printf "COUNT checks ran (want 46): %d\n", *(unsigned int*)0x0203FEF8
+printf "COUNT checks ran (want 54): %d\n", *(unsigned int*)0x0203FEF8
 printf "A1 InCharacterMode mode-off (want 0): %d\n", *(unsigned char*)(0x0203FE00 + 0)
 printf "A2 IsSpeciesAllowed(27) mode-off (want 1): %d\n", *(unsigned char*)(0x0203FE00 + 1)
 printf "A3 CatchFlagGet mode-off (want 0): %d\n", *(unsigned char*)(0x0203FE00 + 2)
@@ -115,6 +115,14 @@ printf "L7 meta Mewtwo legendary flag (want 1): %d\n", *(unsigned char*)(0x0203F
 printf "L8 meta Pikachu not legendary (want 1): %d\n", *(unsigned char*)(0x0203FE00 + 43)
 printf "L9 wild pick never legendary x200 Red (want 1): %d\n", *(unsigned char*)(0x0203FE00 + 44)
 printf "L10 wild override empirical rate in band (want 1): %d\n", *(unsigned char*)(0x0203FE00 + 45)
+printf "M1 selectable character is selectable (want 1): %d\n", *(unsigned char*)(0x0203FE00 + 46)
+printf "M2 hidden character is NOT selectable (want 1): %d\n", *(unsigned char*)(0x0203FE00 + 47)
+printf "M3 id 0 rejected (want 1): %d\n", *(unsigned char*)(0x0203FE00 + 48)
+printf "M4 id count+1 rejected (want 1): %d\n", *(unsigned char*)(0x0203FE00 + 49)
+printf "M5 native writes 1 for selectable (want 1): %d\n", *(unsigned char*)(0x0203FE00 + 50)
+printf "M6 native writes 0 for hidden (want 1): %d\n", *(unsigned char*)(0x0203FE00 + 51)
+printf "M7 hidden character still loads from a save (want 1): %d\n", *(unsigned char*)(0x0203FE00 + 52)
+printf "M8 hidden character still resolves its roster (want 1): %d\n", *(unsigned char*)(0x0203FE00 + 53)
 
 echo \n=== TESTS DONE ===\n
 # mGBA's stub doesn't implement the detach packet (E07) — just drop the link

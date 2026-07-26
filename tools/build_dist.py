@@ -120,9 +120,13 @@ def main():
         # DERIVE the count -- it read a literal 179 and would have shipped a
         # README advertising the wrong number of characters the moment the roster
         # changed, which is exactly how this file came to say 156 once before.
+        # ...and it counts what the player can actually PICK, not how many
+        # records the table holds: the threshold gate hides some, and promising
+        # a number the select screen refuses is the same defect in a new place.
         with open(os.path.join(HERE, "character_mode",
                                "characters_manifest.json")) as mf:
-            n_chars = len(json.load(mf)["characters"])
+            n_chars = sum(1 for c in json.load(mf)["characters"]
+                          if not c.get("hidden"))
         f.write(README.format(src_sha1=src_sha1, out_sha1=out_sha1,
                               n_chars=n_chars))
     chars_out = os.path.join(DIST, "CHARACTERS.md")

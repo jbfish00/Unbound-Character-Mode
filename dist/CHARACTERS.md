@@ -7,6 +7,11 @@ families). Your starter is replaced by the character's own starter,
 listed below. Off-roster gifts and trades are sent to your PC instead
 of your party; off-roster wild Pokemon cannot be caught.
 
+Some numbers are missing from this list. Those characters have fewer
+than six fully-evolved Pokemon obtainable in this game, so they are
+not offered; entering one of their numbers re-asks. The numbers below
+are the ones the game accepts — enter them exactly as shown.
+
 
 ## Generation 1
 
@@ -30,7 +35,6 @@ of your party; off-roster wild Pokemon cannot be caught.
 | 16 | Ash | Anime | Pikachu | 145 |
 | 17 | Gary | Anime | Squirtle | 77 |
 | 18 | Ritchie | Anime | Pikachu | 24 |
-| 19 | Tracey | Anime | Scyther | 8 |
 | 20 | Jessie | Anime | Ekans | 30 |
 | 21 | James | Anime | Koffing | 27 |
 
@@ -80,7 +84,6 @@ of your party; off-roster wild Pokemon cannot be caught.
 | 56 | Wally | Rival | Ralts | 23 |
 | 57 | Maxie | Villain | Numel | 14 |
 | 58 | Archie | Villain | Carvanha | 15 |
-| 59 | Drew | Anime | Budew | 12 |
 
 ## Generation 4
 
@@ -148,15 +151,10 @@ of your party; off-roster wild Pokemon cannot be caught.
 | 109 | Malva | Elite Four | Fletchling | 15 |
 | 110 | Siebold | Elite Four | Clauncher | 13 |
 | 111 | Wikstrom | Elite Four | Honedge | 15 |
-| 112 | Drasna | Elite Four | Noibat | 7 |
-| 113 | Viola | Gym Leader | Scatterbug | 5 |
-| 114 | Grant | Gym Leader | Tyrunt | 6 |
 | 115 | Korrina | Gym Leader | Riolu | 22 |
 | 116 | Ramos | Gym Leader | Skiddo | 16 |
 | 117 | Clemont | Gym Leader | Helioptile | 24 |
 | 118 | Valerie | Gym Leader | Eevee | 14 |
-| 119 | Olympia | Gym Leader | Espurr | 7 |
-| 120 | Wulfric | Gym Leader | Bergmite | 6 |
 | 121 | Shauna | Rival | Chespin | 38 |
 | 122 | Lysandre | Villain | Magikarp | 20 |
 | 123 | Alain | Anime | Charmander | 21 |
@@ -180,7 +178,6 @@ of your party; off-roster wild Pokemon cannot be caught.
 | 136 | Kiawe (anime) | Anime | Turtonator | 18 |
 | 137 | Lana (anime) | Anime | Popplio | 22 |
 | 138 | Mallow (anime) | Anime | Bounsweet | 20 |
-| 139 | Sophocles | Anime | Togedemaru | 13 |
 
 ## Generation 8
 
@@ -192,9 +189,6 @@ of your party; off-roster wild Pokemon cannot be caught.
 | 143 | Kabu | Gym Leader | Sizzlipede | 11 |
 | 144 | Bea | Gym Leader | Machop | 22 |
 | 145 | Allister | Gym Leader | Gastly | 23 |
-| 146 | Opal | Gym Leader | Milcery | 14 |
-| 147 | Gordie | Gym Leader | Rolycoly | 10 |
-| 148 | Melony | Gym Leader | Lapras | 9 |
 | 149 | Piers | Gym Leader | Zigzagoon | 13 |
 | 150 | Raihan | Gym Leader | Duraludon | 16 |
 | 151 | Hop | Rival | Wooloo | 34 |
@@ -244,16 +238,12 @@ of your party; off-roster wild Pokemon cannot be caught.
 
 | # | Character | Category | Starter | Roster size |
 |---|-----------|----------|---------|-------------|
-| 163 | Burnet | Professor | Munchlax | 2 |
 | 164 | Samson Oak | Professor | Rattata | 31 |
 
 ## Generation 8
 
 | # | Character | Category | Starter | Roster size |
 |---|-----------|----------|---------|-------------|
-| 165 | Magnolia | Professor | Rotom | 6 |
-| 166 | Sonia | Professor | Rotom | 9 |
-| 167 | Laventon | Professor | Cyndaquil | 12 |
 | 168 | Cerise | Professor | Bulbasaur | 18 |
 | 169 | Volo | Villain | Growlithe | 17 |
 

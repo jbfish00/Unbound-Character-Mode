@@ -19,16 +19,6 @@ Final-evolution rosters in National Pokédex order, sprites with names. [← bac
 <tr><td align="center" width="100"><img width="56" src="https://cdn.jsdelivr.net/gh/PokeAPI/sprites@master/sprites/pokemon/711.png"><br><sub>Gourgeist</sub><br><sub><i>X/Y</i></sub></td><td align="center" width="100"><img width="56" src="https://cdn.jsdelivr.net/gh/PokeAPI/sprites@master/sprites/pokemon/719.png"><br><sub>Diancie</sub><br><sub><i>Masters EX</i></sub></td></tr>
 </table>
 
-### Drasna — Elite Four
-<table>
-<tr><td align="center" width="100"><img width="56" src="https://cdn.jsdelivr.net/gh/PokeAPI/sprites@master/sprites/pokemon/334.png"><br><sub>Altaria</sub><br><sub><i>X/Y</i></sub></td><td align="center" width="100"><img width="56" src="https://cdn.jsdelivr.net/gh/PokeAPI/sprites@master/sprites/pokemon/621.png"><br><sub>Druddigon</sub><br><sub><i>X/Y</i></sub></td><td align="center" width="100"><img width="56" src="https://cdn.jsdelivr.net/gh/PokeAPI/sprites@master/sprites/pokemon/691.png"><br><sub>Dragalge</sub><br><sub><i>X/Y</i></sub></td><td align="center" width="100"><img width="56" src="https://cdn.jsdelivr.net/gh/PokeAPI/sprites@master/sprites/pokemon/715.png"><br><sub>Noivern</sub><br><sub><i>X/Y</i></sub></td></tr>
-</table>
-
-### Grant — Gym Leader
-<table>
-<tr><td align="center" width="100"><img width="56" src="https://cdn.jsdelivr.net/gh/PokeAPI/sprites@master/sprites/pokemon/208.png"><br><sub>Steelix</sub><br><sub><i>as Onix — Anime — XY</i></sub></td><td align="center" width="100"><img width="56" src="https://cdn.jsdelivr.net/gh/PokeAPI/sprites@master/sprites/pokemon/697.png"><br><sub>Tyrantrum</sub><br><sub><i>X/Y</i></sub></td><td align="center" width="100"><img width="56" src="https://cdn.jsdelivr.net/gh/PokeAPI/sprites@master/sprites/pokemon/699.png"><br><sub>Aurorus</sub><br><sub><i>X/Y</i></sub></td></tr>
-</table>
-
 ### Korrina — Gym Leader
 <table>
 <tr><td align="center" width="100"><img width="56" src="https://cdn.jsdelivr.net/gh/PokeAPI/sprites@master/sprites/pokemon/68.png"><br><sub>Machamp</sub><br><sub><i>X/Y</i></sub></td><td align="center" width="100"><img width="56" src="https://cdn.jsdelivr.net/gh/PokeAPI/sprites@master/sprites/pokemon/282.png"><br><sub>Gardevoir</sub><br><sub><i>as Gallade — Pokémon Legends: Z-A</i></sub></td><td align="center" width="100"><img width="56" src="https://cdn.jsdelivr.net/gh/PokeAPI/sprites@master/sprites/pokemon/308.png"><br><sub>Medicham</sub><br><sub><i>Pokémon Legends: Z-A</i></sub></td><td align="center" width="100"><img width="56" src="https://cdn.jsdelivr.net/gh/PokeAPI/sprites@master/sprites/pokemon/448.png"><br><sub>Lucario</sub><br><sub><i>X/Y</i></sub></td><td align="center" width="100"><img width="56" src="https://cdn.jsdelivr.net/gh/PokeAPI/sprites@master/sprites/pokemon/475.png"><br><sub>Gallade</sub><br><sub><i>Pokémon Legends: Z-A</i></sub></td><td align="center" width="100"><img width="56" src="https://cdn.jsdelivr.net/gh/PokeAPI/sprites@master/sprites/pokemon/620.png"><br><sub>Mienshao</sub><br><sub><i>Anime — XY</i></sub></td><td align="center" width="100"><img width="56" src="https://cdn.jsdelivr.net/gh/PokeAPI/sprites@master/sprites/pokemon/652.png"><br><sub>Chesnaught</sub><br><sub><i>Pokémon Legends: Z-A</i></sub></td><td align="center" width="100"><img width="56" src="https://cdn.jsdelivr.net/gh/PokeAPI/sprites@master/sprites/pokemon/701.png"><br><sub>Hawlucha</sub><br><sub><i>X/Y</i></sub></td></tr>
@@ -44,11 +34,6 @@ Final-evolution rosters in National Pokédex order, sprites with names. [← bac
 ### Malva — Elite Four
 <table>
 <tr><td align="center" width="100"><img width="56" src="https://cdn.jsdelivr.net/gh/PokeAPI/sprites@master/sprites/pokemon/229.png"><br><sub>Houndoom</sub><br><sub><i>Anime — XY</i></sub></td><td align="center" width="100"><img width="56" src="https://cdn.jsdelivr.net/gh/PokeAPI/sprites@master/sprites/pokemon/324.png"><br><sub>Torkoal</sub><br><sub><i>X/Y</i></sub></td><td align="center" width="100"><img width="56" src="https://cdn.jsdelivr.net/gh/PokeAPI/sprites@master/sprites/pokemon/609.png"><br><sub>Chandelure</sub><br><sub><i>X/Y</i></sub></td><td align="center" width="100"><img width="56" src="https://cdn.jsdelivr.net/gh/PokeAPI/sprites@master/sprites/pokemon/655.png"><br><sub>Delphox</sub><br><sub><i>Manga — Pokémon Adventures</i></sub></td><td align="center" width="100"><img width="56" src="https://cdn.jsdelivr.net/gh/PokeAPI/sprites@master/sprites/pokemon/663.png"><br><sub>Talonflame</sub><br><sub><i>X/Y</i></sub></td><td align="center" width="100"><img width="56" src="https://cdn.jsdelivr.net/gh/PokeAPI/sprites@master/sprites/pokemon/668.png"><br><sub>Pyroar</sub><br><sub><i>X/Y</i></sub></td><td align="center" width="100"><img width="56" src="https://cdn.jsdelivr.net/gh/PokeAPI/sprites@master/sprites/pokemon/717.png"><br><sub>Yveltal</sub><br><sub><i>Manga — Pokémon Adventures</i></sub></td></tr>
-</table>
-
-### Olympia — Gym Leader
-<table>
-<tr><td align="center" width="100"><img width="56" src="https://cdn.jsdelivr.net/gh/PokeAPI/sprites@master/sprites/pokemon/80.png"><br><sub>Slowbro</sub><br><sub><i>as Slowking — X/Y</i></sub></td><td align="center" width="100"><img width="56" src="https://cdn.jsdelivr.net/gh/PokeAPI/sprites@master/sprites/pokemon/199.png"><br><sub>Slowking</sub><br><sub><i>X/Y</i></sub></td><td align="center" width="100"><img width="56" src="https://cdn.jsdelivr.net/gh/PokeAPI/sprites@master/sprites/pokemon/561.png"><br><sub>Sigilyph</sub><br><sub><i>X/Y</i></sub></td><td align="center" width="100"><img width="56" src="https://cdn.jsdelivr.net/gh/PokeAPI/sprites@master/sprites/pokemon/678.png"><br><sub>Meowstic</sub><br><sub><i>X/Y</i></sub></td></tr>
 </table>
 
 ### Ramos — Gym Leader
@@ -86,17 +71,7 @@ Final-evolution rosters in National Pokédex order, sprites with names. [← bac
 <tr><td align="center" width="100"><img width="56" src="https://cdn.jsdelivr.net/gh/PokeAPI/sprites@master/sprites/pokemon/471.png"><br><sub>Glaceon</sub><br><sub><i>as Sylveon — X/Y</i></sub></td><td align="center" width="100"><img width="56" src="https://cdn.jsdelivr.net/gh/PokeAPI/sprites@master/sprites/pokemon/683.png"><br><sub>Aromatisse</sub><br><sub><i>as Spritzee — Anime — XY</i></sub></td><td align="center" width="100"><img width="56" src="https://cdn.jsdelivr.net/gh/PokeAPI/sprites@master/sprites/pokemon/700.png"><br><sub>Sylveon</sub><br><sub><i>X/Y</i></sub></td></tr>
 </table>
 
-### Viola — Gym Leader
-<table>
-<tr><td align="center" width="100"><img width="56" src="https://cdn.jsdelivr.net/gh/PokeAPI/sprites@master/sprites/pokemon/284.png"><br><sub>Masquerain</sub><br><sub><i>X/Y</i></sub></td><td align="center" width="100"><img width="56" src="https://cdn.jsdelivr.net/gh/PokeAPI/sprites@master/sprites/pokemon/666.png"><br><sub>Vivillon</sub><br><sub><i>X/Y</i></sub></td></tr>
-</table>
-
 ### Wikstrom — Elite Four
 <table>
 <tr><td align="center" width="100"><img width="56" src="https://cdn.jsdelivr.net/gh/PokeAPI/sprites@master/sprites/pokemon/212.png"><br><sub>Scizor</sub><br><sub><i>X/Y</i></sub></td><td align="center" width="100"><img width="56" src="https://cdn.jsdelivr.net/gh/PokeAPI/sprites@master/sprites/pokemon/476.png"><br><sub>Probopass</sub><br><sub><i>X/Y</i></sub></td><td align="center" width="100"><img width="56" src="https://cdn.jsdelivr.net/gh/PokeAPI/sprites@master/sprites/pokemon/589.png"><br><sub>Escavalier</sub><br><sub><i>Anime — Journeys</i></sub></td><td align="center" width="100"><img width="56" src="https://cdn.jsdelivr.net/gh/PokeAPI/sprites@master/sprites/pokemon/609.png"><br><sub>Chandelure</sub><br><sub><i>as Litwick — Anime — Journeys</i></sub></td><td align="center" width="100"><img width="56" src="https://cdn.jsdelivr.net/gh/PokeAPI/sprites@master/sprites/pokemon/681.png"><br><sub>Aegislash</sub><br><sub><i>X/Y</i></sub></td><td align="center" width="100"><img width="56" src="https://cdn.jsdelivr.net/gh/PokeAPI/sprites@master/sprites/pokemon/702.png"><br><sub>Dedenne</sub><br><sub><i>Anime — Journeys</i></sub></td><td align="center" width="100"><img width="56" src="https://cdn.jsdelivr.net/gh/PokeAPI/sprites@master/sprites/pokemon/707.png"><br><sub>Klefki</sub><br><sub><i>X/Y</i></sub></td><td align="center" width="100"><img width="56" src="https://cdn.jsdelivr.net/gh/PokeAPI/sprites@master/sprites/pokemon/900.png"><br><sub>Kleavor</sub><br><sub><i>as Scizor — X/Y</i></sub></td></tr>
-</table>
-
-### Wulfric — Gym Leader
-<table>
-<tr><td align="center" width="100"><img width="56" src="https://cdn.jsdelivr.net/gh/PokeAPI/sprites@master/sprites/pokemon/460.png"><br><sub>Abomasnow</sub><br><sub><i>X/Y</i></sub></td><td align="center" width="100"><img width="56" src="https://cdn.jsdelivr.net/gh/PokeAPI/sprites@master/sprites/pokemon/615.png"><br><sub>Cryogonal</sub><br><sub><i>X/Y</i></sub></td><td align="center" width="100"><img width="56" src="https://cdn.jsdelivr.net/gh/PokeAPI/sprites@master/sprites/pokemon/713.png"><br><sub>Hisuian Avalugg</sub><br><sub><i>as Avalugg — X/Y</i></sub></td><td align="center" width="100"><img width="56" src="https://cdn.jsdelivr.net/gh/PokeAPI/sprites@master/sprites/pokemon/713.png"><br><sub>Avalugg</sub><br><sub><i>X/Y</i></sub></td></tr>
 </table>

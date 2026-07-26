@@ -38,6 +38,13 @@ press_hold() {
     sleep 0.12
     xdotool keyup --window "$WID" "$1" 2>/dev/null
 }
+# Types '1'. Entering an ARBITRARY id here was tried and abandoned: sp0B3 is a
+# naming screen in number mode whose digit keys are a 5-wide grid
+# (build/unbound-cm-4.png), and it drops/reorders synthetic presses badly
+# enough that two-digit numbers landed on a different value every time ("19"
+# came out as 3, twice, with two different navigation models). The threshold
+# gate is therefore driven by tools/test_harness/run_gate_test.sh, which
+# presets VAR_RESULT and jumps into the real gate bytes instead of typing.
 (
     while true; do
         [ -f "$ROOT/build/.type_now" ] || { sleep 0.3; continue; }

@@ -101,6 +101,29 @@ def main():
         fails.append("the ROM's own character count is %d, the manifest has %d"
                      % (rom_count, n))
 
+    # CHAR_FLAG_HIDDEN (bit1 of flags, byte 11 of each 16-byte record), read
+    # out of the BUILT ROM -- this is the byte CharacterMode_IsCharacterSelectable
+    # actually tests, so checking it here closes the loop between the docs and
+    # the gate rather than trusting the manifest that produced both.
+    rom_chars = rom[INJECT_FILE_OFF:INJECT_FILE_OFF + len(chars_bin)]
+    if rom_chars != chars_bin:
+        fails.append("the character records in the built ROM differ from "
+                     "characters.bin -- the ROM was not built from this data")
+    rom_hidden = {manifest[i]["character"]
+                  for i in range(min(n, len(rom_chars) // 16))
+                  if rom_chars[16 * i + 11] & 0x2}
+    man_hidden = {c["character"] for c in manifest if c.get("hidden")}
+    if rom_hidden != man_hidden:
+        fails.append("the ROM hides %s but the manifest hides %s"
+                     % (sorted(rom_hidden), sorted(man_hidden)))
+    drops = set(docs.load_unselectable())
+    if rom_hidden != drops:
+        fails.append("the ROM hides %d character(s), character_drops.json lists "
+                     "%d (only in ROM: %s; only in drops: %s)"
+                     % (len(rom_hidden), len(drops),
+                        sorted(rom_hidden - drops), sorted(drops - rom_hidden)))
+    selectable = {c["character"] for c in manifest} - rom_hidden
+
     const_id = ms.species_ids()
     id_const = {v: k for k, v in const_id.items()}
     id_name = {v: k for k, v in ms.name_to_id().items()}
@@ -148,18 +171,21 @@ def main():
         rom_finals[rec["character"]] = shown
 
     doc = parse_doc(read(os.path.join(ROOT, "ROSTERS.md")))
-    thin = docs.load_unselectable()
 
     for char in doc:
         if char not in rom_names:
             fails.append("%s: in ROSTERS.md but not in characters_manifest.json"
                          % char)
-    # Selection gating is not injected yet, so the ROM offers every character and
-    # the docs must list every character. When it lands, subtract the threshold
-    # list here and in emit_roster_docs together.
-    for char in rom_names:
+    # Selection gating IS injected, so the docs must list exactly the characters
+    # the ROM will let the player choose: every selectable one present, and no
+    # hidden one present. Both directions matter -- documenting a character the
+    # select screen refuses is the same defect as omitting one it accepts.
+    for char in selectable:
         if char not in doc:
             fails.append("%s: offered by the ROM but missing from ROSTERS.md" % char)
+    for char in rom_hidden:
+        if char in doc:
+            fails.append("%s: hidden by the ROM but still listed in ROSTERS.md" % char)
 
     for char, listed in doc.items():
         if char not in rom_names:
@@ -231,8 +257,9 @@ def main():
           % (len(doc), sum(len(v) for v in doc.values())))
     print("sprite pages: %d characters, %d cells, %d without a source line"
           % (len(sprite_chars), sprite_rows, missing_src))
-    print("threshold:    %d characters below six fully-evolved (not gated in this "
-          "build, so still documented)" % len(thin))
+    print("threshold:    %d characters hidden from the select screen by "
+          "CHAR_FLAG_HIDDEN in the built ROM; %d selectable and documented"
+          % (len(rom_hidden), len(selectable)))
     if fails:
         print("\n%d MISMATCHES:" % len(fails))
         for f in fails[:25]:

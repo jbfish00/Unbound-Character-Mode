@@ -45,11 +45,15 @@ struct CharacterRecordBin
     u32 rosterOffset;
     u16 spriteAssetId;
     u8 generation;
-    u8 flags;         /* bit0 = hasSignature (ace at roster[0]) */
+    u8 flags;         /* bit0 = hasSignature (ace at roster[0])
+                       * bit1 = hidden (below the playability threshold) */
     u8 starterCount;  /* roster[0..starterCount) eligible as starters */
     u8 reserved;
     u16 pad;
 };
+
+#define CHAR_FLAG_HAS_SIGNATURE 0x1
+#define CHAR_FLAG_HIDDEN        0x2
 
 extern const struct CharacterRecordBin gCharacterTable[];
 extern const u16 gCharacterRosters[]; /* rosters.bin viewed as u16 */
@@ -653,6 +657,38 @@ void CharacterMode_BufferNameSpecial(void)
         *dst = 0xFF;
 }
 
+/* ---- playability-threshold gating (../push_rosters.md §3) ----
+ *
+ * A character with fewer than six fully-evolved Pokemon obtainable in this
+ * game's dex (and no legendary to exempt it) is not worth offering: the wild
+ * override and the catch gate would leave the player with almost nothing to
+ * find. emit_characters.py sets CHAR_FLAG_HIDDEN on those records from
+ * character_drops.json.
+ *
+ * ONLY the selection path consults this. Enforcement deliberately does not:
+ * a save that already stores a hidden character's index must keep working
+ * exactly as before, because the id in the save IS the table index. That is
+ * also why hiding never renumbers anyone -- the emitted table keeps all 208
+ * records and the hidden ones simply stop being choosable. */
+bool8 CharacterMode_IsCharacterSelectable(u16 id)
+{
+    if (id < 1 || id > gCharacterCount)
+        return FALSE;
+    return (gCharacterTable[id - 1].flags & CHAR_FLAG_HIDDEN) == 0;
+}
+
+/* callnative target for the number-entry validation loop. ScrCmd_callnative
+ * discards the C return value, so the verdict is handed back through a var:
+ * VAR_SELECTABLE_RESULT = 1 when the id in VAR_RESULT may be chosen, 0 when it
+ * is out of range or hidden. The script compares and re-asks on 0.
+ *
+ * 0x800C is used rather than one of 0x8000-0x800B: those are givemon's own
+ * override channel, and nothing else in this project reads or writes 0x800C. */
+void CharacterMode_CheckSelectableNative(void)
+{
+    VarSet(0x800C, CharacterMode_IsCharacterSelectable(VarGet(0x800D)) ? 1 : 0);
+}
+
 /* Debug/test primitive (the ROWE debug-menu equivalent for a binary hack):
  * queue the new-game difficulty script (entry 0x09E70000 — flows through our
  * opt-in splice at 0x09E70003) on the game's own script engine, then park in
@@ -935,6 +971,41 @@ void CharacterMode_RunSelfTest(void)
     }
     FlagClear(FLAG_CHARACTER_MODE);
     VarSet(VAR_CHARACTER_ID, 0);
+
+    /* ---- M: playability-threshold gating ----
+     * Both ids are derived by build_patch.py from characters_manifest.json and
+     * passed in as defines, so a roster change cannot leave these pointing at
+     * the wrong character. */
+    r[n++] = CharacterMode_IsCharacterSelectable(TEST_SHOWN_ID) == TRUE;   /* M1 want 1 */
+    r[n++] = CharacterMode_IsCharacterSelectable(TEST_HIDDEN_ID) == FALSE; /* M2 want 1 */
+    r[n++] = CharacterMode_IsCharacterSelectable(0) == FALSE;              /* M3 want 1 */
+    r[n++] = CharacterMode_IsCharacterSelectable(GetCharacterCount() + 1)
+             == FALSE;                                                     /* M4 want 1 */
+
+    /* The native hands its verdict back through 0x800C, which is what the
+     * script actually branches on -- checking only the bool above would leave
+     * the var plumbing (the part that can silently break) untested. */
+    VarSet(0x800D, TEST_SHOWN_ID);
+    VarSet(0x800C, 0xFFFF);
+    CharacterMode_CheckSelectableNative();
+    r[n++] = VarGet(0x800C) == 1;                                          /* M5 want 1 */
+    VarSet(0x800D, TEST_HIDDEN_ID);
+    VarSet(0x800C, 0xFFFF);
+    CharacterMode_CheckSelectableNative();
+    r[n++] = VarGet(0x800C) == 0;                                          /* M6 want 1 */
+
+    /* M7/M8: a hidden character must remain fully PLAYABLE from a save that
+     * already stores its index -- only SELECTION is gated. push_rosters.md §3
+     * requires this be tested explicitly, because getting it wrong would brick
+     * an existing save rather than merely hiding a menu entry. */
+    FlagSet(FLAG_CHARACTER_MODE);
+    VarSet(VAR_CHARACTER_ID, TEST_HIDDEN_ID);
+    r[n++] = InCharacterMode() == TRUE;                                    /* M7 want 1 */
+    r[n++] = CharacterMode_GetStarterSpecies() != SPECIES_NONE;            /* M8 want 1 */
+    FlagClear(FLAG_CHARACTER_MODE);
+    VarSet(VAR_CHARACTER_ID, 0);
+    VarSet(0x800C, 0);
+    VarSet(0x800D, 0);
 
     /* leave the expanded save state clean */
     FlagClear(FLAG_CHARACTER_MODE);

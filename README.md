@@ -1,11 +1,17 @@
 # Character Mode — Pokémon Unbound v2.1.1.1
 
 An opt-in game mode for [Pokémon Unbound](https://www.pokecommunity.com/threads/pok%C3%A9mon-unbound-completed.382178/)
-(by Skeli789): at the start of a new game you pick one of **208 iconic Pokémon
+(by Skeli789): at the start of a new game you pick one of **193 iconic Pokémon
 characters** — protagonists, rivals, gym leaders, Elite Four, champions,
 villains, and anime cast, Generations 1–8 — and play the whole game restricted
 to that character's canon roster (Bulbapedia-documented teams, expanded to full
 evolution families).
+
+The character table holds 208 records; 15 are hidden from the select screen
+because fewer than six of their Pokémon evolve fully in this game's dex, which
+would make for a bare playthrough. Character ids are save data, so the hidden
+ones keep their slots and the remaining numbers are unchanged — the numbered
+list in `dist/CHARACTERS.md` simply skips them.
 
 This is a binary ROM-hacking port of the "Character Mode" feature originally
 built in source for Pokémon ROWE. Unbound has no public source, so the mode is

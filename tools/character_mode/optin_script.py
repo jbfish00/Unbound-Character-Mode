@@ -61,11 +61,20 @@ PROMPT_TEXT = "Would you like to enable Character\nMode and pick your character?
 NUMBER_TEXT = "Enter your character's number\n(1-{count}, listed in the patch notes)."
 CONFIRM_TEXT = "Play as {NAME}?"
 ENABLED_TEXT = "Character Mode has been enabled\nfor your chosen character!"
+# Shown when the entered number names a character below the playability
+# threshold (CHAR_FLAG_HIDDEN). Two lines: FRLG's msgbox shows two at a time.
+HIDDEN_TEXT = "{NAME} is not available\nin this game."
 
 # v3 select flow: CFRU ChooseNumberScreen special -> number in 0x800D
 # (0xFFFF on empty/cancel); our special 0x1B6 buffers the chosen name.
 SPECIAL_CHOOSE_NUMBER = 0x0B3
 SPECIAL_BUFFER_NAME = 0x1B6
+
+# ScrCmd_callnative discards the C return value, so CharacterMode_
+# CheckSelectableNative hands its verdict back through this var (1 = may be
+# chosen, 0 = out of range or hidden). 0x800C is outside givemon's own
+# 0x8000-0x800B override channel and is read by nothing else in the project.
+VAR_SELECTABLE = 0x800C
 
 NEWLINE = 0xFE  # in-msgbox line break
 STR_VAR_1 = b"\xFD\x02"  # {STR_VAR_1} placeholder
@@ -79,7 +88,47 @@ def encode_msg(text, charmap):
     return STR_VAR_1.join(parts) + b"\xFF"
 
 
-def build(block_rom_addr, char_count, show_mugshot=None, hide_mugshot=None):
+def label_offsets(show_mugshot=True, hide_mugshot=True, check_selectable=True):
+    """Byte offsets of the block's labels and of the points where the script
+    PARKS waiting on the player.
+
+    The live harness used to hardcode these (CONFIRM_POS = 90, block bound
+    140). Every optional feature added to the block -- the mugshot callnatives,
+    now the threshold gate -- shifts everything after it, and a stale literal
+    here does not fail as "the offset moved": the driver simply never sees the
+    state it is waiting for and the suite reports a scene that never completed.
+    Derive them instead."""
+    mug = 5 if (show_mugshot and hide_mugshot) else 0
+    sel = 16 if check_selectable else 0
+    selbr = 16 if check_selectable else 0
+    o = {
+        "OPTIN_YESNO": 13,      # parked in the opt-in yes/no
+        "NUMTEXT_MSGBOX": 32,   # parked in the "enter your number" msgbox
+        "NUMBER_SCREEN": 36,    # parked on the waitstate, number screen up
+        "PICK": 24,
+        # First byte of the threshold gate (the callnative), i.e. the point
+        # just past the range checks. Fixed, because everything before it is
+        # unconditional. A test can `goto` here with VAR_RESULT preset to run
+        # the REAL shipped gate without driving the number screen.
+        "GATE": 69 if check_selectable else -1,
+        "NO": 112 + 2 * mug + sel,
+        "REPLAY": 120 + 2 * mug + sel,
+        "HIDDEN": 130 + 2 * mug + sel,
+        "TEXT": 130 + 2 * mug + sel + selbr,
+    }
+    # Parked in "Play as {NAME}?" -- just past its callstd. Only the SHOW
+    # callnative precedes it (hide runs after the yesno returns), so this
+    # carries one mug, not two.
+    o["CONFIRM_YESNO"] = 85 + mug + sel
+    # parked in the "mode enabled" msgbox -- past both callnatives
+    o["ENABLED_MSGBOX"] = 107 + 2 * mug + sel
+    # parked in the "not available" msgbox of the rejection branch
+    o["HIDDEN_MSGBOX"] = o["HIDDEN"] + 11 if sel else -1
+    return o
+
+
+def build(block_rom_addr, char_count, show_mugshot=None, hide_mugshot=None,
+          check_selectable=None):
     """Return (block_blob, splice_bytes) for a block placed at block_rom_addr.
 
     v2 flow: yesno -> scrolling character list (all char_count names via the
@@ -95,6 +144,7 @@ def build(block_rom_addr, char_count, show_mugshot=None, hide_mugshot=None):
     numtext = encode_msg(NUMBER_TEXT.replace("{count}", str(char_count)), charmap)
     confirm = encode_msg(CONFIRM_TEXT, charmap)
     enabled = encode_msg(ENABLED_TEXT, charmap)
+    hiddentext = encode_msg(HIDDEN_TEXT, charmap)
 
     # The two mugshot callnatives are 5 bytes each (0x23 + u32) and are only
     # emitted when the caller supplies their addresses, so the fixed label
@@ -102,19 +152,28 @@ def build(block_rom_addr, char_count, show_mugshot=None, hide_mugshot=None):
     # real emitted length — a drift shows up as an assertion, not as a script
     # that runs off into the text.
     mug = 5 if (show_mugshot and hide_mugshot) else 0
+    # The threshold gate is likewise optional and likewise shifts every label
+    # after it: callnative (5) + compare_var_to_value (5) + goto_if (6), plus a
+    # 16-byte rejection branch after the `return`.
+    sel = 16 if check_selectable else 0
 
-    # fixed-size body, so label offsets are static (+5: breadcrumb setvar)
-    OFF_PICK = 24            # the number-entry loop head
-    OFF_NO = 112 + 2 * mug   # the No/cancel branch (clears mode state, falls into replay)
-    OFF_REPLAY = 120 + 2 * mug  # replay of the displaced checkflag+goto_if gate
-    OFF_TEXT = 130 + 2 * mug # first text byte (right after the `return`)
+    # fixed-size body, so label offsets are static (+5: breadcrumb setvar).
+    # Shared with the live harness via label_offsets() so the two cannot drift.
+    _off = label_offsets(show_mugshot, hide_mugshot, check_selectable)
+    OFF_PICK = _off["PICK"]        # the number-entry loop head
+    OFF_NO = _off["NO"]            # No/cancel branch (clears mode state, falls into replay)
+    OFF_REPLAY = _off["REPLAY"]    # replay of the displaced checkflag+goto_if gate
+    OFF_HIDDEN = _off["HIDDEN"]    # "not available" branch (right after the `return`)
+    OFF_TEXT = _off["TEXT"]        # first text byte
     p_prompt = block_rom_addr + OFF_TEXT
     p_numtext = p_prompt + len(prompt)
     p_confirm = p_numtext + len(numtext)
     p_enabled = p_confirm + len(confirm)
+    p_hiddentext = p_enabled + len(enabled)
     p_pick = block_rom_addr + OFF_PICK
     p_no = block_rom_addr + OFF_NO
     p_replay = block_rom_addr + OFF_REPLAY
+    p_hidden = block_rom_addr + OFF_HIDDEN
 
     body = bytearray()
     body += bytes([0x16]) + struct.pack("<HH", VAR_REACHED_BREADCRUMB,
@@ -135,6 +194,16 @@ def build(block_rom_addr, char_count, show_mugshot=None, hide_mugshot=None):
     body += bytes([0x06, 0x00]) + struct.pack("<I", p_pick)            # goto_if < -> pick
     body += bytes([0x21]) + struct.pack("<HH", VAR_RESULT, char_count + 1)  # > count ?
     body += bytes([0x06, 0x04]) + struct.pack("<I", p_pick)            # goto_if >= -> pick
+    if sel:
+        # Threshold gate. It runs AFTER the range checks (so the id handed to
+        # the native is always 1..count) and BEFORE the copyvar that commits it
+        # to VAR_CHARACTER_ID -- a rejected pick must leave no trace, and must
+        # not have shown a mugshot for a character the player cannot have.
+        assert len(body) == _off["GATE"], \
+            f"GATE drifted: {len(body)} != {_off['GATE']}"
+        body += bytes([0x23]) + struct.pack("<I", check_selectable)    # callnative check
+        body += bytes([0x21]) + struct.pack("<HH", VAR_SELECTABLE, 1)  # selectable?
+        body += bytes([0x06, 0x05]) + struct.pack("<I", p_hidden)      # goto_if NE -> hidden
     body += bytes([0x19]) + struct.pack("<HH", VAR_CHARACTER_ID, VAR_RESULT)  # copyvar
     # (ids are 1-based and the player enters 1..count: no +1 adjustment)
     body += bytes([0x25]) + struct.pack("<H", SPECIAL_BUFFER_NAME)     # name -> gStringVar1
@@ -142,6 +211,9 @@ def build(block_rom_addr, char_count, show_mugshot=None, hide_mugshot=None):
         body += bytes([0x23]) + struct.pack("<I", show_mugshot)        # callnative show mugshot
     body += bytes([0x0F, 0x00]) + struct.pack("<I", p_confirm)         # loadword 0, confirm
     body += bytes([0x09, 0x05])                                        # callstd MSGBOX_YESNO
+    # The live driver waits for exactly this position to sample the mugshot.
+    assert len(body) == _off["CONFIRM_YESNO"], \
+        f"CONFIRM_YESNO drifted: {len(body)} != {_off['CONFIRM_YESNO']}"
     if mug:
         # After the yes/no returns, so it runs on BOTH answers — a No sends
         # the script back to p_pick, which would otherwise leave the mugshot
@@ -152,6 +224,8 @@ def build(block_rom_addr, char_count, show_mugshot=None, hide_mugshot=None):
     body += bytes([0x29]) + struct.pack("<H", FLAG_CHARACTER_MODE)     # setflag
     body += bytes([0x0F, 0x00]) + struct.pack("<I", p_enabled)         # loadword 0, enabled
     body += bytes([0x09, 0x04])                                        # callstd MSGBOX_DEFAULT
+    assert len(body) == _off["ENABLED_MSGBOX"], \
+        f"ENABLED_MSGBOX drifted: {len(body)} != {_off['ENABLED_MSGBOX']}"
     body += bytes([0x05]) + struct.pack("<I", p_replay)                # goto replay (MUST
     # skip the No branch — a fall-through here once cleared the flag right
     # after setting it; caught live by tools/test_harness/live_script_test)
@@ -164,8 +238,21 @@ def build(block_rom_addr, char_count, show_mugshot=None, hide_mugshot=None):
     body += bytes([0x2B]) + struct.pack("<H", 0x0001)                  # replay: checkflag 1
     body += bytes([0x06, 0x01]) + struct.pack("<I", FIRSTRUN_SKIP_PTR) # goto_if TRUE -> skip
     body += bytes([0x03])                                              # return (re-entry path)
+    if sel:
+        # Rejection branch: name the character the player actually typed (the
+        # id is still in VAR_RESULT and still in range, so the buffer special
+        # resolves it), say it is unavailable, and go back to the number entry.
+        assert len(body) == OFF_HIDDEN, f"OFF_HIDDEN drifted: {len(body)}"
+        body += bytes([0x25]) + struct.pack("<H", SPECIAL_BUFFER_NAME) # name -> gStringVar1
+        body += bytes([0x0F, 0x00]) + struct.pack("<I", p_hiddentext)  # loadword 0, hiddentext
+        body += bytes([0x09, 0x04])                                    # callstd MSGBOX_DEFAULT
+        assert len(body) == _off["HIDDEN_MSGBOX"], \
+            f"HIDDEN_MSGBOX drifted: {len(body)} != {_off['HIDDEN_MSGBOX']}"
+        body += bytes([0x05]) + struct.pack("<I", p_pick)              # goto pick (re-ask)
     assert len(body) == OFF_TEXT, f"OFF_TEXT drifted: {len(body)}"
     body += prompt + numtext + confirm + enabled
+    if sel:
+        body += hiddentext
 
     splice = bytes([0x04]) + struct.pack("<I", block_rom_addr) + b"\x00\x00\x00\x00"
     assert len(splice) == len(SPLICE_ORIG)
@@ -173,5 +260,5 @@ def build(block_rom_addr, char_count, show_mugshot=None, hide_mugshot=None):
 
 
 if __name__ == "__main__":
-    blob, splice = build(0x08B2B280, 178, 0x08B2B001, 0x08B2B101)
+    blob, splice = build(0x08B2B280, 178, 0x08B2B001, 0x08B2B101, 0x08B2B201)
     print(f"block: {len(blob)} bytes; splice: {splice.hex(' ')}")
