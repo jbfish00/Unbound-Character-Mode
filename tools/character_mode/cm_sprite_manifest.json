@@ -1,8 +1,8 @@
 {
- "count": 179,
- "with_art": 136,
- "without_art": 43,
- "blob_bytes": 122096,
+ "count": 208,
+ "with_art": 154,
+ "without_art": 54,
+ "blob_bytes": 137896,
  "entries": [
   {
    "character": "Red",
@@ -1227,6 +1227,168 @@
    "pal_off": 122056,
    "gfx_bytes": 1011,
    "pal_bytes": 40
+  },
+  {
+   "character": "Brassius",
+   "source": "rogue",
+   "file": "brassius_front.4bpp.lz",
+   "gfx_off": 122096,
+   "pal_off": 122956,
+   "gfx_bytes": 859,
+   "pal_bytes": 40
+  },
+  {
+   "character": "Calem",
+   "source": "rogue",
+   "file": "calem_front.4bpp.lz",
+   "gfx_off": 122996,
+   "pal_off": 123688,
+   "gfx_bytes": 690,
+   "pal_bytes": 39
+  },
+  {
+   "character": "Elio",
+   "source": "rogue",
+   "file": "elio_front.4bpp.lz",
+   "gfx_off": 123728,
+   "pal_off": 124500,
+   "gfx_bytes": 772,
+   "pal_bytes": 40
+  },
+  {
+   "character": "Gloria",
+   "source": "rogue",
+   "file": "gloria_front.4bpp.lz",
+   "gfx_off": 124540,
+   "pal_off": 125368,
+   "gfx_bytes": 825,
+   "pal_bytes": 40
+  },
+  {
+   "character": "Hala",
+   "source": "rogue",
+   "file": "hala_front.4bpp.lz",
+   "gfx_off": 125408,
+   "pal_off": 126436,
+   "gfx_bytes": 1025,
+   "pal_bytes": 40
+  },
+  {
+   "character": "Hapu",
+   "source": "rogue",
+   "file": "hapu_front.4bpp.lz",
+   "gfx_off": 126476,
+   "pal_off": 127384,
+   "gfx_bytes": 908,
+   "pal_bytes": 40
+  },
+  {
+   "character": "Hassel",
+   "source": "rogue",
+   "file": "hassel_front.4bpp.lz",
+   "gfx_off": 127424,
+   "pal_off": 128224,
+   "gfx_bytes": 800,
+   "pal_bytes": 40
+  },
+  {
+   "character": "Hilbert",
+   "source": "rogue",
+   "file": "hilbert_front.4bpp.lz",
+   "gfx_off": 128264,
+   "pal_off": 129136,
+   "gfx_bytes": 872,
+   "pal_bytes": 40
+  },
+  {
+   "character": "Hilda",
+   "source": "rogue",
+   "file": "hilda_front.4bpp.lz",
+   "gfx_off": 129176,
+   "pal_off": 130000,
+   "gfx_bytes": 822,
+   "pal_bytes": 40
+  },
+  {
+   "character": "Larry",
+   "source": "rogue",
+   "file": "larry_front.4bpp.lz",
+   "gfx_off": 130040,
+   "pal_off": 130728,
+   "gfx_bytes": 685,
+   "pal_bytes": 40
+  },
+  {
+   "character": "Nate",
+   "source": "rogue",
+   "file": "nate_front.4bpp.lz",
+   "gfx_off": 130768,
+   "pal_off": 131680,
+   "gfx_bytes": 910,
+   "pal_bytes": 40
+  },
+  {
+   "character": "Nemona",
+   "source": "rogue",
+   "file": "nemona_front.4bpp.lz",
+   "gfx_off": 131720,
+   "pal_off": 132548,
+   "gfx_bytes": 826,
+   "pal_bytes": 40
+  },
+  {
+   "character": "Penny",
+   "source": "rogue",
+   "file": "penny_front.4bpp.lz",
+   "gfx_off": 132588,
+   "pal_off": 133428,
+   "gfx_bytes": 839,
+   "pal_bytes": 40
+  },
+  {
+   "character": "Rika",
+   "source": "rogue",
+   "file": "rika_front.4bpp.lz",
+   "gfx_off": 133468,
+   "pal_off": 134260,
+   "gfx_bytes": 790,
+   "pal_bytes": 40
+  },
+  {
+   "character": "Rosa",
+   "source": "rogue",
+   "file": "rosa_front.4bpp.lz",
+   "gfx_off": 134300,
+   "pal_off": 135252,
+   "gfx_bytes": 951,
+   "pal_bytes": 40
+  },
+  {
+   "character": "Selene",
+   "source": "rogue",
+   "file": "selene_front.4bpp.lz",
+   "gfx_off": 135292,
+   "pal_off": 136156,
+   "gfx_bytes": 862,
+   "pal_bytes": 40
+  },
+  {
+   "character": "Serena",
+   "source": "rogue",
+   "file": "serena_front.4bpp.lz",
+   "gfx_off": 136196,
+   "pal_off": 136980,
+   "gfx_bytes": 781,
+   "pal_bytes": 40
+  },
+  {
+   "character": "Victor",
+   "source": "rogue",
+   "file": "victor_front.4bpp.lz",
+   "gfx_off": 137020,
+   "pal_off": 137856,
+   "gfx_bytes": 835,
+   "pal_bytes": 40
   }
  ],
  "missing": [
@@ -1272,6 +1434,17 @@
   "Noland",
   "Spenser",
   "Tucker",
-  "Dahlia"
+  "Dahlia",
+  "Adaman",
+  "Akari",
+  "Beni",
+  "Cogita",
+  "Ingo",
+  "Irida",
+  "Kamado",
+  "Rei",
+  "Thorton",
+  "Tobias",
+  "Zisu"
  ]
 }

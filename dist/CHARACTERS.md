@@ -12,250 +12,250 @@ of your party; off-roster wild Pokemon cannot be caught.
 
 | # | Character | Category | Starter | Roster size |
 |---|-----------|----------|---------|-------------|
-| 1 | Red | Protagonist | Pikachu | 69 |
-| 2 | Leaf | Protagonist | Eevee | 27 |
-| 3 | Blue | Champion | Pidgey | 90 |
-| 4 | Lance | Champion | Dratini | 73 |
-| 5 | Lorelei | Elite Four | Lapras | 57 |
-| 6 | Bruno | Elite Four | Machop | 77 |
-| 7 | Agatha | Elite Four | Gastly | 47 |
-| 8 | Koga | Elite Four | Koffing | 85 |
-| 9 | Brock | Gym Leader | Onix | 128 |
-| 10 | Misty | Gym Leader | Staryu | 120 |
-| 11 | Lt. Surge | Gym Leader | Pikachu | 79 |
-| 12 | Erika | Gym Leader | Oddish | 82 |
-| 13 | Sabrina | Gym Leader | Abra | 82 |
-| 14 | Blaine | Gym Leader | Growlithe | 75 |
-| 15 | Giovanni | Villain | Rhyhorn | 107 |
-| 16 | Ash | Anime | Pikachu | 92 |
-| 17 | Gary | Anime | Squirtle | 97 |
-| 18 | Ritchie | Anime | Pikachu | 54 |
-| 19 | Tracey | Anime | Scyther | 28 |
-| 20 | Jessie | Anime | Ekans | 122 |
-| 21 | James | Anime | Koffing | 112 |
+| 1 | Red | Protagonist | Pikachu | 93 |
+| 2 | Leaf | Protagonist | Eevee | 19 |
+| 3 | Blue | Champion | Pidgey | 77 |
+| 4 | Lance | Champion | Dratini | 49 |
+| 5 | Lorelei | Elite Four | Lapras | 25 |
+| 6 | Bruno | Elite Four | Machop | 47 |
+| 7 | Agatha | Elite Four | Gastly | 27 |
+| 8 | Koga | Elite Four | Koffing | 58 |
+| 9 | Brock | Gym Leader | Onix | 62 |
+| 10 | Misty | Gym Leader | Staryu | 82 |
+| 11 | Lt. Surge | Gym Leader | Pikachu | 57 |
+| 12 | Erika | Gym Leader | Oddish | 61 |
+| 13 | Sabrina | Gym Leader | Abra | 64 |
+| 14 | Blaine | Gym Leader | Growlithe | 62 |
+| 15 | Giovanni | Villain | Rhyhorn | 69 |
+| 16 | Ash | Anime | Pikachu | 145 |
+| 17 | Gary | Anime | Squirtle | 77 |
+| 18 | Ritchie | Anime | Pikachu | 24 |
+| 19 | Tracey | Anime | Scyther | 8 |
+| 20 | Jessie | Anime | Ekans | 30 |
+| 21 | James | Anime | Koffing | 27 |
 
 ## Generation 2
 
 | # | Character | Category | Starter | Roster size |
 |---|-----------|----------|---------|-------------|
-| 22 | Ethan | Protagonist | Cyndaquil | 33 |
-| 23 | Kris | Protagonist | Totodile | 41 |
-| 24 | Lyra | Protagonist | Chikorita | 43 |
-| 25 | Will | Elite Four | Natu | 52 |
-| 26 | Karen | Elite Four | Eevee | 55 |
-| 27 | Janine | Gym Leader | Spinarak | 47 |
-| 28 | Falkner | Gym Leader | Hoothoot | 68 |
-| 29 | Bugsy | Gym Leader | Scyther | 68 |
-| 30 | Whitney | Gym Leader | Miltank | 72 |
-| 31 | Morty | Gym Leader | Gastly | 62 |
-| 32 | Chuck | Gym Leader | Poliwag | 47 |
-| 33 | Jasmine | Gym Leader | Onix | 64 |
-| 34 | Pryce | Gym Leader | Swinub | 62 |
-| 35 | Clair | Gym Leader | Horsea | 51 |
-| 36 | Silver | Rival | Totodile | 40 |
-| 37 | Archer | Villain | Houndour | 44 |
-| 38 | Ariana | Villain | Ekans | 31 |
+| 22 | Ethan | Protagonist | Cyndaquil | 30 |
+| 23 | Kris | Protagonist | Totodile | 23 |
+| 24 | Lyra | Protagonist | Chikorita | 41 |
+| 25 | Will | Elite Four | Natu | 43 |
+| 26 | Karen | Elite Four | Eevee | 39 |
+| 27 | Janine | Gym Leader | Spinarak | 43 |
+| 28 | Falkner | Gym Leader | Hoothoot | 38 |
+| 29 | Bugsy | Gym Leader | Scyther | 40 |
+| 30 | Whitney | Gym Leader | Miltank | 54 |
+| 31 | Morty | Gym Leader | Gastly | 45 |
+| 32 | Chuck | Gym Leader | Poliwag | 32 |
+| 33 | Jasmine | Gym Leader | Onix | 48 |
+| 34 | Pryce | Gym Leader | Swinub | 37 |
+| 35 | Clair | Gym Leader | Horsea | 34 |
+| 36 | Silver | Rival | Totodile | 33 |
+| 37 | Archer | Villain | Houndour | 34 |
+| 38 | Ariana | Villain | Ekans | 28 |
 
 ## Generation 3
 
 | # | Character | Category | Starter | Roster size |
 |---|-----------|----------|---------|-------------|
-| 39 | Brendan | Protagonist | Treecko | 60 |
-| 40 | May | Protagonist | Torchic | 84 |
-| 41 | Steven | Champion | Beldum | 53 |
-| 42 | Wallace | Champion | Feebas | 52 |
-| 43 | Sidney | Elite Four | Absol | 23 |
-| 44 | Phoebe | Elite Four | Duskull | 19 |
-| 45 | Glacia | Elite Four | Spheal | 17 |
-| 46 | Drake | Elite Four | Bagon | 27 |
-| 47 | Roxanne | Gym Leader | Nosepass | 34 |
-| 48 | Brawly | Gym Leader | Makuhita | 27 |
-| 49 | Wattson | Gym Leader | Electrike | 34 |
-| 50 | Flannery | Gym Leader | Torkoal | 32 |
-| 51 | Norman | Gym Leader | Slakoth | 50 |
-| 52 | Winona | Gym Leader | Swablu | 40 |
-| 53 | Tate | Gym Leader | Solrock | 40 |
-| 54 | Liza | Gym Leader | Lunatone | 40 |
-| 55 | Juan | Gym Leader | Horsea | 44 |
-| 56 | Wally | Rival | Ralts | 25 |
-| 57 | Maxie | Villain | Numel | 23 |
-| 58 | Archie | Villain | Carvanha | 40 |
-| 59 | Drew | Anime | Budew | 50 |
+| 39 | Brendan | Protagonist | Treecko | 45 |
+| 40 | May | Protagonist | Torchic | 71 |
+| 41 | Steven | Champion | Beldum | 36 |
+| 42 | Wallace | Champion | Feebas | 30 |
+| 43 | Sidney | Elite Four | Absol | 20 |
+| 44 | Phoebe | Elite Four | Duskull | 16 |
+| 45 | Glacia | Elite Four | Spheal | 13 |
+| 46 | Drake | Elite Four | Bagon | 16 |
+| 47 | Roxanne | Gym Leader | Nosepass | 24 |
+| 48 | Brawly | Gym Leader | Makuhita | 19 |
+| 49 | Wattson | Gym Leader | Electrike | 20 |
+| 50 | Flannery | Gym Leader | Torkoal | 22 |
+| 51 | Norman | Gym Leader | Slakoth | 28 |
+| 52 | Winona | Gym Leader | Swablu | 26 |
+| 53 | Tate | Gym Leader | Solrock | 24 |
+| 54 | Liza | Gym Leader | Lunatone | 24 |
+| 55 | Juan | Gym Leader | Horsea | 40 |
+| 56 | Wally | Rival | Ralts | 23 |
+| 57 | Maxie | Villain | Numel | 14 |
+| 58 | Archie | Villain | Carvanha | 15 |
+| 59 | Drew | Anime | Budew | 12 |
 
 ## Generation 4
 
 | # | Character | Category | Starter | Roster size |
 |---|-----------|----------|---------|-------------|
-| 60 | Lucas | Protagonist | Turtwig | 69 |
-| 61 | Dawn | Protagonist | Piplup | 138 |
-| 62 | Cynthia | Champion | Gible | 107 |
-| 63 | Aaron | Elite Four | Skorupi | 33 |
-| 64 | Bertha | Elite Four | Hippopotas | 33 |
-| 65 | Flint | Elite Four | Chimchar | 59 |
-| 66 | Lucian | Elite Four | Bronzor | 40 |
-| 67 | Roark | Gym Leader | Cranidos | 58 |
-| 68 | Gardenia | Gym Leader | Budew | 72 |
-| 69 | Maylene | Gym Leader | Riolu | 48 |
-| 70 | Crasher Wake | Gym Leader | Buizel | 35 |
-| 71 | Fantina | Gym Leader | Misdreavus | 44 |
-| 72 | Byron | Gym Leader | Shieldon | 52 |
-| 73 | Candice | Gym Leader | Snorunt | 63 |
-| 74 | Volkner | Gym Leader | Shinx | 68 |
-| 75 | Barry | Rival | Piplup | 54 |
-| 76 | Cyrus | Villain | Sneasel | 56 |
-| 77 | Mars | Villain | Glameow | 56 |
-| 78 | Jupiter | Villain | Stunky | 58 |
-| 79 | Saturn | Villain | Croagunk | 51 |
-| 80 | Paul | Anime | Elekid | 72 |
-| 81 | Zoey | Anime | Glameow | 49 |
-| 82 | Nando | Anime | Budew | 35 |
+| 60 | Lucas | Protagonist | Turtwig | 60 |
+| 61 | Dawn | Protagonist | Piplup | 85 |
+| 62 | Cynthia | Champion | Gible | 39 |
+| 63 | Aaron | Elite Four | Skorupi | 20 |
+| 64 | Bertha | Elite Four | Hippopotas | 26 |
+| 65 | Flint | Elite Four | Chimchar | 40 |
+| 66 | Lucian | Elite Four | Bronzor | 26 |
+| 67 | Roark | Gym Leader | Cranidos | 30 |
+| 68 | Gardenia | Gym Leader | Budew | 49 |
+| 69 | Maylene | Gym Leader | Riolu | 33 |
+| 70 | Crasher Wake | Gym Leader | Buizel | 39 |
+| 71 | Fantina | Gym Leader | Misdreavus | 29 |
+| 72 | Byron | Gym Leader | Shieldon | 38 |
+| 73 | Candice | Gym Leader | Snorunt | 30 |
+| 74 | Volkner | Gym Leader | Shinx | 47 |
+| 75 | Barry | Rival | Piplup | 27 |
+| 76 | Cyrus | Villain | Sneasel | 24 |
+| 77 | Mars | Villain | Glameow | 35 |
+| 78 | Jupiter | Villain | Stunky | 20 |
+| 79 | Saturn | Villain | Croagunk | 32 |
+| 80 | Paul | Anime | Elekid | 54 |
+| 81 | Zoey | Anime | Glameow | 21 |
+| 82 | Nando | Anime | Budew | 13 |
 
 ## Generation 5
 
 | # | Character | Category | Starter | Roster size |
 |---|-----------|----------|---------|-------------|
-| 83 | Alder | Champion | Larvesta | 54 |
-| 84 | Iris | Champion | Axew | 67 |
+| 83 | Alder | Champion | Larvesta | 26 |
+| 84 | Iris | Champion | Axew | 27 |
 | 85 | Shauntal | Elite Four | Litwick | 21 |
-| 86 | Marshal | Elite Four | Timburr | 36 |
-| 87 | Grimsley | Elite Four | Pawniard | 33 |
-| 88 | Caitlin | Elite Four | Gothita | 27 |
-| 89 | Cilan | Gym Leader | Pansage | 71 |
-| 90 | Chili | Gym Leader | Pansear | 28 |
-| 91 | Cress | Gym Leader | Panpour | 32 |
-| 92 | Lenora | Gym Leader | Patrat | 32 |
-| 93 | Burgh | Gym Leader | Sewaddle | 33 |
-| 94 | Elesa | Gym Leader | Blitzle | 41 |
-| 95 | Clay | Gym Leader | Drilbur | 49 |
-| 96 | Skyla | Gym Leader | Ducklett | 42 |
-| 97 | Brycen | Gym Leader | Cubchoo | 56 |
-| 98 | Drayden | Gym Leader | Axew | 27 |
-| 99 | Cheren | Gym Leader | Lillipup | 70 |
-| 100 | Roxie | Gym Leader | Venipede | 28 |
-| 101 | Marlon | Gym Leader | Frillish | 23 |
-| 102 | Bianca | Rival | Tepig | 66 |
-| 103 | Hugh | Rival | Growlithe | 50 |
-| 104 | N | Rival | Zorua | 126 |
-| 105 | Ghetsis | Villain | Deino | 32 |
-| 106 | Colress | Villain | Klink | 74 |
-| 107 | Trip | Anime | Snivy | 32 |
+| 86 | Marshal | Elite Four | Timburr | 20 |
+| 87 | Grimsley | Elite Four | Pawniard | 21 |
+| 88 | Caitlin | Elite Four | Gothita | 22 |
+| 89 | Cilan | Gym Leader | Pansage | 23 |
+| 90 | Chili | Gym Leader | Pansear | 18 |
+| 91 | Cress | Gym Leader | Panpour | 25 |
+| 92 | Lenora | Gym Leader | Patrat | 20 |
+| 93 | Burgh | Gym Leader | Sewaddle | 19 |
+| 94 | Elesa | Gym Leader | Blitzle | 20 |
+| 95 | Clay | Gym Leader | Drilbur | 22 |
+| 96 | Skyla | Gym Leader | Ducklett | 25 |
+| 97 | Brycen | Gym Leader | Cubchoo | 15 |
+| 98 | Drayden | Gym Leader | Axew | 15 |
+| 99 | Cheren | Gym Leader | Lillipup | 51 |
+| 100 | Roxie | Gym Leader | Venipede | 22 |
+| 101 | Marlon | Gym Leader | Frillish | 15 |
+| 102 | Bianca | Rival | Tepig | 39 |
+| 103 | Hugh | Rival | Trapinch | 28 |
+| 104 | N | Rival | Zorua | 103 |
+| 105 | Ghetsis | Villain | Deino | 23 |
+| 106 | Colress | Villain | Klink | 21 |
+| 107 | Trip | Anime | Snivy | 17 |
 
 ## Generation 6
 
 | # | Character | Category | Starter | Roster size |
 |---|-----------|----------|---------|-------------|
-| 108 | Diantha | Champion | Ralts | 41 |
-| 109 | Malva | Elite Four | Fletchling | 32 |
-| 110 | Siebold | Elite Four | Clauncher | 16 |
-| 111 | Wikstrom | Elite Four | Honedge | 22 |
-| 112 | Drasna | Elite Four | Noibat | 9 |
-| 113 | Viola | Gym Leader | Scatterbug | 19 |
-| 114 | Grant | Gym Leader | Tyrunt | 17 |
-| 115 | Korrina | Gym Leader | Riolu | 51 |
-| 116 | Ramos | Gym Leader | Skiddo | 37 |
-| 117 | Clemont | Gym Leader | Helioptile | 81 |
-| 118 | Valerie | Gym Leader | Eevee | 22 |
-| 119 | Olympia | Gym Leader | Espurr | 13 |
-| 120 | Wulfric | Gym Leader | Bergmite | 19 |
-| 121 | Shauna | Rival | Chespin | 51 |
-| 122 | Lysandre | Villain | Magikarp | 40 |
-| 123 | Alain | Anime | Charmander | 47 |
-| 124 | Sawyer | Anime | Treecko | 47 |
+| 108 | Diantha | Champion | Ralts | 18 |
+| 109 | Malva | Elite Four | Fletchling | 15 |
+| 110 | Siebold | Elite Four | Clauncher | 13 |
+| 111 | Wikstrom | Elite Four | Honedge | 15 |
+| 112 | Drasna | Elite Four | Noibat | 7 |
+| 113 | Viola | Gym Leader | Scatterbug | 5 |
+| 114 | Grant | Gym Leader | Tyrunt | 6 |
+| 115 | Korrina | Gym Leader | Riolu | 22 |
+| 116 | Ramos | Gym Leader | Skiddo | 16 |
+| 117 | Clemont | Gym Leader | Helioptile | 24 |
+| 118 | Valerie | Gym Leader | Eevee | 14 |
+| 119 | Olympia | Gym Leader | Espurr | 7 |
+| 120 | Wulfric | Gym Leader | Bergmite | 6 |
+| 121 | Shauna | Rival | Chespin | 38 |
+| 122 | Lysandre | Villain | Magikarp | 20 |
+| 123 | Alain | Anime | Charmander | 21 |
+| 124 | Sawyer | Anime | Treecko | 16 |
 
 ## Generation 7
 
 | # | Character | Category | Starter | Roster size |
 |---|-----------|----------|---------|-------------|
-| 125 | Kukui | Champion | Litten | 84 |
-| 126 | Hau | Champion | Pichu | 58 |
-| 127 | Molayne | Elite Four | Diglett | 35 |
-| 128 | Kahili | Elite Four | Pikipek | 25 |
-| 129 | Acerola | Elite Four | Sandygast | 42 |
-| 130 | Olivia | Elite Four | Rockruff | 33 |
-| 131 | Gladion | Rival | Type:　Null | 85 |
-| 132 | Guzma | Villain | Wimpod | 42 |
-| 133 | Plumeria | Villain | Salandit | 38 |
-| 134 | Lusamine | Villain | Stufful | 98 |
-| 135 | Lillie (anime) | Anime | Vulpix | 72 |
-| 136 | Kiawe (anime) | Anime | Turtonator | 52 |
-| 137 | Lana (anime) | Anime | Popplio | 63 |
-| 138 | Mallow (anime) | Anime | Bounsweet | 38 |
-| 139 | Sophocles | Anime | Togedemaru | 60 |
+| 125 | Kukui | Champion | Litten | 59 |
+| 126 | Hau | Champion | Pichu | 32 |
+| 127 | Molayne | Elite Four | Diglett | 17 |
+| 128 | Kahili | Elite Four | Pikipek | 14 |
+| 129 | Acerola | Elite Four | Sandygast | 18 |
+| 130 | Olivia | Elite Four | Rockruff | 20 |
+| 131 | Gladion | Rival | Type:　Null | 39 |
+| 132 | Guzma | Villain | Wimpod | 24 |
+| 133 | Plumeria | Villain | Salandit | 18 |
+| 134 | Lusamine | Villain | Stufful | 64 |
+| 135 | Lillie (anime) | Anime | Vulpix | 14 |
+| 136 | Kiawe (anime) | Anime | Turtonator | 18 |
+| 137 | Lana (anime) | Anime | Popplio | 22 |
+| 138 | Mallow (anime) | Anime | Bounsweet | 20 |
+| 139 | Sophocles | Anime | Togedemaru | 13 |
 
 ## Generation 8
 
 | # | Character | Category | Starter | Roster size |
 |---|-----------|----------|---------|-------------|
-| 140 | Leon | Champion | Charmander | 92 |
-| 141 | Milo | Gym Leader | Gossifleur | 31 |
-| 142 | Nessa | Gym Leader | Chewtle | 25 |
-| 143 | Kabu | Gym Leader | Sizzlipede | 24 |
-| 144 | Bea | Gym Leader | Machop | 44 |
-| 145 | Allister | Gym Leader | Gastly | 32 |
-| 146 | Opal | Gym Leader | Milcery | 25 |
-| 147 | Gordie | Gym Leader | Rolycoly | 17 |
-| 148 | Melony | Gym Leader | Lapras | 19 |
-| 149 | Piers | Gym Leader | Zigzagoon | 21 |
-| 150 | Raihan | Gym Leader | Duraludon | 40 |
-| 151 | Hop | Rival | Wooloo | 38 |
-| 152 | Bede | Rival | Hatenna | 50 |
-| 153 | Marnie | Rival | Morpeko | 31 |
-| 154 | Rose | Villain | Cufant | 27 |
-| 155 | Goh | Anime | Scorbunny | 95 |
-| 156 | Chloe | Anime | Eevee | 58 |
+| 140 | Leon | Champion | Charmander | 37 |
+| 141 | Milo | Gym Leader | Gossifleur | 22 |
+| 142 | Nessa | Gym Leader | Chewtle | 17 |
+| 143 | Kabu | Gym Leader | Sizzlipede | 11 |
+| 144 | Bea | Gym Leader | Machop | 22 |
+| 145 | Allister | Gym Leader | Gastly | 23 |
+| 146 | Opal | Gym Leader | Milcery | 14 |
+| 147 | Gordie | Gym Leader | Rolycoly | 10 |
+| 148 | Melony | Gym Leader | Lapras | 9 |
+| 149 | Piers | Gym Leader | Zigzagoon | 13 |
+| 150 | Raihan | Gym Leader | Duraludon | 16 |
+| 151 | Hop | Rival | Wooloo | 34 |
+| 152 | Bede | Rival | Hatenna | 32 |
+| 153 | Marnie | Rival | Morpeko | 18 |
+| 154 | Rose | Villain | Cufant | 15 |
+| 155 | Goh | Anime | Scorbunny | 197 |
+| 156 | Chloe | Anime | Eevee | 17 |
 
 ## Generation 1
 
 | # | Character | Category | Starter | Roster size |
 |---|-----------|----------|---------|-------------|
-| 157 | Oak | Professor | Bulbasaur | 38 |
+| 157 | Oak | Professor | Bulbasaur | 130 |
 
 ## Generation 2
 
 | # | Character | Category | Starter | Roster size |
 |---|-----------|----------|---------|-------------|
-| 158 | Elm | Professor | Ekans | 41 |
+| 158 | Elm | Professor | Chikorita | 21 |
 
 ## Generation 3
 
 | # | Character | Category | Starter | Roster size |
 |---|-----------|----------|---------|-------------|
-| 159 | Birch | Professor | Bulbasaur | 83 |
+| 159 | Birch | Professor | Magikarp | 58 |
 
 ## Generation 4
 
 | # | Character | Category | Starter | Roster size |
 |---|-----------|----------|---------|-------------|
-| 160 | Rowan | Professor | Onix | 30 |
+| 160 | Rowan | Professor | Turtwig | 17 |
 
 ## Generation 5
 
 | # | Character | Category | Starter | Roster size |
 |---|-----------|----------|---------|-------------|
-| 161 | Juniper | Professor | Pichu | 35 |
+| 161 | Juniper | Professor | Snivy | 20 |
 
 ## Generation 6
 
 | # | Character | Category | Starter | Roster size |
 |---|-----------|----------|---------|-------------|
-| 162 | Sycamore | Professor | Bulbasaur | 38 |
+| 162 | Sycamore | Professor | Bulbasaur | 47 |
 
 ## Generation 7
 
 | # | Character | Category | Starter | Roster size |
 |---|-----------|----------|---------|-------------|
-| 163 | Burnet | Professor | Munchlax | 21 |
-| 164 | Samson Oak | Professor | Rattata | 50 |
+| 163 | Burnet | Professor | Munchlax | 2 |
+| 164 | Samson Oak | Professor | Rattata | 31 |
 
 ## Generation 8
 
 | # | Character | Category | Starter | Roster size |
 |---|-----------|----------|---------|-------------|
-| 165 | Magnolia | Professor | Bronzor | 18 |
-| 166 | Sonia | Professor | Charmander | 21 |
-| 167 | Laventon | Professor | Cyndaquil | 15 |
-| 168 | Cerise | Professor | Bulbasaur | 35 |
-| 169 | Volo | Villain | Growlithe | 15 |
+| 165 | Magnolia | Professor | Rotom | 6 |
+| 166 | Sonia | Professor | Rotom | 9 |
+| 167 | Laventon | Professor | Cyndaquil | 12 |
+| 168 | Cerise | Professor | Bulbasaur | 18 |
+| 169 | Volo | Villain | Growlithe | 17 |
 
 ## Generation 3
 
@@ -265,7 +265,7 @@ of your party; off-roster wild Pokemon cannot be caught.
 | 171 | Brandon | Frontier Brain | Nincada | 14 |
 | 172 | Greta | Frontier Brain | Gastly | 22 |
 | 173 | Lucy | Frontier Brain | Abra | 24 |
-| 174 | Noland | Frontier Brain | Bulbasaur | 27 |
+| 174 | Noland | Frontier Brain | Bulbasaur | 32 |
 | 175 | Spenser | Frontier Brain | Bulbasaur | 27 |
 | 176 | Tucker | Frontier Brain | Charmander | 15 |
 
@@ -275,4 +275,58 @@ of your party; off-roster wild Pokemon cannot be caught.
 |---|-----------|----------|---------|-------------|
 | 177 | Dahlia | Frontier Brain | Togepi | 15 |
 | 178 | Darach | Frontier Brain | Houndour | 13 |
-| 179 | Palmer | Frontier Brain | Rhyhorn | 11 |
+| 179 | Palmer | Frontier Brain | Rhyhorn | 13 |
+
+## Generation 8
+
+| # | Character | Category | Starter | Roster size |
+|---|-----------|----------|---------|-------------|
+| 180 | Adaman | Rival | Eevee | 9 |
+| 181 | Akari | Protagonist | Pichu | 21 |
+| 182 | Beni | Villain | Magnemite | 14 |
+| 183 | Brassius | Anime | Oddish | 16 |
+| 184 | Calem | Anime | Charmander | 37 |
+| 185 | Cogita | Other | Enamorus | 1 |
+| 186 | Elio | Anime | Eevee | 39 |
+| 187 | Gloria | Anime | Grookey | 18 |
+| 188 | Hala | Anime | Mankey | 25 |
+| 189 | Hapu | Anime | Diglett | 14 |
+| 190 | Hassel | Anime | Dratini | 17 |
+| 191 | Hilbert | Anime | Eevee | 102 |
+| 192 | Hilda | Anime | Eevee | 102 |
+
+## Generation 5
+
+| # | Character | Category | Starter | Roster size |
+|---|-----------|----------|---------|-------------|
+| 193 | Ingo | Frontier Brain | Abra | 45 |
+
+## Generation 8
+
+| # | Character | Category | Starter | Roster size |
+|---|-----------|----------|---------|-------------|
+| 194 | Irida | Rival | Eevee | 9 |
+| 195 | Kamado | Villain | Geodude | 17 |
+| 196 | Larry | Anime | Tauros | 13 |
+| 197 | Nate | Anime | Growlithe | 96 |
+| 198 | Nemona | Anime | Tauros | 31 |
+| 199 | Penny | Anime | Eevee | 9 |
+| 200 | Rei | Protagonist | Cyndaquil | 33 |
+| 201 | Rika | Anime | Diglett | 13 |
+| 202 | Rosa | Anime | Delibird | 97 |
+| 203 | Selene | Anime | Scyther | 37 |
+| 204 | Serena | Anime | Eevee | 39 |
+
+## Generation 4
+
+| # | Character | Category | Starter | Roster size |
+|---|-----------|----------|---------|-------------|
+| 205 | Thorton | Frontier Brain | Magnemite | 10 |
+| 206 | Tobias | Anime | Latios | 2 |
+
+## Generation 8
+
+| # | Character | Category | Starter | Roster size |
+|---|-----------|----------|---------|-------------|
+| 207 | Victor | Anime | Grookey | 20 |
+| 208 | Zisu | Galaxy | Ponyta | 22 |

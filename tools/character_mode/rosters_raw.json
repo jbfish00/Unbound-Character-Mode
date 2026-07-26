@@ -56,6 +56,17 @@
    "Type: Null"
   ]
  },
+ "Adaman": {
+  "category": "rival",
+  "gen": 8,
+  "page": "Adaman",
+  "species": [
+   "Eevee",
+   "Leafeon",
+   "Umbreon",
+   "Vaporeon"
+  ]
+ },
  "Agatha": {
   "category": "elite4",
   "gen": 1,
@@ -82,6 +93,20 @@
    "Scyther",
    "Venusaur",
    "Weezing"
+  ]
+ },
+ "Akari": {
+  "category": "protagonist",
+  "gen": 8,
+  "page": "Akari (game)",
+  "species": [
+   "Clefairy",
+   "Empoleon",
+   "Infernape",
+   "Mr. Mime",
+   "Pikachu",
+   "Staraptor",
+   "Torterra"
   ]
  },
  "Alain": {
@@ -422,6 +447,19 @@
    "Zapdos"
   ]
  },
+ "Beni": {
+  "category": "villain",
+  "gen": 8,
+  "page": "Beni",
+  "species": [
+   "Gallade",
+   "Gardevoir",
+   "Magnezone",
+   "Mismagius",
+   "Roserade",
+   "Sneasler"
+  ]
+ },
  "Bertha": {
   "category": "elite4",
   "gen": 4,
@@ -638,6 +676,23 @@
    "Registeel",
    "Solrock",
    "Zapdos"
+  ]
+ },
+ "Brassius": {
+  "category": "anime",
+  "gen": 8,
+  "page": "Brassius",
+  "species": [
+   "Arboliva",
+   "Breloom",
+   "Dolliv",
+   "Lilligant",
+   "Petilil",
+   "Smoliv",
+   "Sudowoodo",
+   "Sunflora",
+   "Tsareena",
+   "Vileplume"
   ]
  },
  "Brawly": {
@@ -1016,6 +1071,36 @@
    "Sigilyph"
   ]
  },
+ "Calem": {
+  "category": "anime",
+  "gen": 8,
+  "page": "Calem",
+  "species": [
+   "Absol",
+   "Altaria",
+   "Braixen",
+   "Bunnelby",
+   "Charizard",
+   "Chesnaught",
+   "Chespin",
+   "Clefable",
+   "Delphox",
+   "Espurr",
+   "Fennekin",
+   "Flareon",
+   "Fletchling",
+   "Froakie",
+   "Frogadier",
+   "Greninja",
+   "Jolteon",
+   "Meowstic",
+   "Quilladin",
+   "Sylveon",
+   "Vaporeon",
+   "Xerneas",
+   "Yveltal"
+  ]
+ },
  "Candice": {
   "category": "gymleader",
   "gen": 4,
@@ -1372,6 +1457,14 @@
    "Yveltal",
    "Zapdos",
    "Zygarde"
+  ]
+ },
+ "Cogita": {
+  "category": "other",
+  "gen": 8,
+  "page": "Cogita",
+  "species": [
+   "Enamorus"
   ]
  },
  "Colress": {
@@ -1793,6 +1886,30 @@
    "Tynamo",
    "Zebstrika",
    "Zorua"
+  ]
+ },
+ "Elio": {
+  "category": "anime",
+  "gen": 8,
+  "page": "Elio",
+  "species": [
+   "Brionne",
+   "Cosmoem",
+   "Cosmog",
+   "Decidueye",
+   "Espeon",
+   "Litten",
+   "Lunala",
+   "Necrozma",
+   "Nihilego",
+   "Popplio",
+   "Primarina",
+   "Rockruff",
+   "Rotom",
+   "Rowlet",
+   "Solgaleo",
+   "Stakataka",
+   "Type: Null"
   ]
  },
  "Elm": {
@@ -2280,6 +2397,21 @@
    "Zygarde"
   ]
  },
+ "Gloria": {
+  "category": "anime",
+  "gen": 8,
+  "page": "Gloria",
+  "species": [
+   "Calyrex",
+   "Cinderace",
+   "Eternatus",
+   "Inteleon",
+   "Thwackey",
+   "Urshifu",
+   "Zacian",
+   "Zamazenta"
+  ]
+ },
  "Goh": {
   "category": "anime",
   "gen": 8,
@@ -2442,6 +2574,56 @@
    "Xurkitree"
   ]
  },
+ "Hala": {
+  "category": "anime",
+  "gen": 8,
+  "page": "Hala",
+  "species": [
+   "Bewear",
+   "Crabominable",
+   "Crabrawler",
+   "Hariyama",
+   "Litten",
+   "Machamp",
+   "Machop",
+   "Makuhita",
+   "Mankey",
+   "Poliwrath",
+   "Popplio",
+   "Primeape",
+   "Rowlet"
+  ]
+ },
+ "Hapu": {
+  "category": "anime",
+  "gen": 8,
+  "page": "Hapu",
+  "species": [
+   "Dugtrio",
+   "Flygon",
+   "Gastrodon",
+   "Golurk",
+   "Krookodile",
+   "Mudsdale"
+  ]
+ },
+ "Hassel": {
+  "category": "anime",
+  "gen": 8,
+  "page": "Hassel",
+  "species": [
+   "Archaludon",
+   "Arctibax",
+   "Baxcalibur",
+   "Dragalge",
+   "Dragonite",
+   "Duraludon",
+   "Flapple",
+   "Gible",
+   "Haxorus",
+   "Noivern"
+  ]
+ },
  "Hau": {
   "category": "champion",
   "gen": 7,
@@ -2485,6 +2667,119 @@
    "Vaporeon",
    "Yungoos",
    "Zubat"
+  ]
+ },
+ "Hilbert": {
+  "category": "anime",
+  "gen": 8,
+  "page": "Hilbert",
+  "species": [
+   "Accelgor",
+   "Alomomola",
+   "Amoonguss",
+   "Archeops",
+   "Audino",
+   "Beartic",
+   "Bisharp",
+   "Bouffalant",
+   "Braviary",
+   "Chandelure",
+   "Cofagrigus",
+   "Conkeldurr",
+   "Cryogonal",
+   "Darmanitan",
+   "Dewott",
+   "Druddigon",
+   "Durant",
+   "Eelektross",
+   "Escavalier",
+   "Excadrill",
+   "Ferrothorn",
+   "Genesect",
+   "Gigalith",
+   "Glaceon",
+   "Golurk",
+   "Gothitelle",
+   "Haxorus",
+   "Jellicent",
+   "Klinklang",
+   "Krookodile",
+   "Kyurem",
+   "Lilligant",
+   "Mandibuzz",
+   "Mienshao",
+   "Mightyena",
+   "Musharna",
+   "Oshawott",
+   "Reshiram",
+   "Reuniclus",
+   "Samurott",
+   "Sawk",
+   "Scrafty",
+   "Snivy",
+   "Tepig",
+   "Throh",
+   "Thundurus",
+   "Vanilluxe",
+   "Zekrom"
+  ]
+ },
+ "Hilda": {
+  "category": "anime",
+  "gen": 8,
+  "page": "Hilda",
+  "species": [
+   "Accelgor",
+   "Alomomola",
+   "Amoonguss",
+   "Archeops",
+   "Audino",
+   "Beartic",
+   "Bisharp",
+   "Bouffalant",
+   "Braviary",
+   "Chandelure",
+   "Cofagrigus",
+   "Conkeldurr",
+   "Cryogonal",
+   "Darmanitan",
+   "Diancie",
+   "Druddigon",
+   "Durant",
+   "Eelektross",
+   "Emboar",
+   "Escavalier",
+   "Excadrill",
+   "Ferrothorn",
+   "Gigalith",
+   "Golurk",
+   "Gothitelle",
+   "Grapploct",
+   "Haxorus",
+   "Iron Leaves",
+   "IronLeaves",
+   "Jellicent",
+   "Klinklang",
+   "Krookodile",
+   "Leafeon",
+   "Lilligant",
+   "Mandibuzz",
+   "Mienfoo",
+   "Mienshao",
+   "Musharna",
+   "Oshawott",
+   "Pignite",
+   "Reshiram",
+   "Reuniclus",
+   "Sawk",
+   "Scrafty",
+   "Snivy",
+   "Tepig",
+   "Throh",
+   "Tornadus",
+   "Vanilluxe",
+   "Victini",
+   "Zekrom"
   ]
  },
  "Hop": {
@@ -2554,6 +2849,41 @@
    "Tynamo",
    "Unfezant",
    "Vibrava"
+  ]
+ },
+ "Ingo": {
+  "category": "frontier",
+  "gen": 5,
+  "page": "Ingo",
+  "species": [
+   "Alakazam",
+   "Basculegion",
+   "Chandelure",
+   "Crustle",
+   "Excadrill",
+   "Garbodor",
+   "Gliscor",
+   "Gurdurr",
+   "Haxorus",
+   "Kleavor",
+   "Klinklang",
+   "Machoke",
+   "Magnezone",
+   "Probopass",
+   "Sneasler",
+   "Tangela",
+   "Wyrdeer"
+  ]
+ },
+ "Irida": {
+  "category": "rival",
+  "gen": 8,
+  "page": "Irida",
+  "species": [
+   "Eevee",
+   "Espeon",
+   "Flareon",
+   "Glaceon"
   ]
  },
  "Iris": {
@@ -2943,6 +3273,21 @@
    "Type: Null"
   ]
  },
+ "Kamado": {
+  "category": "villain",
+  "gen": 8,
+  "page": "Kamado",
+  "species": [
+   "Clefable",
+   "Golem",
+   "Heracross",
+   "Hisuian Braviary",
+   "Probopass",
+   "Rufflet",
+   "Snorlax",
+   "Ursaluna"
+  ]
+ },
  "Karen": {
   "category": "elite4",
   "gen": 2,
@@ -3260,6 +3605,27 @@
    "Steelix",
    "Suicune",
    "Tyranitar"
+  ]
+ },
+ "Larry": {
+  "category": "anime",
+  "gen": 8,
+  "page": "Larry",
+  "species": [
+   "Altaria",
+   "Braviary",
+   "Dudunsparce",
+   "Dunsparce",
+   "Flamigo",
+   "Komala",
+   "Oinkologne",
+   "Oricorio",
+   "Rufflet",
+   "Staraptor",
+   "Staravia",
+   "Starly",
+   "Tauros",
+   "Tropius"
   ]
  },
  "Laventon": {
@@ -4246,6 +4612,68 @@
    "Turtwig"
   ]
  },
+ "Nate": {
+  "category": "anime",
+  "gen": 8,
+  "page": "Nate",
+  "species": [
+   "Arcanine",
+   "Braviary",
+   "Dewott",
+   "Emboar",
+   "Haxorus",
+   "Lucario",
+   "Panpour",
+   "Pansage",
+   "Pansear",
+   "Pignite",
+   "Servine",
+   "Tepig"
+  ]
+ },
+ "Nemona": {
+  "category": "anime",
+  "gen": 8,
+  "page": "Nemona",
+  "species": [
+   "Crocalor",
+   "Cyclizar",
+   "Decidueye",
+   "Dudunsparce",
+   "Dunsparce",
+   "Dusknoir",
+   "Floragato",
+   "Fuecoco",
+   "Goodra",
+   "Goomy",
+   "Greninja",
+   "Infernape",
+   "Kilowattrel",
+   "Kommo-o",
+   "Lechonk",
+   "Lycanroc",
+   "Meowscarada",
+   "Milotic",
+   "Orthworm",
+   "Pawmi",
+   "Pawmo",
+   "Pawmot",
+   "Quaquaval",
+   "Quaxly",
+   "Quaxwell",
+   "Ribombee",
+   "Rockruff",
+   "Rowlet",
+   "Scream Tail",
+   "ScreamTail",
+   "Skeledirge",
+   "Sliggoo",
+   "Smoliv",
+   "Sprigatito",
+   "Tauros",
+   "Wattrel"
+  ]
+ },
  "Nessa": {
   "category": "gymleader",
   "gen": 8,
@@ -4465,6 +4893,22 @@
    "Zangoose"
   ]
  },
+ "Penny": {
+  "category": "anime",
+  "gen": 8,
+  "page": "Penny",
+  "species": [
+   "Eevee",
+   "Espeon",
+   "Flareon",
+   "Glaceon",
+   "Jolteon",
+   "Leafeon",
+   "Sylveon",
+   "Umbreon",
+   "Vaporeon"
+  ]
+ },
  "Phoebe": {
   "category": "elite4",
   "gen": 3,
@@ -4660,6 +5104,39 @@
    "Wooper"
   ]
  },
+ "Rei": {
+  "category": "protagonist",
+  "gen": 8,
+  "page": "Rei (game)",
+  "species": [
+   "Clefairy",
+   "Cyndaquil",
+   "Empoleon",
+   "Infernape",
+   "Mr. Mime",
+   "Oshawott",
+   "Pikachu",
+   "Rowlet",
+   "Staraptor",
+   "Torterra"
+  ]
+ },
+ "Rika": {
+  "category": "anime",
+  "gen": 8,
+  "page": "Rika",
+  "species": [
+   "Camerupt",
+   "Clodsire",
+   "Donphan",
+   "Dugtrio",
+   "Great Tusk",
+   "Quagsire",
+   "Torterra",
+   "Whiscash",
+   "Wooper"
+  ]
+ },
  "Ritchie": {
   "category": "anime",
   "gen": 1,
@@ -4716,6 +5193,25 @@
    "Sunkern",
    "Tyranitar",
    "Wurmple"
+  ]
+ },
+ "Rosa": {
+  "category": "anime",
+  "gen": 8,
+  "page": "Rosa",
+  "species": [
+   "Deerling",
+   "Delibird",
+   "Dewott",
+   "Meloetta",
+   "Panpour",
+   "Pansage",
+   "Pansear",
+   "Pignite",
+   "Serperior",
+   "Servine",
+   "Shaymin",
+   "Snivy"
   ]
  },
  "Rose": {
@@ -4954,6 +5450,61 @@
    "Spritzee",
    "Talonflame",
    "Treecko"
+  ]
+ },
+ "Selene": {
+  "category": "anime",
+  "gen": 8,
+  "page": "Selene",
+  "species": [
+   "Cosmoem",
+   "Cosmog",
+   "Dartrix",
+   "Decidueye",
+   "Litten",
+   "Lunala",
+   "Necrozma",
+   "Nihilego",
+   "Popplio",
+   "Rotom",
+   "Rowlet",
+   "Scizor",
+   "Solgaleo",
+   "Type: Null",
+   "Umbreon"
+  ]
+ },
+ "Serena": {
+  "category": "anime",
+  "gen": 8,
+  "page": "Serena",
+  "species": [
+   "Absol",
+   "Altaria",
+   "Braixen",
+   "Bunnelby",
+   "Chesnaught",
+   "Chespin",
+   "Clefable",
+   "Delphox",
+   "Eevee",
+   "Espurr",
+   "Fennekin",
+   "Flareon",
+   "Fletchling",
+   "Froakie",
+   "Frogadier",
+   "Greninja",
+   "Jolteon",
+   "Meowstic",
+   "Pancham",
+   "Quilladin",
+   "Sylveon",
+   "Vaporeon",
+   "Whimsicott",
+   "Xerneas",
+   "Yveltal",
+   "Zygarde"
   ]
  },
  "Shauna": {
@@ -5263,6 +5814,27 @@
    "Xatu"
   ]
  },
+ "Thorton": {
+  "category": "frontier",
+  "gen": 4,
+  "page": "Thorton",
+  "species": [
+   "Bronzong",
+   "Electivire",
+   "Magnezone",
+   "Regigigas",
+   "Skarmory"
+  ]
+ },
+ "Tobias": {
+  "category": "anime",
+  "gen": 4,
+  "page": "Tobias",
+  "species": [
+   "Darkrai",
+   "Latios"
+  ]
+ },
  "Tracey": {
   "category": "anime",
   "gen": 1,
@@ -5333,6 +5905,23 @@
    "Sylveon",
    "Xerneas",
    "Yveltal"
+  ]
+ },
+ "Victor": {
+  "category": "anime",
+  "gen": 8,
+  "page": "Victor",
+  "species": [
+   "Calyrex",
+   "Eternatus",
+   "Glastrier",
+   "Greedent",
+   "Inteleon",
+   "Kubfu",
+   "Rillaboom",
+   "Scorbunny",
+   "Sirfetch'd",
+   "Spectrier"
   ]
  },
  "Viola": {
@@ -5634,6 +6223,23 @@
    "Talonflame",
    "Xerneas",
    "Yveltal"
+  ]
+ },
+ "Zisu": {
+  "category": "galaxy",
+  "gen": 8,
+  "page": "Zisu",
+  "species": [
+   "Ambipom",
+   "Drifblim",
+   "Hisuian Zoroark",
+   "Honchkrow",
+   "Infernape",
+   "Lopunny",
+   "Luxray",
+   "Rapidash",
+   "Steelix",
+   "Zorua"
   ]
  },
  "Zoey": {

@@ -230,3 +230,37 @@ Tucker | Tucker | frontier | 3
 Dahlia | Dahlia | frontier | 4
 Darach | Darach | frontier | 4
 Palmer | Palmer | frontier | 4
+
+
+# Appended by the 2026-07-25 roster audit: Legends: Arceus cast
+# and any Battle Frontier Brains this game did not already carry.
+# APPEND ONLY -- a save stores the character index.
+Adaman | Adaman | rival | 8
+Akari | Akari (game) | protagonist | 8
+Beni | Beni | villain | 8
+Brassius | Brassius | anime | 8
+Calem | Calem | anime | 8
+Cogita | Cogita | other | 8
+Elio | Elio | anime | 8
+Gloria | Gloria | anime | 8
+Hala | Hala | anime | 8
+Hapu | Hapu | anime | 8
+Hassel | Hassel | anime | 8
+Hilbert | Hilbert | anime | 8
+Hilda | Hilda | anime | 8
+Ingo | Ingo | frontier | 5
+Irida | Irida | rival | 8
+Kamado | Kamado | villain | 8
+Larry | Larry | anime | 8
+Nate | Nate | anime | 8
+Nemona | Nemona | anime | 8
+Penny | Penny | anime | 8
+Rei | Rei (game) | protagonist | 8
+Rika | Rika | anime | 8
+Rosa | Rosa | anime | 8
+Selene | Selene | anime | 8
+Serena | Serena | anime | 8
+Thorton | Thorton | frontier | 4
+Tobias | Tobias | anime | 4
+Victor | Victor | anime | 8
+Zisu | Zisu | galaxy | 8

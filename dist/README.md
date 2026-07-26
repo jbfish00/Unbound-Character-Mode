@@ -1,6 +1,6 @@
 # Character Mode for Pokemon Unbound v2.1.1.1
 
-An opt-in game mode: at the start of a new game, pick one of 179 iconic
+An opt-in game mode: at the start of a new game, pick one of 208 iconic
 Pokemon characters (protagonists, rivals, gym leaders, Elite Four,
 champions, villains, and anime cast, Generations 1-8) and play the whole
 game restricted to that character's canon Pokemon.
@@ -31,7 +31,7 @@ game restricted to that character's canon Pokemon.
    `b4776b82a4c7915d0fadeaa27e013523f99dfd94`).
 2. Apply `unbound-character-mode.bps` to that ROM with Flips
    (https://github.com/Alcaro/Flips), or any BPS patcher.
-3. The result should have sha1 `345cc7e6aa5461b4a73ffaf6e15fa4f107ea2f2a`.
+3. The result should have sha1 `0109c5af7974bf3373e8e9690a655c6d75182c40`.
 
 ## Known limitations
 
