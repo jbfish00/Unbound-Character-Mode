@@ -39,7 +39,11 @@ HERE = Path(__file__).resolve().parent
 ROOT = HERE.parents[1]
 DONORS = ROOT / "sprites" / "donors"
 
-PREFERENCE = ["ashgray", "rogue", "taar", "hns", "pokesho", "loulilie", "platinum"]
+# "rowe" is last: it is art staged through the ROWE project rather than from a
+# named upstream set, so CREDITS.md can only say "same original credits apply".
+# Prefer any source with specific attribution over it.
+PREFERENCE = ["ashgray", "rogue", "taar", "hns", "pokesho", "loulilie", "platinum",
+              "rowe"]
 
 slug = lambda s: re.sub(r"[^a-z0-9]+", "_", s.lower()).strip("_")
 

@@ -156,13 +156,23 @@ def pick_source(per_base, base_const, shown_name):
     """The best-matching source entry for one doc row, deterministically:
     the exact species shown, else one naming the family base, else the
     alphabetically first -- a family with several owned forms must not pick a
-    different one on each run."""
+    different one on each run.
+
+    Entries whose `source` is null are considered ONLY as a last resort. 24 of
+    the audit's entries carry an owned_form but no source, and several of them
+    sit in a family whose OTHER entry is perfectly well sourced -- Anabel's
+    "Espeon" (null) was masking her "Eevee" ("Anime"), so the row printed "—"
+    while the provenance was sitting right there in the same family. Preferring
+    the exact species match is still correct; it just must not prefer a blank
+    one over a real one."""
     entries = per_base.get(base_const) or {}
     if not entries:
         return {}
-    if shown_name in entries:
-        return entries[shown_name]
-    return entries[min(entries)]
+    sourced = {k: v for k, v in entries.items() if (v or {}).get("source")}
+    pool = sourced or entries
+    if shown_name in pool:
+        return pool[shown_name]
+    return pool[min(pool)]
 
 SPRITE_URL = ("https://cdn.jsdelivr.net/gh/PokeAPI/sprites@master"
               "/sprites/pokemon/%d.png")

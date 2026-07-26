@@ -193,3 +193,20 @@ Three more donor sets staged alongside `rogue/`, converted by
   documented judgement call: the five aligned frames span 68px, so the window
   chosen keeps four frames pixel-complete and clips only the tip of a thrown
   Poké Ball leaving frame 4 — which is how FRLG back pics behave anyway.
+
+### `sprites/donors/rowe/` — 1 sprite (added 2026-07-26)
+- **Source**: staged through the ROWE Character Mode project's own asset tree
+  (`assets/donor_sprites_staged/`), not from a separately-named upstream set.
+- **Credit**: the same original credits as the "Overworld & trainer sprites
+  (staged via the ROWE project)" section above — for a Johto trainer front
+  that means **PokemonHnS-Development/pokemonHnS** and/or
+  **pret/pokefirered**, which is as precisely as the staging manifest records
+  it.
+- Currently one sprite: **Kris**, whose 64x64 front pic was already staged and
+  converted but had never been wired in, because the emitter needs an
+  LZ77-compressed palette and only an uncompressed `trainer_pal.gbapal` was
+  present. `tools/lz77.py` compresses it; the written stream is decoded back
+  and compared byte-for-byte before use.
+- **This directory is deliberately last in `emit_sprite_table.py`'s
+  PREFERENCE order**: any source with specific attribution should win over one
+  whose provenance can only be given as a group.
