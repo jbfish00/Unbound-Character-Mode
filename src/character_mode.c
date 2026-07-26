@@ -425,7 +425,8 @@ static bool8 CharacterMode_AlreadyCaught(u16 species)
  * Deliberately does not reuse the picker to answer this: the picker consumes
  * Random(), and a probe that perturbs the RNG stream would change encounter
  * behaviour just by being asked a question. */
-static bool8 CharacterMode_HasNonLegendaryFamily(const struct CharacterRecordBin *character)
+static bool8 CharacterMode_HasFamilyOfKind(const struct CharacterRecordBin *character,
+                                           bool8 wantLegendary)
 {
     const u16 *roster;
     u32 i;
@@ -437,10 +438,17 @@ static bool8 CharacterMode_HasNonLegendaryFamily(const struct CharacterRecordBin
     {
         u16 sp = roster[i];
 
-        if (sp < WILD_META_COUNT && !(gWildSpeciesMeta[sp].flags & WILD_META_LEGENDARY))
+        if (sp >= WILD_META_COUNT)
+            continue;
+        if (((gWildSpeciesMeta[sp].flags & WILD_META_LEGENDARY) != 0) == wantLegendary)
             return TRUE;
     }
     return FALSE;
+}
+
+static bool8 CharacterMode_HasNonLegendaryFamily(const struct CharacterRecordBin *character)
+{
+    return CharacterMode_HasFamilyOfKind(character, FALSE);
 }
 
 /* Decision core (factored out so the self-test can drive it directly, same
@@ -578,7 +586,16 @@ u16 CharacterMode_MaybeOverrideWildSpecies(u16 species, u8 level)
     if (!InCharacterMode())
         return species;
 
-    if (CharacterMode_UMod(Random(), 100) < WILD_LEGENDARY_CHANCE_PERCENT)
+    /* The DATA CHECK comes before the roll, and that ordering is load-bearing:
+     * Random() is the game's own LCG, so consuming one extra value per wild
+     * encounter would shift the whole downstream RNG stream (shininess, IVs,
+     * every later roll) for the ~115 characters that have no legendary at all.
+     * Testing "does this character even have one" first means those characters
+     * consume exactly the RNG they did before this feature existed, which is
+     * what "a character with no legendary is completely unaffected" has to
+     * mean to be true. */
+    if (CharacterMode_HasFamilyOfKind(GetActiveCharacter(), TRUE)
+        && CharacterMode_UMod(Random(), 100) < WILD_LEGENDARY_CHANCE_PERCENT)
     {
         replacement = CharacterMode_PickWildLegendarySpecies(level);
         if (replacement != SPECIES_NONE)
@@ -1210,6 +1227,10 @@ void CharacterMode_RunSelfTest(void)
     VarSet(VAR_CHARACTER_ID, TEST_NOLEGEND_CHAR_ID);
     r[n++] = CharacterMode_PickWildLegendarySpecies(30) == SPECIES_NONE; /* N5 want 1 */
     r[n++] = CharacterMode_PickWildRosterSpecies(30) != SPECIES_NONE;    /* N6 want 1 */
+    /* N6b: the predicate that gates the 1% roll. It is what keeps a
+     * no-legendary character from consuming an extra Random() per encounter
+     * and shifting the game's whole downstream RNG stream. */
+    r[n++] = CharacterMode_HasFamilyOfKind(GetActiveCharacter(), TRUE) == FALSE; /* want 1 */
 
     /* N7/N8: the §1.2 exemption. An all-legendary roster has no non-legendary
      * family, so its legendaries stay repeatable -- without this, Cogita
