@@ -5,6 +5,9 @@
 set -u
 HERE="$(cd "$(dirname "$0")" && pwd)"
 ROOT="$(cd "$HERE/../.." && pwd)"
+# the gdb side DERIVES its wild species from character 1's own injected roster
+export CM_MANIFEST="$ROOT/tools/character_mode/characters_manifest.json"
+
 . "$HERE/headless_display.sh"
 ROM="$ROOT/build/unbound-cm.gba"
 ELF="$ROOT/build/character_mode.elf"

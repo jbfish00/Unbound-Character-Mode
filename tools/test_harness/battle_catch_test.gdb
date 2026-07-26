@@ -58,8 +58,37 @@ script += bytes([0x29]) + struct.pack("<H", 0x18F8)         # setflag
 script += bytes([0x16]) + struct.pack("<HH", 0x51FC, 1)     # setvar char=Red
 script += bytes([0x44]) + struct.pack("<HH", 1, 10)         # additem MASTER_BALL x10
 script += bytes([0x79]) + struct.pack("<HBH", 25, 30, 0) + b"\x00" * 9  # givemon Pikachu L30
-TEST_SPECIES = int(os.environ.get("TEST_SPECIES", "150"))   # default wild Mewtwo
+# The species is DERIVED from character 1's own injected roster, not hardcoded.
+# It was a literal 150 (Mewtwo), and the 2026-07-25 roster audit put Mewtwo ON
+# Red's roster -- so "block" became the WRONG expectation and the case kept
+# passing for a stale reason (a dodged ball reads identically to a ball that was
+# never thrown, so nothing went red). block -> a species absent from the roster;
+# catch -> a species present in it.
+def _char1_roster():
+    import json as _json, struct as _struct, os as _os
+    mp = _os.environ.get("CM_MANIFEST",
+                         "tools/character_mode/characters_manifest.json")
+    rec = _json.load(open(mp))["characters"][0]
+    blob = open(_os.path.join(_os.path.dirname(mp) or ".", "rosters.bin"), "rb").read()
+    off, ids = rec["roster_offset"], set()
+    while True:
+        (s,) = _struct.unpack_from("<H", blob, off)
+        off += 2
+        if s == 0:
+            return rec["character"], ids
+        ids.add(s)
+
+_CHAR1, _ROSTER = _char1_roster()
 TEST_WANT = os.environ.get("TEST_WANT", "block")            # block | catch
+if os.environ.get("TEST_SPECIES"):
+    TEST_SPECIES = int(os.environ["TEST_SPECIES"])
+elif TEST_WANT == "catch":
+    TEST_SPECIES = min(_ROSTER)
+else:
+    TEST_SPECIES = next(s for s in range(1, 1295) if s not in _ROSTER)
+print(f"fixture: character={_CHAR1} roster={len(_ROSTER)} species, "
+      f"want={TEST_WANT}, wild species={TEST_SPECIES} "
+      f"({'on' if TEST_SPECIES in _ROSTER else 'off'}-roster)")
 script += bytes([0xB6]) + struct.pack("<HBH", TEST_SPECIES, 5, 0)  # setwildbattle
 script += bytes([0xB7, 0x27, 0x02])                         # dowildbattle; waitstate; end
 
