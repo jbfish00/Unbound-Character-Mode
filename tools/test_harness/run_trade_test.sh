@@ -88,4 +88,11 @@ sys.exit(1 if fails else 0)
 EOF
 done
 
+# The display is sourced ONCE above the case loop, so it is stopped once here --
+# not inside the loop, which would tear it down before the second case runs.
+# Without this the trap disarm at the end of each case leaks the Xvfb, and the
+# next suite to allocate the same ":90 + PID%8" number reports "mgba window not
+# found" -- which reads as a hang rather than as a leaked display.
+headless_display_stop
+
 exit $OVERALL

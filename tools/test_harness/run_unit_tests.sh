@@ -40,6 +40,10 @@ fi
 
 kill $MGBA_PID 2>/dev/null
 trap - EXIT
+# the trap is disarmed above, so the private Xvfb must be stopped explicitly.
+# Leaving it running squats the ":90 + PID%8" display the next run may allocate,
+# which surfaces there as "mgba window not found" -- a hang, not a leak.
+headless_display_stop
 
 echo "--- gdb output ---"
 cat "$LOG"
