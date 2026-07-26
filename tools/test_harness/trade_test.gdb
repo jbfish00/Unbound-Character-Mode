@@ -85,7 +85,11 @@ def pc_raw_scan(species):
         i = buf.find(pat, i + 1)
     return f"storage={storage:08x} raw hits at storage+{hits}"
 
-print(f"case: {CASE} (character: {dbg.get('trade_test_' + CASE + '_char', '?')})")
+# Read the derived fixture names here, not at line 109 where `dbg` is first
+# loaded -- referencing it this early is what broke the suite with
+# "NameError: name 'dbg' is not defined" and produced a 296-byte log.
+_dbg0 = json.load(open("/home/jbfish00/Documents/Character Hacks/Unbound-Character-Mode/build/debug_addrs.json"))
+print(f"case: {CASE} (character: {_dbg0.get('trade_test_' + CASE + '_char', '?')})")
 print("phase1: driving the opening (answers No at the CM prompt)...")
 exec(open("/home/jbfish00/Documents/Character Hacks/Unbound-Character-Mode/tools/test_harness/intro_drive.py").read())
 drive_intro_to_freeroam()
