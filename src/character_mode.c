@@ -921,3 +921,112 @@ void CharacterMode_RunSelfTest(void)
     SELFTEST_MAGIC = 0xC0DED00D;
     CharacterMode_SelfTestDone();
 }
+
+/* ---- character mugshot (Phase 3 render surface, 2026-07-25) ----
+ *
+ * 136 character front pics are injected at gCharacterSpritePtrs (an additive
+ * blob + pointer table that touches no engine table), but until now nothing
+ * read them. These two are called from the opt-in script via `callnative`
+ * (script command 0x23 — confirmed in this ROM's own command table at
+ * 0x0815F9B4, and it takes an ABSOLUTE pointer, so there is no branch-range
+ * constraint) and bracket the "Play as {NAME}?" confirmation, so the player
+ * sees the character before committing:
+ *
+ *     special 0x1B6                  <- buffers the name into gStringVar1
+ *     callnative CharacterMode_ShowMugshot
+ *     loadword <"Play as {NAME}?">; callstd MSGBOX_YESNO   <- blocks
+ *     callnative CharacterMode_HideMugshot
+ *
+ * Ported from RadicalRed-Character-Mode/src/character_sprite.c, which proved
+ * the technique. Every address it relies on was re-verified in THIS ROM.
+ *
+ * Failure is silent and safe throughout: an out-of-range id, a character with
+ * no staged art, or a full OBJ palette all leave the prompt looking exactly as
+ * it did before this existed.
+ */
+
+#define CM_TILE_TAG 0xC0DE
+#define CM_PALETTE_TAG 0xC0DF
+#define MUGSHOT_GFX_SIZE 2048   /* 64x64 4bpp, decompressed */
+
+/* Sprite position is its CENTRE (CreateSprite applies the centre-to-corner
+ * vector itself), so a 64x64 mugshot here spans x 160-224, y 2-66.
+ *
+ * Measured, not guessed: the confirm prompt's Yes/No window occupies
+ * x >= 161, y >= 67 in this game, and the message box the bottom of the
+ * screen. At y = 48 (Radical Red's value) the sprite's feet were clipped by
+ * the top of that window -- see build/unbound-cm-6.png from the first pass.
+ * This sits it directly above the choices instead. */
+#define MUGSHOT_X 192
+#define MUGSHOT_Y 34
+
+/* attr0 = 0 (square shape, 4bpp, normal), attr1 = 0xC000 (size 3 -> 64x64),
+ * attr2 = 0 (priority 0; CreateSprite fills tileNum/paletteNum from the tags) */
+static const u32 sMugshotOam[2] = { 0xC0000000, 0x00000000 };
+
+static const struct SpriteTemplate sMugshotTemplate = {
+    CM_TILE_TAG,
+    CM_PALETTE_TAG,
+    sMugshotOam,
+    gDummySpriteAnimTable,
+    0,
+    gDummySpriteAffineAnimTable,
+    SpriteCallbackDummy,
+};
+
+void CharacterMode_HideMugshot(void)
+{
+    u8 *s = gSprites;
+    u32 i;
+
+    /* Identify our own sprite by template pointer: needs no save-block var
+     * and no scratch RAM, and stays correct if it was never created. */
+    for (i = 0; i < SPRITE_COUNT; i++, s += SPRITE_STRIDE)
+    {
+        if (!(s[SPRITE_OFF_INUSE] & 1))
+            continue;
+        if (*(const void **)(s + SPRITE_OFF_TEMPLATE) == (const void *)&sMugshotTemplate)
+            DestroySprite(s);
+    }
+
+    FreeSpriteTilesByTag(CM_TILE_TAG);
+    FreeSpritePaletteByTag(CM_PALETTE_TAG);
+}
+
+void CharacterMode_ShowMugshot(void)
+{
+    struct CompressedSpriteSheet sheet;
+    struct CompressedSpritePalette pal;
+    const u32 *entry;
+    u16 id;
+
+    id = VarGet(VAR_CHARACTER_ID);
+    if (id < 1 || id > gCharacterCount)
+        return;
+
+    /* ids are 1-based in the var, 0-based in the table */
+    entry = &gCharacterSpritePtrs[(u32)(id - 1) * 2];
+    if (entry[0] == 0 || entry[1] == 0)
+        return;                 /* no front pic staged for this character */
+
+    /* Re-entry is normal here: the confirm prompt sits in a validation loop,
+     * so answering No returns to the number entry and comes back through.
+     * Without this, each pass would strand another tile/palette allocation. */
+    CharacterMode_HideMugshot();
+
+    pal.data = (const void *)entry[1];
+    pal.tag = CM_PALETTE_TAG;
+    if (LoadCompressedSpritePalette(&pal) == PALETTE_ALLOC_FAIL)
+        return;                 /* all 16 OBJ palette slots in use */
+
+    sheet.data = (const void *)entry[0];
+    sheet.size = MUGSHOT_GFX_SIZE;
+    sheet.tag = CM_TILE_TAG;
+    LoadCompressedSpriteSheet(&sheet);
+
+    if (CreateSprite(&sMugshotTemplate, MUGSHOT_X, MUGSHOT_Y, 0) == MAX_SPRITES_RETURN)
+    {
+        FreeSpriteTilesByTag(CM_TILE_TAG);
+        FreeSpritePaletteByTag(CM_PALETTE_TAG);
+    }
+}

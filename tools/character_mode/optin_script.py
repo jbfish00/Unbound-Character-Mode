@@ -79,7 +79,7 @@ def encode_msg(text, charmap):
     return STR_VAR_1.join(parts) + b"\xFF"
 
 
-def build(block_rom_addr, char_count):
+def build(block_rom_addr, char_count, show_mugshot=None, hide_mugshot=None):
     """Return (block_blob, splice_bytes) for a block placed at block_rom_addr.
 
     v2 flow: yesno -> scrolling character list (all char_count names via the
@@ -96,11 +96,18 @@ def build(block_rom_addr, char_count):
     confirm = encode_msg(CONFIRM_TEXT, charmap)
     enabled = encode_msg(ENABLED_TEXT, charmap)
 
+    # The two mugshot callnatives are 5 bytes each (0x23 + u32) and are only
+    # emitted when the caller supplies their addresses, so the fixed label
+    # offsets below shift with them. Every OFF_* is still asserted against the
+    # real emitted length — a drift shows up as an assertion, not as a script
+    # that runs off into the text.
+    mug = 5 if (show_mugshot and hide_mugshot) else 0
+
     # fixed-size body, so label offsets are static (+5: breadcrumb setvar)
-    OFF_PICK = 24    # the number-entry loop head
-    OFF_NO = 112     # the No/cancel branch (clears mode state, falls into replay)
-    OFF_REPLAY = 120 # replay of the displaced checkflag+goto_if gate
-    OFF_TEXT = 130   # first text byte (right after the `return`)
+    OFF_PICK = 24            # the number-entry loop head
+    OFF_NO = 112 + 2 * mug   # the No/cancel branch (clears mode state, falls into replay)
+    OFF_REPLAY = 120 + 2 * mug  # replay of the displaced checkflag+goto_if gate
+    OFF_TEXT = 130 + 2 * mug # first text byte (right after the `return`)
     p_prompt = block_rom_addr + OFF_TEXT
     p_numtext = p_prompt + len(prompt)
     p_confirm = p_numtext + len(numtext)
@@ -131,8 +138,15 @@ def build(block_rom_addr, char_count):
     body += bytes([0x19]) + struct.pack("<HH", VAR_CHARACTER_ID, VAR_RESULT)  # copyvar
     # (ids are 1-based and the player enters 1..count: no +1 adjustment)
     body += bytes([0x25]) + struct.pack("<H", SPECIAL_BUFFER_NAME)     # name -> gStringVar1
+    if mug:
+        body += bytes([0x23]) + struct.pack("<I", show_mugshot)        # callnative show mugshot
     body += bytes([0x0F, 0x00]) + struct.pack("<I", p_confirm)         # loadword 0, confirm
     body += bytes([0x09, 0x05])                                        # callstd MSGBOX_YESNO
+    if mug:
+        # After the yes/no returns, so it runs on BOTH answers — a No sends
+        # the script back to p_pick, which would otherwise leave the mugshot
+        # up over the number-entry screen.
+        body += bytes([0x23]) + struct.pack("<I", hide_mugshot)        # callnative hide mugshot
     body += bytes([0x21]) + struct.pack("<HH", VAR_RESULT, 1)          # confirmed?
     body += bytes([0x06, 0x05]) + struct.pack("<I", p_pick)            # goto_if NE -> pick
     body += bytes([0x29]) + struct.pack("<H", FLAG_CHARACTER_MODE)     # setflag
@@ -159,5 +173,5 @@ def build(block_rom_addr, char_count):
 
 
 if __name__ == "__main__":
-    blob, splice = build(0x08B2B280, 178)
+    blob, splice = build(0x08B2B280, 178, 0x08B2B001, 0x08B2B101)
     print(f"block: {len(blob)} bytes; splice: {splice.hex(' ')}")

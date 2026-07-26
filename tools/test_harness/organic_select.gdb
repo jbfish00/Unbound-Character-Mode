@@ -16,7 +16,7 @@ set remotetimeout 10
 target remote localhost:2345
 
 python
-import gdb, os, signal, threading, subprocess, struct
+import gdb, os, re, signal, threading, subprocess, struct
 
 inf = gdb.selected_inferior()
 WID = os.environ.get("MGBA_WID", "")
@@ -73,9 +73,34 @@ def block_pos():
     for i in range(min(depth, 20)):
         vals.append(rd(0x03000EBC + 4*i, 4))
     for v in vals:
-        if BLOCK <= v < BLOCK + 130:
+        # bound = OFF_TEXT in optin_script.py (140 with the mugshot
+        # callnatives, 130 without) -- too small and the tail of the block
+        # reads as "not in block"
+        if BLOCK <= v < BLOCK + 140:
             return v - BLOCK
     return -1
+
+# ---- character mugshot (Phase 3 render surface) ----
+# Identify our sprite the same way CharacterMode_HideMugshot does: by its
+# template pointer, read out of the linked ELF rather than hardcoded.
+_nm = subprocess.run(
+    "arm-none-eabi-nm '/home/jbfish00/Documents/Character Hacks/Unbound-Character-Mode/build/character_mode.elf'",
+    shell=True, capture_output=True, text=True).stdout
+_m = re.search(r"^([0-9a-f]+) [rRtT] sMugshotTemplate$", _nm, re.M)
+MUGSHOT_TEMPLATE = int(_m.group(1), 16) if _m else 0
+print(f"sMugshotTemplate @ 0x{MUGSHOT_TEMPLATE:08x}")
+GSPRITES = 0x0202063C
+
+def count_mugshot():
+    """live sprites whose template is ours (SPRITE_COUNT 64, stride 0x44)"""
+    if not MUGSHOT_TEMPLATE:
+        return -1
+    n = 0
+    for i in range(64):
+        s = GSPRITES + i * 0x44
+        if rd(s + 0x3E, 1) & 1 and rd(s + 0x14, 4) == MUGSHOT_TEMPLATE:
+            n += 1
+    return n
 
 print(f"block @ 0x{BLOCK:08x}")
 print("phase1: driving the intro to the Character Mode prompt...")
@@ -99,12 +124,25 @@ if reached:
     #   13  parked in opt-in yesno            -> A (Yes)
     #   32  parked in number-prompt msgbox    -> A
     #   36  parked on waitstate: ChooseNumberScreen up -> right,'1',Start,OK
-    #   85  parked in confirm yesno           -> A (Yes)
-    #  107  parked in enabled msgbox          -> A
+    #   90  parked in confirm yesno           -> A (Yes)   [was 85 pre-mugshot]
+    #  117  parked in enabled msgbox          -> A         [was 107]
+    CONFIRM_POS = 90
+    mug_seen = 0
+    mug_checked = False
     for step in range(60):
         pos = block_pos()
         if step % 5 == 0:
             print(f"  step {step:02d}: pos={pos} flag={rd(FLAG18F8,1)&1} var={rd(VAR51FC,2)}")
+        if pos == CONFIRM_POS:
+            # Parked in "Play as {NAME}?" — the mugshot must be on screen
+            # right now (callnative show ran just before the yesno, hide runs
+            # only after it returns). Screenshot for the human, sprite count
+            # for the assert.
+            n = count_mugshot()
+            mug_seen = max(mug_seen, n)
+            mug_checked = True
+            print(f"  confirm prompt up: mugshot sprites = {n}")
+            shot()
         if pos == 36:
             # The naming screen mishandles gdb-sliced key presses (keys
             # register in heldKeysRaw but the screen ignores/garbles them —
@@ -133,6 +171,13 @@ if reached:
     print(f"G2 mode enabled by the organic flow (want 1): {flag}")
     print(f"info: chosen character id = {var}, typed rounds = {typed}")
     print(f"G3 character id valid 1-179 (want 1): {1 if 1 <= var <= 179 else 0}")
+    # G7 is only meaningful if the driver actually caught the prompt frame;
+    # character 1 (Red) has staged art, so one sprite is the right answer.
+    # Reported as a check either way so a silently-missed sample can't pass
+    # as evidence that the mugshot rendered.
+    print(f"G7 confirm prompt was sampled (want 1): {1 if mug_checked else 0}")
+    print(f"G8 mugshot drawn at the confirm prompt (want 1): {1 if mug_seen == 1 else 0}")
+    print(f"G9 mugshot torn down after selection (want 0): {count_mugshot()}")
 
     # keep playing: the intro must continue (story cutscene) and reach the
     # overworld with the mode state intact

@@ -14,6 +14,7 @@
 typedef uint8_t u8;
 typedef uint16_t u16;
 typedef uint32_t u32;
+typedef int16_t s16;
 typedef uint8_t bool8;
 
 #define TRUE 1
@@ -103,5 +104,57 @@ extern u8 *gSaveBlock2Ptr;            /* 0x0300500C holds the live pointer */
 extern u8 gStringVar1[];              /* 0x02021CD0 */
 
 #define BATTLEMON_SPECIES(bank) (*(u16 *)(gBattleMons + (bank) * 0x58))
+
+/* ---- sprite API for the character mugshot (Phase 3 render surface,
+ * 2026-07-25). Struct layouts and the gSprites geometry below were read out
+ * of THIS ROM's own CreateSprite/CreateSpriteAt code, not assumed from
+ * pokeemerald — see docs/ROUTINE_MAP.md. ---- */
+
+struct CompressedSpriteSheet
+{
+    const void *data;
+    u16 size;   /* DECOMPRESSED size (2048 for 64x64 4bpp), not the stream length */
+    u16 tag;
+};
+
+struct CompressedSpritePalette
+{
+    const void *data;
+    u16 tag;
+};
+
+struct SpriteTemplate
+{
+    u16 tileTag;
+    u16 paletteTag;
+    const void *oam;
+    const void *anims;
+    const void *images;         /* only consulted when tileTag == TAG_NONE */
+    const void *affineAnims;
+    void (*callback)(void *);
+};
+
+#define SPRITE_COUNT 64
+#define SPRITE_STRIDE 0x44
+#define SPRITE_OFF_TEMPLATE 0x14
+#define SPRITE_OFF_INUSE 0x3E   /* bit 0 */
+#define MAX_SPRITES_RETURN 64   /* CreateSprite's "no free slot" return */
+#define PALETTE_ALLOC_FAIL 0xFF
+
+u16 LoadCompressedSpriteSheet(const struct CompressedSpriteSheet *sheet);
+u8 LoadCompressedSpritePalette(const struct CompressedSpritePalette *palette);
+u8 CreateSprite(const struct SpriteTemplate *template, s16 x, s16 y, u8 subpriority);
+void DestroySprite(void *sprite);
+void FreeSpriteTilesByTag(u16 tag);
+void FreeSpritePaletteByTag(u16 tag);
+void SpriteCallbackDummy(void *sprite);
+extern u8 gSprites[];
+extern const void *const gDummySpriteAnimTable[];
+extern const void *const gDummySpriteAffineAnimTable[];
+
+/* NUM_CHARACTERS x {u32 gfx, u32 pal} absolute ROM pointers in character-index
+ * order, {0,0} where no art is staged (tools/character_mode/emit_sprite_table.py;
+ * placed by tools/build_patch.py, address supplied via --defsym). */
+extern const u32 gCharacterSpritePtrs[];
 
 #endif /* UNBOUND_ROM_H */

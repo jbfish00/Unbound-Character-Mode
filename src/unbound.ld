@@ -51,3 +51,19 @@ gBattleTypeFlags  = 0x02022B4C;
 gMainInBattleByte = 0x030030F0 + 0x439; /* gMain.inBattle byte */
 gSaveBlock2Ptr    = 0x0300500C;
 gStringVar1       = 0x02021CD0;
+
+/* ---- sprite API for the character mugshot (Phase 3 render surface,
+ *      2026-07-25). Vanilla FRLG addresses from CFRU BPRE.ld, each
+ *      RE-VERIFIED byte-exact in THIS ROM by disassembly — not taken on
+ *      trust; see docs/ROUTINE_MAP.md. Unbound's low-ROM vanilla region is
+ *      untouched here, identical to Radical Red's. ---- */
+LoadCompressedSpriteSheet   = 0x0800EBCC | 1;
+LoadCompressedSpritePalette = 0x0800EC28 | 1;
+CreateSprite                = 0x08006F8C | 1;
+DestroySprite               = 0x08007280 | 1;
+FreeSpriteTilesByTag        = 0x0800874C | 1;
+FreeSpritePaletteByTag      = 0x08008A30 | 1;
+SpriteCallbackDummy         = 0x0800760C | 1;
+gSprites                    = 0x0202063C;   /* stride 0x44, 64 entries */
+gDummySpriteAnimTable       = 0x08231CF0;
+gDummySpriteAffineAnimTable = 0x08231CFC;

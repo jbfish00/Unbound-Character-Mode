@@ -198,6 +198,10 @@ def main():
          "--defsym", f"gCharacterNamePtrs={addr(off_nameptrs):#x}",
          "--defsym", f"gCharacterCount={addr(off_count):#x}",
          "--defsym", f"gWildSpeciesMeta={addr(off_wild_meta):#x}",
+         # The sprite pointer table lives in the SEPARATE free run (see
+         # CM_SPRITE_PTRS_FILE_OFF), not in this injection block, so its
+         # address is a fixed constant rather than an offset into `addr`.
+         "--defsym", f"gCharacterSpritePtrs={ROM_BASE + CM_SPRITE_PTRS_FILE_OFF:#x}",
          "-o", elf, obj, os.path.join(ROOT, "src", "unbound.ld")])
     code_bin = os.path.join(BUILD, "character_mode.bin")
     run(["arm-none-eabi-objcopy", "-O", "binary", "--only-section=.text",
@@ -224,7 +228,12 @@ def main():
 
     # opt-in prompt script block, appended after the code
     off_optin = (off_code + len(code) + 3) & ~3
-    optin_blob, optin_splice = optin_script.build(addr(off_optin), n_chars)
+    show_mugshot = syms["CharacterMode_ShowMugshot"] | 1
+    hide_mugshot = syms["CharacterMode_HideMugshot"] | 1
+    print(f"CharacterMode_ShowMugshot    @ {show_mugshot:#010x}")
+    print(f"CharacterMode_HideMugshot    @ {hide_mugshot:#010x}")
+    optin_blob, optin_splice = optin_script.build(addr(off_optin), n_chars,
+                                                  show_mugshot, hide_mugshot)
     print(f"opt-in script block          @ {addr(off_optin):#010x} ({len(optin_blob)} bytes)")
 
     total_len = off_optin + len(optin_blob)
