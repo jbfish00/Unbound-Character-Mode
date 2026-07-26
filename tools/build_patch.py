@@ -49,6 +49,14 @@ INJECT_FILE_OFF = 0x00B2B280
 INJECT_ROM_ADDR = ROM_BASE + INJECT_FILE_OFF
 INJECT_BLOCK_LEN = 147 * 1024
 
+# Phase 3 character sprites (2026-07-25). The 147 KB block above is nearly full
+# and the sprite blobs are ~122 KB, so they live in the separate 344 KB 0xFF run
+# at file 0x015FBC90. Additive: this never touches the engine's trainer-pic
+# table, so locating that table is not a prerequisite and nothing the game
+# already draws changes.
+CM_SPRITE_PTRS_FILE_OFF  = 0x015FC000
+CM_SPRITE_BLOBS_FILE_OFF = 0x015FC800
+
 # Hook sites (docs/ROUTINE_MAP.md v8)
 CATCH_BL_FILE_OFF = 0x9C8CA6          # bl call_via_r6 (FlagGet) inside atkEF_handleballthrow
 CATCH_BL_ORIG = bytes.fromhex("00F0E6FE")
@@ -262,6 +270,31 @@ def main():
     rom[INJECT_FILE_OFF + off_wild_meta:INJECT_FILE_OFF + off_wild_meta + len(wild_meta)] = wild_meta
     rom[INJECT_FILE_OFF + off_code:INJECT_FILE_OFF + off_code + len(code)] = code
     rom[INJECT_FILE_OFF + off_optin:INJECT_FILE_OFF + off_optin + len(optin_blob)] = optin_blob
+
+    # 5b. character sprites (separate free run)
+    spr_b = os.path.join(CM_DIR, "cm_sprite_blobs.bin")
+    spr_o = os.path.join(CM_DIR, "cm_sprite_offsets.bin")
+    if os.path.isfile(spr_b) and os.path.isfile(spr_o):
+        with open(spr_b, "rb") as f: sblobs = f.read()
+        with open(spr_o, "rb") as f: soffs = f.read()
+        assert len(soffs) == n_chars * 8, (len(soffs), n_chars)
+        blobs_addr = ROM_BASE + CM_SPRITE_BLOBS_FILE_OFF
+        sptrs = bytearray()
+        wired = 0
+        for i in range(n_chars):
+            g, pl = struct.unpack_from("<II", soffs, i * 8)
+            if g == 0xFFFFFFFF:
+                sptrs += struct.pack("<II", 0, 0)
+            else:
+                sptrs += struct.pack("<II", blobs_addr + g, blobs_addr + pl)
+                wired += 1
+        for off, data, what in ((CM_SPRITE_BLOBS_FILE_OFF, sblobs, "sprite blobs"),
+                                (CM_SPRITE_PTRS_FILE_OFF, bytes(sptrs), "sprite pointers")):
+            assert all(b == 0xFF for b in rom[off:off + len(data)]), \
+                f"{what}: target not 0xFF @ {off:#x}"
+            rom[off:off + len(data)] = data
+        print(f"character sprites: {wired}/{n_chars} wired, {len(sblobs):,} B "
+              f"@ {blobs_addr:#x}, table @ {ROM_BASE + CM_SPRITE_PTRS_FILE_OFF:#x}")
 
     # 6a. bl retarget (thumb bit must NOT be in a bl target address)
     bl = thumb_bl(ROM_BASE + CATCH_BL_FILE_OFF, catch_hook & ~1)
