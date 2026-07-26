@@ -6,9 +6,11 @@
 # goto tail -> special 0xFE; waitstate; special 0x1AF sweep).
 #
 # Case selected by env TRADE_CASE:
-#   red   (char 1): Hitmontop off-roster -> swept to the PC. Party ends
+#   swept (character DERIVED at build time): Hitmontop off-roster ->
+#                   swept to the PC. Party ends
 #                   [Pikachu]; 237 present in PC storage.
-#   bruno (char 6): Hitmontop on-roster -> stays. Party ends
+#   stays (character DERIVED at build time): Hitmontop on-roster ->
+#                   stays. Party ends
 #                   [Pikachu, Hitmontop]; 237 NOT in PC storage.
 #
 # Same primitives as starter_test.gdb: ROM-resident script queued via
@@ -39,7 +41,7 @@ def run(sec):
 def reg(name):
     return int(gdb.parse_and_eval(f"(unsigned int)${name}")) & 0xFFFFFFFF
 
-CASE = os.environ.get("TRADE_CASE", "red")
+CASE = os.environ.get("TRADE_CASE", "swept")
 
 PARTY = 0x02024284      # gPlayerParty, stride 100, species u16 at +0x20
 PARTY_COUNT = 0x02024029
@@ -83,7 +85,7 @@ def pc_raw_scan(species):
         i = buf.find(pat, i + 1)
     return f"storage={storage:08x} raw hits at storage+{hits}"
 
-print(f"case: {CASE}")
+print(f"case: {CASE} (character: {dbg.get('trade_test_' + CASE + '_char', '?')})")
 print("phase1: driving the opening (answers No at the CM prompt)...")
 exec(open("/home/jbfish00/Documents/Character Hacks/Unbound-Character-Mode/tools/test_harness/intro_drive.py").read())
 drive_intro_to_freeroam()
@@ -176,7 +178,7 @@ if ok:
     print(f"diag: party=[{sp0},{sp1}] count={cnt} hitmontop_in_pc={in_pc}")
     print(f"diag: {pc_raw_scan(237)}")
     print(f"T3 party[0] is Pikachu (want 1): {1 if sp0 == 25 else 0}")
-    if CASE == "red":
+    if CASE == "swept":
         print(f"T4 party count post-sweep (want 1): {cnt}")
         print(f"T5 off-roster Hitmontop out of party (want 1): {1 if sp1 == 0 else 0}")
         print(f"T6 Hitmontop delivered to PC storage (want 1): {1 if in_pc == 1 else 0}")

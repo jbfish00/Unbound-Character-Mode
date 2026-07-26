@@ -4,13 +4,14 @@
 Contents of dist/:
   unbound-character-mode.bps   the patch (copy of build/unbound-cm.bps)
   README.md                    what it is + how to apply + limitations
-  CHARACTERS.md                the numbered 179-character list
+  CHARACTERS.md                the numbered character list
   unbound-character-mode.zip   all of the above
 
 Never includes a ROM. The BPS applies to Pokemon Unbound v2.1.1.1 (which
 players build themselves from a FireRed ROM + Skeli's official patch).
 """
 import hashlib
+import json
 import os
 import shutil
 import subprocess
@@ -28,7 +29,7 @@ import emit_character_list
 
 README = """# Character Mode for Pokemon Unbound v2.1.1.1
 
-An opt-in game mode: at the start of a new game, pick one of 179 iconic
+An opt-in game mode: at the start of a new game, pick one of {n_chars} iconic
 Pokemon characters (protagonists, rivals, gym leaders, Elite Four,
 champions, villains, and anime cast, Generations 1-8) and play the whole
 game restricted to that character's canon Pokemon.
@@ -101,7 +102,14 @@ def main():
     shutil.copyfile(BPS, bps_out)
     readme_out = os.path.join(DIST, "README.md")
     with open(readme_out, "w") as f:
-        f.write(README.format(src_sha1=src_sha1, out_sha1=out_sha1))
+        # DERIVE the count -- it read a literal 179 and would have shipped a
+        # README advertising the wrong number of characters the moment the roster
+        # changed, which is exactly how this file came to say 156 once before.
+        with open(os.path.join(HERE, "character_mode",
+                               "characters_manifest.json")) as mf:
+            n_chars = len(json.load(mf)["characters"])
+        f.write(README.format(src_sha1=src_sha1, out_sha1=out_sha1,
+                              n_chars=n_chars))
     chars_out = os.path.join(DIST, "CHARACTERS.md")
     emit_character_list.main(chars_out)
 

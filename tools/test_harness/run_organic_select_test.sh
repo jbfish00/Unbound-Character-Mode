@@ -4,6 +4,11 @@
 set -u
 HERE="$(cd "$(dirname "$0")" && pwd)"
 ROOT="$(cd "$HERE/../.." && pwd)"
+# DERIVE the character count for the gdb assertions; never hardcode it. A stale
+# literal here fails as "want 179, got 208", which reads like a roster bug
+# rather than a test that has not been told the roster grew.
+export CM_MANIFEST="$ROOT/tools/character_mode/characters_manifest.json"
+
 . "$HERE/headless_display.sh"
 ROM="$ROOT/build/unbound-cm.gba"
 LOG="$ROOT/build/organic_select.log"

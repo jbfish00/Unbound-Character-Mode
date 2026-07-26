@@ -52,33 +52,47 @@ printf "PC after stop: 0x%08x\n", (unsigned int)$pc
 printf "SelfTestDone at: 0x%08x\n", ((unsigned int)CharacterMode_SelfTestDone) & ~1
 printf "parked in SelfTestDone (want 1): %d\n", ((unsigned int)$pc >= (((unsigned int)CharacterMode_SelfTestDone) & ~1)) && ((unsigned int)$pc < ((((unsigned int)CharacterMode_SelfTestDone) & ~1) + 8))
 
+python
+# The character count is DERIVED from characters_manifest.json (path exported by
+# the runner as CM_MANIFEST). It used to be a literal 179 in the assertions
+# below, which failed as "want 179, got 208" the moment the 2026-07-25 roster
+# audit landed -- a message that reads like a roster bug rather than a test that
+# had not been told the roster grew.
+import json, os
+_p = os.environ.get("CM_MANIFEST", "tools/character_mode/characters_manifest.json")
+try:
+    NUM_CHARS = len(json.load(open(_p))["characters"])
+except Exception as _e:
+    raise SystemExit("cannot derive the character count from %s: %s" % (_p, _e))
+gdb.execute("set $want_chars = %d" % NUM_CHARS)
+end
 echo \n=== results ===\n
 printf "MAGIC ok (want 1): %d\n", (*(unsigned int*)0x0203FEFC == 0xC0DED00D)
 printf "COUNT checks ran (want 46): %d\n", *(unsigned int*)0x0203FEF8
 printf "A1 InCharacterMode mode-off (want 0): %d\n", *(unsigned char*)(0x0203FE00 + 0)
-printf "A2 IsSpeciesAllowed(150) mode-off (want 1): %d\n", *(unsigned char*)(0x0203FE00 + 1)
+printf "A2 IsSpeciesAllowed(27) mode-off (want 1): %d\n", *(unsigned char*)(0x0203FE00 + 1)
 printf "A3 CatchFlagGet mode-off (want 0): %d\n", *(unsigned char*)(0x0203FE00 + 2)
 printf "B1 InCharacterMode Red (want 1): %d\n", *(unsigned char*)(0x0203FE00 + 3)
-printf "B2 GetCharacterCount (want 179): %d\n", *(unsigned char*)(0x0203FE00 + 4)
+printf "B2 GetCharacterCount (want %d): %d\n", $want_chars, *(unsigned char*)(0x0203FE00 + 4)
 printf "B3 IsSpeciesAllowed(25) Pikachu (want 1): %d\n", *(unsigned char*)(0x0203FE00 + 5)
 printf "B4 IsSpeciesAllowed(6) Charizard-expansion (want 1): %d\n", *(unsigned char*)(0x0203FE00 + 6)
-printf "B5 IsSpeciesAllowed(150) Mewtwo (want 0): %d\n", *(unsigned char*)(0x0203FE00 + 7)
+printf "B5 IsSpeciesAllowed(27) Sandshrew, off-roster (want 0): %d\n", *(unsigned char*)(0x0203FE00 + 7)
 printf "B6 IsSpeciesAllowed(0) SPECIES_NONE (want 0): %d\n", *(unsigned char*)(0x0203FE00 + 8)
-printf "C1 CatchFlagGet target=Mewtwo (want 1=blocked): %d\n", *(unsigned char*)(0x0203FE00 + 9)
+printf "C1 CatchFlagGet target=Sandshrew (want 1=blocked): %d\n", *(unsigned char*)(0x0203FE00 + 9)
 printf "C2 CatchFlagGet target=Pikachu (want 0=allowed): %d\n", *(unsigned char*)(0x0203FE00 + 10)
 printf "C3 CatchFlagGet target=Charizard (want 0=allowed): %d\n", *(unsigned char*)(0x0203FE00 + 11)
 printf "D1 CatchFlagGet no-catching-flag mode-off (want 1): %d\n", *(unsigned char*)(0x0203FE00 + 12)
 printf "E1 InCharacterMode var=999 (want 0): %d\n", *(unsigned char*)(0x0203FE00 + 13)
-printf "E2 IsSpeciesAllowed(150) var=999 (want 1): %d\n", *(unsigned char*)(0x0203FE00 + 14)
+printf "E2 IsSpeciesAllowed(27) var=999 (want 1): %d\n", *(unsigned char*)(0x0203FE00 + 14)
 printf "F1 GiveMon(Pikachu) to party (want 0): %d\n", *(unsigned char*)(0x0203FE00 + 15)
 printf "F2 party[0] is Pikachu (want 1): %d\n", *(unsigned char*)(0x0203FE00 + 16)
 printf "F3 party count (want 1): %d\n", *(unsigned char*)(0x0203FE00 + 17)
-printf "G1 GiveMon(Mewtwo) kept out of party (want 1): %d\n", *(unsigned char*)(0x0203FE00 + 18)
+printf "G1 GiveMon(Sandshrew, off-roster) kept out of party (want 1): %d\n", *(unsigned char*)(0x0203FE00 + 18)
 printf "H1 GiveMon(Mewtwo) empty party accepted (want 0): %d\n", *(unsigned char*)(0x0203FE00 + 19)
 printf "H2 party[0] is Mewtwo (softlock guard) (want 1): %d\n", *(unsigned char*)(0x0203FE00 + 20)
 printf "I1 buffer name id=1 nonempty (want 1): %d\n", *(unsigned char*)(0x0203FE00 + 21)
 printf "I2 buffer name id=1 first char R (want 204): %d\n", *(unsigned char*)(0x0203FE00 + 22)
-printf "I3 buffer name id=179 (last) nonempty (want 1): %d\n", *(unsigned char*)(0x0203FE00 + 23)
+printf "I3 buffer name id=%d (last) nonempty (want 1): %d\n", $want_chars, *(unsigned char*)(0x0203FE00 + 23)
 printf "I4 buffer name id=0 empty (want 1): %d\n", *(unsigned char*)(0x0203FE00 + 24)
 printf "I5 buffer name id=999 empty (want 1): %d\n", *(unsigned char*)(0x0203FE00 + 25)
 printf "J1 GetStarterSpecies Red (want 25): %d\n", *(unsigned char*)(0x0203FE00 + 26)

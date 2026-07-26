@@ -1,3 +1,17 @@
+python
+# The character count is DERIVED from characters_manifest.json (path exported by
+# the runner as CM_MANIFEST). It used to be a literal 179 in the assertions
+# below, which failed as "want 179, got 208" the moment the 2026-07-25 roster
+# audit landed -- a message that reads like a roster bug rather than a test that
+# had not been told the roster grew.
+import json, os
+_p = os.environ.get("CM_MANIFEST", "tools/character_mode/characters_manifest.json")
+try:
+    NUM_CHARS = len(json.load(open(_p))["characters"])
+except Exception as _e:
+    raise SystemExit("cannot derive the character count from %s: %s" % (_p, _e))
+gdb.execute("set $want_chars = %d" % NUM_CHARS)
+end
 # Organic intro-reach test: run a fresh save with a blind A-masher through
 # Unbound's new-game intro (Welcome speech -> name -> difficulty
 # questionnaire -> level cap -> [our spliced Character Mode prompt] ->
@@ -56,7 +70,7 @@ vb2 = rd(VBLANK, 4)
 print(f"O1 splice reached organically (breadcrumb) (want 1): {1 if crumb == 0xCA11 else 0}")
 print(f"O2 game alive after intro (want 1): {1 if vb2 > vb1 else 0}")
 print(f"O3 mode state consistent (flag=>valid id) (want 1): "
-      f"{1 if (flag == 0 or (1 <= var <= 179)) else 0}")
+      f"{1 if (flag == 0 or (1 <= var <= NUM_CHARS)) else 0}")
 print(f"diag: final flag={flag} var51FC={var}")
 end
 

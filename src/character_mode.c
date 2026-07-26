@@ -682,6 +682,21 @@ void CharacterMode_QueueScriptCb1(void)
     ScriptContext1_SetupScript((const u8 *)*(volatile u32 *)0x0203B764);
 }
 
+/* OFF_ROSTER_SPECIES: the self-test's control for "not on Red's roster".
+ *
+ * This was Mewtwo (150) until the 2026-07-25 roster audit, whose wave 5
+ * explicitly KEPT Mewtwo for Red -- Pokemon Origins, where he weakens it with
+ * Mega Charizard X and catches it with an Ultra Ball (the Adventures Mewtwo is
+ * Blaine's, which is why it looks wrong at first glance). Three checks went red
+ * (B5/C1/G1) and, worse, four more (H1/H2/K1/K2) kept PASSING while no longer
+ * testing anything, because their expected outcome is "kept" either way.
+ *
+ * Re-picked BY FAMILY BASE, the documented rule: Sandshrew's whole family is
+ * absent from Red's roster, so no evolution or regional form can quietly put it
+ * back. Verify with tools/character_mode/rosters_mapped.json before changing.
+ */
+#define OFF_ROSTER_SPECIES 27   /* Sandshrew */
+
 void CharacterMode_RunSelfTest(void)
 {
     volatile u8 *r = SELFTEST_BUF;
@@ -693,7 +708,7 @@ void CharacterMode_RunSelfTest(void)
     VarSet(VAR_CHARACTER_ID, 0);
     FlagClear(FLAG_NO_CATCHING);
     r[n++] = InCharacterMode();                      /* A1 want 0 */
-    r[n++] = IsSpeciesAllowedForCharacter(150);      /* A2 want 1 */
+    r[n++] = IsSpeciesAllowedForCharacter(OFF_ROSTER_SPECIES); /* A2 want 1 */
     r[n++] = CharacterMode_CatchFlagGet(FLAG_NO_CATCHING); /* A3 want 0 */
 
     /* B: mode on as character 1 (Red) */
@@ -703,12 +718,12 @@ void CharacterMode_RunSelfTest(void)
     r[n++] = (u8)GetCharacterCount();                /* B2 want 179 */
     r[n++] = IsSpeciesAllowedForCharacter(25);       /* B3 Pikachu want 1 */
     r[n++] = IsSpeciesAllowedForCharacter(6);        /* B4 Charizard (family expansion) want 1 */
-    r[n++] = IsSpeciesAllowedForCharacter(150);      /* B5 Mewtwo want 0 */
+    r[n++] = IsSpeciesAllowedForCharacter(OFF_ROSTER_SPECIES); /* B5 want 0 */
     r[n++] = IsSpeciesAllowedForCharacter(0);        /* B6 SPECIES_NONE want 0 */
 
     /* C: catch gate against live battle state */
     gBankTarget = 0;
-    BATTLEMON_SPECIES(0) = 150;
+    BATTLEMON_SPECIES(0) = OFF_ROSTER_SPECIES;
     r[n++] = CharacterMode_CatchFlagGet(FLAG_NO_CATCHING); /* C1 want 1 (blocked) */
     BATTLEMON_SPECIES(0) = 25;
     r[n++] = CharacterMode_CatchFlagGet(FLAG_NO_CATCHING); /* C2 want 0 (allowed) */
@@ -725,7 +740,7 @@ void CharacterMode_RunSelfTest(void)
     FlagSet(FLAG_CHARACTER_MODE);
     VarSet(VAR_CHARACTER_ID, 999);
     r[n++] = InCharacterMode();                      /* E1 want 0 */
-    r[n++] = IsSpeciesAllowedForCharacter(150);      /* E2 want 1 */
+    r[n++] = IsSpeciesAllowedForCharacter(OFF_ROSTER_SPECIES); /* E2 want 1 */
 
     /* F/G: GiveMonToPlayer routing. Built from a zeroed stack mon with the
      * species written at raw+0x20 (the unencrypted CFRU layout the shipped
@@ -750,7 +765,7 @@ void CharacterMode_RunSelfTest(void)
 
         for (j = 0; j < POKEMON_SIZE; j++)
             m.raw[j] = 0;
-        *(u16 *)(m.raw + 0x20) = 150;                        /* Mewtwo, off-roster */
+        *(u16 *)(m.raw + 0x20) = OFF_ROSTER_SPECIES;          /* off-roster */
         CharacterMode_GiveMonToPlayer(&m);
         r[n++] = (gPlayerPartyCount == 1
                   && *(u16 *)(gPlayerParty[1].raw + 0x20) == SPECIES_NONE); /* G1 want 1 */
@@ -762,9 +777,9 @@ void CharacterMode_RunSelfTest(void)
         gPlayerPartyCount = 0;
         for (j = 0; j < POKEMON_SIZE; j++)
             m.raw[j] = 0;
-        *(u16 *)(m.raw + 0x20) = 150;                        /* Mewtwo, off-roster */
+        *(u16 *)(m.raw + 0x20) = OFF_ROSTER_SPECIES;          /* off-roster */
         r[n++] = CharacterMode_GiveMonToPlayer(&m);          /* H1 want 0 (party) */
-        r[n++] = *(u16 *)(gPlayerParty[0].raw + 0x20) == 150; /* H2 want 1 */
+        r[n++] = *(u16 *)(gPlayerParty[0].raw + 0x20) == OFF_ROSTER_SPECIES; /* H2 want 1 */
     }
 
     /* I: character-name buffering for the select flow (special 0x1B6) */
@@ -810,17 +825,17 @@ void CharacterMode_RunSelfTest(void)
         VarSet(VAR_CHARACTER_ID, 0);
         for (i = 0; i < PARTY_SIZE; i++)
             ZeroMonData(&gPlayerParty[i]);
-        *(u16 *)(gPlayerParty[0].raw + 0x20) = 150;          /* Mewtwo */
+        *(u16 *)(gPlayerParty[0].raw + 0x20) = OFF_ROSTER_SPECIES; /* off-roster */
         gPlayerPartyCount = 1;
         CharacterMode_SweepPartyToPC();
-        r[n++] = *(u16 *)(gPlayerParty[0].raw + 0x20) == 150; /* K1 want 1 */
+        r[n++] = *(u16 *)(gPlayerParty[0].raw + 0x20) == OFF_ROSTER_SPECIES; /* K1 want 1 */
 
         /* K2: never-empty guard — sole off-roster mon is kept (this path
          * never even calls SendMonToPC, so it's fully deterministic) */
         FlagSet(FLAG_CHARACTER_MODE);
         VarSet(VAR_CHARACTER_ID, 1);                          /* Red */
         CharacterMode_SweepPartyToPC();
-        r[n++] = *(u16 *)(gPlayerParty[0].raw + 0x20) == 150; /* K2 want 1 */
+        r[n++] = *(u16 *)(gPlayerParty[0].raw + 0x20) == OFF_ROSTER_SPECIES; /* K2 want 1 */
 
         /* K3: all-on-roster party untouched */
         for (i = 0; i < PARTY_SIZE; i++)
@@ -837,7 +852,7 @@ void CharacterMode_RunSelfTest(void)
         for (i = 0; i < PARTY_SIZE; i++)
             ZeroMonData(&gPlayerParty[i]);
         *(u16 *)(gPlayerParty[0].raw + 0x20) = 25;
-        *(u16 *)(gPlayerParty[1].raw + 0x20) = 150;
+        *(u16 *)(gPlayerParty[1].raw + 0x20) = OFF_ROSTER_SPECIES;
         gPlayerPartyCount = 2;
         CharacterMode_SweepPartyToPC();
         r[n++] = *(u16 *)(gPlayerParty[0].raw + 0x20) == 25;  /* K4 want 1 */
@@ -846,11 +861,11 @@ void CharacterMode_RunSelfTest(void)
         for (i = 0; i < PARTY_SIZE; i++)
             ZeroMonData(&gPlayerParty[i]);
         *(u16 *)(gPlayerParty[0].raw + 0x20) = 25;
-        *(u16 *)(gPlayerParty[1].raw + 0x20) = 150;
+        *(u16 *)(gPlayerParty[1].raw + 0x20) = OFF_ROSTER_SPECIES;
         *(u32 *)(gPlayerParty[1].raw + 0x48) |= (1u << 30);   /* isEgg */
         gPlayerPartyCount = 2;
         CharacterMode_SweepPartyToPC();
-        r[n++] = *(u16 *)(gPlayerParty[1].raw + 0x20) == 150; /* K5 want 1 */
+        r[n++] = *(u16 *)(gPlayerParty[1].raw + 0x20) == OFF_ROSTER_SPECIES; /* K5 want 1 */
 
         for (i = 0; i < PARTY_SIZE; i++)
             ZeroMonData(&gPlayerParty[i]);

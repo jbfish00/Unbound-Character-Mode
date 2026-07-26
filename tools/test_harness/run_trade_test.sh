@@ -1,8 +1,11 @@
 #!/bin/bash
 # Live trade-enforcement test driver (see trade_test.gdb). Runs both cases
-# on separate fresh saves: red (off-roster incoming mon swept to PC) and
-# bruno (on-roster incoming mon stays). Usage:
-#   tools/test_harness/run_trade_test.sh [red|bruno]   (default: both)
+# on separate fresh saves: swept (off-roster incoming mon swept to PC) and
+# stays (on-roster incoming mon stays). Both characters are DERIVED at build
+# time from the roster blob -- the old red/bruno pair BOTH gained Hitmontop in
+# the 2026-07-25 roster audit, and the test silently stopped discriminating.
+# Usage:
+#   tools/test_harness/run_trade_test.sh [swept|stays]  (default: both)
 # Bash-only (uses $SECONDS, and set -u makes a wrong shell fail silently in
 # a background subshell -- that is exactly how a dead key-masher once looked
 # like a stuck trade scene). Re-exec under bash if invoked as `sh <script>`.
@@ -17,7 +20,7 @@ ELF="$ROOT/build/character_mode.elf"
 [ -f "$ROM" ] || { echo "patched ROM missing — run tools/build_patch.py first"; exit 1; }
 [ -f "$ELF" ] || { echo "ELF missing — run tools/build_patch.py first"; exit 1; }
 
-CASES="${1:-red bruno}"
+CASES="${1:-swept stays}"
 OVERALL=0
 
 for CASE in $CASES; do

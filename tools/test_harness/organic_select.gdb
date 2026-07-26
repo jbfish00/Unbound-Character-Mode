@@ -1,3 +1,17 @@
+python
+# The character count is DERIVED from characters_manifest.json (path exported by
+# the runner as CM_MANIFEST). It used to be a literal 179 in the assertions
+# below, which failed as "want 179, got 208" the moment the 2026-07-25 roster
+# audit landed -- a message that reads like a roster bug rather than a test that
+# had not been told the roster grew.
+import json, os
+_p = os.environ.get("CM_MANIFEST", "tools/character_mode/characters_manifest.json")
+try:
+    NUM_CHARS = len(json.load(open(_p))["characters"])
+except Exception as _e:
+    raise SystemExit("cannot derive the character count from %s: %s" % (_p, _e))
+gdb.execute("set $want_chars = %d" % NUM_CHARS)
+end
 # Full organic character-select test (gold path): on a FRESH save, drive the
 # real new-game intro with verified key presses — Welcome speech, appearance,
 # player naming, questionnaire, difficulty — until the game's own flow
@@ -170,7 +184,7 @@ if reached:
     shot()
     print(f"G2 mode enabled by the organic flow (want 1): {flag}")
     print(f"info: chosen character id = {var}, typed rounds = {typed}")
-    print(f"G3 character id valid 1-179 (want 1): {1 if 1 <= var <= 179 else 0}")
+    print(f"G3 character id valid 1-{NUM_CHARS} (want 1): {1 if 1 <= var <= NUM_CHARS else 0}")
     # G7 is only meaningful if the driver actually caught the prompt frame;
     # character 1 (Red) has staged art, so one sprite is the right answer.
     # Reported as a check either way so a silently-missed sample can't pass

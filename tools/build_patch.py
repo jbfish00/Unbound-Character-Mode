@@ -26,6 +26,7 @@ Pipeline (all addresses from docs/ROUTINE_MAP.md v8, double-confirmed):
 Distribution is ALWAYS the patch, never the ROM.
 """
 import hashlib
+import json
 import os
 import shutil
 import struct
@@ -170,7 +171,24 @@ def main():
         names = f.read()
     with open(os.path.join(CM_DIR, "wild_species_meta.bin"), "rb") as f:
         wild_meta = f.read()
+    # needed to derive the live trade test's discriminating character pair by
+    # roster content rather than by hardcoded index -- see trade_debug_script
+    with open(os.path.join(CM_DIR, "characters_manifest.json")) as f:
+        manifest = json.load(f)
     n_chars = len(characters) // 16
+    assert n_chars == len(manifest["characters"]), \
+        ("characters.bin holds %d records but the manifest lists %d -- re-run "
+         "emit_characters.py" % (n_chars, len(manifest["characters"])))
+
+    def _expanded(rec):
+        off, ids = rec["roster_offset"], set()
+        while True:
+            (sid,) = struct.unpack_from("<H", rosters, off)
+            off += 2
+            if sid == 0:
+                return ids
+            ids.add(sid)
+
 
     off_characters = 0
     off_rosters = off_characters + len(characters)
@@ -365,8 +383,13 @@ def main():
     # (Pikachu + Lickitung — no starter substitution, no gift PC-routing),
     # then mode is enabled for char_id and trade 2 (The Top the Hitmontop
     # for Lickitung) is executed through the real patched shared junction.
-    # Red (1): Hitmontop off-roster -> swept to PC, party ends [Pikachu].
-    # Bruno (6): Hitmontop on-roster -> stays, party ends [Pikachu, Hitmontop].
+    #
+    # The two characters are DERIVED from the roster blob, not hardcoded. They
+    # used to be Red (1, off-roster) and Bruno (6, on-roster); the 2026-07-25
+    # roster audit put the Tyrogue line on Red, so Hitmontop became on-roster for
+    # BOTH and the test silently stopped discriminating anything. Pikachu must
+    # also be on-roster for each, because the script grants one to set the party
+    # up -- otherwise the shim PC-routes it and the fixture collapses.
     def trade_debug_script(char_id):
         s = bytearray()
         s += bytes([0x2A]) + struct.pack("<H", 0x18F8)               # clearflag CM
@@ -383,18 +406,46 @@ def main():
         return bytes(s)
 
     off_dbg_block = (off_optin + len(optin_blob) + 3) & ~3
-    dbg_block = battle_debug_script(150)
+    # The blocked-catch case needs a species genuinely OFF character 1's roster.
+    # It was Mewtwo (150) until the 2026-07-25 audit, whose wave 5 explicitly kept
+    # Mewtwo for Red (Pokemon Origins). Derived from the roster blob so it cannot
+    # go stale again; Sandshrew's whole family is absent from Red's roster.
+    blocked_species = None
+    for cand in (27, 63, 74, 95, 109, 88, 100, 104, 108, 106):
+        if cand not in _expanded(manifest["characters"][0]):
+            blocked_species = cand
+            break
+    assert blocked_species, "no off-roster species left for the catch-block test"
+    print(f"battle-catch blocked species (derived): {blocked_species}")
+    dbg_block = battle_debug_script(blocked_species)
     off_dbg_catch = off_dbg_block + len(dbg_block)
     dbg_catch = battle_debug_script(6)
     off_dbg_starter = off_dbg_catch + len(dbg_catch)
     dbg_starter = starter_debug_script()
     off_trade_tails = off_dbg_starter + len(dbg_starter)
     trade_blob, trade_patches = trade_hook.build(addr(off_trade_tails))
-    off_dbg_trade_red = off_trade_tails + len(trade_blob)
-    dbg_trade_red = trade_debug_script(1)
-    off_dbg_trade_bruno = off_dbg_trade_red + len(dbg_trade_red)
-    dbg_trade_bruno = trade_debug_script(6)
-    total_len = off_dbg_trade_bruno + len(dbg_trade_bruno)
+    TRADE_SPECIES, SETUP_SPECIES = 237, 25     # Hitmontop traded in, Pikachu granted
+
+    def _pick(wants_trade_species):
+        for i, rec in enumerate(manifest["characters"]):
+            ids = _expanded(rec)
+            if SETUP_SPECIES not in ids:
+                continue
+            if (TRADE_SPECIES in ids) == wants_trade_species:
+                return i + 1, rec["character"]
+        raise SystemExit("no character can serve as the trade fixture "
+                         "(wants_trade_species=%r) -- re-pick by hand"
+                         % wants_trade_species)
+
+    swept_id, swept_name = _pick(False)   # Hitmontop off-roster -> swept to PC
+    stays_id, stays_name = _pick(True)    # Hitmontop on-roster  -> stays in party
+    print(f"trade fixtures (derived): swept={swept_name} (id {swept_id}), "
+          f"stays={stays_name} (id {stays_id})")
+    off_dbg_trade_swept = off_trade_tails + len(trade_blob)
+    dbg_trade_swept = trade_debug_script(swept_id)
+    off_dbg_trade_stays = off_dbg_trade_swept + len(dbg_trade_swept)
+    dbg_trade_stays = trade_debug_script(stays_id)
+    total_len = off_dbg_trade_stays + len(dbg_trade_stays)
     assert total_len <= INJECT_BLOCK_LEN, "injection block overflow (debug scripts)"
     span2 = rom[INJECT_FILE_OFF + off_dbg_block:INJECT_FILE_OFF + total_len]
     assert all(b == 0xFF for b in span2), "debug-script target not 0xFF-free!"
@@ -402,19 +453,22 @@ def main():
     rom[INJECT_FILE_OFF + off_dbg_catch:INJECT_FILE_OFF + off_dbg_catch + len(dbg_catch)] = dbg_catch
     rom[INJECT_FILE_OFF + off_dbg_starter:INJECT_FILE_OFF + off_dbg_starter + len(dbg_starter)] = dbg_starter
     rom[INJECT_FILE_OFF + off_trade_tails:INJECT_FILE_OFF + off_trade_tails + len(trade_blob)] = trade_blob
-    rom[INJECT_FILE_OFF + off_dbg_trade_red:INJECT_FILE_OFF + off_dbg_trade_red + len(dbg_trade_red)] = dbg_trade_red
-    rom[INJECT_FILE_OFF + off_dbg_trade_bruno:INJECT_FILE_OFF + off_dbg_trade_bruno + len(dbg_trade_bruno)] = dbg_trade_bruno
-    import json
+    rom[INJECT_FILE_OFF + off_dbg_trade_swept:INJECT_FILE_OFF + off_dbg_trade_swept + len(dbg_trade_swept)] = dbg_trade_swept
+    rom[INJECT_FILE_OFF + off_dbg_trade_stays:INJECT_FILE_OFF + off_dbg_trade_stays + len(dbg_trade_stays)] = dbg_trade_stays
+    # json is imported at module scope (a second local import here made json
+    # function-local, so the manifest load above raised UnboundLocalError)
     with open(os.path.join(BUILD, "debug_addrs.json"), "w") as f:
         json.dump({"battle_block_script": addr(off_dbg_block),
                    "battle_catch_script": addr(off_dbg_catch),
                    "starter_test_script": addr(off_dbg_starter),
-                   "trade_test_script_red": addr(off_dbg_trade_red),
-                   "trade_test_script_bruno": addr(off_dbg_trade_bruno)}, f)
+                   "trade_test_script_swept": addr(off_dbg_trade_swept),
+                   "trade_test_script_stays": addr(off_dbg_trade_stays),
+                   "trade_test_swept_char": swept_name,
+                   "trade_test_stays_char": stays_name}, f)
     print(f"debug scripts: block @ {addr(off_dbg_block):#010x}, catch @ {addr(off_dbg_catch):#010x}, "
           f"starter @ {addr(off_dbg_starter):#010x}")
     print(f"trade tails @ {addr(off_trade_tails):#010x}, trade tests red/bruno @ "
-          f"{addr(off_dbg_trade_red):#010x}/{addr(off_dbg_trade_bruno):#010x}")
+          f"{addr(off_dbg_trade_swept):#010x}/{addr(off_dbg_trade_stays):#010x}")
 
     # 6c''. trade-junction overlays + sweep special (gSpecials[0x1AF])
     sweep_fn = syms["CharacterMode_SweepPartyToPC"]

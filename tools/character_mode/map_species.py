@@ -142,6 +142,15 @@ NAME_FIXES = {
     "Polteageist": "Poltegeist",
     "Stonjourner": "Stonjorner",
     "Blacephalon": "Blacphalon",
+    "Basculegion": "Basculegon",
+    # ROWE's own 10-char truncations, arriving through the shared overlays. ROWE
+    # is a pokeemerald-expansion fork whose species names are capped at 10
+    # characters, and its NAME_FIXES had already rewritten these before the
+    # 2026-07-25 audit recorded them -- so the audit data spells them ROWE's way,
+    # which is NOT this donor's way. Both games truncate, differently.
+    "Blacefalon": "Blacphalon",       # ROWE's spelling of Blacephalon
+    "Stonjourne": "Stonjorner",       # ROWE's spelling of Stonjourner
+    "Mime jr.": "Mime Jr.",           # ROWE lowercases the "jr."
 }
 
 # Known signature/ace Pokemon per character (any stage; resolved to the
@@ -221,17 +230,111 @@ def merge_additions(raw):
             skipped += 1
             continue
         have = set(raw[char_name]["species"])
-        new = [s for s in extra if s not in have]
-        raw[char_name]["species"] = sorted(have | set(new))
+        # Rows are bare species names from the 2026-07-23 pass, or
+        # {species, source, owned_form} dicts from the 2026-07-25 audit, which
+        # carries each add's provenance alongside it.
+        new = {e["species"] if isinstance(e, dict) else e for e in extra} - have
+        raw[char_name]["species"] = sorted(have | new)
         added += len(new)
     print(f"roster_additions.json: merged {added} species across "
           f"{len(additions) - skipped} characters ({skipped} not in this game)")
+
+
+
+def merge_removals(raw):
+    """Subtract the audited-away species listed in roster_removals.json.
+
+    The 2026-07-25 adversarial audit found the scraper harvests narrative
+    sections as if they were ownership tables -- its section filter matches
+    headings like "Pokemon Journeys: The Series" -- so rosters absorbed Pokemon
+    that were merely mentioned in an episode. Professor Oak's lab Pokemon landed
+    on Tracey, Ridley's Golurk on Larry, Red's Clefairy on all three Striaton
+    brothers.
+
+    An overlay for the same reason as the additions: a re-scrape would bring
+    every one of them back, and the file carries the citation for each removal.
+
+    THE FAMILY RULE (user, 2026-07-25): a full evolution family is allowed
+    whenever any single member of it is canon, forwards and backwards. The file
+    is generated with that already applied -- it lists only species whose ENTIRE
+    family was removed -- so plain subtraction is correct here.
+    """
+    path = os.path.join(HERE, "roster_removals.json")
+    if not os.path.isfile(path):
+        return
+    with open(path, encoding="utf-8") as f:
+        removals = json.load(f)["removals"]
+    dropped = 0
+    for char, rows in removals.items():
+        if char not in raw:
+            continue
+        gone = {r["species"] if isinstance(r, dict) else r for r in rows}
+        have = set(raw[char]["species"])
+        raw[char]["species"] = sorted(have - gone)
+        dropped += len(have & gone)
+    print("roster_removals.json: dropped %d species across %d characters"
+          % (dropped, len(removals)))
+
+
+# Bulbapedia's regional prefix -> this donor's constant suffix. The DPE Unbound
+# branch stops at Gen 8, so it carries Hisuian (_H, 18 of them) and Alolan (_A)
+# forms and has NO Galarian or Paldean constants -- those fall through to the
+# plain species, which is correct under the family rule (a regional variant is
+# still that species, and a family is canon if any member is).
+REGION_SUFFIX = {"Hisuian": "_H", "Hisui": "_H", "Alolan": "_A", "Alola": "_A",
+                 "Galarian": None, "Galar": None,
+                 "Paldean": None, "Paldea": None}
+
+
+# Gen 9 species that evolve FROM a species this donor does have. Unbound carries
+# no Gen 9 content at all, so these names resolve to nothing and the family is
+# silently lost -- but the user's family rule (2026-07-25) is explicit that a
+# family is canon if ANY member is, in BOTH directions. Rika's ace is Clodsire,
+# so the Wooper line is hers; Larry's and Nemona's Dudunsparce makes Dunsparce
+# theirs. Hardcoded because the donor cannot describe species it does not contain.
+# The list is every Gen 9 evolution of a pre-Gen-9 species, not only the ones
+# currently on a roster, so a later roster change cannot silently reopen the gap.
+GEN9_EVO_OF = {
+    "Dudunsparce": "Dunsparce",
+    "Clodsire": "Wooper",          # Paldean Wooper's line; plain Wooper is the
+                                   # same species, per regional_fallback's logic
+    "Annihilape": "Primeape",
+    "Kingambit": "Bisharp",
+    "Farigiraf": "Girafarig",
+}
+
+
+def regional_fallback(name, ids, name_id, id_to_const):
+    """Resolve "Hisuian Arcanine" -> SPECIES_ARCANINE_H, else plain Arcanine.
+
+    name_to_id() maps by DISPLAY name and takes the first occurrence, and every
+    regional form shares its base's display name ("Growlithe"), so a prefixed
+    Bulbapedia name like "Hisuian Growlithe" matches nothing at all. That is not
+    cosmetic: it cost Volo his only Fire-type in the sibling projects, and
+    Palina -- whose whole roster is Hisuian forms -- mapped to an empty roster.
+
+    So resolve through the CONSTANT, which does disambiguate. Falls back to the
+    plain species when this donor has no such form. Returns None if neither
+    resolves.
+    """
+    parts = name.split(" ", 1)
+    if len(parts) != 2 or parts[0] not in REGION_SUFFIX:
+        return None
+    suffix, plain = REGION_SUFFIX[parts[0]], parts[1]
+    if suffix:
+        ident = re.sub(r"[^A-Za-z0-9]", "", plain).upper()
+        const = "SPECIES_%s%s" % (ident, suffix)
+        if const in ids:
+            return const
+    sid = name_id.get(NAME_FIXES.get(plain, plain))
+    return id_to_const.get(sid) if sid is not None else None
 
 
 def main():
     with open(os.path.join(HERE, "rosters_raw.json")) as f:
         raw = json.load(f)
     merge_additions(raw)
+    merge_removals(raw)
 
     name_id = name_to_id()
     ids = species_ids()
@@ -244,8 +347,55 @@ def main():
         """Bulbapedia display name -> SPECIES_* constant, or None."""
         sid = name_id.get(NAME_FIXES.get(name, name))
         if sid is None:
-            return None
-        return id_to_const.get(sid)
+            const = regional_fallback(name, ids, name_id, id_to_const)
+            if const is not None:
+                return const
+            pre = GEN9_EVO_OF.get(name)
+            if pre:
+                sid = name_id.get(NAME_FIXES.get(pre, pre))
+        return id_to_const.get(sid) if sid is not None else None
+
+    # A removal is a verdict on the whole FAMILY, not on the single name the
+    # auditor was shown. merge_removals() above subtracts by NAME, before
+    # canonicalization, which is not enough: the scraper often lists later stages
+    # under their own names, and those walk the family straight back in. Leaf's
+    # Charmander was removed while "Charizard" stayed in her raw list, and she
+    # kept the line. Re-apply here, where a family is one base constant.
+    #
+    # ...but a family a wave explicitly KEPT outranks another wave's removal of a
+    # different member, because one canon member makes the family canon (the
+    # user's family rule, both directions). Lana's Milotic is another trainer's
+    # and her Feebas is her own; unshielded, the Milotic verdict eats the Feebas.
+    removals = {}
+    rpath = os.path.join(HERE, "roster_removals.json")
+    if os.path.isfile(rpath):
+        with open(rpath, encoding="utf-8") as f:
+            removals = json.load(f)["removals"]
+    audit_keeps = {}
+    kpath = os.path.join(HERE, "audit_keeps.json")
+    if os.path.isfile(kpath):
+        with open(kpath, encoding="utf-8") as f:
+            audit_keeps = json.load(f).get("keeps", {})
+
+    family_removed, shielded = {}, 0
+    for disp, rows in removals.items():
+        kept_bases = set()
+        for name in audit_keeps.get(disp, ()):
+            const = resolve_const(name)
+            if const is not None:
+                kept_bases.add(base.get(const, const))
+        bases = set()
+        for r in rows:
+            const = resolve_const(r["species"] if isinstance(r, dict) else r)
+            if const is None:
+                continue
+            b = base.get(const, const)
+            if b in kept_bases:
+                shielded += 1
+                continue
+            bases.add(b)
+        family_removed[disp] = bases
+    swept = 0
 
     for disp, info in sorted(raw.items()):
         consts = set()
@@ -254,7 +404,11 @@ def main():
             if const is None:
                 unmatched.add(name)
                 continue
-            consts.add(base.get(const, const))
+            b = base.get(const, const)
+            if b in family_removed.get(disp, ()):
+                swept += 1
+                continue
+            consts.add(b)
         species_list = sorted(consts, key=lambda c: ids.get(c, 999999))
         entry = {"page": info["page"], "category": info["category"],
                  "gen": info.get("gen", 0),
@@ -285,6 +439,12 @@ def main():
 
     with open(os.path.join(HERE, "unmatched_names.txt"), "w") as f:
         f.write("\n".join(sorted(unmatched)) + "\n")
+
+    if swept:
+        print("roster_removals.json: %d more swept at family level" % swept)
+    if shielded:
+        print("roster_removals.json: %d held back by an audit keep on the family"
+              % shielded)
 
     empty = [d for d, i in mapped.items() if not i["species"]]
     print("mapped %d characters; %d unmatched names; %d empty rosters%s"
