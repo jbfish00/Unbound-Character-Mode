@@ -1087,6 +1087,16 @@ void CharacterMode_RunSelfTest(void)
         CharacterMode_SweepPartyToPC();
         r[n++] = *(u16 *)(gPlayerParty[1].raw + 0x20) == OFF_ROSTER_SPECIES; /* K5 want 1 */
 
+        /* K6: ...but ONCE IT HATCHES it is swept. This is the exact state the
+         * egg-hatch hook creates: the same party slot, off-roster, with the egg
+         * bit now clear. K5 alone made the exemption look like a permanent
+         * licence to keep an off-roster Pokemon, which is what a gift egg used
+         * to do. The hook appends the sweep special to the hatch script's tail,
+         * so this is the state the sweep sees when it runs. */
+        *(u32 *)(gPlayerParty[1].raw + 0x48) &= ~(1u << 30);  /* hatched */
+        CharacterMode_SweepPartyToPC();
+        r[n++] = *(u16 *)(gPlayerParty[1].raw + 0x20) != OFF_ROSTER_SPECIES; /* K6 want 1 */
+
         for (i = 0; i < PARTY_SIZE; i++)
             ZeroMonData(&gPlayerParty[i]);
         gPlayerPartyCount = 0;

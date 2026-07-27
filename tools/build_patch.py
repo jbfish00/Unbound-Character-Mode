@@ -41,6 +41,7 @@ CM_DIR = os.path.join(HERE, "character_mode")
 
 sys.path.insert(0, CM_DIR)
 import optin_script
+import egg_hook
 import trade_hook
 
 ROM_BASE = 0x08000000
@@ -360,6 +361,9 @@ def main():
     assert rom[trade_hook.INLINE_SITE_OFF:
                trade_hook.INLINE_SITE_OFF + len(trade_hook.INLINE_ORIG)] == trade_hook.INLINE_ORIG, \
         "inline trade junction bytes changed — wrong ROM?"
+    assert rom[egg_hook.SPLICE_FILE_OFF:
+               egg_hook.SPLICE_FILE_OFF + len(egg_hook.SPLICE_ORIG)] == egg_hook.SPLICE_ORIG, \
+        "egg-hatch script bytes changed — wrong ROM?"
     for label, (off, orig) in WILD_CALL_SITES.items():
         assert rom[off:off + 4] == orig, \
             f"wild-encounter call site bytes changed at {label} — wrong ROM?"
@@ -548,7 +552,10 @@ def main():
     print(f"gate fixtures (derived): hidden id {gate_hidden_id}, shown id "
           f"{gate_shown_id}; gate @ {gate_addr:#010x} (block+{gate_off})")
 
-    total_len = off_dbg_gate_shown + len(dbg_gate_shown)
+    off_egg_tail = off_dbg_gate_shown + len(dbg_gate_shown)
+    egg_blob, egg_patches = egg_hook.build(addr(off_egg_tail))
+
+    total_len = off_egg_tail + len(egg_blob)
     assert total_len <= INJECT_BLOCK_LEN, "injection block overflow (debug scripts)"
     span2 = rom[INJECT_FILE_OFF + off_dbg_block:INJECT_FILE_OFF + total_len]
     assert all(b == 0xFF for b in span2), "debug-script target not 0xFF-free!"
@@ -560,6 +567,7 @@ def main():
     rom[INJECT_FILE_OFF + off_dbg_trade_stays:INJECT_FILE_OFF + off_dbg_trade_stays + len(dbg_trade_stays)] = dbg_trade_stays
     rom[INJECT_FILE_OFF + off_dbg_gate_hidden:INJECT_FILE_OFF + off_dbg_gate_hidden + len(dbg_gate_hidden)] = dbg_gate_hidden
     rom[INJECT_FILE_OFF + off_dbg_gate_shown:INJECT_FILE_OFF + off_dbg_gate_shown + len(dbg_gate_shown)] = dbg_gate_shown
+    rom[INJECT_FILE_OFF + off_egg_tail:INJECT_FILE_OFF + off_egg_tail + len(egg_blob)] = egg_blob
     # json is imported at module scope (a second local import here made json
     # function-local, so the manifest load above raised UnboundLocalError)
     with open(os.path.join(BUILD, "debug_addrs.json"), "w") as f:
@@ -590,6 +598,42 @@ def main():
         assert rom[off:off + len(orig)] == orig  # rechecked against pre-write state above
         rom[off:off + len(new)] = new
         print(f"trade hook: {label} @{ROM_BASE + off:#x}  {orig.hex()} -> {new.hex()}")
+
+    # egg-hatch overlay: an off-roster GIFT egg used to hatch into a permanent
+    # off-roster party member, because eggs are exempt from the gift routing AND
+    # from the sweep, and nothing ever looked at what they became. Hatching is
+    # script-driven, so the same sweep special the trade hook uses is appended to
+    # the hatch script's tail -- after its waitstate, so it sees the finished
+    # Pokemon rather than the egg.
+    for off, orig, new in egg_patches:
+        assert rom[off:off + len(orig)] == orig  # rechecked against pre-write state above
+        rom[off:off + len(new)] = new
+        print(f"egg hook: hatch script @{ROM_BASE + off:#x}  {orig.hex()} -> {new.hex()}")
+    print(f"egg hatch tail @ {addr(off_egg_tail):#010x} ({len(egg_blob)} bytes)")
+
+    # Decode the egg hook back out of the PATCHED image, the same way the bl
+    # hooks are round-trip verified. A script overlay that merely "looks right"
+    # in the source is exactly the class of thing that has shipped broken here
+    # before (the opt-in Yes path once fell through into the No branch and
+    # cleared the flag it had just set; only a live run caught it).
+    _egg_site = rom[egg_hook.SPLICE_FILE_OFF:egg_hook.SPLICE_FILE_OFF + 6]
+    assert _egg_site[0] == 0x05, "egg splice is not a goto"
+    _egg_dest = struct.unpack_from("<I", _egg_site, 1)[0]
+    assert _egg_dest == addr(off_egg_tail), (
+        "egg splice targets %#010x, tail is at %#010x" % (_egg_dest, addr(off_egg_tail)))
+    _tail = rom[INJECT_FILE_OFF + off_egg_tail:
+                INJECT_FILE_OFF + off_egg_tail + len(egg_blob)]
+    assert _tail == egg_blob, "egg tail in the image differs from what was assembled"
+    # ...and it must still perform the hatch, wait for it, and only THEN sweep:
+    # sweeping before the waitstate would see an egg, not a Pokemon.
+    assert _tail[0] == 0x25 and struct.unpack_from("<H", _tail, 1)[0] == egg_hook.SPECIAL_HATCH, \
+        "egg tail does not replay the hatch special first"
+    assert _tail[3] == 0x27, "egg tail does not waitstate after the hatch"
+    assert _tail[5] == 0x25 and struct.unpack_from("<H", _tail, 6)[0] == egg_hook.SPECIAL_SWEEP, \
+        "egg tail does not run the sweep special after the hatch"
+    assert _tail[8] == 0x02, "egg tail does not end"
+    print("  verified egg hook: goto -> [special %#x; waitstate; %#04x; special %#x; end]"
+          % (egg_hook.SPECIAL_HATCH, egg_hook.OPCODE_RELEASE, egg_hook.SPECIAL_SWEEP))
 
     # 6d. character-select: wire the name-buffering special into slot 0x1B6
     buf_special = syms["CharacterMode_BufferNameSpecial"]
