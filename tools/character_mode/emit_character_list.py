@@ -25,7 +25,14 @@ CAT = {"protagonist": "Protagonist", "rival": "Rival", "gymleader": "Gym Leader"
        "anime": "Anime", "frontier": "Frontier Brain"}
 
 
-def main(out_path):
+def load_rows():
+    """Return (rows, n_hidden) for every SELECTABLE character, in table order.
+
+    Shared with emit_readme_codes.py so the README's number table and
+    dist/CHARACTERS.md cannot disagree about a number, a starter or a
+    category -- two hand-kept copies of this list is exactly how the docs
+    drifted before they were generated.
+    """
     cmap = load_charmap(CHARMAP)
     rom = open(ROM, "rb").read()
 
@@ -48,6 +55,27 @@ def main(out_path):
     # than from character_drops.json: this is the byte the ROM itself checks.
     hidden = {i for i in range(len(chars) // 16) if chars[16 * i + 11] & 0x2}
 
+    rows = []
+    for i, l in enumerate(lines):
+        if i in hidden:
+            continue
+        name, _pages, cat, gen = [p.strip() for p in l.split("|")]
+        roff = struct.unpack_from("<I", chars, 16 * i + 4)[0]
+        sig = struct.unpack_from("<H", rosters, roff)[0]
+        n = 0
+        j = roff
+        while struct.unpack_from("<H", rosters, j)[0] != 0:
+            n += 1
+            j += 2
+        rows.append({"number": i + 1, "name": name, "generation": gen,
+                     "category": CAT.get(cat, cat.title()),
+                     "starter": spname(sig), "roster_size": n})
+    return rows, len(hidden)
+
+
+def main(out_path):
+    rows, n_hidden = load_rows()
+
     out = []
     out.append("# Character Mode — Character List (Pokemon Unbound v2.1.1.1)\n")
     out.append("At the Character Mode prompt during a new game, enter the number of the")
@@ -56,34 +84,25 @@ def main(out_path):
     out.append("families). Your starter is replaced by the character's own starter,")
     out.append("listed below. Off-roster gifts and trades are sent to your PC instead")
     out.append("of your party; off-roster wild Pokemon cannot be caught.\n")
-    if hidden:
+    if n_hidden:
         out.append("Some numbers are missing from this list. Those characters have fewer")
         out.append("than six fully-evolved Pokemon obtainable in this game, so they are")
         out.append("not offered; entering one of their numbers re-asks. The numbers below")
         out.append("are the ones the game accepts — enter them exactly as shown.\n")
     gen_open = None
-    for i, l in enumerate(lines):
-        name, _pages, cat, gen = [p.strip() for p in l.split("|")]
-        if i in hidden:
-            continue
-        if gen != gen_open:
-            out.append(f"\n## Generation {gen}\n")
+    for r in rows:
+        if r["generation"] != gen_open:
+            out.append(f"\n## Generation {r['generation']}\n")
             out.append("| # | Character | Category | Starter | Roster size |")
             out.append("|---|-----------|----------|---------|-------------|")
-            gen_open = gen
-        roff = struct.unpack_from("<I", chars, 16 * i + 4)[0]
-        sig = struct.unpack_from("<H", rosters, roff)[0]
-        n = 0
-        j = roff
-        while struct.unpack_from("<H", rosters, j)[0] != 0:
-            n += 1
-            j += 2
-        out.append(f"| {i + 1} | {name} | {CAT.get(cat, cat.title())} | {spname(sig)} | {n} |")
+            gen_open = r["generation"]
+        out.append(f"| {r['number']} | {r['name']} | {r['category']} | "
+                   f"{r['starter']} | {r['roster_size']} |")
     os.makedirs(os.path.dirname(out_path), exist_ok=True)
     with open(out_path, "w") as f:
         f.write("\n".join(out) + "\n")
-    print(f"wrote {out_path} ({len(lines) - len(hidden)} selectable characters"
-          f"{f', {len(hidden)} hidden' if hidden else ''})")
+    print(f"wrote {out_path} ({len(rows)} selectable characters"
+          f"{f', {n_hidden} hidden' if n_hidden else ''})")
 
 
 if __name__ == "__main__":

@@ -76,7 +76,11 @@ game restricted to that character's canon Pokemon.
 - The starter scene's dialogue/preview sprite still shows the original
   species; the Pokemon you actually receive (and its "received!" text)
   is your character's starter.
-- Characters keep the normal player sprites (no custom character art).
+- The character portrait shown when you pick appears only on that
+  confirmation screen. Your overworld sprite, trainer card and battle
+  back-sprite stay the normal Unbound player art.
+- {n_no_art} of the {n_sel} selectable characters have no portrait staged
+  yet; picking one shows the confirmation with no art beside it.
 - If your character's roster makes a required trade species uncatchable,
   that side quest reward may be unreachable — pick accordingly.
 
@@ -134,10 +138,19 @@ def main():
         # a number the select screen refuses is the same defect in a new place.
         with open(os.path.join(HERE, "character_mode",
                                "characters_manifest.json")) as mf:
-            n_chars = sum(1 for c in json.load(mf)["characters"]
-                          if not c.get("hidden"))
+            selectable = [c for c in json.load(mf)["characters"]
+                          if not c.get("hidden")]
+        n_chars = len(selectable)
+        # Portrait coverage is derived the same way, and counted over the
+        # SELECTABLE characters only -- a player cannot pick a hidden one, so
+        # folding those into "no art yet" would overstate the gap.
+        with open(os.path.join(HERE, "character_mode",
+                               "cm_sprite_manifest.json")) as sf:
+            with_art = {e["character"] for e in json.load(sf)["entries"]}
+        n_no_art = sum(1 for c in selectable if c["character"] not in with_art)
         f.write(README.format(src_sha1=src_sha1, out_sha1=out_sha1,
-                              n_chars=n_chars))
+                              n_chars=n_chars, n_sel=n_chars,
+                              n_no_art=n_no_art))
     chars_out = os.path.join(DIST, "CHARACTERS.md")
     emit_character_list.main(chars_out)
 

@@ -287,6 +287,36 @@ def main():
             fails.append("%d character(s) have an empty wild pool but "
                          "ENCOUNTERS.md does not say so" % n_empty)
 
+    # The README's "## Character numbers" table is what a player reads to know
+    # what to type at the prompt, so a wrong number there is a wrong answer at
+    # the only moment the mode asks a question. Check the NUMBER, not just the
+    # count: the numbers are non-contiguous (hidden records keep their slots),
+    # which is exactly the shape that invites an off-by-one when regenerated.
+    readme_nums = {}
+    readme_txt = read(os.path.join(ROOT, "README.md"))
+    if "## Character numbers" in readme_txt:
+        sect = readme_txt[readme_txt.index("## Character numbers"):]
+        sect = sect[:sect.index("## Credits")] if "## Credits" in sect else sect
+        for num, name in re.findall(r"^\| \*\*(\d+)\*\* \| ([^|]+?) \|", sect,
+                                    re.M):
+            readme_nums[name.strip()] = int(num)
+        expected = {c["character"]: i + 1 for i, c in enumerate(manifest)
+                    if c["character"] not in rom_hidden}
+        for char, want in sorted(expected.items()):
+            got = readme_nums.get(char)
+            if got is None:
+                fails.append("%s: offered by the ROM but missing from the "
+                             "README's number table" % char)
+            elif got != want:
+                fails.append("README lists %s as number %d; the ROM's table puts "
+                             "it at %d" % (char, got, want))
+        for char in sorted(set(readme_nums) - set(expected)):
+            fails.append("%s: in the README's number table but the ROM does not "
+                         "offer it" % char)
+    else:
+        fails.append("README.md has no '## Character numbers' section -- run "
+                     "emit_readme_codes.py")
+
     for path, pat in (("ROSTERS.md", r"\*\*(\d+) characters"),
                       ("ROSTERS_SPRITES.md", r"\*\*(\d+) characters"),
                       (os.path.join("dist", "README.md"), r"pick one of (\d+) iconic"),

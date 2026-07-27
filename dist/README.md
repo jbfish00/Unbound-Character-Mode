@@ -47,7 +47,11 @@ game restricted to that character's canon Pokemon.
 - The starter scene's dialogue/preview sprite still shows the original
   species; the Pokemon you actually receive (and its "received!" text)
   is your character's starter.
-- Characters keep the normal player sprites (no custom character art).
+- The character portrait shown when you pick appears only on that
+  confirmation screen. Your overworld sprite, trainer card and battle
+  back-sprite stay the normal Unbound player art.
+- 49 of the 193 selectable characters have no portrait staged
+  yet; picking one shows the confirmation with no art beside it.
 - If your character's roster makes a required trade species uncatchable,
   that side quest reward may be unreachable — pick accordingly.
 
