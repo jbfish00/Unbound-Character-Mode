@@ -68,7 +68,7 @@ gdb.execute("set $want_chars = %d" % NUM_CHARS)
 end
 echo \n=== results ===\n
 printf "MAGIC ok (want 1): %d\n", (*(unsigned int*)0x0203FEFC == 0xC0DED00D)
-printf "COUNT checks ran (want 64): %d\n", *(unsigned int*)0x0203FEF8
+printf "COUNT checks ran (want 66): %d\n", *(unsigned int*)0x0203FEF8
 printf "A1 InCharacterMode mode-off (want 0): %d\n", *(unsigned char*)(0x0203FE00 + 0)
 printf "A2 IsSpeciesAllowed(27) mode-off (want 1): %d\n", *(unsigned char*)(0x0203FE00 + 1)
 printf "A3 CatchFlagGet mode-off (want 0): %d\n", *(unsigned char*)(0x0203FE00 + 2)
@@ -133,6 +133,8 @@ printf "N6 no-legendary character keeps its 10%% override (want 1): %d\n", *(uns
 printf "N6b no-legendary character has no legendary family (want 1): %d\n", *(unsigned char*)(0x0203FE00 + 61)
 printf "N7 all-legendary roster has no non-legendary family (want 1): %d\n", *(unsigned char*)(0x0203FE00 + 62)
 printf "N8 all-legendary roster is repeatable, not empty (want 1): %d\n", *(unsigned char*)(0x0203FE00 + 63)
+printf "R1 randomizer flag cleared in Character Mode (want 0): %d\n", *(unsigned char*)(0x0203FE00 + 64)
+printf "R2 control: randomizer untouched with mode off (want 1): %d\n", *(unsigned char*)(0x0203FE00 + 65)
 
 echo \n=== TESTS DONE ===\n
 # mGBA's stub doesn't implement the detach packet (E07) — just drop the link

@@ -35,6 +35,36 @@
 #include "unbound_rom.h"
 
 #define FLAG_CHARACTER_MODE 0x18F8
+
+/* Unbound's own Species Randomizer, MUTUALLY EXCLUSIVE with Character Mode.
+ *
+ * Unbound offers three randomizer toggles in its intro enhancement menu
+ * (species / moveset / ability) -- the same menu Character Mode's own opt-in
+ * prompt is spliced into. The SPECIES one is the problem: CFRU applies it
+ * inside CreateBoxMon() via TryRandomizeSpecies(), which is DOWNSTREAM of
+ * everything here. The roster override picks a species from the character's
+ * own pool, CreateBoxMon then remaps it to an unrelated one, and the catch
+ * gate refuses the mon it was handed -- so Character Mode degrades to "you can
+ * catch almost nothing", with nothing to indicate why.
+ *
+ * ROWE hit the same interaction and made the two modes exclusive; Radical Red
+ * has the identical defect and the identical fix (its flag is 0x940).
+ *
+ * 0x9FD is confirmed twice over in this ROM: Unbound-Cloud's research names
+ * FLAG_UNBOUND_SPECIES_RANDOMIZER 0x9FD, and decoding the enhancement menu's
+ * own script gives `29 FD 09` (setflag 0x09FD) right after its Yes answer
+ * (docs/ROUTINE_MAP.md:236). */
+#define FLAG_SPECIES_RANDOMIZER 0x9FD
+
+/* Character Mode wins, and it is enforced on the paths that run constantly
+ * rather than once at selection -- the randomizer prompt sits in the same
+ * intro flow as our own, and a player can reach it after choosing a
+ * character. */
+static void CharacterMode_EnforceModeExclusion(void)
+{
+    if (FlagGet(FLAG_CHARACTER_MODE) && FlagGet(FLAG_SPECIES_RANDOMIZER))
+        FlagClear(FLAG_SPECIES_RANDOMIZER);
+}
 #define VAR_CHARACTER_ID 0x51FC
 
 /* ---- injected data (tools/character_mode binaries; addresses via unbound.ld) ---- */
@@ -204,6 +234,7 @@ u8 CharacterMode_GiveMonToPlayer(struct Pokemon *mon)
     u8 *sb2;
     u32 i;
 
+    CharacterMode_EnforceModeExclusion();
     TryFormRevert(mon);
     TryRevertMega(mon);
     TryRevertGigantamax(mon);
@@ -583,6 +614,7 @@ u16 CharacterMode_MaybeOverrideWildSpecies(u16 species, u8 level)
 {
     u16 replacement;
 
+    CharacterMode_EnforceModeExclusion();
     if (!InCharacterMode())
         return species;
 
@@ -1265,6 +1297,28 @@ void CharacterMode_RunSelfTest(void)
     /* leave the expanded save state clean */
     FlagClear(FLAG_CHARACTER_MODE);
     VarSet(VAR_CHARACTER_ID, 0);
+
+    /* R: Species Randomizer exclusion (2026-08-20).
+     *
+     * A POSITIVE assertion, deliberately. Every other way of checking this
+     * would be satisfied by a completely dead guard: the interesting claim is
+     * that the flag actually gets cleared, not that nothing went wrong.
+     *
+     * R2 is the control and it is the half that matters. Without it, a guard
+     * that cleared the randomizer UNCONDITIONALLY -- breaking the randomizer
+     * for players not in Character Mode at all -- would pass R1 and look
+     * correct. */
+    FlagSet(FLAG_CHARACTER_MODE);
+    VarSet(VAR_CHARACTER_ID, 1);
+    FlagSet(FLAG_SPECIES_RANDOMIZER);
+    CharacterMode_EnforceModeExclusion();
+    r[n++] = FlagGet(FLAG_SPECIES_RANDOMIZER);       /* R1 want 0: cleared */
+
+    FlagClear(FLAG_CHARACTER_MODE);
+    FlagSet(FLAG_SPECIES_RANDOMIZER);
+    CharacterMode_EnforceModeExclusion();
+    r[n++] = FlagGet(FLAG_SPECIES_RANDOMIZER);       /* R2 want 1: untouched */
+    FlagClear(FLAG_SPECIES_RANDOMIZER);
 
     SELFTEST_COUNT = n;
     SELFTEST_MAGIC = 0xC0DED00D;
