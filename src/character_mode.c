@@ -790,13 +790,19 @@ __attribute__((noinline)) void CharacterMode_SelfTestDone(void)
 
 /* ---- character-select menu: scrolling-multichoice list hooks ----
  *
- * Unbound ships CFRU's scrolling multichoice (special 0x158): the vanilla
- * list machinery at 0x080CB7C4 asks two tiny CFRU getters for the list.
- * We trampoline BOTH getters (0x09EB48B8 / 0x09EB48D4, wired in
- * tools/build_patch.py) to these replacements: a magic set index returns
- * the 179 character names; anything else reproduces the originals exactly
- * (including Unbound's own idx>31 clamp-to-0), so every existing menu in
- * the game behaves identically.
+ * ⚠️ HISTORICAL -- NONE OF THIS SHIPS. Kept because it records what was tried
+ * and why it was dropped; do not read it as a description of the build.
+ * Verified 2026-08-20: neither getter address appears anywhere in tools/ or
+ * src/ outside the CFRU donor tree, build_patch.py wires no trampoline for
+ * them, and no replacement getter is compiled. The live mechanism is the
+ * number entry described in the next block.
+ *
+ * What was tried: Unbound ships CFRU's scrolling multichoice (special 0x158),
+ * whose vanilla list machinery at 0x080CB7C4 asks two tiny CFRU getters
+ * (0x09EB48B8 / 0x09EB48D4) for the list. Both were to be trampolined so a
+ * magic set index returned the character names while every other index
+ * reproduced the original behaviour exactly, including Unbound's own idx>31
+ * clamp-to-0.
  *
  * Script contract (decoded from Unbound's own scripts, docs/ROUTINE_MAP.md):
  *   setvar 0x8000, <set>; setvar 0x8001, <rows>; setvar 0x8004, <cursor>;
