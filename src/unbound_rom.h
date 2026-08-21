@@ -95,6 +95,10 @@ void TryRevertOriginFormes(struct Pokemon *mon, bool8 keepChanges);
 
 /* ---- engine data (addresses in unbound.ld) ---- */
 extern struct Pokemon gPlayerParty[PARTY_SIZE];
+/* gEnemyParty = 0x0202402C, already in src/unbound.ld -- the wild mon
+   CreateWildMon builds. Needed by the encounter marker, which reads the
+   species that actually appeared. */
+extern struct Pokemon gEnemyParty[PARTY_SIZE];
 extern u8 gPlayerPartyCount;
 extern u8 gBankTarget;                /* CFRU name for gBattlerTarget */
 extern u8 gBattleMons[];              /* stride 0x58, species u16 at +0 */

@@ -59,6 +59,20 @@ INJECT_BLOCK_LEN = 147 * 1024
 CM_SPRITE_PTRS_FILE_OFF  = 0x015FC000
 CM_SPRITE_BLOBS_FILE_OFF = 0x015FC800
 
+# Encounter marker (../game_plans/rowe_parity.md §3). Also inside the 344 KB
+# 0xFF run above, past the sprite blobs (which end ~file 0x0161FBC8).
+# 208*64 = 13,312 B.
+CM_MARKER_FILE_OFF = 0x01630000
+CM_MARKER_STRIDE   = 64
+# Unbound's battle-message code was relocated to high ROM, and the relocated
+# copy reaches the low-ROM string wrapper through a POOL WORD rather than a BL:
+#   0x089BDBDC  ldr r3, =0x080D77F5   (the word at 0x089BDDC8)
+#   0x089BDBDE  bl  0x089BE3A2        (a veneer: `bx r3`)
+# So the hook is a single-word patch. Exactly one ldr in the ROM reads this
+# pool; the four other copies of 0x080D77F5 belong to unrelated callers.
+CM_MARKER_POOL_FILE_OFF = 0x009BDDC8
+CM_MARKER_ORIG_TARGET   = 0x080D77F5
+
 # Hook sites (docs/ROUTINE_MAP.md v8)
 CATCH_BL_FILE_OFF = 0x9C8CA6          # bl call_via_r6 (FlagGet) inside atkEF_handleballthrow
 CATCH_BL_ORIG = bytes.fromhex("00F0E6FE")
@@ -228,6 +242,7 @@ def main():
 
     run(["arm-none-eabi-gcc", "-c", "-g", "-mthumb", "-mcpu=arm7tdmi", "-mtune=arm7tdmi",
          "-O2", "-ffreestanding", "-fno-builtin", "-mlong-calls", "-Wall", "-Wextra",
+         f"-DMARKER_ADDR={ROM_BASE + CM_MARKER_FILE_OFF:#x}",
          f"-DMAX_WILD_FAMILY_ROOTS={max_wild_roots}",
          f"-DTEST_HIDDEN_ID={test_hidden_id}", f"-DTEST_SHOWN_ID={test_shown_id}",
          f"-DTEST_LEGEND_CHAR_ID={test_legend_id}",
@@ -404,6 +419,27 @@ def main():
               f"@ {blobs_addr:#x}, table @ {ROM_BASE + CM_SPRITE_PTRS_FILE_OFF:#x}")
 
     # 6a. bl retarget (thumb bit must NOT be in a bl target address)
+    # --- encounter marker: strings + the pool-word hook ---
+    with open(os.path.join(CM_DIR, "marker_strings.bin"), "rb") as _f:
+        marker_blob = _f.read()
+    assert len(marker_blob) == n_chars * CM_MARKER_STRIDE, (
+        f"marker_strings.bin is {len(marker_blob)} B, expected "
+        f"{n_chars * CM_MARKER_STRIDE} for {n_chars} characters "
+        f"-- re-run emit_marker_strings.py")
+    assert all(b == 0xFF for b in
+               rom[CM_MARKER_FILE_OFF:CM_MARKER_FILE_OFF + len(marker_blob)]), \
+        "marker string region is not 0xFF-free"
+    rom[CM_MARKER_FILE_OFF:CM_MARKER_FILE_OFF + len(marker_blob)] = marker_blob
+    marker_hook = syms["CharacterMode_BattleStringHook"]
+    _cur = struct.unpack_from("<I", rom, CM_MARKER_POOL_FILE_OFF)[0]
+    assert _cur == CM_MARKER_ORIG_TARGET, (
+        f"marker pool word {_cur:#010x} != {CM_MARKER_ORIG_TARGET:#010x} "
+        "-- wrong ROM or already patched")
+    struct.pack_into("<I", rom, CM_MARKER_POOL_FILE_OFF, marker_hook | 1)
+    print(f"encounter marker: {len(marker_blob):,} B @ "
+          f"{ROM_BASE + CM_MARKER_FILE_OFF:#x}, pool word @ "
+          f"{ROM_BASE + CM_MARKER_POOL_FILE_OFF:#x} -> {marker_hook | 1:#010x}")
+
     bl = thumb_bl(ROM_BASE + CATCH_BL_FILE_OFF, catch_hook & ~1)
     rom[CATCH_BL_FILE_OFF:CATCH_BL_FILE_OFF + 4] = bl
     print(f"catch hook: bl @{ROM_BASE + CATCH_BL_FILE_OFF:#x} -> {catch_hook & ~1:#x}  bytes={bl.hex()}")

@@ -229,6 +229,77 @@ u8 CharacterMode_CatchFlagGet(u16 flagId)
  *   full party -> TryRevertOriginFormes + SendMonToPC
  *   else CopyMon into slot, bump gPlayerPartyCount, MON_GIVEN_TO_PARTY
  */
+/* --- wild-encounter marker (../../game_plans/rowe_parity.md §3) ---
+ *
+ *     A wild GIBLE appeared,
+ *     destined for CYNTHIA!
+ *
+ * WHY. The 10%% roster override hands out a family ROOT, indistinguishable from
+ * what the map's own table could have produced. ROWE measured the consequence
+ * (the median character matches ~2%% of the game's wild slots, so the override
+ * does nearly all the team-building, invisibly) and Platinum proved the failure
+ * mode is real -- a playthrough reported as "no on-roster encounters" had no
+ * bug at all, and naming the character was the fix. Rates are untouched.
+ *
+ * HOW, and Unbound needs a different hook from all three siblings. Its
+ * battle-message code was RELOCATED to high ROM, and the relocated copy reaches
+ * the low-ROM string wrapper indirectly:
+ *     0x089BDBDA  movs r0, r3            <- the chosen intro string
+ *     0x089BDBDC  ldr  r3, =0x080D77F5   <- pool word at 0x089BDDC8
+ *     0x089BDBDE  bl   0x089BE3A2        <- a veneer: `bx r3`
+ * So there is no BL to retarget: the call target is a POOL WORD. We patch that
+ * single word to point here instead, and tail-call the original. Exactly one
+ * ldr in the ROM reads that pool (verified), so no other battle message is
+ * affected -- the four other copies of 0x080D77F5 belong to unrelated callers
+ * and are left alone.
+ *
+ * ⚠️ Unbound also REWROTE the text: its intros say "A wild X appeared!", not
+ * the vanilla "Wild X appeared!". The marker strings match the game's own
+ * voice; using the sibling wording would read as another game's string.
+ *
+ * Two single-wild intros are matched -- the plain one and the bare
+ * "{FD}{06} appeared!" variant. The two-wild, Wally-pause and Distortion World
+ * strings are deliberately left alone: a double battle has two opponents and
+ * only one could be the roster mon, so a marker would name half a battle.
+ *
+ * ⚠️ Deviations from ROWE, forced by this being a binary hack: STATIC
+ * per-character strings emitted into ROM (no RAM to build one in), and an "is
+ * the wild mon on the roster" test rather than "did the override fire" (no RAM
+ * to remember that). */
+#ifndef MARKER_ADDR
+#error "compile with -DMARKER_ADDR= (marker_strings.bin injection address)"
+#endif
+#define MARKER_STRIDE 64
+#define TEXT_WILD_APPEARED_A ((const u8 *) 0x08A4C5C8)  /* "A wild X appeared!" */
+#define TEXT_WILD_APPEARED_B ((const u8 *) 0x08A4C5A3)  /* "X appeared!"        */
+#define OrigExpandString ((void (*)(const u8 *)) 0x080D77F5)
+
+/* PURE, and separate from the hook on purpose: it makes the decision testable
+ * without rendering anything, so the in-ROM self-test can assert it directly
+ * instead of needing a live battle. */
+const u8 *CharacterMode_MarkedIntro(const u8 *src)
+{
+    u16 id;
+    u16 species;
+
+    if (src != TEXT_WILD_APPEARED_A && src != TEXT_WILD_APPEARED_B)
+        return src;
+    if (!InCharacterMode())
+        return src;
+    id = VarGet(VAR_CHARACTER_ID);
+    if (id < 1 || id > gCharacterCount)
+        return src;
+    species = (u16) GetMonData(&gEnemyParty[0], MON_DATA_SPECIES, 0);
+    if (species == SPECIES_NONE || !IsSpeciesAllowedForCharacter(species))
+        return src;
+    return (const u8 *) (MARKER_ADDR + (u32) (id - 1) * MARKER_STRIDE);
+}
+
+void CharacterMode_BattleStringHook(const u8 *src)
+{
+    OrigExpandString(CharacterMode_MarkedIntro(src));
+}
+
 u8 CharacterMode_GiveMonToPlayer(struct Pokemon *mon)
 {
     u8 *sb2;
@@ -1319,6 +1390,67 @@ void CharacterMode_RunSelfTest(void)
     CharacterMode_EnforceModeExclusion();
     r[n++] = FlagGet(FLAG_SPECIES_RANDOMIZER);       /* R2 want 1: untouched */
     FlagClear(FLAG_SPECIES_RANDOMIZER);
+
+    /* M: encounter marker (2026-08-21).
+     *
+     * Asserts the PURE decision helper, so no rendering happens and no live
+     * battle is needed. M2 is the control that matters: a different character
+     * must get a DIFFERENT string. A shim that ignored the character id and
+     * always returned the first character's marker would pass every other case
+     * here -- and the sibling repo shipped exactly that vacuous control for one
+     * run before it was caught. */
+    {
+        struct Pokemon *e = &gEnemyParty[0];
+        const u8 *plain = (const u8 *) 0x08A4C5C8;   /* "A wild X appeared!" */
+        const u8 *other = (const u8 *) 0x08A4C52A;   /* the two-wild string  */
+        u32 j;
+
+        for (j = 0; j < POKEMON_SIZE; j++)
+            e->raw[j] = 0;
+        *(u16 *)(e->raw + 0x20) = 25;                /* Pikachu, on Red's roster */
+
+        FlagSet(FLAG_CHARACTER_MODE);
+        VarSet(VAR_CHARACTER_ID, 1);
+        r[n++] = CharacterMode_MarkedIntro(plain)
+                 == (const u8 *) MARKER_ADDR;                    /* M1 want 1 */
+
+        /* ⚠️ Character 2 needs a species that is on ITS OWN roster -- reusing
+         * Pikachu here made M2 fail for the right reason (the helper correctly
+         * declines an off-roster mon) and looked like a broken marker. Find one
+         * at runtime rather than hardcoding, so this cannot rot when the
+         * rosters move. */
+        VarSet(VAR_CHARACTER_ID, 2);
+        {
+            u16 sp;
+
+            for (sp = 1; sp < 1000; sp++) {
+                if (IsSpeciesAllowedForCharacter(sp))
+                    break;
+            }
+            *(u16 *)(e->raw + 0x20) = sp;
+            r[n++] = (sp < 1000)
+                     && CharacterMode_MarkedIntro(plain)
+                        == (const u8 *) (MARKER_ADDR + MARKER_STRIDE); /* M2 want 1 */
+        }
+        *(u16 *)(e->raw + 0x20) = 25;
+
+        /* off-roster mon -> untouched */
+        VarSet(VAR_CHARACTER_ID, 1);
+        *(u16 *)(e->raw + 0x20) = OFF_ROSTER_SPECIES;
+        r[n++] = CharacterMode_MarkedIntro(plain) == plain;      /* M3 want 1 */
+
+        /* mode off -> untouched */
+        *(u16 *)(e->raw + 0x20) = 25;
+        FlagClear(FLAG_CHARACTER_MODE);
+        r[n++] = CharacterMode_MarkedIntro(plain) == plain;      /* M4 want 1 */
+
+        /* a string we must never substitute (the double-battle intro) */
+        FlagSet(FLAG_CHARACTER_MODE);
+        r[n++] = CharacterMode_MarkedIntro(other) == other;      /* M5 want 1 */
+
+        for (j = 0; j < POKEMON_SIZE; j++)
+            e->raw[j] = 0;
+    }
 
     SELFTEST_COUNT = n;
     SELFTEST_MAGIC = 0xC0DED00D;
