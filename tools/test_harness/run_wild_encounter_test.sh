@@ -43,17 +43,7 @@ echo "--- log ---"
 grep -aE "^phase1|^W[0-9]|^info:|TESTS DONE" "$LOG"
 echo "-----------"
 
-python3 - "$LOG" <<'EOF'
-import re, sys
-fails = checks = 0
-for line in open(sys.argv[1]):
-    m = re.search(r"\(want (\d+)\): (\d+)", line)
-    if m:
-        checks += 1
-        if m.group(1) != m.group(2):
-            print("FAIL:", line.strip()); fails += 1
-if checks == 0:
-    print("NO CHECKS RAN — gdb session failed?"); sys.exit(2)
-print(f"{checks - fails}/{checks} checks passed")
-sys.exit(1 if fails else 0)
-EOF
+# Tally assertion lives in assert_tally.py -- one copy, and it now
+# checks the NUMBER of checks, not just that each agrees with itself.
+# The literal below is deliberate: see rowe_parity.md §9 Finding 2.
+python3 "$(dirname "$0")/assert_tally.py" --expect 12 "$LOG"

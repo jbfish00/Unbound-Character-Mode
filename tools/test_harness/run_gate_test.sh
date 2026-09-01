@@ -43,23 +43,21 @@ for CASE in $CASES; do
     grep -av "^warning:" "$LOG" | grep -av "^0x\|SIGINT\|^$"
     echo "-------------------"
 
-    python3 - "$LOG" <<'EOF' || OVERALL=1
-import re, sys
-fails = 0
-checks = 0
-for line in open(sys.argv[1], errors="replace"):
-    m = re.search(r"\(want (\d+)\): (\d+)", line)
-    if m:
-        checks += 1
-        if m.group(1) != m.group(2):
-            print(f"FAIL: {line.strip()}")
-            fails += 1
-if checks == 0:
-    print("NO CHECKS RAN — gdb session failed?")
-    sys.exit(2)
-print(f"{checks - fails}/{checks} checks passed")
-sys.exit(1 if fails else 0)
-EOF
+    # Tally assertion lives in assert_tally.py -- one copy, and it now checks
+    # the NUMBER of checks, not just that each agrees with itself.
+    # ⚠️ PER CASE, not one number for the runner. This loop runs each case with
+    # its own log and the cases do not run the same number of checks (hidden
+    # asserts one more than shown). A single literal here reported a tally
+    # mismatch on the case that was fine, and measuring the runner by tailing
+    # its output for the last "N/N passed" line silently sampled only the last
+    # case. A runner that loops needs a count per iteration.
+    case "$CASE" in
+        hidden) EXPECT=8 ;;
+        shown)  EXPECT=7 ;;
+        *) echo "no expected check count declared for case '$CASE' -- add one"
+           OVERALL=1; continue ;;
+    esac
+    python3 "$(dirname "$0")/assert_tally.py" --expect "$EXPECT" "$LOG" || OVERALL=1
 done
 
 # The display is sourced once above the case loop, so it is stopped once here.
