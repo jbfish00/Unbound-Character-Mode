@@ -60,40 +60,108 @@ EXPECT_CHECKS = 3
 #   EXEMPT     deliberately not gated, with a reason
 #   UNVERIFIED found by the scan, containing routine not yet identified
 INVENTORY = {
-    0x00040b6c: ("UNVERIFIED",
-                 "writes the party count; containing routine not yet identified"),
-    0x00040c3e: ("UNVERIFIED",
-                 "writes the party count; containing routine not yet identified"),
-    0x0004c232: ("UNVERIFIED",
-                 "writes the party count; containing routine not yet identified"),
-    0x00054aee: ("UNVERIFIED",
-                 "writes the party count; containing routine not yet identified"),
-    0x0008ecc0: ("UNVERIFIED",
-                 "writes the party count; containing routine not yet identified"),
-    0x0008edf4: ("UNVERIFIED",
-                 "writes the party count; containing routine not yet identified"),
-    0x0012092a: ("UNVERIFIED",
-                 "writes the party count; containing routine not yet identified"),
-    0x0082f442: ("UNVERIFIED",
-                 "writes the party count; containing routine not yet identified"),
-    0x008a42b2: ("UNVERIFIED",
-                 "writes the party count; containing routine not yet identified"),
-    0x008a4324: ("UNVERIFIED",
-                 "writes the party count; containing routine not yet identified"),
-    0x008a4db0: ("UNVERIFIED",
-                 "writes the party count; containing routine not yet identified"),
-    0x008aaef2: ("UNVERIFIED",
-                 "writes the party count; containing routine not yet identified"),
+    0x00040b6c: ("EXEMPT",
+                 "DEAD CODE: the orphaned body of stock FireRed "
+                 "GiveMonToPlayer. Its entry 0x08040B14 was overwritten "
+                 "with a 4-byte thunk (ldr r1,[pc,#0]; bx r1) to "
+                 "0x089C905D, the CFRU GiveMonToPlayer that carries the "
+                 "GATED writer, so all 3 BL callers are redirected. No BL, "
+                 "no branch and NO pointer of any kind reaches the orphan "
+                 "in this ROM -- a cleaner negative than Radical Red's, "
+                 "measured the same way"),
+    0x00040c3e: ("EXEMPT",
+                 "CalculatePlayerPartyCount (36 BL callers): "
+                 "gPlayerPartyCount = 0, then ++ per slot whose "
+                 "MON_DATA_SPECIES is non-zero. A RECOUNT of what the array "
+                 "already holds -- it cannot introduce a mon. See the "
+                 "LAUNDERING note in docs/PARTY_COUNT_WRITERS.md"),
+    0x0004c232: ("EXEMPT",
+                 "LoadPlayerParty: gPlayerPartyCount = "
+                 "gSaveBlock1Ptr->[0x34], then copies 6 x 100 bytes back "
+                 "from the save block. Restores the player's OWN saved "
+                 "party (link/facility swap-back); everything it restores "
+                 "was gated when first acquired -- same reasoning as the "
+                 "existing party-restore EXEMPT"),
+    0x00054aee: ("EXEMPT",
+                 "new-game init (entry 0x08054A60 thunked to 0x089A2FD1, "
+                 "which re-enters the original body at +0x09): "
+                 "gPlayerPartyCount = 0 amid the init BL run. Zeroing "
+                 "removes, never adds"),
+    0x0008ecc0: ("EXEMPT",
+                 "gPlayerPartyCount = CalculatePlayerPartyCount() -- "
+                 "literally `bl 0x08040C3C; ldr r1,=count; strb r0,[r1]`. A "
+                 "recount after a storage-screen exit"),
+    0x0008edf4: ("EXEMPT",
+                 "gPlayerPartyCount = CalculatePlayerPartyCount(); "
+                 "byte-identical to the site at 0x0008ECC0, the other arm "
+                 "of the same screen"),
+    0x0012092a: ("NOT-A-WRITER",
+                 "FALSE POSITIVE -- not a writer. `ldr r0,=count; ldrb "
+                 "r0,[r0]; cmp r4,r0; bcc` is a LOOP BOUND READ. The "
+                 "detector's window walked past the loop's unconditional "
+                 "branch into the literal pool at 0x08120938 and decoded "
+                 "the word 0x020370C2 as `strb r2,[r0,#3]`. See the "
+                 "DETECTOR DEFECT note in docs/PARTY_COUNT_WRITERS.md"),
+    0x0082f442: ("NOT-A-WRITER",
+                 "FALSE POSITIVE -- not a writer. r3 is loaded with "
+                 "&gPlayerPartyCount and used only by `ldrb r5,[r3,#0]`, "
+                 "then CLOBBERED by `movs r3,r4` at 0x0882F45A. The "
+                 "detector kept scanning and matched `strb r2,[r3,#1]` at "
+                 "0x0882F472, which stores through the new r3. Same "
+                 "detector defect as 0x0012092A"),
+    0x008a42b2: ("EXEMPT",
+                 "DEPOSIT arm of the party <-> 6-slot EWRAM store at "
+                 "0x0203C000 (count byte + 6 x 80-byte records): copies "
+                 "gPlayerParty[i] out to the store, compacts the party, "
+                 "clears slot 5, then store-count++ and "
+                 "gPlayerPartyCount--. A DECREMENT: a mon leaves the party"),
+    0x008a4324: ("EXEMPT",
+                 "WITHDRAW arm of the same store: party-full check, memcpy "
+                 "80 bytes from the store into gPlayerParty[count], expand, "
+                 "compact the store, store-count-- and gPlayerPartyCount++. "
+                 "This one INCREMENTS, but the store's only filler is the "
+                 "deposit arm above, which draws from the party -- so "
+                 "nothing enters that the party gate did not already pass. "
+                 "NOTE: off-roster mons are PC-routed to gPokemonStoragePtr "
+                 "0x03005010 (docs/ROUTINE_MAP.md:221), a DIFFERENT "
+                 "structure, so they cannot appear in this store. Highest "
+                 "residual risk of the EXEMPT sites; worth one live check"),
+    0x008a4db0: ("EXEMPT",
+                 "party removal/compaction: shifts slots down over the "
+                 "removed one, zeroes the tail with `stmia r6!`, then "
+                 "gPlayerPartyCount--. A DECREMENT"),
+    0x008aaef2: ("EXEMPT",
+                 "gPlayerPartyCount-- (`ldrb r3,[r2]; subs r3,#1; strb "
+                 "r3,[r2]`) on the failure/removal arm of the routine that "
+                 "also contains 0x008AAF12"),
     0x008aaf12: ("UNVERIFIED",
-                 "writes the party count; containing routine not yet identified"),
-    0x008bf8fc: ("UNVERIFIED",
-                 "writes the party count; containing routine not yet identified"),
-    0x008d14ac: ("UNVERIFIED",
-                 "writes the party count; containing routine not yet identified"),
+                 "SUSPECTED ADD PATH -- the top follow-up in this repo. The "
+                 "site itself is a party-full check (`ldrb r3,[r6]; cmp "
+                 "r3,#5; bhi`), but the same routine INCREMENTS at "
+                 "0x088AAF76 (`ldrb r3,[r6]; adds r3,#1; strb r3,[r6]`) "
+                 "directly after memcpy'ing an 80-byte record into "
+                 "gPlayerParty[count] and clearing the source buffer. The "
+                 "containing function's ENTRY is not located: 0x088AAE2C is "
+                 "a mid-function push, and it has zero BL callers and zero "
+                 "pointer refs. Identify the entry, then decide GATED vs "
+                 "EXEMPT"),
+    0x008bf8fc: ("EXEMPT",
+                 "recount, party or enemy party selected by r9&1 (r5 = "
+                 "0x02024284 or 0x0202402C): count = 0, then ++ per slot "
+                 "with a non-zero species. 8 BL callers. Adds nothing"),
+    0x008d14ac: ("EXEMPT",
+                 "Unbound's own relocated LoadPlayerParty: copies 6 x 100 "
+                 "bytes back, then gPlayerPartyCount = "
+                 "gSaveBlock1Ptr->[0x34]. Same verdict and reasoning as the "
+                 "stock copy at 0x0004C232"),
     0x009c90c6: ("GATED",
                  "inside GiveMonToPlayer 0x089C905C -- the entry trampoline hooks this function, so every BL caller is gated by construction (docs/ROUTINE_MAP.md:270)"),
-    0x009e8664: ("UNVERIFIED",
-                 "writes the party count; containing routine not yet identified"),
+    0x009e8664: ("EXEMPT",
+                 "the same 124-byte routine as Radical Red's 0x0109B5C8 "
+                 "(party slots 0-2 -> 3-5, then recount), relocated: only "
+                 "12 of 124 bytes differ and all 12 are pool words. "
+                 "Confirmed by comparing the opcode stream, not by "
+                 "arithmetic"),
 }
 
 WINDOW = 60          # instructions to follow after the ldr
@@ -188,10 +256,17 @@ def main():
           bool(gated), "no GATED writer found among %d" % len(found))
 
     unver = sorted(o for o in INVENTORY if INVENTORY[o][0] == "UNVERIFIED")
-    print("\n  verdicts: %d GATED, %d EXEMPT, %d UNVERIFIED"
+    print("\n  verdicts: %d GATED, %d EXEMPT, %d NOT-A-WRITER, %d UNVERIFIED"
           % (sum(1 for v in INVENTORY.values() if v[0] == "GATED"),
              sum(1 for v in INVENTORY.values() if v[0] == "EXEMPT"),
+             sum(1 for v in INVENTORY.values() if v[0] == "NOT-A-WRITER"),
              len(unver)))
+    print("  NOT-A-WRITER: the scan reports these, and reverse engineering "
+          "showed they are\n    reads, not stores. They stay listed on "
+          "purpose -- the detector is deliberately\n    conservative, so "
+          "dropping them would make check 2 fail. See\n    "
+          "docs/PARTY_COUNT_WRITERS.md for the detector defect that "
+          "produces them.")
     if unver:
         print("  ⚠️ UNVERIFIED means the containing routine has not been "
               "identified here. It is a 'go look', not a clean bill of health:")
