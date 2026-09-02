@@ -138,16 +138,23 @@ INVENTORY = {
                  "r3,[r2]`) on the failure/removal arm of the routine that "
                  "also contains 0x008AAF12"),
     0x008aaf12: ("UNVERIFIED",
-                 "SUSPECTED ADD PATH -- the top follow-up in this repo. The "
+                 "SUSPECTED ADD PATH -- still the top follow-up here. The "
                  "site itself is a party-full check (`ldrb r3,[r6]; cmp "
                  "r3,#5; bhi`), but the same routine INCREMENTS at "
                  "0x088AAF76 (`ldrb r3,[r6]; adds r3,#1; strb r3,[r6]`) "
                  "directly after memcpy'ing an 80-byte record into "
-                 "gPlayerParty[count] and clearing the source buffer. The "
-                 "containing function's ENTRY is not located: 0x088AAE2C is "
-                 "a mid-function push, and it has zero BL callers and zero "
-                 "pointer refs. Identify the entry, then decide GATED vs "
-                 "EXEMPT"),
+                 "gPlayerParty[count] and clearing the source buffer. ⚠️ "
+                 "THE CONTAINING FUNCTION'S ENTRY IS STILL NOT LOCATED, and "
+                 "the technique that cracked Lazarus's 0x0020DDB8 does NOT "
+                 "work here -- measured 2026-09-02. Scanning for BLs and "
+                 "thumb pointers landing anywhere in 0x088A9000..0x088AB000 "
+                 "yields candidates (0x088AA506 from 0x084B936E was the "
+                 "best), and DISASSEMBLING them shows both ends are "
+                 "garbage: this region interleaves data that decodes as "
+                 "valid BL pairs and as valid thumb pointers, and 61 of the "
+                 "pointers into it are self-references. Do not repeat the "
+                 "caller-scan approach; this one needs a live trace or a "
+                 "proper code/data-separating disassembler"),
     0x008bf8fc: ("EXEMPT",
                  "recount, party or enemy party selected by r9&1 (r5 = "
                  "0x02024284 or 0x0202402C): count = 0, then ++ per slot "
