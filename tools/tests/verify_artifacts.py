@@ -51,7 +51,7 @@ BUILT = os.environ.get("CM_BUILT_ROM",
 
 # How many checks this layer must run. A deliberate LITERAL -- see
 # tools/tests/cm_tally.py for why this must never be a derived expression.
-EXPECT_CHECKS = 23
+EXPECT_CHECKS = 27
 
 failures = []
 checks_run = 0
@@ -126,6 +126,11 @@ def main():
     win("sprite pointer table", bp.CM_SPRITE_PTRS_FILE_OFF, spr_ptr_len)
     win("sprite blobs", bp.CM_SPRITE_BLOBS_FILE_OFF, spr_len)
 
+    # faster stat-change battle messages: two 15-byte battle-script windows
+    # reordered in place (same length, so nothing downstream moves).
+    for _label, _a, _t in bp.CM_BATTLE_MSG_SITES:
+        win("battle message %s" % _label, _a - 0x08000000, 15)
+
     check("no two declared windows overlap",
           all(not (a[1] < b[1] + b[2] and b[1] < a[1] + a[2])
               for i, a in enumerate(windows) for b in windows[i + 1:]))
@@ -143,6 +148,23 @@ def main():
 
     changed = sum(1 for a, b in zip(orig, rom) if a != b)
     check("the build changed something at all", changed > 0, str(changed))
+
+    # ---- 1b. faster stat-change battle messages --------------------------
+    # Pinned in BOTH directions on purpose. Checking only the built bytes would
+    # pass just as happily if the base ROM had always been in the new order,
+    # which would mean the injector was doing nothing.
+    for _label, _a, _t in bp.CM_BATTLE_MSG_SITES:
+        _o = _a - 0x08000000
+        _play = bytes([0x45, 0x02, 0x01]) + struct.pack("<I", bp.CM_ANIM_ARGS)
+        _prnt = bytes([0x13]) + struct.pack("<I", _t)
+        _vanilla = _play + _prnt + bytes([0x12]) + struct.pack("<H", 0x0040)
+        _fast = _prnt + _play + bytes([0x12]) + struct.pack("<H", 0x0020)
+        check("base ROM '%s' still has the vanilla order + wait 64" % _label,
+              bytes(orig[_o:_o + 15]) == _vanilla,
+              bytes(orig[_o:_o + 15]).hex())
+        check("built ROM '%s' prints first, then animates, wait 32" % _label,
+              bytes(rom[_o:_o + 15]) == _fast,
+              bytes(rom[_o:_o + 15]).hex())
 
     # ---- 2. the injection block really was free before -------------------
     blk = orig[bp.INJECT_FILE_OFF:bp.INJECT_FILE_OFF + bp.INJECT_BLOCK_LEN]
