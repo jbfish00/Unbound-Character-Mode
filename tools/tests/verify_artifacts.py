@@ -51,7 +51,7 @@ BUILT = os.environ.get("CM_BUILT_ROM",
 
 # How many checks this layer must run. A deliberate LITERAL -- see
 # tools/tests/cm_tally.py for why this must never be a derived expression.
-EXPECT_CHECKS = 27
+EXPECT_CHECKS = 30   # +3: the activation party sweep (2026-09-02)
 
 failures = []
 checks_run = 0
@@ -148,6 +148,39 @@ def main():
 
     changed = sum(1 for a, b in zip(orig, rom) if a != b)
     check("the build changed something at all", changed > 0, str(changed))
+
+    # ---- 1c. activation party sweep --------------------------------------
+    # The opt-in block's confirm arm must be: setflag FLAG_CHARACTER_MODE, then
+    # a callnative into the injected code, then the "enabled" msgbox. Decoded
+    # POSITIONALLY -- the sweep returns immediately unless the mode is active,
+    # so it has to come AFTER the setflag; an edit that moved it before would
+    # leave it a permanent no-op rather than failing anywhere else.
+    #
+    # Anchored on the WHOLE shape, not on `29 <flag>` alone: that three-byte
+    # pattern occurs six times in the injected code as incidental compiled
+    # bytes, and matching it by itself reports "the block sets the flag six
+    # times".
+    _blk = bp.INJECT_FILE_OFF
+    _end = _blk + bp.INJECT_BLOCK_LEN
+    _setflag = bytes([0x29]) + struct.pack("<H", optin_script.FLAG_CHARACTER_MODE)
+    _hits = []
+    _i = _blk - 1
+    while True:
+        _i = bytes(rom).find(_setflag, _i + 1, _end)
+        if _i < 0:
+            break
+        _a = _i + 3
+        if (rom[_a] == 0x23 and rom[_a + 5] == 0x0F and rom[_a + 6] == 0x00
+                and rom[_a + 11:_a + 13] == bytes([0x09, 0x04])):
+            _hits.append(_a)
+    check("exactly one `setflag; callnative; loadword; callstd 4` arm in the "
+          "opt-in block", len(_hits) == 1, str(len(_hits)))
+    if len(_hits) == 1:
+        _sw = struct.unpack_from("<I", rom, _hits[0] + 1)[0]
+        check("the sweep callnative is a Thumb pointer", (_sw & 1) == 1,
+              f"{_sw:#010x}")
+        check("...into the injected code block",
+              _blk <= (_sw & ~1) - bp.ROM_BASE < _end, f"{_sw:#010x}")
 
     # ---- 1b. faster stat-change battle messages --------------------------
     # Pinned in BOTH directions on purpose. Checking only the built bytes would

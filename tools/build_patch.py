@@ -348,12 +348,18 @@ def main():
     show_mugshot = syms["CharacterMode_ShowMugshot"] | 1
     hide_mugshot = syms["CharacterMode_HideMugshot"] | 1
     check_selectable = syms["CharacterMode_CheckSelectableNative"] | 1
+    # The party sweep already exists for trades/storage; the opt-in block calls
+    # it once at activation too. On the intro path the party is empty and it is
+    # a no-op -- it earns its place on settings-NPC / New-Game-Plus re-entry,
+    # where the mode can be switched on with a party already in hand.
+    sweep_party = syms["CharacterMode_SweepPartyToPC"] | 1
     print(f"CharacterMode_ShowMugshot    @ {show_mugshot:#010x}")
     print(f"CharacterMode_HideMugshot    @ {hide_mugshot:#010x}")
     print(f"CharacterMode_CheckSelectable@ {check_selectable:#010x}")
     optin_blob, optin_splice = optin_script.build(addr(off_optin), n_chars,
                                                   show_mugshot, hide_mugshot,
-                                                  check_selectable)
+                                                  check_selectable,
+                                                 sweep_party)
     print(f"opt-in script block          @ {addr(off_optin):#010x} ({len(optin_blob)} bytes)")
 
     total_len = off_optin + len(optin_blob)

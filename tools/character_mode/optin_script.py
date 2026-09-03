@@ -88,7 +88,8 @@ def encode_msg(text, charmap):
     return STR_VAR_1.join(parts) + b"\xFF"
 
 
-def label_offsets(show_mugshot=True, hide_mugshot=True, check_selectable=True):
+def label_offsets(show_mugshot=True, hide_mugshot=True, check_selectable=True,
+                  sweep=True):
     """Byte offsets of the block's labels and of the points where the script
     PARKS waiting on the player.
 
@@ -101,6 +102,10 @@ def label_offsets(show_mugshot=True, hide_mugshot=True, check_selectable=True):
     mug = 5 if (show_mugshot and hide_mugshot) else 0
     sel = 16 if check_selectable else 0
     selbr = 16 if check_selectable else 0
+    # The activation party sweep is one callnative (5 bytes) emitted right
+    # after the setflag, so it shifts everything from ENABLED_MSGBOX onward and
+    # nothing before it.
+    swp = 5 if sweep else 0
     o = {
         "OPTIN_YESNO": 13,      # parked in the opt-in yes/no
         "NUMTEXT_MSGBOX": 32,   # parked in the "enter your number" msgbox
@@ -111,24 +116,24 @@ def label_offsets(show_mugshot=True, hide_mugshot=True, check_selectable=True):
         # unconditional. A test can `goto` here with VAR_RESULT preset to run
         # the REAL shipped gate without driving the number screen.
         "GATE": 69 if check_selectable else -1,
-        "NO": 112 + 2 * mug + sel,
-        "REPLAY": 120 + 2 * mug + sel,
-        "HIDDEN": 130 + 2 * mug + sel,
-        "TEXT": 130 + 2 * mug + sel + selbr,
+        "NO": 112 + 2 * mug + sel + swp,
+        "REPLAY": 120 + 2 * mug + sel + swp,
+        "HIDDEN": 130 + 2 * mug + sel + swp,
+        "TEXT": 130 + 2 * mug + sel + selbr + swp,
     }
     # Parked in "Play as {NAME}?" -- just past its callstd. Only the SHOW
     # callnative precedes it (hide runs after the yesno returns), so this
     # carries one mug, not two.
     o["CONFIRM_YESNO"] = 85 + mug + sel
     # parked in the "mode enabled" msgbox -- past both callnatives
-    o["ENABLED_MSGBOX"] = 107 + 2 * mug + sel
+    o["ENABLED_MSGBOX"] = 107 + 2 * mug + sel + swp
     # parked in the "not available" msgbox of the rejection branch
     o["HIDDEN_MSGBOX"] = o["HIDDEN"] + 11 if sel else -1
     return o
 
 
 def build(block_rom_addr, char_count, show_mugshot=None, hide_mugshot=None,
-          check_selectable=None):
+          check_selectable=None, sweep_party=None):
     """Return (block_blob, splice_bytes) for a block placed at block_rom_addr.
 
     v2 flow: yesno -> scrolling character list (all char_count names via the
@@ -159,7 +164,8 @@ def build(block_rom_addr, char_count, show_mugshot=None, hide_mugshot=None,
 
     # fixed-size body, so label offsets are static (+5: breadcrumb setvar).
     # Shared with the live harness via label_offsets() so the two cannot drift.
-    _off = label_offsets(show_mugshot, hide_mugshot, check_selectable)
+    _off = label_offsets(show_mugshot, hide_mugshot, check_selectable,
+                         sweep_party)
     OFF_PICK = _off["PICK"]        # the number-entry loop head
     OFF_NO = _off["NO"]            # No/cancel branch (clears mode state, falls into replay)
     OFF_REPLAY = _off["REPLAY"]    # replay of the displaced checkflag+goto_if gate
@@ -222,6 +228,13 @@ def build(block_rom_addr, char_count, show_mugshot=None, hide_mugshot=None,
     body += bytes([0x21]) + struct.pack("<HH", VAR_RESULT, 1)          # confirmed?
     body += bytes([0x06, 0x05]) + struct.pack("<I", p_pick)            # goto_if NE -> pick
     body += bytes([0x29]) + struct.pack("<H", FLAG_CHARACTER_MODE)     # setflag
+    if sweep_party:
+        # Reconcile whatever the player already has. On the intro path the
+        # party is empty and this is a no-op; it earns its place on the
+        # settings-NPC / New-Game-Plus re-entry, where the mode can be turned
+        # on with a party already in hand. AFTER the setflag on purpose: the
+        # sweep returns immediately unless the mode is active.
+        body += bytes([0x23]) + struct.pack("<I", sweep_party)         # callnative sweep
     body += bytes([0x0F, 0x00]) + struct.pack("<I", p_enabled)         # loadword 0, enabled
     body += bytes([0x09, 0x04])                                        # callstd MSGBOX_DEFAULT
     assert len(body) == _off["ENABLED_MSGBOX"], \
