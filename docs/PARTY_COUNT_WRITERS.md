@@ -179,11 +179,7 @@ THE PC WITHDRAW, and the most consequential entry in this file. 0x08092FD4 is a 
 
 ### `0x089c7d52` (file `0x009c7d52`) -- **UNVERIFIED**
 
-Unbound-specific high-ROM routine at 0x089C7D48 that moves mons between gPlayerParty and gEnemyParty (0x0202402C -- exactly 600 bytes below gPlayerParty, this engine's party stash) in THREE-mon halves, keyed on vars 0x50C1 / 0x50C3 / 0x16EA, calling memcpy 0x081E5E78 and CompactPartySlots 0x080937DC through the veneer. Shape and stash match a reduce-the-party-for-a-battle feature, i.e. the same family as the EXEMPT vanilla 0x0011C08E -- but that is a resemblance, not a reading: nothing here shows the mons it writes came OUT of the party rather than from a scripted one. ⚠️ Newly visible 2026-09-04 (the `movs r2, rN` size form); it was in the ROM all along
-
-### `0x089e1e78` (file `0x009e1e78`) -- **UNVERIFIED**
-
-mon-sized operation on a gPlayerParty slot inside the large Unbound-specific routine entered at 0x089E1C4E (no BL callers -- reached by pointer or as a task). It iterates a 6-word table at 0x0825E45C..0x0825E474 and then calls 0x089E15BC -- a real function, not a veneer -- with r0 = a party slot and r2 = 100. ⭐ RECONCILED 2026-09-02: NO party-count writer shares this routine, so check_acquisition_paths.py is structurally blind to it. Identify 0x089E15BC first: if it is a read, this is a false positive of exactly the shape the Emerald pair's two GetMonData sites turned out to be
+⭐ IT IS SCRIPT SPECIAL 0x67. 0x089C7D48 has no BL callers; its Thumb pointer 0x089C7D49 appears exactly once in the ROM, at 0x0815FEFC -- and gSpecials is 0x0815FD60 (docs/ROUTINE_MAP.md), so that slot is index (0x19C / 4) = 0x67. ✅ One script call site confirmed by decoding backwards from 0x08740F4F: `setvar 0x50C2,50 ; setvar 0x8000,0 ; special 0x67 ; end`. The routine moves mons between gPlayerParty and gEnemyParty (0x0202402C -- exactly 600 bytes below gPlayerParty, this engine's party stash) in THREE-mon halves keyed on vars 0x50C1 / 0x50C3 / 0x16EA, calling memcpy 0x081E5E78 and CompactPartySlots 0x080937DC through the veneer. Shape and stash match a reduce-the-party-for-a-battle feature, i.e. the same family as the EXEMPT vanilla 0x0011C08E -- but that is a resemblance, not a reading. ⭐ NEXT STEP, and it is cheap: walk the scripts that reach `special 0x67` (11 raw byte occurrences; use check_gift_eggs.py's dialogue-anchored walker, NOT a bare opcode scan) and read what sets 0x50C1 / 0x50C3. ⚠️ Newly visible 2026-09-04 (the `movs r2, rN` size form); it was in the ROM all along
 
 ### `0x089c909a` (file `0x009c909a`) -- **GATED**
 
@@ -240,6 +236,10 @@ inside 0x081280C4 (1 BL caller, 0x0811FAD2): allocates a 600-byte (6-mon) buffer
 ### `0x089e141e` (file `0x009e141e`) -- **EXEMPT**
 
 CFRU's LIVE CreateShedinja -- the replacement the vanilla body at 0x000CE786 was thunked out to, and a REAL acquisition path: a Nincada evolution creates an EXTRA Pokemon, copied straight into gPlayerParty[count] and blessed by a recount, never touching GiveMonToPlayer. ⭐ IT WAS INVISIBLE TO THIS SCAN UNTIL 2026-09-04, because it keeps the mon size in r4 and issues `movs r2, r4` -- see size_seed(). ✅ EXEMPT ON MEASUREMENT, not on reasoning: on this game's own enforcement data, all 8 characters whose roster allows Nincada (301) also allow 302 and 303, so the extra Pokemon is on-roster by construction and the family rule is doing exactly what it exists for. ⚠️ That is a property of the DATA: re-check it if the roster pipeline ever stops expanding branch evolutions
+
+### `0x089e1e78` (file `0x009e1e78`) -- **NOT-A-COPY**
+
+A READ, and the false positive predicted by the Emerald pair's two. The call at 0x089E1EB4 passes r0 = a party slot and nothing else that matters; r2 still holds 100 because `movs r0, r2 ; muls r0, r3 ; adds r0, r4, r0` used it as the party-slot STRIDE. ✅ The callee 0x089E15BC is a one-argument PREDICATE, disassembled 2026-09-04: `VarGet(0x16E0)` (0x0806E6D0), and if that is set `GetMonData(mon, 56, NULL)` (0x0803FBE8), compared against 0x08A10474's return, returning a bool. It copies nothing. ⚠️ It stays inventoried because the scan still FINDS it -- the stride-vs-size ambiguity is not decidable from r2 alone -- which is why 0x089E15BC is in EXPECT_CALLEES despite being a read
 
 ## 1 site(s) removed as NOT-A-COPY (2026-09-04)
 
