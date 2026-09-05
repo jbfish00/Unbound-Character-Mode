@@ -292,27 +292,33 @@ INVENTORY = {
                  "exactly what it exists for. \u26a0\ufe0f That is a "
                  "property of the DATA: re-check it if the roster pipeline "
                  "ever stops expanding branch evolutions"),
-    0x009c7d52: ("UNVERIFIED",
-                 "\u2b50 IT IS SCRIPT SPECIAL 0x67. 0x089C7D48 has no BL "
-                 "callers; its Thumb pointer 0x089C7D49 appears exactly once "
-                 "in the ROM, at 0x0815FEFC -- and gSpecials is 0x0815FD60 "
-                 "(docs/ROUTINE_MAP.md), so that slot is index "
-                 "(0x19C / 4) = 0x67. \u2705 One script call site confirmed by "
-                 "decoding backwards from 0x08740F4F: "
-                 "`setvar 0x50C2,50 ; setvar 0x8000,0 ; special 0x67 ; end`. "
-                 "The routine moves mons between gPlayerParty and gEnemyParty "
-                 "(0x0202402C -- exactly 600 bytes below gPlayerParty, this "
-                 "engine's party stash) in THREE-mon halves keyed on vars "
-                 "0x50C1 / 0x50C3 / 0x16EA, calling memcpy 0x081E5E78 and "
-                 "CompactPartySlots 0x080937DC through the veneer. Shape and "
-                 "stash match a reduce-the-party-for-a-battle feature, i.e. "
-                 "the same family as the EXEMPT vanilla 0x0011C08E -- but that "
-                 "is a resemblance, not a reading. \u2b50 NEXT STEP, and it is "
-                 "cheap: walk the scripts that reach `special 0x67` (11 raw "
-                 "byte occurrences; use check_gift_eggs.py's dialogue-anchored "
-                 "walker, NOT a bare opcode scan) and read what sets 0x50C1 / "
-                 "0x50C3. \u26a0\ufe0f Newly visible 2026-09-04 (the "
-                 "`movs r2, rN` size form); it was in the ROM all along"),
+    0x009c7d52: ("EXEMPT",
+                 "THE BATTLE ROOM / RANDOM BATTLE RENTAL PARTY. \u2b50 Named "
+                 "2026-09-04 by following the script, not the code. "
+                 "0x089C7D48 has no BL callers; its Thumb pointer appears "
+                 "exactly once in the ROM, at 0x0815FEFC, and gSpecials is "
+                 "0x0815FD60, so that slot is index 0x67. Running "
+                 "check_gift_eggs.py's dialogue-anchored walker for "
+                 "`special 0x67` finds exactly ONE reachable site, "
+                 "0x09EA5D2F, whose script reads "
+                 "`compare 0x50C4,6 ; call_if ... ; setvar 0x8000,4 ; "
+                 "special 0x67`, and whose surrounding msgbox text is "
+                 "\"...tle Room challenge?\" / \"Please choose the [N] random "
+                 "Pokemon you would like to use.\" / \"To recognize your "
+                 "current Random Battle streak...\". The routine moves mons "
+                 "between gPlayerParty and gEnemyParty (0x0202402C -- exactly "
+                 "600 bytes below gPlayerParty, this engine's party stash) in "
+                 "three-mon halves, with 0x8000 as the mode (0 and 4 both "
+                 "observed at call sites) -- the save/restore pair a rental "
+                 "facility needs. EXEMPT because nothing the player KEEPS "
+                 "comes from here: the rental team exists for the challenge "
+                 "and the real party is stashed and restored. "
+                 "\u26a0\ufe0f RESIDUAL, and it is the CONVERSE of the usual "
+                 "worry: while a rental party is in gPlayerParty it is full of "
+                 "mons that are not the player's, so a sweep firing in that "
+                 "window would box them. Neither of the sweep's two triggers "
+                 "(activation, egg hatch) is reachable inside a facility, "
+                 "which is why this is a residual and not a defect"),
 }
 
 WINDOW = 48
@@ -569,10 +575,12 @@ def main():
              sorted("%#010x" % (0x08000000 + o) for o in ungated)))
 
     unver = sorted(o for o in INVENTORY if INVENTORY[o][0] == "UNVERIFIED")
-    print("\n  verdicts: %d GATED, %d EXEMPT, %d UNGATED, %d UNVERIFIED"
+    print("\n  verdicts: %d GATED, %d EXEMPT, %d UNGATED, %d NOT-A-COPY, "
+          "%d UNVERIFIED"
           % (sum(1 for v in INVENTORY.values() if v[0] == "GATED"),
              sum(1 for v in INVENTORY.values() if v[0] == "EXEMPT"),
              sum(1 for v in INVENTORY.values() if v[0] == "UNGATED"),
+             sum(1 for v in INVENTORY.values() if v[0] == "NOT-A-COPY"),
              len(unver)))
     for o in sorted(o for o in INVENTORY if INVENTORY[o][0] == "UNGATED"):
         print("  \U0001f534 UNGATED %#010x -- a KNOWN hole, not a clean site"
