@@ -525,3 +525,23 @@ See `docs/FREE_SPACE.md` — resolved, ~1.46 MiB confirmed free (0xFF-padded), n
 ## Toolchain status
 
 See `CLAUDE.md` — `arm-none-eabi-gcc`, `armips`, `mgba-qt` (Lua scripting compiled in) all verified working. **Ghidra 12.0.2 + `pudii/gba-ghidra-loader` 1.1.0 now installed** at `tools/ghidra/` (matched-version pair, confirmed the loader auto-detects the ROM as `GBA Loader` / `ARM:LE:32:v4t:default` on import). Full auto-analysis of the imported ROM is running (headless, `ghidra_project/UnboundCM`) — this is a genuinely long-running job on a 32MB binary; check `docs/ghidra_analysis.log` and process status before assuming it's done. Once complete, the next concrete step is running XREF queries against the string anchors above to convert them from "string anchor" to "confirmed routine."
+
+## PC-exit sweep — live-verified 2026-09-10
+
+`tools/test_harness/run_pc_exit_test.sh` (10/10 × 2 cases + a negative control).
+The PC access script's spliced tail (`0x081A6A22`, site 0 of four — see
+`tools/character_mode/pc_hook.py`) is reached from a ROM-baked debug script:
+with Character Mode OFF, `givemon` Pikachu (the keeper) and Hitmontop (the mon
+under test), then `setflag` CM, `setvar` the character, and `goto` the splice.
+Everything after that `goto` is shipped. **swept** (Brock, Hitmontop
+off-roster): party ends `[Pikachu]`, Hitmontop in PC storage. **stays** (Red,
+on-roster): party ends `[Pikachu, Hitmontop]`, nothing PC-routed. **nohook**:
+the identical run against a ROM with all four splices reverted must NOT sweep.
+
+⚠️⚠️ **`special 0x3C` opens a FIELD MULTICHOICE over the live map here, not a
+full-screen takeover** — `gMain.callback2` stays `0x080565B5` the entire time
+the PC menu is up (measured: 23 consecutive polls). Any test that tries to prove
+"the PC opened" by watching CB2 will read 0 on a run where the menu is plainly
+open. What does prove it: press nothing and require the script context to stay
+at `waitstate` (`sScriptContext2Enabled == 1`), i.e. held open by a menu only
+input can dismiss. CB2 moves only if a submenu is entered.

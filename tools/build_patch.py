@@ -584,10 +584,43 @@ def main():
     stays_id, stays_name = _pick(True)    # Hitmontop on-roster  -> stays in party
     print(f"trade fixtures (derived): swept={swept_name} (id {swept_id}), "
           f"stays={stays_name} (id {stays_id})")
+    # PC-exit sweep live test (../game_plans/rowe_parity.md §13.33 item 1).
+    # Same fixture shape as the trade test, and deliberately the SAME derived
+    # character pair and species: with Character Mode OFF, grant Pikachu (the
+    # keeper -- on-roster for both, so the gate leaves it in the party) and
+    # Hitmontop (the mon under test); THEN enable the mode for char_id and fall
+    # into the real, shipped PC access script. Everything from that goto onward
+    # is the shipped hook: the overlay, the replayed special 0x3C + waitstate
+    # that opens the storage system and waits for it to close, and the sweep.
+    #
+    # ⚠️ The keeper is not decoration. CharacterMode_SweepPartyToPC never empties
+    # the party, so with Hitmontop alone it would be kept for EVERY character and
+    # the swept/stays runs would be identical -- green, discriminating nothing.
+    #
+    # ⚠️ And the mode must be OFF for the two givemons: an off-roster gift is
+    # PC-routed on the way in by the gift gate, so with the mode already on,
+    # Hitmontop would never reach the party and there would be nothing to sweep.
+    def pc_debug_script(char_id):
+        s = bytearray()
+        s += bytes([0x2A]) + struct.pack("<H", 0x18F8)               # clearflag CM
+        for v in range(0x8000, 0x8008):
+            s += bytes([0x16]) + struct.pack("<HH", v, 0)
+        s += bytes([0x79]) + struct.pack("<HBH", 25, 20, 0) + b"\x00" * 9   # Pikachu
+        s += bytes([0x79]) + struct.pack("<HBH", 237, 20, 0) + b"\x00" * 9  # Hitmontop
+        s += bytes([0x29]) + struct.pack("<H", 0x18F8)               # setflag CM
+        s += bytes([0x16]) + struct.pack("<HH", 0x51FC, char_id)
+        s += bytes([0x05]) + struct.pack("<I", pc_hook.SPLICE_ROM_ADDR)
+        s += bytes([0x02])                                           # unreachable
+        return bytes(s)
+
     off_dbg_trade_swept = off_trade_tails + len(trade_blob)
     dbg_trade_swept = trade_debug_script(swept_id)
     off_dbg_trade_stays = off_dbg_trade_swept + len(dbg_trade_swept)
     dbg_trade_stays = trade_debug_script(stays_id)
+    off_dbg_pc_swept = off_dbg_trade_stays + len(dbg_trade_stays)
+    dbg_pc_swept = pc_debug_script(swept_id)
+    off_dbg_pc_stays = off_dbg_pc_swept + len(dbg_pc_swept)
+    dbg_pc_stays = pc_debug_script(stays_id)
 
     # Threshold-gate live test. The number screen (sp0B3) is a naming screen in
     # number mode and is hostile to automation -- it drops and reorders
@@ -608,7 +641,7 @@ def main():
     shown_ids = [i + 1 for i, c in enumerate(manifest["characters"]) if not c.get("hidden")]
     gate_hidden_id = hidden_ids[0] if hidden_ids else 0
     gate_shown_id = shown_ids[0]
-    off_dbg_gate_hidden = off_dbg_trade_stays + len(dbg_trade_stays)
+    off_dbg_gate_hidden = off_dbg_pc_stays + len(dbg_pc_stays)
     dbg_gate_hidden = gate_debug_script(gate_hidden_id)
     off_dbg_gate_shown = off_dbg_gate_hidden + len(dbg_gate_hidden)
     dbg_gate_shown = gate_debug_script(gate_shown_id)
@@ -636,6 +669,8 @@ def main():
     rom[INJECT_FILE_OFF + off_trade_tails:INJECT_FILE_OFF + off_trade_tails + len(trade_blob)] = trade_blob
     rom[INJECT_FILE_OFF + off_dbg_trade_swept:INJECT_FILE_OFF + off_dbg_trade_swept + len(dbg_trade_swept)] = dbg_trade_swept
     rom[INJECT_FILE_OFF + off_dbg_trade_stays:INJECT_FILE_OFF + off_dbg_trade_stays + len(dbg_trade_stays)] = dbg_trade_stays
+    rom[INJECT_FILE_OFF + off_dbg_pc_swept:INJECT_FILE_OFF + off_dbg_pc_swept + len(dbg_pc_swept)] = dbg_pc_swept
+    rom[INJECT_FILE_OFF + off_dbg_pc_stays:INJECT_FILE_OFF + off_dbg_pc_stays + len(dbg_pc_stays)] = dbg_pc_stays
     rom[INJECT_FILE_OFF + off_dbg_gate_hidden:INJECT_FILE_OFF + off_dbg_gate_hidden + len(dbg_gate_hidden)] = dbg_gate_hidden
     rom[INJECT_FILE_OFF + off_dbg_gate_shown:INJECT_FILE_OFF + off_dbg_gate_shown + len(dbg_gate_shown)] = dbg_gate_shown
     rom[INJECT_FILE_OFF + off_egg_tail:INJECT_FILE_OFF + off_egg_tail + len(egg_blob)] = egg_blob
@@ -648,6 +683,8 @@ def main():
                    "starter_test_script": addr(off_dbg_starter),
                    "trade_test_script_swept": addr(off_dbg_trade_swept),
                    "trade_test_script_stays": addr(off_dbg_trade_stays),
+                   "pc_test_script_swept": addr(off_dbg_pc_swept),
+                   "pc_test_script_stays": addr(off_dbg_pc_stays),
                    "gate_test_script_hidden": addr(off_dbg_gate_hidden),
                    "gate_test_script_shown": addr(off_dbg_gate_shown),
                    "gate_hidden_id": gate_hidden_id,
@@ -655,11 +692,15 @@ def main():
                    "optin_block": addr(off_optin),
                    "optin_offsets": optin_script.label_offsets(),
                    "trade_test_swept_char": swept_name,
-                   "trade_test_stays_char": stays_name}, f)
+                   "trade_test_stays_char": stays_name,
+                   "pc_test_swept_char": swept_name,
+                   "pc_test_stays_char": stays_name}, f)
     print(f"debug scripts: block @ {addr(off_dbg_block):#010x}, catch @ {addr(off_dbg_catch):#010x}, "
           f"starter @ {addr(off_dbg_starter):#010x}")
     print(f"trade tails @ {addr(off_trade_tails):#010x}, trade tests red/bruno @ "
           f"{addr(off_dbg_trade_swept):#010x}/{addr(off_dbg_trade_stays):#010x}")
+    print(f"PC-exit tests swept/stays @ {addr(off_dbg_pc_swept):#010x}/"
+          f"{addr(off_dbg_pc_stays):#010x}")
 
     # 6c''. trade-junction overlays + sweep special (gSpecials[0x1AF])
     sweep_fn = syms["CharacterMode_SweepPartyToPC"]
