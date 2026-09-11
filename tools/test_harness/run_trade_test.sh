@@ -72,7 +72,8 @@ for CASE in $CASES; do
     # Tally assertion lives in assert_tally.py -- one copy, and it now
     # checks the NUMBER of checks, not just that each agrees with itself.
     # The literal is deliberate: see rowe_parity.md §9 Finding 2.
-    python3 "$(dirname "$0")/assert_tally.py" --expect 8 "$LOG" || OVERALL=1
+    # 9, not 8: T2a used to sit outside this tally (see trade_test.gdb).
+    python3 "$(dirname "$0")/assert_tally.py" --expect 9 "$LOG" || OVERALL=1
 done
 
 # The display is sourced ONCE above the case loop, so it is stopped once here --

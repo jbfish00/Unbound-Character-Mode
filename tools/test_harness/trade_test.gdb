@@ -141,7 +141,13 @@ if ok:
         if scene_done():
             done = True
             break
-    print(f"T2a scene input path alive (key bits seen, want 1): "
+    # ⚠️ "key bits seen" sits AFTER the "(want" anchor on purpose.
+    # assert_tally.py matches a literal "(want", so the original wording --
+    # "(key bits seen, want 1)" -- put this check OUTSIDE its own layer's
+    # tally: nine T-lines printed and only eight were ever counted, for as
+    # long as the line existed. check_countable_checks.py now makes that
+    # shape an error rather than a silent subtraction.
+    print(f"T2a scene input path alive, key bits seen (want 1): "
           f"{1 if keys_seen else 0}  [{keys_seen:#06x}]")
     if not done:
         print(f"diag stuck: cb1={rd(CB1,4):#010x} cb2={rd(CB2,4):#010x} "

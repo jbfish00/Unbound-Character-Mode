@@ -53,5 +53,31 @@ else
     printf '  FAIL  runners with no --expect:%s\n' "$missing"; fail=1
 fi
 
+# ⭐ And every printed check must be COUNTABLE by that tally, which is the
+# guard's own blind spot: assert_tally.py finds checks by matching a literal
+# "(want", so a line worded "(key bits seen, want 1)" prints, can fail, and is
+# invisible to the count. trade_test.gdb printed NINE T-lines against an
+# --expect of 8 for as long as that wording existed, and the two agreed with
+# each other the whole time. check_countable_checks.py makes it an error.
+cc() { # <label> <want-exit> <dir>
+    local label=$1 want=$2 dir=$3
+    python3 check_countable_checks.py "$dir" >/dev/null 2>&1
+    local got=$?
+    if [ "$got" = "$want" ]; then printf '  ok    %-44s exit=%s\n' "$label" "$got"; pass=$((pass+1))
+    else printf '  FAIL  %-44s got %s want %s\n' "$label" "$got" "$want"; fail=1; fi
+}
+G="$T/gdb"; mkdir -p "$G"
+printf 'print(f"T0 a thing (want 1): {x}")\n' > "$G/good.gdb"
+cc "control: a countable check passes"       0 "$G"
+printf 'print(f"T1 b (some prose, want 1): {y}")\n' > "$G/bad.gdb"
+cc "an uncountable check fails"              1 "$G"
+rm -f "$G/bad.gdb"
+cc "control: removing it passes again"       0 "$G"
+# ⚠️ And an empty scan is never a pass -- pointed at the wrong directory this
+# would otherwise report "0 uncountable" and exit 0, which is the same shape of
+# vacuous green the tally guard itself exists to stop.
+cc "an empty scan is never a pass"           1 "$T"
+cc "the real layers are all countable"       0 "."
+
 [ $fail -eq 0 ] && echo "tally guard test: $pass/$pass PASS" || echo "tally guard test: FAILURES"
 exit $fail
