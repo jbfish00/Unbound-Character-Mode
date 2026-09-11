@@ -42,6 +42,7 @@ CM_DIR = os.path.join(HERE, "character_mode")
 sys.path.insert(0, CM_DIR)
 import optin_script
 import egg_hook
+import pc_hook
 import trade_hook
 
 ROM_BASE = 0x08000000
@@ -395,6 +396,16 @@ def main():
     assert rom[egg_hook.SPLICE_FILE_OFF:
                egg_hook.SPLICE_FILE_OFF + len(egg_hook.SPLICE_ORIG)] == egg_hook.SPLICE_ORIG, \
         "egg-hatch script bytes changed — wrong ROM?"
+    # PC-exit sweep (../game_plans/rowe_parity.md §13.24/§13.26c). Four sites,
+    # two shapes; each is pinned by its own bytes AND by an independent anchor
+    # (the msgbox pointer above it, or -- for the one site that is jumped to
+    # rather than fallen into -- the menu's own goto_if operand).
+    for _pr, _pf, _po, (_aoff, _aval), _plabel in pc_hook.SITES:
+        assert rom[_pf:_pf + len(_po)] == _po, \
+            f"PC script bytes changed at {_pr:#x} ({_plabel}) — wrong ROM?"
+        _got = struct.unpack_from("<I", rom, _aoff)[0]
+        assert _got == _aval, \
+            f"PC script @{_pr:#x} anchor reads {_got:#x}, expected {_aval:#x} — it has moved"
     for label, (off, orig) in WILD_CALL_SITES.items():
         assert rom[off:off + 4] == orig, \
             f"wild-encounter call site bytes changed at {label} — wrong ROM?"
@@ -607,7 +618,15 @@ def main():
     off_egg_tail = off_dbg_gate_shown + len(dbg_gate_shown)
     egg_blob, egg_patches = egg_hook.build(addr(off_egg_tail))
 
-    total_len = off_egg_tail + len(egg_blob)
+    # PC-exit sweep: four replayed tails, 0x20 apart, one per PC access script.
+    # They are NOT all the same length -- the two high-ROM scripts replay
+    # `special; waitstate; releaseall` where the low-ROM pair replays
+    # `special; waitstate; setvar` -- so each tail's rejoin is derived from its
+    # own site rather than shared. tools/character_mode/pc_hook.py has the RE.
+    off_pc_tails = off_egg_tail + len(egg_blob)
+    pc_blob, pc_patches, pc_addrs = pc_hook.build(addr(off_pc_tails))
+
+    total_len = off_pc_tails + len(pc_blob)
     assert total_len <= INJECT_BLOCK_LEN, "injection block overflow (debug scripts)"
     span2 = rom[INJECT_FILE_OFF + off_dbg_block:INJECT_FILE_OFF + total_len]
     assert all(b == 0xFF for b in span2), "debug-script target not 0xFF-free!"
@@ -620,6 +639,7 @@ def main():
     rom[INJECT_FILE_OFF + off_dbg_gate_hidden:INJECT_FILE_OFF + off_dbg_gate_hidden + len(dbg_gate_hidden)] = dbg_gate_hidden
     rom[INJECT_FILE_OFF + off_dbg_gate_shown:INJECT_FILE_OFF + off_dbg_gate_shown + len(dbg_gate_shown)] = dbg_gate_shown
     rom[INJECT_FILE_OFF + off_egg_tail:INJECT_FILE_OFF + off_egg_tail + len(egg_blob)] = egg_blob
+    rom[INJECT_FILE_OFF + off_pc_tails:INJECT_FILE_OFF + off_pc_tails + len(pc_blob)] = pc_blob
     # json is imported at module scope (a second local import here made json
     # function-local, so the manifest load above raised UnboundLocalError)
     with open(os.path.join(BUILD, "debug_addrs.json"), "w") as f:
@@ -686,6 +706,52 @@ def main():
     assert _tail[8] == 0x02, "egg tail does not end"
     print("  verified egg hook: goto -> [special %#x; waitstate; %#04x; special %#x; end]"
           % (egg_hook.SPECIAL_HATCH, egg_hook.OPCODE_RELEASE, egg_hook.SPECIAL_SWEEP))
+
+    # PC-exit overlay: enforcement deliberately routes off-roster mons INTO the
+    # PC and, until 2026-09-10, nothing re-enforced the roster afterwards -- so
+    # a mon the catch gate had just boxed could be withdrawn straight back and
+    # kept, no exploit required (rowe_parity.md §13.24). The PC is opened from a
+    # SCRIPT whose special carries a waitstate, exactly like the egg hatch, so
+    # this is the same splice pointed at four different tails, reusing the same
+    # sweep special. ⚠️ UNDO ON EXIT, not prevention, and it deliberately does
+    # NOT reproduce ROWE's IsRemovingLastAllowedPartyMon. See pc_hook.py.
+    for off, orig, new in pc_patches:
+        assert rom[off:off + len(orig)] == orig  # rechecked against pre-write state above
+        rom[off:off + len(new)] = new
+        print(f"PC hook: script @{ROM_BASE + off:#x}  {orig.hex()} -> {new.hex()}")
+    print(f"PC-exit tails @ {addr(off_pc_tails):#010x} ({len(pc_blob)} bytes, "
+          f"{len(pc_addrs)} sites)")
+
+    # Decode all four back out of the PATCHED image, the same way the egg hook
+    # is. Each is checked in BOTH directions and, crucially, for its OWN rejoin:
+    # a tail that rejoined a DIFFERENT site's caller would still be perfectly
+    # well-formed -- right special, right waitstate, right sweep -- and would
+    # silently send the player to the wrong script on exit.
+    for _i, (_pr, _pf, _po, _anchor, _plabel) in enumerate(pc_hook.SITES):
+        _site = rom[_pf:_pf + len(_po)]
+        assert _site[0] == 0x05, f"PC splice {_i} is not a goto"
+        _dest = struct.unpack_from("<I", _site, 1)[0]
+        assert _dest == pc_addrs[_i], (
+            "PC splice %d targets %#010x, its tail is at %#010x"
+            % (_i, _dest, pc_addrs[_i]))
+        _n = len(_po) + 8
+        _toff = INJECT_FILE_OFF + off_pc_tails + _i * pc_hook.SPACING
+        _pt = rom[_toff:_toff + _n]
+        assert (_pt[0] == 0x25
+                and struct.unpack_from("<H", _pt, 1)[0] == pc_hook.SPECIAL_PC), \
+            f"PC tail {_i} does not replay the storage special first"
+        assert _pt[3] == 0x27, f"PC tail {_i} does not waitstate after it"
+        assert (_pt[4] == 0x25
+                and struct.unpack_from("<H", _pt, 5)[0] == pc_hook.SPECIAL_SWEEP), \
+            f"PC tail {_i} does not run the sweep special after the waitstate"
+        assert _pt[len(_po) + 3] == 0x05, f"PC tail {_i} does not end in a goto"
+        _ret = struct.unpack_from("<I", _pt, len(_po) + 4)[0]
+        assert _ret == _pr + len(_po), (
+            "PC tail %d rejoins %#010x, its own caller resumes at %#010x"
+            % (_i, _ret, _pr + len(_po)))
+    print("  verified PC hook: %d goto -> [special %#x; waitstate; special %#x; "
+          "replay; goto own caller]"
+          % (len(pc_addrs), pc_hook.SPECIAL_PC, pc_hook.SPECIAL_SWEEP))
 
     # 6d. character-select: wire the name-buffering special into slot 0x1B6
     buf_special = syms["CharacterMode_BufferNameSpecial"]

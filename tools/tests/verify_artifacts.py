@@ -42,6 +42,7 @@ from cm_tally import assert_tally      # noqa: E402
 import build_patch as bp               # noqa: E402  (constants only; no side effects)
 import trade_hook                      # noqa: E402
 import egg_hook                        # noqa: E402
+import pc_hook                         # noqa: E402
 import optin_script                    # noqa: E402
 
 # CM_BUILT_ROM lets the negative test point this at a tampered COPY. The real
@@ -51,7 +52,7 @@ BUILT = os.environ.get("CM_BUILT_ROM",
 
 # How many checks this layer must run. A deliberate LITERAL -- see
 # tools/tests/cm_tally.py for why this must never be a derived expression.
-EXPECT_CHECKS = 30   # +3: the activation party sweep (2026-09-02)
+EXPECT_CHECKS = 51   # +21: the PC-exit sweep, 5 checks x 4 sites + the tail census (2026-09-10)
 
 failures = []
 checks_run = 0
@@ -64,6 +65,40 @@ def check(name, ok, detail=""):
                            (" -- %s" % detail) if detail and not ok else ""))
     if not ok:
         failures.append(name)
+
+
+def _find_pc_tails(rom):
+    """ROM addresses of the four PC-exit tails, located by CONTENT.
+
+    ⚠️ The first version of this read the base out of site 0's own `goto`
+    operand -- which made the "site 0 points at its tail" check SELF-REFERENTIAL
+    and therefore unable to fail. Bending that operand moved the expectation
+    with it, and the negative test caught it. (It was written that way to avoid
+    replaying the injector's packing arithmetic, which is a real hazard: every
+    offset in that block depends on the length of everything before it.)
+
+    So locate them by the one thing neither the goto nor the rejoin can fake:
+    the four-byte head every tail shares -- `special <storage>; waitstate` --
+    inside the injection block. Four of them, evenly spaced, written in SITES
+    order. That is independent of every operand under test.
+
+    ⚠️ The head deliberately STOPS before the sweep special, even though
+    including it would look tidier. Locating on the sweep too would make a
+    tamper that bends the sweep MOVE the tail out from under its own check, so
+    every site would fail the census instead of the one site failing the check
+    that names the defect. The locator must not depend on anything it is
+    helping to test.
+    """
+    head = (bytes([0x25]) + struct.pack("<H", pc_hook.SPECIAL_PC)
+            + bytes([0x27]))
+    lo, hi = bp.INJECT_FILE_OFF, bp.INJECT_FILE_OFF + bp.INJECT_BLOCK_LEN
+    hits, i = [], lo - 1
+    while True:
+        i = bytes(rom).find(head, i + 1, hi)
+        if i < 0:
+            break
+        hits.append(bp.ROM_BASE + i)
+    return hits
 
 
 def main():
@@ -106,6 +141,10 @@ def main():
     for label, off in sorted(trade_hook.SUB_SITES.items()):
         win("trade sub site (%s)" % label, off, len(trade_hook.SUB_TAIL_ORIG))
     win("egg splice", egg_hook.SPLICE_FILE_OFF, len(egg_hook.SPLICE_ORIG))
+    # PC-exit sweep: four overlays (the tails live inside the injection block,
+    # which is already a declared window).
+    for _i, (_pr, _pf, _po, _anchor, _plabel) in enumerate(pc_hook.SITES):
+        win("PC splice %d (%s)" % (_i, _plabel), _pf, len(_po))
     # ⚠️ The opt-in splice. Omitting it is what this checker caught on its first
     # run -- 9 stray bytes at 0x1e6ff2d, which is the entire organic-reach
     # mechanism (the checkflag gate every first-run new game passes through).
@@ -333,6 +372,65 @@ def main():
           not unreadable, ", ".join(unreadable))
     check("the scripted/raid/swarm/DexNav call sites are still unhooked",
           not touched, ", ".join(touched))
+
+    # ---- the PC-exit sweep (game_plans/rowe_parity.md §13.24/§13.26c) ----
+    # Pinned in BOTH directions and for ALL FOUR sites: checking only one would
+    # leave the other three free to be unhooked or to point at the wrong tail.
+    # ⚠️ This game has the most sites AND two different tail shapes, so nothing
+    # here may assume a fixed replay length.
+    _pc_tails = _find_pc_tails(rom)
+    check("exactly %d PC-exit tails in the injection block, evenly spaced"
+          % len(pc_hook.SITES),
+          len(_pc_tails) == len(pc_hook.SITES)
+          and all(_pc_tails[_k] == _pc_tails[0] + _k * pc_hook.SPACING
+                  for _k in range(len(_pc_tails))),
+          "found %d at %s" % (len(_pc_tails), [hex(_a) for _a in _pc_tails]))
+    if len(_pc_tails) != len(pc_hook.SITES):
+        # Without the tails there is nothing to decode; fail the rest by name
+        # rather than indexing off the end of the list.
+        _pc_tails = [0] * len(pc_hook.SITES)
+    for _i, (_pr, _pf, _po, (_aoff, _aval), _plabel) in enumerate(pc_hook.SITES):
+        _n = len(_po)
+        check("[PC%d] base ROM still holds the stock PC script tail" % _i,
+              orig[_pf:_pf + _n] == _po,
+              "%s != %s" % (orig[_pf:_pf + _n].hex(), _po.hex()))
+        _site = rom[_pf:_pf + _n]
+        _want = _pc_tails[_i]
+        check("[PC%d] PC script tail overlaid with `goto <PC tail>`" % _i,
+              _site[0] == 0x05
+              and struct.unpack_from("<I", _site, 1)[0] == _want,
+              _site.hex())
+        # ⚠️ Guarded: when the census above has already failed there is no
+        # valid tail address, and an unguarded negative slice raised
+        # IndexError here -- a checker that CRASHES reports nothing by name,
+        # which is exactly what the negative test is trying to read.
+        _toff = _want - bp.ROM_BASE
+        _pt = (bytes(rom[_toff:_toff + _n + 8])
+               if 0 <= _toff <= len(rom) - (_n + 8) else b"")
+        _pt = _pt + b"\x00" * (_n + 8 - len(_pt))
+        # ORDERING IS LOAD-BEARING: the sweep must run AFTER the waitstate.
+        # Before it the storage UI has not opened, so the sweep would see the
+        # party the player walked IN with -- a silent no-op that still passes
+        # any "the sweep special is present" check.
+        check("[PC%d] PC tail replays the storage special and its waitstate, "
+              "then sweeps" % _i,
+              _pt[0] == 0x25
+              and struct.unpack_from("<H", _pt, 1)[0] == pc_hook.SPECIAL_PC
+              and _pt[3] == 0x27
+              and _pt[4] == 0x25
+              and struct.unpack_from("<H", _pt, 5)[0] == pc_hook.SPECIAL_SWEEP,
+              _pt.hex())
+        # ⭐ The goto must rejoin THIS site's own caller. A tail that rejoined
+        # another site's would be perfectly well-formed -- right special, right
+        # waitstate, right sweep -- and would silently send the player into the
+        # wrong script on exit. With four sites this is the tamper that matters.
+        check("[PC%d] and its goto rejoins its OWN caller" % _i,
+              _pt[_n + 3] == 0x05
+              and struct.unpack_from("<I", _pt, _n + 4)[0] == _pr + _n,
+              _pt.hex())
+        check("[PC%d] the hooked script is still the PC access script" % _i,
+              struct.unpack_from("<I", rom, _aoff)[0] == _aval,
+              "%#x != %#x" % (struct.unpack_from("<I", rom, _aoff)[0], _aval))
 
     sha = os.path.join(ROOT, "build", "unbound-cm.gba.sha1")
     check("the build recorded its own sha1", os.path.isfile(sha))
