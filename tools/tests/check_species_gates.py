@@ -66,6 +66,10 @@ WAITSTATE = 0x27
 ITEM_TABLE = (0x08876200, 44)
 SPECIES_TABLE = (0x0966a98c, 11)
 # (id, name) pairs read out of those two tables when this file was written.
+# ⚠️ At least one probe is deliberately FAR from the base: a wrong STRIDE is
+# invisible at id 1 and shows up only at a high index. That is not
+# hypothetical -- an early version of this work carried a sibling's stride for
+# Seaglass, read ids 1-4 correctly, and decoded item 51 as mojibake.
 # Species id 386 is pinned in the FireRed pair on purpose: it is Volbeat, not
 # the national-dex 386, which is the trap `CHARACTER_ROSTER_PLAN.md` records.
 ITEM_PROBES = ((1, 'Master Ball'), (299, 'TM11'))
@@ -166,60 +170,229 @@ SITES = (
 #                       is NOT established here -- so this verdict bounds the
 #                       cost, it does not prove it is zero
 GATES = {
+ 0x0816ffb0: (
+  'Magikarp size judge',
+  (),
+  ((0x0817003c, 6, 1),),
+  'ELSEWHERE',
+  'rewards seen in the window between this site and the next call site:'
+  ' Net Ball x1'),
+ 0x0879422c: (
+  'Hoopa -- MASTER BALL (low-ROM copy)',
+  (828, 829),
+  ((0x08794269, 1, 1),),
+  'ELSEWHERE',
+  'rewards seen in the window between this site and the next call site:'
+  ' Master Ball x1'),
+ 0x087a82d3: (
+  'Happiny -- Oval Stone',
+  (493,),
+  ((0x087a8307, 102, 1),),
+  'SPECIES_LOCKED',
+  'rewards seen in the window between this site and the next call site:'
+  ' Oval Stone x1'),
  0x088aa2c2: (
-  'Deoxys meteorite -- "bring the Deoxys in your party closer to the'
-  ' meteorite?"; native test, callasm 0x088AB3CD',
+  'Deoxys meteorite (native test, callasm 0x088AB3CD)',
   (),
   (),
   'SPECIES_LOCKED',
-  'a Deoxys form change. Two more sites of the same NPC (0x088AA485,'
-  ' 0x088AA4C5) are NOT reachable from any dialogue anchor -- see the'
-  ' coverage note below.'),
+  'no give-item in its window'),
+ 0x088aa485: (
+  'Kyurem FUSION -- "There is no Kyurem in the party!", "Multiple'
+  ' fusions are not allowed!"; NOT dialogue-reachable. Labelled Deoxys'
+  ' at first by PROXIMITY to the meteorite script, which is exactly the'
+  ' mistake the PC-hook work already recorded: the discriminator is the'
+  ' text, not the neighbourhood',
+  (),
+  (),
+  'SPECIES_LOCKED',
+  'no give-item in its window'),
+ 0x088aa4c5: (
+  'Kyurem separation, the same NPC -- NOT dialogue-reachable',
+  (),
+  (),
+  'SPECIES_LOCKED',
+  'no give-item in its window'),
+ 0x088aa9d1: (
+  'Rotom appliance (native test) -- NOT dialogue-reachable',
+  (),
+  (),
+  'SPECIES_LOCKED',
+  'no give-item in its window'),
+ 0x088aaa11: (
+  'Rotom appliance, second site -- NOT dialogue-reachable',
+  (),
+  (),
+  'SPECIES_LOCKED',
+  'no give-item in its window'),
+ 0x088c0ff1: (
+  'one of six identical per-slot stubs; the species in the window'
+  ' belong to a neighbouring table',
+  (252, 609, 610, 611, 612, 613),
+  (),
+  'NOT_A_GATE',
+  'no give-item in its window'),
+ 0x088c1006: (
+  'per-slot stub',
+  (252, 609, 610, 611, 612, 613),
+  (),
+  'NOT_A_GATE',
+  'no give-item in its window'),
+ 0x088c101b: (
+  'per-slot stub',
+  (252, 609, 610, 611, 612, 613),
+  (),
+  'NOT_A_GATE',
+  'no give-item in its window'),
+ 0x088c1030: (
+  'per-slot stub',
+  (252, 609, 610, 611, 612, 613, 618),
+  (),
+  'NOT_A_GATE',
+  'no give-item in its window'),
+ 0x088c1045: (
+  'per-slot stub',
+  (252, 609, 610, 611, 612, 613, 618, 619),
+  (),
+  'NOT_A_GATE',
+  'no give-item in its window'),
+ 0x088c105a: (
+  'per-slot stub',
+  (252, 609, 610, 611, 612, 613, 618, 619, 620, 958),
+  (),
+  'NOT_A_GATE',
+  'no give-item in its window'),
+ 0x088c1151: (
+  'per-slot stub family, second group',
+  (618, 619, 620, 958, 1043, 1044, 1045),
+  (),
+  'NOT_A_GATE',
+  'no give-item in its window'),
+ 0x09e57739: (
+  'Basculin -- EVIOLITE',
+  (),
+  ((0x09e57772, 495, 1), (0x09e57844, 105, 1)),
+  'UNIQUE',
+  'rewards seen in the window between this site and the next call site:'
+  ' Eviolite x1, Ice Stone x1'),
+ 0x09e607fd: (
+  'Alolan Sandshrew / Sandslash -- Ice Stone, and a Moon Stone in the'
+  ' same window',
+  (1023, 1024),
+  ((0x09e6083c, 105, 1), (0x09e6089f, 94, 1)),
+  'UNIQUE',
+  'rewards seen in the window between this site and the next call site:'
+  ' Ice Stone x1, Moon Stone x1'),
+ 0x09e63112: (
+  'the floating-Pokemon NPC, first site',
+  (174, 478, 479, 1086),
+  (),
+  'UNIQUE',
+  'no give-item in its window'),
+ 0x09e63191: (
+  'the floating-Pokemon NPC -- "I\'ll give you the item, Air Balloon!"',
+  (174, 478, 479, 1086),
+  ((0x09e631cc, 564, 1),),
+  'UNIQUE',
+  'rewards seen in the window between this site and the next call site:'
+  ' Air Balloon x1'),
  0x09e68c86: (
-  'Oddish scientist -- "Which Oddish will you give me?"; CONSUMES the'
-  ' mon, counting into var 0x5029 up to 30',
-  (43,),
+  'Oddish scientist -- CONSUMES thirty Oddish, gives Dream Mist',
+  (),
   ((0x09e68dd7, 89, 1),),
-  'CATCH_ONLY',
-  'one Dream Mist, which is generic and has no other confirmed scripted'
-  ' source. THIRTY Oddish have to be handed over, each of them caught,'
-  ' and the catch gate already refuses an off-roster catch -- so this is'
-  ' the upper bound of what the PC hook costs here, and reaching it'
-  ' would take thirty deliveries of a species the game will not let the'
-  ' character keep.'),
+  'UNIQUE',
+  'rewards seen in the window between this site and the next call site:'
+  ' Dream Mist x1'),
+ 0x09e69879: (
+  'Hoopa -- MASTER BALL (high-ROM copy)',
+  (828, 829),
+  ((0x09e698ba, 1, 1), (0x09e69960, 263, 1), (0x09e699c0, 84, 3)),
+  'ELSEWHERE',
+  'rewards seen in the window between this site and the next call site:'
+  ' Master Ball x1, Good Rod x1, Max Repel x3'),
+ 0x09e6a780: (
+  'Happiny -- Oval Stone (second site)',
+  (493,),
+  (),
+  'SPECIES_LOCKED',
+  'no give-item in its window'),
+ 0x09e6a890: (
+  'Happiny -- Oval Stone / Everstone (third site)',
+  (493,),
+  ((0x09e6a8cb, 102, 1),),
+  'SPECIES_LOCKED',
+  'rewards seen in the window between this site and the next call site:'
+  ' Oval Stone x1'),
+ 0x09e6b2e9: (
+  'Butterfree named in flavour text only',
+  (),
+  (),
+  'NOT_A_GATE',
+  'no give-item in its window'),
+ 0x09e7b1cc: (
+  'Furfrou trimmer',
+  (),
+  (),
+  'SPECIES_LOCKED',
+  'no give-item in its window'),
+ 0x09e7b2e8: (
+  'Furfrou trimmer, second site',
+  (),
+  (),
+  'SPECIES_LOCKED',
+  'no give-item in its window'),
+ 0x09e821fe: (
+  'Sneasel -- Luck Incense',
+  (215,),
+  ((0x09e82233, 252, 1),),
+  'ELSEWHERE',
+  'rewards seen in the window between this site and the next call site:'
+  ' Luck Incense x1'),
  0x09e8569c: (
-  'Mr. Sun -- "Oh Mr. Sun, Sun, Mr. Golden Sun, please shine down on'
-  ' me"',
+  'Mr. Sun -- Solrock / Solgaleo, TM11',
   (349, 1008),
   ((0x09e856dc, 299, 1),),
-  'CATCH_ONLY',
-  'TM11, which is generic, sold in no mart (33 mart tables scanned) and'
-  ' given by no other script in this ROM -- the single most valuable'
-  ' species-gate reward found in any of the four games, and the one real'
-  ' item this class can cost a character. The gate still needs a Solrock'
-  ' or Solgaleo, which the catch gate refuses.'),
+  'UNIQUE',
+  'rewards seen in the window between this site and the next call site:'
+  ' TM11 x1'),
+ 0x09e8e901: (
+  'Pumpkaboo size judge -- 5 Dusk Balls and a Bottle Cap',
+  (),
+  ((0x09e8e995, 60, 5), (0x09e8e9e2, 616, 1)),
+  'ELSEWHERE',
+  'rewards seen in the window between this site and the next call site:'
+  ' Dusk Ball x5, Bottle Cap x1'),
+ 0x09e8eaed: (
+  'Pichu -- DESTINY KNOT',
+  (172, 1100),
+  ((0x09e8eb22, 239, 1),),
+  'UNIQUE',
+  'rewards seen in the window between this site and the next call site:'
+  ' Destiny Knot x1'),
  0x09e8eb95: (
-  'Pichu girl -- "Can I see it?"',
+  'Pichu -- a gift Pichu (givepokemon 1100 L50 @Light Ball, 0x09E8EC25)',
   (172, 1100),
   (),
   'SPECIES_LOCKED',
-  'a GIFT POKEMON: givepokemon species 1100 (Pichu) at level 50 holding'
-  ' item 202 (Light Ball) at 0x09E8EC25. Only a character who already'
-  ' has Pichu on-roster can open the gate, which is exactly the'
-  ' character who could keep the gift.'),
+  'no give-item in its window'),
  0x09eb02a7: (
-  'Zygardia / Zygfried -- "Which Zygarde\'s Ability should I change?"',
+  'Zygardia / Zygfried -- moves and ability',
   (826, 837),
   (),
   'SPECIES_LOCKED',
-  'special moves and an ability change for a Zygarde.'),
+  'no give-item in its window'),
+ 0x09eb0723: (
+  'Zygardia -- disassemble the construct',
+  (),
+  (),
+  'SPECIES_LOCKED',
+  'no give-item in its window'),
  0x09eb086a: (
-  'Zygardia -- "Would you like to change the form of your Zygarde?"',
+  'Zygardia -- form change',
   (826, 837),
   (),
   'SPECIES_LOCKED',
-  'a Zygarde form change. A third site of the same NPC (0x09EB0723, the'
-  ' disassembler) tests the construct natively.'),
+  'no give-item in its window'),
 }
 
 EXPECT_CHECKS = 7
