@@ -70,6 +70,43 @@ call site and the next one; that is a window, not a proof of reachability,
 except for the gates whose scripts were decoded by hand (every
 `SPECIES_LOCKED`, `ELSEWHERE` and `UNIQUE` row).
 
+## Which of these can be opened WITHOUT catching the species
+
+This is the only part of the class the **PC-withdraw hook** can be blamed for.
+Character Mode's catch gate has always refused an off-roster catch, so a gate
+whose species you could only catch was already unreachable before the hook
+existed. A gate species that arrives as a **gift**, an **egg**, a **trade** or
+from the game's own **starter picker** lands in the party, is swept into the PC
+by enforcement — and before the hook shipped could be withdrawn and shown to
+the NPC.
+
+🔴 **Three gates, and two of them are the only real cost of the PC-withdraw
+hook found in any of the four games.**
+
+- **The floating-Pokémon NPC** (`0x09E63191`, and its first site
+  `0x09E63112`) accepts Pikachu **1086** — and the game *gifts* that very
+  species at `0x09E6F7B5`, level 35. Its reward, an **Air Balloon**, has no
+  mart entry and no other scripted source. **Real cost.**
+- **The Pichu gate** (`0x09E8EAED`) accepts Pichu 1100, which the Pichu girl
+  gifts at `0x09E8EC25` (level 50, holding a Light Ball). Its reward, a
+  **Destiny Knot**, likewise has no other source. **Real cost.**
+- `0x09E8EB95` is that same gift NPC; its reward is *another Pichu*, so it is
+  inert without the species either way.
+- **The Oddish scientist** (`0x09E68C86`) accepts Oddish, and Oddish is one of
+  three species in a pick-one gift at `0x0826D677` — but the scientist consumes
+  **thirty** Oddish and the gift grants one, so it stays out of reach.
+
+⚠️ This is also the only port whose in-game trades **complete** (the incoming
+mon is swept to the PC rather than the trade being refused), so all nine trade
+species are a non-catch route here — none of them happens to be a gate
+species.
+
+Pinned by two checks in `tools/tests/check_species_gates.py`: the in-game trade
+table is verified by content (a moved or edited table fails), and every gift
+that opens a gate must still be that `givemon`. ⚠️ The routes are a **floor**:
+a species handed out by native code, or an egg whose species is computed,
+appears in no operand anywhere. `rowe_parity.md` §13.42.
+
 ## What "UNIQUE" is a floor of, not a proof
 
 `UNIQUE` means: the item appears in **no `pokemart` table in this ROM** and at
