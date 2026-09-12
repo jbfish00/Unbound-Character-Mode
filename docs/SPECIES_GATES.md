@@ -3,8 +3,8 @@
 **76 `ChoosePartyMon` call sites, 34 classified, 26 of them
 real species gates.** Only **26** of the call sites are reachable from a
 dialogue anchor, which is why every earlier count of this class was wrong.
-Measured 2026-09-11; pinned by `tools/tests/check_species_gates.py` (7 checks,
-negative-tested).
+Measured 2026-09-11; pinned by `tools/tests/check_species_gates.py` (**9
+checks**, negative-tested — see the last section).
 
 A *species gate* is an NPC that wants a Pokémon **shown** rather than traded:
 it calls `ChoosePartyMon`, tests what you handed it, and gives something back.
