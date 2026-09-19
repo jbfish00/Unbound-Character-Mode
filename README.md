@@ -18,6 +18,30 @@ built in source for Pokémon ROWE. Unbound has no public source, so the mode is
 injected directly into the compiled ROM (via the CFRU engine's free space) and
 distributed **as a patch only — never as a ROM**.
 
+## ▶️ How to turn Character Mode on
+
+> **Character Mode is opt-in. Nothing in the game changes until you do this —
+> and unlike the other ports, you can only do it when starting a new game.**
+
+1. **Start a new game.**
+2. Answer Unbound's normal **difficulty / questionnaire** questions.
+3. Immediately after those, an **extra question offers Character Mode.**
+   Answering **No** leaves the game completely vanilla.
+4. Answer **Yes**, then **enter your character's number** on the number-entry
+   screen and confirm.
+
+⚠️ **Unbound uses a NUMBER, not a name** — there is no code keyboard here.
+📋 **Full list: [Character numbers](#character-numbers)** (193 selectable), also
+in [`dist/CHARACTERS.md`](dist/CHARACTERS.md).
+
+**You will know it worked:** a **"Play as {NAME}?"** confirmation with the
+character's portrait beside it, then their signature starter.
+
+⚠️ **Your choice is locked in for that save file.** There is no in-game code to
+switch Character Mode off afterwards — start a new game to change or disable it.
+
+---
+
 ## What it does
 
 - **New-game prompt** — right after Unbound's difficulty questionnaire, an extra
