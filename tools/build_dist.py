@@ -58,6 +58,10 @@ game restricted to that character's canon Pokemon.
   area's level. Each one is offered until you catch it, then stops
   appearing — unless your character's roster is legendaries only, in
   which case they keep appearing so you always have something to catch.
+- **Roster screen**: the START menu gains a "Roster" icon while Character
+  Mode is on. It lists your character's Pokemon, one row per evolution
+  family, with the highlighted Pokemon's icon beside the list; A or B
+  closes it. With Character Mode off the START menu is unchanged.
 - Answering "No" at the prompt (or cancelling the number entry) leaves
   the game completely vanilla. The choice is made once per save file.
 

@@ -29,6 +29,10 @@ game restricted to that character's canon Pokemon.
   area's level. Each one is offered until you catch it, then stops
   appearing — unless your character's roster is legendaries only, in
   which case they keep appearing so you always have something to catch.
+- **Roster screen**: the START menu gains a "Roster" icon while Character
+  Mode is on. It lists your character's Pokemon, one row per evolution
+  family, with the highlighted Pokemon's icon beside the list; A or B
+  closes it. With Character Mode off the START menu is unchanged.
 - Answering "No" at the prompt (or cancelling the number entry) leaves
   the game completely vanilla. The choice is made once per save file.
 
@@ -40,7 +44,7 @@ game restricted to that character's canon Pokemon.
    `b4776b82a4c7915d0fadeaa27e013523f99dfd94`).
 2. Apply `unbound-character-mode.bps` to that ROM with Flips
    (https://github.com/Alcaro/Flips), or any BPS patcher.
-3. The result should have sha1 `ac2fa52b499d515a12a37fbc2b538e5fec8a1335`.
+3. The result should have sha1 `32196c71279c23d823220e66e256f34b8ef82f92`.
 
 ## Known limitations
 
@@ -50,7 +54,7 @@ game restricted to that character's canon Pokemon.
 - The character portrait shown when you pick appears only on that
   confirmation screen. Your overworld sprite, trainer card and battle
   back-sprite stay the normal Unbound player art.
-- 49 of the 193 selectable characters have no portrait staged
+- 43 of the 193 selectable characters have no portrait staged
   yet; picking one shows the confirmation with no art beside it.
 - If your character's roster makes a required trade species uncatchable,
   that side quest reward may be unreachable — pick accordingly.

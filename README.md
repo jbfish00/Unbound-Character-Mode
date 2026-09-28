@@ -69,6 +69,16 @@ switch Character Mode off afterwards — start a new game to change or disable i
   [`../game_plans/legendary_encounters.md`](../game_plans/legendary_encounters.md);
   per-character pools in [`ENCOUNTERS.md`](ENCOUNTERS.md).
 
+## Seeing your roster in-game
+
+With Character Mode on, the **START menu** gets a **Roster** icon (it uses the
+Pokémon List artwork, labelled "Roster"). Choose it to see a screen headed with
+your character's name, listing their Pokémon one row per evolution family (the
+first stage is shown, and the whole family counts), with the highlighted
+Pokémon's icon in a box beside the list. Scroll with Up/Down; A or B closes it.
+
+With Character Mode off, the START menu is exactly the same as vanilla Unbound.
+
 ## Installing
 
 See [`dist/README.md`](dist/README.md) for the player-facing instructions.
