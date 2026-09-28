@@ -545,3 +545,56 @@ the PC menu is up (measured: 23 consecutive polls). Any test that tries to prove
 open. What does prove it: press nothing and require the script context to stay
 at `waitstate` (`sScriptContext2Enabled == 1`), i.e. held open by a menu only
 input can dismiss. CB2 moves only if a submenu is entered.
+
+## Roster display: a START menu row (2026-09-27): ✅ SHIPPED, LIVE
+
+The user chose a START menu option, asking for the "cheapest and least
+intrusive" way. Unbound's START menu is **its own graphical icon bar**, not
+CFRU's `start_menu.c` and not vanilla. FireRed's vanilla action table
+`0x083A7344` is still used by vanilla code, but this menu comes from:
+
+| what | addr | notes |
+|---|---|---|
+| row record table | `0x08A6D160` | 12 × 16 B `{u32 cb, u32 text, u16 gfxTag, u8 frame, u8, u16 orderVar, u8 inNormal, u8 inAlt}`; refs `0x8A0B510` / `0x8A0B760` / `0x8A0BC30` / `0x8A0BE70` / `0x8A0C1EC` |
+| rows | 0 Pokédex · 1 DexNav · 2 Pokémon List · 3 Cube V3 · 4 Save Game · 5 Mission Log · **6 Costume Box** · 7 Player · 8 Player (link) · 9 Game Settings · 10 Retire · 11 Exit | order vars `0x503A`–`0x5043` (the player can reorder with SELECT) |
+| builder | `0x08A0BA40` | picks the lowest non-`0xFF` order slot each round; jump table at `0x08A0BA80` (9 bytes, cases 0–8) runs a flag condition then `AppendToStartMenuItems`; rows > 8 are appended unconditionally; **case 6 → skip, so Costume Box is DEAD** |
+| order loops | `0x08A0BF5C` / `0x08A0BFFE` | `array[i] = VarGet(rec.orderVar)` if the var is nonzero and the in-normal/in-alt byte is set; both loops read `VarGet` from literal **`0x08A0C1F4`** (its only two users) |
+| close (Exit's) | `0x08A0BD34` | `PlaySE(5)`; count = 0; tear down the bar (`0x08A0B90C`); `ClearPlayerHeldMovementAndUnfreezeEventObjects`; `ScriptContext2_Disable`; `ShowBg(0)`; flash fix-up |
+| Exit callback | `0x08A0BD85` | `close(); return TRUE` |
+| state | `sStartMenuCallback 0x020370F0`, cursor `0x020370F4`, count `0x020370F5`, actions `0x020370F6` | vanilla BPRE addresses |
+
+**Patches (verify-then-write in `build_patch.py`):**
+- **record 6, in place:** callback → `CM_StartMenuRosterCallback`, text →
+  `gCMRosterMenuText` ("Roster"), icon → the Pokémon List icon (`0x27F0`,
+  frame 2). The order var `0x5040` and the flags are untouched.
+- **case-6 byte** `0xA0BA86`: `0x11` (→ `0x08A0BAA2`, skip) → `0x1D` (→
+  `0x08A0BABA`, the append path rows 9–11 use).
+- **VarGet literal** `0xA0C1F4` → `CM_StartMenuVarGet`: the real `VarGet`
+  for every var except `0x5040`, which returns `0xFF` (not in the menu) unless
+  CM is on and the character has rows. **With CM off the menu is unchanged**
+  (live: actions 3,4,7,9 either way).
+
+**Traps (each bit once):**
+- ⭐ **The handler fades to black before calling any row it doesn't know stays
+  on the field** (FireRed's `StartMenu_FadeScreenIfLeavingOverworld`). The
+  callback runs in the same frame, with the fade active at level 0. Without
+  `ResetPaletteFadeControl` (`0x08070A85`) the field stayed black for good.
+  **`BeginNormalPaletteFade` can't cancel it: it refuses while a fade is
+  active.**
+- ⭐ **Palette checks must read `gPlttBufferUnfaded` (`0x020371F8`)**, not
+  palette RAM: Unbound's day/night system tints what reaches the hardware.
+- Six of the 30 vanilla entries RR's screen calls differ from RR:
+  `GetVarPointer`, `ListMenu_ProcessInput`, `PlaySE` (CFRU hook trampolines),
+  and `CreateMonIcon`, `LoadMonIconPalette`, `FreeMonIconPalette` (same code,
+  different table literals). Calling the entries is correct.
+- Icons: `*0x08000138` → `0x09A217FC`; palette indices `*0x0800013C` →
+  `0x09A212EC`; palette table `0x083D4038`; names `*0x08000144` →
+  `0x0966A98C`.
+
+**Headless mGBA works for Unbound.** The old "no screenshots" note described a
+tooling choice. `tools/mgba_scripts/mk_checkpoint_field.lua` ports
+`intro_drive.py` to Lua (⚠️ the opt-in block pointer at `0x09E6FF2E` is
+**unaligned**, so assemble it from bytes: `emu:read32` there read a wrong
+value, the drive answered Yes and wedged in the number loop).
+`tools/test_harness/run_roster_test.sh` runs roster (14 checks), off (2), and a
+negative control with case 6 reverted.

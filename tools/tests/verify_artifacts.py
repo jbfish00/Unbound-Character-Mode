@@ -52,7 +52,8 @@ BUILT = os.environ.get("CM_BUILT_ROM",
 
 # How many checks this layer must run. A deliberate LITERAL -- see
 # tools/tests/cm_tally.py for why this must never be a derived expression.
-EXPECT_CHECKS = 51   # +21: the PC-exit sweep, 5 checks x 4 sites + the tail census (2026-09-10)
+EXPECT_CHECKS = 68   # +17: [R] the roster display START row (2026-09-27)
+                     # +21: the PC-exit sweep, 5 checks x 4 sites + the tail census (2026-09-10)
 
 failures = []
 checks_run = 0
@@ -125,6 +126,11 @@ def main():
         windows.append((name, off, ln))
 
     win("injection block", bp.INJECT_FILE_OFF, bp.INJECT_BLOCK_LEN)
+    # roster display: record 6 (callback, label, icon gfx + frame = 11 B),
+    # the builder's case-6 byte, and the order loops' VarGet literal
+    win("START record 6", bp.START_RECORD6_OFF, 11)
+    win("START builder case-6 byte", bp.START_CASE6_OFF, 1)
+    win("START VarGet literal", bp.START_VARGET_LIT, 4)
     win("catch bl", bp.CATCH_BL_FILE_OFF, 4)
     win("GiveMonToPlayer trampoline", bp.GMTP_FILE_OFF, 8)
     win("givemon bl", bp.GIVEMON_BL_FILE_OFF, 4)
@@ -431,6 +437,112 @@ def main():
         check("[PC%d] the hooked script is still the PC access script" % _i,
               struct.unpack_from("<I", rom, _aoff)[0] == _aval,
               "%#x != %#x" % (struct.unpack_from("<I", rom, _aoff)[0], _aval))
+
+
+    # ---- [R] roster display: a START menu row (2026-09-27) ---------------
+    # Every check reads the BUILT ROM; expected values come from the manifest,
+    # the base ROM or the linked ELF -- never from the .bin it was built from.
+    import re
+    import subprocess
+    _elf = os.path.join(ROOT, "build", "character_mode.elf")
+    _nm = subprocess.run(["arm-none-eabi-nm", _elf], check=True,
+                         capture_output=True, text=True).stdout
+    _sym = {m.group(3): int(m.group(1), 16)
+            for m in re.finditer(r"^([0-9a-f]+) ([TtAaDdRr]) (\w+)$", _nm, re.M)}
+    _rm = json.load(open(os.path.join(CM, "roster_roots_manifest.json")))
+    _rr_file = open(os.path.join(CM, "roster_roots.bin"), "rb").read()
+    _rr_off = _sym["gRosterRoots"] - 0x08000000
+    check("[R] roster roots in-ROM == roster_roots.bin (at gRosterRoots)",
+          rom[_rr_off:_rr_off + len(_rr_file)] == _rr_file)
+    _blob = rom[_rr_off:_rr_off + len(_rr_file)]
+    _esz = _rm["entry_size_bytes"]
+    _roff = n_chars * _esz
+    check("[R] roots[] offset re-derived from the character count == manifest",
+          _roff == _rm["roots_offset_bytes"])
+    check("[R] roster_roots.bin size == entry table + one u16 per root",
+          len(_rr_file) == _roff + _rm["total_roots"] * 2)
+    _names = struct.unpack_from("<I", orig, 0x144)[0] - 0x08000000   # CFRU slot
+    _bad_e, _bad_n, _cur = [], [], 0
+    for _ci, _c in enumerate(chars):
+        _want = list(dict.fromkeys(_c["roster_species_ids"]))
+        _f, _n = struct.unpack_from("<HH", _blob, _ci * _esz)
+        if (_f, _n) != (_cur, len(_want)):
+            _bad_e.append((_c["character"], _f, _n))
+        _lo = _roff + _f * 2
+        _got = (list(struct.unpack_from("<%dH" % _n, _blob, _lo))
+                if _n and _lo + _n * 2 <= len(_blob) else ([] if not _n else None))
+        if _got != _want:
+            _bad_e.append((_c["character"], "roots differ"))
+        for _sp in (_got or []):
+            if rom[_names + _sp * 11] in (0x00, 0xFF):
+                _bad_n.append((_c["character"], _sp))
+        _cur += len(_want)
+    check("[R] every character's (first,count) and root slice re-derive from the manifest",
+          not _bad_e, str(_bad_e[:3]))
+    _t, _gap = 0, []
+    for _ci in range(n_chars):
+        _f, _n = struct.unpack_from("<HH", _blob, _ci * _esz)
+        if _f != _t:
+            _gap.append(_ci)
+        _t += _n
+    check("[R] entries tile roots[] exactly, no gap and no overlap",
+          not _gap and _t == _rm["total_roots"], "%d %s" % (_t, _gap[:3]))
+    check("[R] every root resolves to a non-empty name in the BUILT ROM's gSpeciesNames",
+          not _bad_n, str(_bad_n[:5]))
+    _late = n_chars - 1
+    _lf, _lc = struct.unpack_from("<HH", _blob, _late * _esz)
+    _lw = list(dict.fromkeys(chars[_late]["roster_species_ids"]))
+    check("[R] late probe: character #%d reads back its own roots" % (_late + 1),
+          _lc == len(_lw) and (not _lc or list(struct.unpack_from(
+              "<%dH" % _lc, _blob, _roff + _lf * 2)) == _lw))
+    _empty = [c["character"] for ci, c in enumerate(chars)
+              if struct.unpack_from("<HH", _blob, ci * _esz)[1] == 0]
+    check("[R] characters with zero roots in-ROM == the emitter's list",
+          _empty == _rm["empty_roster"], str(_empty))
+    check("[R] every zero-root character is hidden (the wrapper also hides the row)",
+          all(chars[ci].get("hidden") for ci in range(n_chars)
+              if struct.unpack_from("<HH", _blob, ci * _esz)[1] == 0))
+    # START record 6: callback + label from the ELF, icon from build_patch,
+    # the rest of the record (var, flags) untouched.
+    _r6 = rom[bp.START_RECORD6_OFF:bp.START_RECORD6_OFF + 16]
+    _cb, _tx, _g = struct.unpack_from("<IIH", _r6, 0)
+    check("[R] START record 6 callback/label -> CM_StartMenuRosterCallback / gCMRosterMenuText",
+          _cb == _sym.get("CM_StartMenuRosterCallback", -2) | 1 and _tx == _sym.get("gCMRosterMenuText", -1),
+          "%#x %#x" % (_cb, _tx))
+    check("[R] record 6 icon = build_patch's (gfx, frame); var and flags untouched",
+          _g == bp.ROSTER_ICON_GFX and _r6[10] == bp.ROSTER_ICON_FRAME
+          and _r6[11:16] == bp.START_RECORD6_ORIG[11:16]
+          and orig[bp.START_RECORD6_OFF:bp.START_RECORD6_OFF + 16] == bp.START_RECORD6_ORIG)
+    _lbl = rom[_tx - 0x08000000:_tx - 0x08000000 + 8] if 0x08000000 <= _tx < 0x0A000000 else b""
+    check("[R] its label reads 'Roster'",
+          _lbl[:7] == bytes([0xCC, 0xE3, 0xE7, 0xE8, 0xD9, 0xE6, 0xFF]), _lbl.hex())
+    check("[R] builder case 6 -> append (the rest of the jump table untouched)",
+          rom[bp.START_CASE6_OFF] == bp.START_CASE6_APPEND
+          and orig[bp.START_CASE6_OFF] == bp.START_CASE6_ORIG
+          and rom[bp.START_CASE6_OFF - 6:bp.START_CASE6_OFF] == orig[bp.START_CASE6_OFF - 6:bp.START_CASE6_OFF]
+          and rom[bp.START_CASE6_OFF + 1:bp.START_CASE6_OFF + 3] == orig[bp.START_CASE6_OFF + 1:bp.START_CASE6_OFF + 3])
+    # the byte's target must still be the unconditional append path
+    _tgt = 0x08A0BA80 + bp.START_CASE6_APPEND * 2 - 0x08000000
+    check("[R] case 6's target is the append path (lsls r0,r4,#24; lsrs; ldr r3,[sp]; bl)",
+          rom[_tgt:_tgt + 6] == bytes.fromhex("2006000e009b"), rom[_tgt:_tgt + 6].hex())
+    _wrap = _sym.get("CM_StartMenuVarGet", -2) | 1
+    _lits = [i for i in range(0, len(rom) - 3, 4) if struct.unpack_from("<I", rom, i)[0] == _wrap]
+    check("[R] the order loops' VarGet literal -> CM_StartMenuVarGet, and nothing else points at it",
+          struct.unpack_from("<I", orig, bp.START_VARGET_LIT)[0] == bp.START_VARGET_ORIG
+          and _lits == [bp.START_VARGET_LIT], str([hex(a) for a in _lits]))
+    # the compiled wrapper carries its gate: record 6's var, the CM flag,
+    # VarGet, and the roots blob it checks for an empty roster
+    _wo = (_wrap & ~1) - 0x08000000
+    _wl = {struct.unpack_from("<I", rom, i)[0] for i in range(_wo & ~3, (_wo & ~3) + 0x80, 4)}
+    check("[R] compiled wrapper carries 0x5040, flag 0x18F8, var 0x51FC, VarGet and gRosterRoots",
+          {0x5040, 0x18F8, 0x51FC, bp.START_VARGET_ORIG, _sym["gRosterRoots"]} <= _wl)
+    # scan the callback's whole extent (to the next symbol): CM_RosterOpen is
+    # inlined into it, so its literal pool is well past a fixed window
+    _co = (_sym["CM_StartMenuRosterCallback"] & ~1) - 0x08000000
+    _next = min(v - 0x08000000 for v in _sym.values() if v - 0x08000000 > _co)
+    _cl = {struct.unpack_from("<I", rom, i)[0] for i in range(_co & ~3, _next & ~3, 4)}
+    check("[R] compiled callback stops the handler's fade and closes via Unbound's own routine",
+          {0x08070A85, 0x08A0BD35} <= _cl, str(sorted(hex(x) for x in _cl if x > 0x08000000)[:8]))
 
     sha = os.path.join(ROOT, "build", "unbound-cm.gba.sha1")
     check("the build recorded its own sha1", os.path.isfile(sha))

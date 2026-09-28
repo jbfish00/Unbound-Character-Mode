@@ -47,6 +47,19 @@ import trade_hook
 
 ROM_BASE = 0x08000000
 
+# --- in-game roster display: a START menu row (../game_plans/roster_display.md,
+# user decision 2026-09-27). Unbound's graphical START menu is built from a
+# 12-record table; record 6 ("Costume Box") is DEAD -- the builder's case 6
+# never appends it -- so Roster takes that slot. Three verify-then-write
+# patches, nothing resized (src/roster_display.c has the full story):
+START_RECORD_TABLE   = 0xA6D160               # 12 x 16 B {cb, text, u16 gfx, u8 frame, u8, u16 var, u8, u8}
+START_RECORD6_OFF    = START_RECORD_TABLE + 6 * 16
+START_RECORD6_ORIG   = bytes.fromhex("69d70108cbe4a408f1270100405001 00".replace(" ", ""))
+ROSTER_ICON_GFX, ROSTER_ICON_FRAME = 0x27F0, 2   # reuse the "Pokemon List" icon
+START_CASE6_OFF      = 0xA0BA86               # builder jump table: case 6 byte
+START_CASE6_ORIG, START_CASE6_APPEND = 0x11, 0x1D  # -> 0x08A0BAA2 skip / 0x08A0BABA append
+START_VARGET_LIT     = 0xA0C1F4               # both order loops' VarGet literal
+START_VARGET_ORIG    = 0x0806E569
 # Injection block: confirmed 0xFF-free, 147 KiB @ file 0x00B2B280 (docs/FREE_SPACE.md)
 INJECT_FILE_OFF = 0x00B2B280
 INJECT_ROM_ADDR = ROM_BASE + INJECT_FILE_OFF
@@ -261,6 +274,16 @@ def main():
          f"-DTEST_ALLLEGEND_CHAR_ID={test_alllegend_id}",
          "-Werror", "-o", obj, os.path.join(ROOT, "src", "character_mode.c")])
 
+    # 2b. the roster display unit (same link; roots placed by --defsym)
+    with open(os.path.join(CM_DIR, "roster_roots_manifest.json")) as f:
+        roots_manifest = json.load(f)
+    roster_obj = os.path.join(BUILD, "roster_display.o")
+    run(["arm-none-eabi-gcc", "-c", "-g", "-mthumb", "-mcpu=arm7tdmi", "-mtune=arm7tdmi",
+         "-O2", "-ffreestanding", "-fno-builtin", "-mlong-calls", "-Wall", "-Wextra",
+         f"-DNUM_CHARACTERS={roots_manifest['characters']}",
+         f"-DROSTER_ROOTS_OFF={roots_manifest['roots_offset_bytes']}",
+         "-Werror", "-o", roster_obj, os.path.join(ROOT, "src", "roster_display.c")])
+
     # 3. layout: [characters.bin][rosters.bin][names.bin][u16 count][pad]
     #            [wild_species_meta.bin][pad][code]
     with open(os.path.join(CM_DIR, "characters.bin"), "rb") as f:
@@ -271,6 +294,9 @@ def main():
         names = f.read()
     with open(os.path.join(CM_DIR, "wild_species_meta.bin"), "rb") as f:
         wild_meta = f.read()
+    with open(os.path.join(CM_DIR, "roster_roots.bin"), "rb") as f:
+        roster_roots = f.read()
+    assert len(roster_roots) == roots_manifest["blob_size_bytes"]
     # needed to derive the live trade test's discriminating character pair by
     # roster content rather than by hardcoded index -- see trade_debug_script
     with open(os.path.join(CM_DIR, "characters_manifest.json")) as f:
@@ -296,7 +322,8 @@ def main():
     off_nameptrs = (off_names + len(names) + 3) & ~3
     off_count = off_nameptrs + n_chars * 4
     off_wild_meta = (off_count + 2 + 3) & ~3
-    off_code = (off_wild_meta + len(wild_meta) + 3) & ~3
+    off_roster_roots = (off_wild_meta + len(wild_meta) + 3) & ~3
+    off_code = (off_roster_roots + len(roster_roots) + 3) & ~3
 
     addr = lambda off: INJECT_ROM_ADDR + off
 
@@ -316,11 +343,12 @@ def main():
          "--defsym", f"gCharacterNamePtrs={addr(off_nameptrs):#x}",
          "--defsym", f"gCharacterCount={addr(off_count):#x}",
          "--defsym", f"gWildSpeciesMeta={addr(off_wild_meta):#x}",
+         "--defsym", f"gRosterRoots={addr(off_roster_roots):#x}",
          # The sprite pointer table lives in the SEPARATE free run (see
          # CM_SPRITE_PTRS_FILE_OFF), not in this injection block, so its
          # address is a fixed constant rather than an offset into `addr`.
          "--defsym", f"gCharacterSpritePtrs={ROM_BASE + CM_SPRITE_PTRS_FILE_OFF:#x}",
-         "-o", elf, obj, os.path.join(ROOT, "src", "unbound.ld")])
+         "-o", elf, obj, roster_obj, os.path.join(ROOT, "src", "unbound.ld")])
     code_bin = os.path.join(BUILD, "character_mode.bin")
     run(["arm-none-eabi-objcopy", "-O", "binary", "--only-section=.text",
          "--only-section=.rodata", elf, code_bin])
@@ -339,6 +367,14 @@ def main():
     gmtp_hook = syms["CharacterMode_GiveMonToPlayer"]
     sgm_hook = syms["CharacterMode_ScriptGiveMon"]
     wild_hook = syms["CharacterMode_CreateWildMon"]
+    assert roots_manifest["characters"] == n_chars, (
+        "roster_roots.bin was emitted for %d characters, this build has %d -- re-run "
+        "emit_roster_roots.py" % (roots_manifest["characters"], n_chars))
+    roster_cb = syms["CM_StartMenuRosterCallback"] | 1
+    roster_varget = syms["CM_StartMenuVarGet"] | 1
+    roster_text = syms["gCMRosterMenuText"]
+    print(f"CM_StartMenuRosterCallback   @ {roster_cb:#010x}; VarGet wrapper {roster_varget:#010x}; "
+          f"label @ {roster_text:#010x}")
     print(f"CharacterMode_CatchFlagGet   @ {catch_hook:#010x}")
     print(f"CharacterMode_GiveMonToPlayer@ {gmtp_hook:#010x}")
     print(f"CharacterMode_ScriptGiveMon  @ {sgm_hook:#010x}")
@@ -409,6 +445,12 @@ def main():
     for label, (off, orig) in WILD_CALL_SITES.items():
         assert rom[off:off + 4] == orig, \
             f"wild-encounter call site bytes changed at {label} — wrong ROM?"
+    assert rom[START_RECORD6_OFF:START_RECORD6_OFF + 16] == START_RECORD6_ORIG, \
+        "START record 6 (Costume Box) changed — wrong ROM?"
+    assert rom[START_CASE6_OFF] == START_CASE6_ORIG, \
+        "START builder case-6 byte changed — wrong ROM?"
+    assert struct.unpack_from("<I", rom, START_VARGET_LIT)[0] == START_VARGET_ORIG, \
+        "START order loops' VarGet literal changed — wrong ROM?"
 
     # 5. splice data + code
     rom[INJECT_FILE_OFF + off_characters:INJECT_FILE_OFF + off_characters + len(characters)] = characters
@@ -417,6 +459,15 @@ def main():
     rom[INJECT_FILE_OFF + off_nameptrs:INJECT_FILE_OFF + off_nameptrs + len(nameptrs)] = nameptrs
     rom[INJECT_FILE_OFF + off_count:INJECT_FILE_OFF + off_count + 2] = struct.pack("<H", n_chars)
     rom[INJECT_FILE_OFF + off_wild_meta:INJECT_FILE_OFF + off_wild_meta + len(wild_meta)] = wild_meta
+    rom[INJECT_FILE_OFF + off_roster_roots:INJECT_FILE_OFF + off_roster_roots + len(roster_roots)] = roster_roots
+    # roster display: record 6 -> Roster (callback, label, icon), case 6 -> append,
+    # order loops' VarGet -> the gating wrapper
+    struct.pack_into("<IIHB", rom, START_RECORD6_OFF, roster_cb, roster_text,
+                     ROSTER_ICON_GFX, ROSTER_ICON_FRAME)
+    rom[START_CASE6_OFF] = START_CASE6_APPEND
+    struct.pack_into("<I", rom, START_VARGET_LIT, roster_varget)
+    print(f"roster display: START record 6 -> Roster (cb {roster_cb:#010x}), case 6 -> append, "
+          f"VarGet literal -> {roster_varget:#010x}; roots {len(roster_roots)} B @ {addr(off_roster_roots):#010x}")
     rom[INJECT_FILE_OFF + off_code:INJECT_FILE_OFF + off_code + len(code)] = code
     rom[INJECT_FILE_OFF + off_optin:INJECT_FILE_OFF + off_optin + len(optin_blob)] = optin_blob
 
