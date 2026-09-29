@@ -52,7 +52,7 @@ BUILT = os.environ.get("CM_BUILT_ROM",
 
 # How many checks this layer must run. A deliberate LITERAL -- see
 # tools/tests/cm_tally.py for why this must never be a derived expression.
-EXPECT_CHECKS = 68   # +17: [R] the roster display START row (2026-09-27)
+EXPECT_CHECKS = 74   # +6: [F] the build fingerprints (2026-09-29); +17: [R] the roster display START row (2026-09-27)
                      # +21: the PC-exit sweep, 5 checks x 4 sites + the tail census (2026-09-10)
 
 failures = []
@@ -546,6 +546,42 @@ def main():
 
     sha = os.path.join(ROOT, "build", "unbound-cm.gba.sha1")
     check("the build recorded its own sha1", os.path.isfile(sha))
+
+    # ---- [F] compiled constants, read back out of the built ROM ----------
+    # (2026-09-29) Every other section checks an emitted .bin, a patched range
+    # or source TEXT. None reads what the COMPILER baked in -- the gap that let
+    # Seaglass ship a stale WILDPOOL_STRIDE and Lazarus a stale TOBIAS_CHAR_ID
+    # behind green suites. Both units export a fingerprint in
+    # .rodata.cm_fingerprint; found by magic inside the injection block.
+    # ⚠️ _fp*-prefixed locals: a bare name can shadow a counter the summary reads.
+    _fp_blk = bytes(rom[bp.INJECT_FILE_OFF:bp.INJECT_FILE_OFF + bp.INJECT_BLOCK_LEN])
+    _fp = {}
+    for _fp_name, _fp_magic, _fp_words in (("character_mode.c", 0x4D435346, 4),
+                                           ("roster_display.c", 0x4D435352, 3)):
+        _fp_n = _fp_blk.count(struct.pack("<I", _fp_magic))
+        check(f"[F] {_fp_name}: exactly one build fingerprint in the injection block "
+              f"({_fp_n} found)", _fp_n == 1)
+        if _fp_n == 1:
+            _fp[_fp_name] = struct.unpack_from(
+                "<%dI" % _fp_words, _fp_blk, _fp_blk.find(struct.pack("<I", _fp_magic)))
+    if "character_mode.c" in _fp:
+        _, _fp_mstride, _fp_wcount, _fp_wsize = _fp["character_mode.c"]
+        _fp_mk = open(os.path.join(CM, "marker_strings.bin"), "rb").read()
+        _fp_wm = open(os.path.join(CM, "wild_species_meta.bin"), "rb").read()
+        check(f"[F] compiled MARKER_STRIDE={_fp_mstride} == the injector's "
+              f"{bp.CM_MARKER_STRIDE}, and x{n_chars} == marker_strings.bin ({len(_fp_mk)} B)",
+              _fp_mstride == bp.CM_MARKER_STRIDE and _fp_mstride * n_chars == len(_fp_mk))
+        check(f"[F] compiled WILD_META_COUNT={_fp_wcount} x compiled "
+              f"sizeof(WildSpeciesMetaBin)={_fp_wsize} == wild_species_meta.bin "
+              f"({len(_fp_wm)} B) -- a stale count reads past the table or refuses real species",
+              _fp_wcount * _fp_wsize == len(_fp_wm))
+    if "roster_display.c" in _fp:
+        _, _fp_nchars, _fp_roff = _fp["roster_display.c"]
+        check(f"[F] roster_display compiled NUM_CHARACTERS={_fp_nchars} == manifest {n_chars}",
+              _fp_nchars == n_chars)
+        check(f"[F] roster_display compiled ROSTER_ROOTS_OFF={_fp_roff} == manifest "
+              f"{_rm['roots_offset_bytes']} == {n_chars} x {_rm['entry_size_bytes']}",
+              _fp_roff == _rm["roots_offset_bytes"] == n_chars * _rm["entry_size_bytes"])
 
     if assert_tally(checks_run, EXPECT_CHECKS, "verify_artifacts"):
         return 1

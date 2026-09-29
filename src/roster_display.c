@@ -379,3 +379,17 @@ u16 CM_StartMenuVarGet(u16 var)
         return 0xFF;
     return VarGet(var);
 }
+
+/* Build fingerprint: the values this unit ACTUALLY compiled with, parked in
+   the blob so verify_artifacts reads them back out of the BUILT ROM instead of
+   the source text or an emitted .bin. Ported from Seaglass via Lazarus and
+   Radical Red (2026-09-29), where it caught a stale TOBIAS_CHAR_ID on its first
+   run. In .rodata.* (which objcopy already extracts), NOT .text.*: both units
+   link into one blob with this one first, so a .text.* array here would push
+   every roster_display.c function along. */
+__attribute__((used, section(".rodata.cm_fingerprint")))
+const u32 CM_RosterFingerprint[3] = {
+    0x4D435352u,                        /* 'RSCM' */
+    NUM_CHARACTERS,
+    ROSTER_ROOTS_OFF,
+};

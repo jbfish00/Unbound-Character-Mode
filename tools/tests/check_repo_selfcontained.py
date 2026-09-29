@@ -66,12 +66,11 @@ ALLOWED_SIBLING = {
     "tools/character_mode/port_sibling_sources.py":
         "cross-repo DONOR tool by design: imports Radical Red's "
         "roster_sources.json. Never on the build or verify path.",
-    "tools/test_harness/run_roster_test.sh":
-        "SHARED TOOL BINARY: runs the roster display's headless Lua layer on "
-        "Seaglass's patched mgba-headless (the workspace's one build with a "
-        "working debugger stub and emu:screenshot). Test-only, never on the "
-        "build or verify path, and it SKIPs if the binary is absent -- the same "
-        "open item RR and Lazarus inventory for their runners.",
+    "tools/build_mgba.sh":
+        "COMMENT only -- provenance: the patch it applies is the one Seaglass "
+        "carries, at the same upstream commit. It clones mGBA from upstream; "
+        "no sibling path is opened. (Until 2026-09-29 run_roster_test.sh ran "
+        "Seaglass's built mgba-headless by path and exited 0 without it.)",
     "tools/tests/check_repo_selfcontained_negative_test.py":
         "THIS CHECKER'S OWN NEGATIVE TEST. It must name a sibling repo in order "
         "to reintroduce the dependency on purpose in a throwaway tree. "

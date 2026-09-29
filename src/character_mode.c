@@ -1591,3 +1591,18 @@ void CharacterMode_ShowMugshot(void)
         FreeSpritePaletteByTag(CM_PALETTE_TAG);
     }
 }
+
+/* Build fingerprint: the values this unit ACTUALLY compiled with, parked in
+   the blob so verify_artifacts reads them back out of the BUILT ROM instead of
+   the source text or an emitted .bin. Ported from Seaglass via Lazarus and
+   Radical Red (2026-09-29), where it caught a stale TOBIAS_CHAR_ID on its first
+   run. In .rodata.* (which objcopy already extracts), NOT .text.*: both units
+   link into one blob with this one first, so a .text.* array here would push
+   every roster_display.c function along. */
+__attribute__((used, section(".rodata.cm_fingerprint")))
+const u32 CM_BuildFingerprint[4] = {
+    0x4D435346u,                        /* 'FSCM' */
+    MARKER_STRIDE,
+    WILD_META_COUNT,
+    sizeof(struct WildSpeciesMetaBin),  /* the compiled entry size, not a guess */
+};

@@ -17,14 +17,14 @@ set -u
 [ -z "${BASH_VERSION:-}" ] && exec bash "$0" "$@"
 cd "$(dirname "$0")/../.." || exit 1
 
-MGBA=../Seaglass-Character-Mode/tools/mgba_src/build/mgba-headless
+MGBA="${MGBA_HEADLESS:-tools/mgba_src/build/mgba-headless}"
 SCRIPT=tools/mgba_scripts/cm_roster_menu_test.lua
 ROM=build/unbound-cm.gba
 NEG=build/unbound-cm-roster-neg.gba
 export CM_CHECKPOINT=${CM_CHECKPOINT:-/tmp/ub_ss_field.ss}
 EXPECT=14          # cm_roster_menu_test.lua, MODE=roster (MODE=off runs 2)
 
-[ -x "$MGBA" ] || { echo "SKIP: mgba-headless not found at $MGBA"; exit 0; }
+[ -x "$MGBA" ] || { echo "no headless mGBA at $MGBA -- build it with 'sh tools/build_mgba.sh', or set MGBA_HEADLESS"; exit 2; }
 [ -f "$ROM" ] || { echo "build first: python3 tools/build_patch.py"; exit 1; }
 
 # The checkpoint embeds RAM that points into the injected code, so remake it
