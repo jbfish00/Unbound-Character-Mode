@@ -59,6 +59,16 @@ headless_display_start() {
         if DISPLAY="$HEADLESS_DISPLAY" xdpyinfo >/dev/null 2>&1; then
             export DISPLAY="$HEADLESS_DISPLAY"
             export LIBGL_ALWAYS_SOFTWARE=1   # software GL keeps QOpenGL happy
+            # ⚠️ ON A WAYLAND DESKTOP, DISPLAY IS NOT ENOUGH. With
+            # WAYLAND_DISPLAY set, Qt picks its Wayland backend: mgba-qt
+            # opened on the USER's real screen, and this Xvfb had no window,
+            # so every runner died at `xdotool search --pid` with "mgba window
+            # not found". That was misread as "mgba-qt windows lack
+            # _NET_WM_PID" and blocked the GDB layers from ~2026-09-27 until
+            # 2026-09-29. Under xcb the windows carry _NET_WM_PID and
+            # `search --pid` works unchanged.
+            export QT_QPA_PLATFORM=xcb
+            unset WAYLAND_DISPLAY
             return 0
         fi
         # If Xvfb died (display taken, missing binary), stop waiting for it.
