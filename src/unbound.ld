@@ -34,6 +34,11 @@ gEnemyParty    = 0x0202402C;       /* wild mon built here by CreateWildMon (BPRE
  *      CanShiftMon (0x0809393C) are its two storage-system callers. ---- */
 CountPartyAliveNonEggMonsExcept = 0x0808C184 | 1;
 
+/* ---- Link-trade sweep (src/character_mode.c
+ *      CharacterMode_LinkTradeSweepThenExpand; 2026-09-30). The vanilla
+ *      FireRed routine, byte-identical to Radical Red's here. ---- */
+StringExpandPlaceholders = 0x08008FCC | 1;
+
 /* ---- Pokedex, for the 1% legendary encounter's "once each" filter
  *      (game_plans/legendary_encounters.md §1.3). Both RE-VERIFIED byte-exact
  *      in THIS ROM by disassembly, not copied from the Radical Red sibling:

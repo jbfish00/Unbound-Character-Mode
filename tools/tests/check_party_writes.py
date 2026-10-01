@@ -151,7 +151,21 @@ INVENTORY = {
                  "back from gSaveBlock1Ptr. Restores the player's OWN saved "
                  "party after a link/facility swap-out; everything it "
                  "restores was gated when first acquired"),
-    0x00050828: ("UNVERIFIED",
+    0x00050828: ("GATED",
+                 "✅ GATED 2026-09-30 by the post-trade sweep (the user chose "
+                 "'sweep after the trade'). Unbound's Cable Club trade branches "
+                 "say 'use Unbound Cloud'; only the Union Room was unmeasured. "
+                 "FireRed has ONE trade ender for wired and wireless, "
+                 "CB2_SaveAndEndTrade 0x08053E8C (installed only by "
+                 "CB2_TryLinkTradeEvolution, after the animation and "
+                 "evolution), and it now runs "
+                 "CharacterMode_LinkTradeSweepThenExpand at state 0 through the "
+                 "BL at 0x080540EC, BEFORE LinkFullSave_Init, so the save holds "
+                 "the swept party and a reset cannot undo it. verify_artifacts "
+                 "[L], verify negative 12/12, live run_link_trade_sweep_test.sh "
+                 "(Brock boxes Hitmontop, Red and CM off move nothing, the "
+                 "no-hook ROM fails). The in-game trades are swept by special "
+                 "0x1AF's tails. History: "
                  "TradeMons(playerIdx, partnerIdx) at 0x0805080C -- NOT a "
                  "party slot swap. ⚠️ Until 2026-09-29 this row was EXEMPT "
                  "and said the routine 'computes two gPlayerParty slot "

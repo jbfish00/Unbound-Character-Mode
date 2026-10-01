@@ -52,7 +52,7 @@ BUILT = os.environ.get("CM_BUILT_ROM",
 
 # How many checks this layer must run. A deliberate LITERAL -- see
 # tools/tests/cm_tally.py for why this must never be a derived expression.
-EXPECT_CHECKS = 82   # +8: [G] the PC second guard (2026-09-29); +6: [F] the build fingerprints (2026-09-29); +17: [R] the roster display START row (2026-09-27)
+EXPECT_CHECKS = 88   # +6: [L] the link-trade sweep (2026-09-30); +8: [G] the PC second guard (2026-09-29); +6: [F] the build fingerprints (2026-09-29); +17: [R] the roster display START row (2026-09-27)
                      # +21: the PC-exit sweep, 5 checks x 4 sites + the tail census (2026-09-10)
 
 failures = []
@@ -136,6 +136,9 @@ def main():
     for _o in bp.PSS_GUARD_BL_FILE_OFFS + (bp.PSS_CANSHIFT_BL_FILE_OFF,):
         win("PC guard BL %#x" % _o, _o, 4)
     win("CanShiftMon tail", bp.PSS_CANSHIFT_TAIL_FILE_OFF, 4)
+    # link-trade sweep: the CheckHeap+8 trampoline and one BL
+    win("link-trade trampoline (CheckHeap+8)", bp.LINK_TRADE_TRAMPOLINE_FILE_OFF, 8)
+    win("link-trade BL", bp.LINK_TRADE_BL_FILE_OFF, 4)
     win("catch bl", bp.CATCH_BL_FILE_OFF, 4)
     win("GiveMonToPlayer trampoline", bp.GMTP_FILE_OFF, 8)
     win("givemon bl", bp.GIVEMON_BL_FILE_OFF, 4)
@@ -638,6 +641,45 @@ def main():
     check("[G] built: the only remaining BL to the count routine is special 0x85's wrapper",
           len(_left) == 1 and 0x08000000 + _left[0] - (_w & ~1) < 16,
           str([hex(0x08000000 + o) for o in _left]))
+    # ---- [L] link-trade sweep (rowe_parity.md §13.53, 2026-09-30) ----------
+    _ls, _lt = bp.LINK_TRADE_BL_FILE_OFF, bp.LINK_TRADE_TRAMPOLINE_FILE_OFF
+    _sep = bp.STRING_EXPAND_PLACEHOLDERS
+    _case0 = struct.unpack_from("<I", orig, 0x053EB4)[0]   # CB2_SaveAndEndTrade's table, entry 0
+    _c0 = _case0 - 0x08000000
+    check("[L] base: CB2_SaveAndEndTrade's state 0 loads \"Communication standby\" "
+          "and branches to the BL at the site, which calls StringExpandPlaceholders",
+          _case0 == 0x0805404C
+          and struct.unpack_from("<I", orig, ((_c0 + 14 + 4) & ~3) + 8)[0] == 0x0841E325
+          and bytes(orig[_c0 + 16:_c0 + 18]) == bytes.fromhex("45e0")
+          and _bl(orig, _ls) == _sep)
+    _ptrs = [o for o in range(0, len(orig) - 3, 4)
+             if struct.unpack_from("<I", orig, o)[0] == 0x08053E8D]
+    check("[L] base: CB2_SaveAndEndTrade has one pointer to it (CB2_TryLinkTradeEvolution's "
+          "pool, 0x080537F8) and no BL callers",
+          _ptrs == [0x0537F8]
+          and not any(_bl(orig, o) == 0x08053E8C for o in range(0, len(orig) - 4, 2)
+                      if (orig[o + 1] & 0xF8) == 0xF0))
+    check("[L] base: CheckHeap+8 is vanilla, and nothing calls it or points at it",
+          bytes(orig[_lt:_lt + 8]) == bp.LINK_TRADE_DEAD_BYTES
+          and not any(_bl(orig, o) == 0x08000000 + _lt
+                      for o in range(0, len(orig) - 4, 2)
+                      if (orig[o + 1] & 0xF8) == 0xF0)
+          and struct.pack("<I", 0x08000000 + _lt + 1) not in orig)
+    check("[L] built: the site calls the CheckHeap+8 trampoline",
+          _bl(rom, _ls) == 0x08000000 + _lt)
+    _lshim = int(_re.search(r"^([0-9a-f]+) T CharacterMode_LinkTradeSweepThenExpand$",
+                            _nm, _re.M).group(1), 16)
+    _sweep = int(_re.search(r"^([0-9a-f]+) T CharacterMode_SweepPartyToPC$",
+                            _nm, _re.M).group(1), 16)
+    check("[L] trampoline is ldr r3,[pc]; bx r3 -> CharacterMode_LinkTradeSweepThenExpand",
+          bytes(rom[_lt:_lt + 8]) == struct.pack("<HHI", 0x4B00, 0x4718, _lshim | 1))
+    _l0 = (_lshim & ~1) - 0x08000000
+    _lcode = bytes(rom[_l0:_l0 + 0x24])
+    check("[L] compiled link shim (read from the ROM) BLs CharacterMode_SweepPartyToPC "
+          "and carries StringExpandPlaceholders",
+          any(_bl(rom, _l0 + k) == (_sweep & ~1) for k in range(0, 0x20, 2))
+          and (_sep | 1) in {struct.unpack_from("<I", _lcode, k)[0]
+                             for k in range(0, len(_lcode) - 3, 4)})
 
     if assert_tally(checks_run, EXPECT_CHECKS, "verify_artifacts"):
         return 1

@@ -116,6 +116,14 @@ PSS_GUARD_BL_FILE_OFFS        = (0x09391A,)   # IsRemovingLastPartyMon: bl Count
 PSS_CANSHIFT_BL_FILE_OFF      = 0x093956      # CanShiftMon: bl Count
 PSS_CANSHIFT_TAIL_FILE_OFF    = 0x09395A      # lsls; cmp -> b <epilogue 0x0809399A>; nop
 PSS_GUARD_TRAMPOLINE_FILE_OFF = 0x002BEC      # CheckHeap (unused debug routine)
+# Link-trade sweep (2026-09-30, rowe_parity.md §13.53): byte-identical to Radical
+# Red's. The one BL to StringExpandPlaceholders in CB2_SaveAndEndTrade
+# (0x08053E8C), shared by state 0 "Communication standby" and state 2 "Saving",
+# both before LinkFullSave_Init. Trampoline: CheckHeap's second 8 bytes.
+LINK_TRADE_BL_FILE_OFF         = 0x0540EC
+STRING_EXPAND_PLACEHOLDERS     = 0x08008FCC
+LINK_TRADE_TRAMPOLINE_FILE_OFF = 0x002BF4      # CheckHeap + 8
+LINK_TRADE_DEAD_BYTES          = bytes.fromhex("2868211c1031fff7")
 # Character-select (v3): the reserved gSpecials[0x1B6] slot (script-
 # unreachable stale entry, docs/ROUTINE_MAP.md v8.1) is repointed to the
 # injected name-buffering special used by the number-entry select flow.
@@ -562,6 +570,20 @@ def main():
     rom[_c:_c + 4] = struct.pack("<HH", 0xE01E, 0x46C0)
     print(f"PC second guard: IsRemovingLastPartyMon + CanShiftMon -> {guard_hook:#010x} "
           f"via {ROM_BASE + _t:#x} (CheckHeap)")
+
+    # 6a-link. Link-trade sweep (src/character_mode.c
+    # CharacterMode_LinkTradeSweepThenExpand): CheckHeap+8 trampoline, one BL.
+    link_hook = syms["CharacterMode_LinkTradeSweepThenExpand"] | 1
+    _l = LINK_TRADE_TRAMPOLINE_FILE_OFF
+    assert bytes(rom[_l:_l + 8]) == LINK_TRADE_DEAD_BYTES, (
+        "CheckHeap+8 is not the dead routine's bytes -- re-derive")
+    rom[_l:_l + 8] = struct.pack("<HHI", 0x4B00, 0x4718, link_hook)
+    _s = LINK_TRADE_BL_FILE_OFF
+    _cur, _exp = bytes(rom[_s:_s + 4]), thumb_bl(ROM_BASE + _s, STRING_EXPAND_PLACEHOLDERS)
+    assert _cur == _exp, f"link-trade site {_s:#x}: {_cur.hex()} != {_exp.hex()}"
+    rom[_s:_s + 4] = thumb_bl(ROM_BASE + _s, ROM_BASE + _l)
+    print(f"link-trade sweep: CB2_SaveAndEndTrade's expand BL -> {link_hook:#010x} "
+          f"via {ROM_BASE + _l:#x} (CheckHeap+8)")
 
     # 6b. entry trampoline: ldr r1,[pc,#0]; bx r1; .word hook|1
     tramp = struct.pack("<HHI", 0x4900, 0x4708, gmtp_hook | 1)

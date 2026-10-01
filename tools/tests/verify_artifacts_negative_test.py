@@ -51,7 +51,7 @@ def run(path):
 
 # How many tamper cases this negative test must run. A deliberate
 # LITERAL -- see cm_tally.assert_cases.
-EXPECT_CASES = 9
+EXPECT_CASES = 12
 
 
 def main():
@@ -118,6 +118,24 @@ def main():
         f.seek(bp.PSS_GUARD_TRAMPOLINE_FILE_OFF + 4)
         f.write((v + 4).to_bytes(4, "little"))
     case("the guard trampoline aimed 4 bytes off fails", 1, guard_tramp_bent)
+    # Link-trade sweep ([L]). Each tamper stays inside a declared window, so only
+    # [L] can catch it.
+    def link_site_reverted(f):
+        o = bp.LINK_TRADE_BL_FILE_OFF
+        f.seek(o)
+        f.write(bp.thumb_bl(bp.ROM_BASE + o, bp.STRING_EXPAND_PLACEHOLDERS))
+    case("the link-trade site left calling vanilla fails", 1, link_site_reverted)
+    def link_site_to_guard(f):
+        o = bp.LINK_TRADE_BL_FILE_OFF
+        f.seek(o)
+        f.write(bp.thumb_bl(bp.ROM_BASE + o, bp.ROM_BASE + bp.PSS_GUARD_TRAMPOLINE_FILE_OFF))
+    case("the link-trade site aimed at the guard's trampoline fails", 1, link_site_to_guard)
+    def link_tramp_bent(f):
+        f.seek(bp.LINK_TRADE_TRAMPOLINE_FILE_OFF + 4)
+        v = int.from_bytes(f.read(4), "little")
+        f.seek(bp.LINK_TRADE_TRAMPOLINE_FILE_OFF + 4)
+        f.write((v + 4).to_bytes(4, "little"))
+    case("the link-trade trampoline aimed 4 bytes off fails", 1, link_tramp_bent)
     case("control: the untouched copy still passes", 0)
 
     shutil.rmtree(tmp, ignore_errors=True)

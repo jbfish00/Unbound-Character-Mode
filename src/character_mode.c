@@ -1682,3 +1682,33 @@ u32 CM_PSSLastMonGuard(u8 slot)
         return 0;
     return alive;
 }
+
+/* ---- Link trade: sweep the party BEFORE the post-trade save (2026-09-30) ----
+ *
+ * The user chose "sweep after the trade" for link trades (rowe_parity.md
+ * §13.53). Unbound repointed the Cable Club's trade branches to "use Unbound
+ * Cloud", but its Union Room still hands off to vanilla RunUnionRoom, and
+ * whether a trade survives there is unmeasured. FireRed has ONE ender for wired
+ * and wireless trades, so this closes both whatever the answer.
+ *
+ * TradeMons's link caller (0x08053DCE) puts the partner's mon into the traded
+ * slot with nothing gating it. CB2_SaveAndEndTrade (0x08053E8C), installed
+ * only by CB2_TryLinkTradeEvolution after the animation and evolution, has
+ * state 0 ("Communication standby...") and state 2 ("Saving...") share one BL
+ * to StringExpandPlaceholders at 0x080540EC, before LinkFullSave_Init (state
+ * 50). That code is byte-identical to Radical Red's (only later save states
+ * differ). The BL comes here through a trampoline at CheckHeap+8: sweep, then
+ * expand exactly as before. The save then writes the swept party, so a reset
+ * can't bring the mon back. Idempotent, so running at both states is
+ * harmless. With Character Mode off, the sweep returns at once: vanilla. */
+extern u8 *StringExpandPlaceholders(u8 *dst, const u8 *src);
+
+u8 *CharacterMode_LinkTradeSweepThenExpand(u8 *dst, const u8 *src)
+{
+    /* An asm call, on purpose: a C call here let GCC split the sweep into a
+     * .part.0 and moved every function after it (measured 2026-09-30 with nm;
+     * Lazarus did the same). The asm is opaque to the call graph. */
+    __asm__ volatile ("bl CharacterMode_SweepPartyToPC"
+                      ::: "r0", "r1", "r2", "r3", "r12", "lr", "memory", "cc");
+    return StringExpandPlaceholders(dst, src);
+}
