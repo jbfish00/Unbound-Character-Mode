@@ -51,7 +51,7 @@ def run(path):
 
 # How many tamper cases this negative test must run. A deliberate
 # LITERAL -- see cm_tally.assert_cases.
-EXPECT_CASES = 6
+EXPECT_CASES = 9
 
 
 def main():
@@ -104,6 +104,20 @@ def main():
         f.seek(bp.CM_MARKER_FILE_OFF)
         f.write(b"\x41" * bp.CM_MARKER_STRIDE)
     case("an unterminated marker slot fails", 1, wipe_marker)
+    # PC second guard ([G]). Each tamper hits one thing [G] owns.
+    def guard_site_reverted(f):
+        o = bp.PSS_GUARD_BL_FILE_OFFS[0]
+        f.seek(o)
+        f.write(bp.thumb_bl(bp.ROM_BASE + o, bp.PSS_COUNT_ALIVE_EXCEPT))
+    case("the deposit site left calling the vanilla count fails", 1, guard_site_reverted)
+    case("CanShiftMon's tail reverted fails", 1,
+         revert(bp.PSS_CANSHIFT_TAIL_FILE_OFF, bytes.fromhex("00060028")))
+    def guard_tramp_bent(f):
+        f.seek(bp.PSS_GUARD_TRAMPOLINE_FILE_OFF + 4)
+        v = int.from_bytes(f.read(4), "little")
+        f.seek(bp.PSS_GUARD_TRAMPOLINE_FILE_OFF + 4)
+        f.write((v + 4).to_bytes(4, "little"))
+    case("the guard trampoline aimed 4 bytes off fails", 1, guard_tramp_bent)
     case("control: the untouched copy still passes", 0)
 
     shutil.rmtree(tmp, ignore_errors=True)

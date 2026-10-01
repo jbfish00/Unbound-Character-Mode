@@ -1606,3 +1606,79 @@ const u32 CM_BuildFingerprint[4] = {
     WILD_META_COUNT,
     sizeof(struct WildSpeciesMetaBin),  /* the compiled entry size, not a guess */
 };
+
+/* --- ROWE's second guard: never let the PC take your last ON-ROSTER mon ---
+ *
+ * Ported 2026-09-29 from the Radical Red port (rowe_parity.md §13.53): this
+ * engine region is byte-identical to Radical Red's, re-checked by
+ * verify_artifacts [G]. The PC-exit sweep is undo-on-exit, and its never-empty
+ * rule KEEPS an off-roster mon when nothing on the roster is left, so "deposit
+ * your only on-roster mon, withdraw an off-roster one" still ended with the
+ * off-roster mon. ROWE closes that inside the storage system
+ * (IsRemovingLastAllowedPartyMon); this is the same rule here.
+ *
+ * FireRed keeps IsRemovingLastPartyMon (0x08093900) as a real function, so
+ * exactly two calls to CountPartyAliveNonEggMonsExcept are taken over: its
+ * one and CanShiftMon's (0x0809393C). Both are BL-retargeted through one
+ * trampoline (over the unused debug routine CheckHeap, 0x08002BEC) to
+ * CM_PSSLastMonGuard, which dispatches on its return address:
+ *   - IsRemovingLastPartyMon: 0 ("that's your last POKEMON") when the cursor
+ *     mon is the last alive, non-egg, on-roster one;
+ *   - CanShiftMon: its tail is patched to return this function's answer:
+ *     vanilla's egg/fainted rule plus ROWE's "don't swap your last on-roster
+ *     mon out for an off-roster one".
+ * With Character Mode off, both are exactly vanilla. */
+extern u8 CountPartyAliveNonEggMonsExcept(u8 slotToIgnore);
+#define PSS_MON_DATA_HP        57      /* CanShiftMon's own GetMonData(moving, 57) */
+#define PSS_STORAGE            (*(u8 **) 0x020397B0)
+#define PSS_MOVING_MON         0x20A0  /* gStorage->movingMon */
+#define PSS_DISPLAY_MON_IS_EGG 0x0CE9  /* gStorage->displayMonIsEgg */
+#define PSS_CANSHIFT_RET       0x0809395A  /* return address of CanShiftMon's call */
+
+static bool8 CharacterMode_RemovingLastAllowed(u8 slot)
+{
+    u16 species;
+    u32 i;
+
+    if (!InCharacterMode() || slot >= PARTY_SIZE)
+        return FALSE;
+    species = GetMonData(&gPlayerParty[slot], MON_DATA_SPECIES, 0);
+    if (species == SPECIES_NONE
+        || GetMonData(&gPlayerParty[slot], MON_DATA_IS_EGG, 0)
+        || !IsSpeciesAllowedForCharacter(species))
+        return FALSE;
+    for (i = 0; i < PARTY_SIZE; i++)
+    {
+        if (i == slot)
+            continue;
+        species = GetMonData(&gPlayerParty[i], MON_DATA_SPECIES, 0);
+        if (species != SPECIES_NONE
+            && !GetMonData(&gPlayerParty[i], MON_DATA_IS_EGG, 0)
+            && GetMonData(&gPlayerParty[i], PSS_MON_DATA_HP, 0) != 0
+            && IsSpeciesAllowedForCharacter(species))
+            return FALSE;
+    }
+    return TRUE;
+}
+
+u32 CM_PSSLastMonGuard(u8 slot)
+{
+    u32 ret = (u32) __builtin_return_address(0) & ~1u;
+    u8 alive = CountPartyAliveNonEggMonsExcept(slot);
+
+    if (ret == PSS_CANSHIFT_RET)
+    {
+        u8 *storage = PSS_STORAGE;
+        struct Pokemon *moving = (struct Pokemon *) (storage + PSS_MOVING_MON);
+        if (alive == 0 && (storage[PSS_DISPLAY_MON_IS_EGG]
+                           || GetMonData(moving, PSS_MON_DATA_HP, 0) == 0))
+            return 0;
+        if (CharacterMode_RemovingLastAllowed(slot)
+            && !IsSpeciesAllowedForCharacter(GetMonData(moving, MON_DATA_SPECIES, 0)))
+            return 0;
+        return 1;
+    }
+    if (alive != 0 && CharacterMode_RemovingLastAllowed(slot))
+        return 0;
+    return alive;
+}

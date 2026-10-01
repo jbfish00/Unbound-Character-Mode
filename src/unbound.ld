@@ -28,6 +28,12 @@ CreateWildMon  = 0x08A14838 | 1;  /* wild_encounter.c; real body behind the 0x08
 TryGenerateWildMon = 0x08A14EC4 | 1; /* live land/water/rock generator; contains the hooked bl @0x08A14FE6 (v17) */
 gEnemyParty    = 0x0202402C;       /* wild mon built here by CreateWildMon (BPRE.ld) */
 
+/* ---- PC second guard (src/character_mode.c CM_PSSLastMonGuard; 2026-09-29).
+ *      Byte-identical to Radical Red's at these addresses, checked: special
+ *      0x85's wrapper calls it; IsRemovingLastPartyMon (0x08093900) and
+ *      CanShiftMon (0x0809393C) are its two storage-system callers. ---- */
+CountPartyAliveNonEggMonsExcept = 0x0808C184 | 1;
+
 /* ---- Pokedex, for the 1% legendary encounter's "once each" filter
  *      (game_plans/legendary_encounters.md §1.3). Both RE-VERIFIED byte-exact
  *      in THIS ROM by disassembly, not copied from the Radical Red sibling:

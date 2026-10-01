@@ -52,7 +52,7 @@ BUILT = os.environ.get("CM_BUILT_ROM",
 
 # How many checks this layer must run. A deliberate LITERAL -- see
 # tools/tests/cm_tally.py for why this must never be a derived expression.
-EXPECT_CHECKS = 74   # +6: [F] the build fingerprints (2026-09-29); +17: [R] the roster display START row (2026-09-27)
+EXPECT_CHECKS = 82   # +8: [G] the PC second guard (2026-09-29); +6: [F] the build fingerprints (2026-09-29); +17: [R] the roster display START row (2026-09-27)
                      # +21: the PC-exit sweep, 5 checks x 4 sites + the tail census (2026-09-10)
 
 failures = []
@@ -131,6 +131,11 @@ def main():
     win("START record 6", bp.START_RECORD6_OFF, 11)
     win("START builder case-6 byte", bp.START_CASE6_OFF, 1)
     win("START VarGet literal", bp.START_VARGET_LIT, 4)
+    # PC second guard: the trampoline over CheckHeap, two BLs, CanShiftMon's tail
+    win("PC guard trampoline (CheckHeap)", bp.PSS_GUARD_TRAMPOLINE_FILE_OFF, 8)
+    for _o in bp.PSS_GUARD_BL_FILE_OFFS + (bp.PSS_CANSHIFT_BL_FILE_OFF,):
+        win("PC guard BL %#x" % _o, _o, 4)
+    win("CanShiftMon tail", bp.PSS_CANSHIFT_TAIL_FILE_OFF, 4)
     win("catch bl", bp.CATCH_BL_FILE_OFF, 4)
     win("GiveMonToPlayer trampoline", bp.GMTP_FILE_OFF, 8)
     win("givemon bl", bp.GIVEMON_BL_FILE_OFF, 4)
@@ -582,6 +587,57 @@ def main():
         check(f"[F] roster_display compiled ROSTER_ROOTS_OFF={_fp_roff} == manifest "
               f"{_rm['roots_offset_bytes']} == {n_chars} x {_rm['entry_size_bytes']}",
               _fp_roff == _rm["roots_offset_bytes"] == n_chars * _rm["entry_size_bytes"])
+
+    # ---- [G] PC second guard (ROWE's IsRemovingLastAllowedPartyMon) ------
+    import re as _re
+    import subprocess as _sp
+
+    def _bl(buf, off):
+        hw1, hw2 = struct.unpack_from("<HH", buf, off)
+        if (hw1 & 0xF800) != 0xF000 or (hw2 & 0xF800) != 0xF800:
+            return None
+        d = ((hw1 & 0x7FF) << 12) | ((hw2 & 0x7FF) << 1)
+        if d & 0x400000:
+            d -= 0x800000
+        return 0x08000000 + off + 4 + d
+    _t = bp.PSS_GUARD_TRAMPOLINE_FILE_OFF
+    _count = bp.PSS_COUNT_ALIVE_EXCEPT
+    _sites = bp.PSS_GUARD_BL_FILE_OFFS + (bp.PSS_CANSHIFT_BL_FILE_OFF,)
+    _c = bp.PSS_CANSHIFT_TAIL_FILE_OFF
+    check("[G] base: CheckHeap is vanilla, and nothing calls it or points at it",
+          bytes(orig[_t:_t + 8]) == bytes.fromhex("30b508480468051c")
+          and not any(_bl(orig, o) == 0x08000000 + _t
+                      for o in range(0, len(orig) - 4, 2)
+                      if (orig[o + 1] & 0xF8) == 0xF0)
+          and struct.pack("<I", 0x08000000 + _t + 1) not in orig
+          and struct.pack("<I", 0x08000000 + _t) not in orig)
+    _w = struct.unpack_from("<I", orig, 0x15FD60 + 4 * 0x85)[0] & ~1
+    check("[G] base: special 0x85's wrapper calls CountPartyAliveNonEggMonsExcept",
+          any(_bl(orig, _w - 0x08000000 + k) == _count for k in range(0, 12, 2)))
+    check("[G] base: both guard sites call the count routine",
+          all(_bl(orig, x) == _count for x in _sites))
+    check("[G] built: both guard sites call the CheckHeap trampoline",
+          all(_bl(rom, x) == 0x08000000 + _t for x in _sites))
+    _nm = _sp.run(["arm-none-eabi-nm", os.path.join(ROOT, "build", "character_mode.elf")],
+                  check=True, capture_output=True, text=True).stdout
+    _guard = int(_re.search(r"^([0-9a-f]+) T CM_PSSLastMonGuard$", _nm, _re.M).group(1), 16)
+    check("[G] trampoline is ldr r3,[pc]; bx r3 -> CM_PSSLastMonGuard",
+          bytes(rom[_t:_t + 8]) == struct.pack("<HHI", 0x4B00, 0x4718, _guard | 1))
+    check("[G] CanShiftMon tail: lsls; cmp -> b <epilogue 0x0809399A>; nop",
+          bytes(orig[_c:_c + 4]) == bytes.fromhex("00060028")
+          and bytes(rom[_c:_c + 4]) == struct.pack("<HH", 0xE01E, 0x46C0))
+    _g0 = (_guard & ~1) - 0x08000000
+    _gcode = bytes(rom[_g0:_g0 + 0x200])
+    _glits = {struct.unpack_from("<I", _gcode, k)[0] for k in range(0, len(_gcode) - 3, 4)}
+    check("[G] compiled guard (read from the ROM) carries 0x0809395A and gStorage 0x020397B0",
+          {0x0809395A, 0x020397B0} <= _glits)
+    # Exhaustive: after the patch, the ONLY direct caller of the count routine
+    # is special 0x85's wrapper -- no storage-system path skips the guard.
+    _left = [o for o in range(0, len(rom) - 4, 2)
+             if (rom[o + 1] & 0xF8) == 0xF0 and _bl(rom, o) == _count]
+    check("[G] built: the only remaining BL to the count routine is special 0x85's wrapper",
+          len(_left) == 1 and 0x08000000 + _left[0] - (_w & ~1) < 16,
+          str([hex(0x08000000 + o) for o in _left]))
 
     if assert_tally(checks_run, EXPECT_CHECKS, "verify_artifacts"):
         return 1

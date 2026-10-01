@@ -104,7 +104,18 @@ GIVEMON_BL_ORIG = bytes.fromhex("34F074F8")
 # r3 carries ScriptGiveMon's unused1 arg, which CFRU itself documents as
 # the hook-in arg ("don't use it for anything") — clobbering it is safe,
 # and the wrapper forwards it unread.
-GIVEMON_VENEER_FILE_OFF = 0x1B2940  # inside the 34KB 0xFF run @ 0x1B2938
+GIVEMON_VENEER_FILE_OFF = 0x1B2940  # first bytes of a 34,940-byte 0xFF run @ 0x1B2938
+# ⚠️ That run is NOT all free: 460 aligned pointers target it (e.g. the table
+# at 0x0845B080, blanked vanilla text). The lowest target is 0x081B2A1C, so
+# these 8 bytes are clear of every reference -- checked 2026-09-29. Do not grow
+# into the run without re-checking (rowe_parity.md §13.53).
+
+# PC second guard (2026-09-29): byte-identical to Radical Red's addresses.
+PSS_COUNT_ALIVE_EXCEPT        = 0x0808C184
+PSS_GUARD_BL_FILE_OFFS        = (0x09391A,)   # IsRemovingLastPartyMon: bl Count
+PSS_CANSHIFT_BL_FILE_OFF      = 0x093956      # CanShiftMon: bl Count
+PSS_CANSHIFT_TAIL_FILE_OFF    = 0x09395A      # lsls; cmp -> b <epilogue 0x0809399A>; nop
+PSS_GUARD_TRAMPOLINE_FILE_OFF = 0x002BEC      # CheckHeap (unused debug routine)
 # Character-select (v3): the reserved gSpecials[0x1B6] slot (script-
 # unreachable stale entry, docs/ROUTINE_MAP.md v8.1) is repointed to the
 # injected name-buffering special used by the number-entry select flow.
@@ -530,6 +541,27 @@ def main():
     print(f"starter hook: bl @{ROM_BASE + GIVEMON_BL_FILE_OFF:#x} -> veneer "
           f"@{ROM_BASE + GIVEMON_VENEER_FILE_OFF:#x} -> {sgm_hook | 1:#010x}  "
           f"bl={bl2.hex()} veneer={veneer.hex()}")
+
+    # 6a''. PC second guard (src/character_mode.c CM_PSSLastMonGuard;
+    # rowe_parity.md §13.53). Byte-identical to Radical Red's engine here.
+    # Trampoline over CheckHeap -- a debug routine vanilla FireRed defines and
+    # never calls; verify_artifacts [G] re-checks no BL callers / no pointer.
+    # ⚠️ NOT a "0xFF run": in the Emerald ports those were sprite pixels.
+    guard_hook = syms["CM_PSSLastMonGuard"] | 1
+    _t = PSS_GUARD_TRAMPOLINE_FILE_OFF
+    assert bytes(rom[_t:_t + 8]) == bytes.fromhex("30b508480468051c"), (
+        "CheckHeap is not at %#x -- re-derive" % (ROM_BASE + _t))
+    rom[_t:_t + 8] = struct.pack("<HHI", 0x4B00, 0x4718, guard_hook)
+    for _site in PSS_GUARD_BL_FILE_OFFS + (PSS_CANSHIFT_BL_FILE_OFF,):
+        _cur = bytes(rom[_site:_site + 4])
+        _exp = thumb_bl(ROM_BASE + _site, PSS_COUNT_ALIVE_EXCEPT)
+        assert _cur == _exp, f"PC guard site {_site:#x}: {_cur.hex()} != {_exp.hex()}"
+        rom[_site:_site + 4] = thumb_bl(ROM_BASE + _site, ROM_BASE + _t)
+    _c = PSS_CANSHIFT_TAIL_FILE_OFF
+    assert bytes(rom[_c:_c + 4]) == bytes.fromhex("00060028"), f"CanShiftMon tail {rom[_c:_c+4].hex()}"
+    rom[_c:_c + 4] = struct.pack("<HH", 0xE01E, 0x46C0)
+    print(f"PC second guard: IsRemovingLastPartyMon + CanShiftMon -> {guard_hook:#010x} "
+          f"via {ROM_BASE + _t:#x} (CheckHeap)")
 
     # 6b. entry trampoline: ldr r1,[pc,#0]; bx r1; .word hook|1
     tramp = struct.pack("<HHI", 0x4900, 0x4708, gmtp_hook | 1)
