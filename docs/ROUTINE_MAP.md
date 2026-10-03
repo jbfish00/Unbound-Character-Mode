@@ -565,8 +565,19 @@ CFRU's `start_menu.c` and not vanilla. FireRed's vanilla action table
 
 **Patches (verify-then-write in `build_patch.py`):**
 - **record 6, in place:** callback → `CM_StartMenuRosterCallback`, text →
-  `gCMRosterMenuText` ("Roster"), icon → the Pokémon List icon (`0x27F0`,
-  frame 2). The order var `0x5040` and the flags are untouched.
+  `gCMRosterMenuText` ("Roster"), icon → **its own clipboard icon** (`0x27F0`,
+  frame 10; until 2026-10-03 it borrowed the Pokémon List icon, frame 2). The order var `0x5040` and the flags are untouched.
+- **icon sheet** (2026-10-03): the bar's sprite sheets are `{u32 lz, u16 size,
+  u16 tag}` structs read as base `0x08A6D0AC` + `0x6C` (no pointer to the
+  struct exists). Tag `0x27F0` at `0xA6D118` is a 10-frame LZ77 sheet
+  (`0x08B1B3B8`, 0x1400 B, 32×32 frames of 0x200, palette `0x08B1BA40`;
+  frames 8 and 9 are an arrow and a cloud, so not free). `build_patch.py`
+  decompresses it, appends `tools/character_mode/roster_start_icon.txt` as
+  frame 10, writes it (store-only LZ77) at file `0x01634000` and sets the
+  struct to that pointer and size 0x1600. That gap has no ROM word pointing
+  into it; the rest of the 344 KB run does have stray ones (0x09648800 +
+  n×0x200 is a real table), so don't widen it. Draw icons in rows 6–25:
+  the selected icon rises and a taller one covers "SELECT Move".
 - **case-6 byte** `0xA0BA86`: `0x11` (→ `0x08A0BAA2`, skip) → `0x1D` (→
   `0x08A0BABA`, the append path rows 9–11 use).
 - **VarGet literal** `0xA0C1F4` → `CM_StartMenuVarGet`: the real `VarGet`

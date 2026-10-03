@@ -52,7 +52,7 @@ BUILT = os.environ.get("CM_BUILT_ROM",
 
 # How many checks this layer must run. A deliberate LITERAL -- see
 # tools/tests/cm_tally.py for why this must never be a derived expression.
-EXPECT_CHECKS = 89   # +1: [R] roots-only hint (2026-10-02); +6: [L] the link-trade sweep (2026-09-30); +8: [G] the PC second guard (2026-09-29); +6: [F] the build fingerprints (2026-09-29); +17: [R] the roster display START row (2026-09-27)
+EXPECT_CHECKS = 90   # +1: [R] Roster's own START icon (2026-10-03); +1: [R] roots-only hint (2026-10-02); +6: [L] the link-trade sweep (2026-09-30); +8: [G] the PC second guard (2026-09-29); +6: [F] the build fingerprints (2026-09-29); +17: [R] the roster display START row (2026-09-27)
                      # +21: the PC-exit sweep, 5 checks x 4 sites + the tail census (2026-09-10)
 
 failures = []
@@ -130,6 +130,10 @@ def main():
     # the builder's case-6 byte, and the order loops' VarGet literal
     win("START record 6", bp.START_RECORD6_OFF, 11)
     win("START builder case-6 byte", bp.START_CASE6_OFF, 1)
+    # Roster's own icon: the sheet struct's {ptr, size} and the repointed sheet
+    win("START icon sheet struct", bp.START_ICON_SHEET_OFF, 6)
+    win("START icon sheet (with Roster)", bp.START_ICON_FILE_OFF,
+        bp.START_ICON_FILE_END - bp.START_ICON_FILE_OFF)
     win("START VarGet literal", bp.START_VARGET_LIT, 4)
     # PC second guard: the trampoline over CheckHeap, two BLs, CanShiftMon's tail
     win("PC guard trampoline (CheckHeap)", bp.PSS_GUARD_TRAMPOLINE_FILE_OFF, 8)
@@ -521,6 +525,22 @@ def main():
           _g == bp.ROSTER_ICON_GFX and _r6[10] == bp.ROSTER_ICON_FRAME
           and _r6[11:16] == bp.START_RECORD6_ORIG[11:16]
           and orig[bp.START_RECORD6_OFF:bp.START_RECORD6_OFF + 16] == bp.START_RECORD6_ORIG)
+    # Roster's own icon: the struct points at a sheet whose first 10 frames are
+    # the stock sheet's, byte for byte, and whose frame 10 is the drawn icon.
+    import lz77
+    def _sheet(img):
+        _p, _sz, _tag = struct.unpack_from("<IHH", img, bp.START_ICON_SHEET_OFF)
+        _o = _p - 0x08000000
+        _n = img[_o + 1] | img[_o + 2] << 8 | img[_o + 3] << 16
+        return _sz, _tag, lz77.decompress(bytes(img[_o:_o + 2 * _n + 16]))
+    _osz, _otag, _old = _sheet(orig)
+    _nsz, _ntag, _new = _sheet(rom)
+    check("[R] START icon sheet = stock 10 frames + Roster's icon at frame 10 (size 0x1400 -> 0x1600)",
+          _osz == 0x1400 and _nsz == 0x1600 and _ntag == _otag == bp.ROSTER_ICON_GFX
+          and len(_new) == _nsz and _new[:0x1400] == _old
+          and _new[0x1400:] == bp.roster_icon_tiles() and any(_new[0x1400:])
+          and _new[0x1400:] not in [_old[i * 0x200:(i + 1) * 0x200] for i in range(10)],
+          "%#x %#x" % (_osz, _nsz))
     _lbl = rom[_tx - 0x08000000:_tx - 0x08000000 + 8] if 0x08000000 <= _tx < 0x0A000000 else b""
     check("[R] its label reads 'Roster'",
           _lbl[:7] == bytes([0xCC, 0xE3, 0xE7, 0xE8, 0xD9, 0xE6, 0xFF]), _lbl.hex())

@@ -71,8 +71,8 @@ switch Character Mode off afterwards — start a new game to change or disable i
 
 ## Seeing your roster in-game
 
-With Character Mode on, the **START menu** gets a **Roster** icon (it uses the
-Pokémon List artwork, labelled "Roster"). Choose it to see a screen headed with
+With Character Mode on, the **START menu** gets a **Roster** icon (a clipboard of Poké Balls,
+labelled "Roster"). Choose it to see a screen headed with
 your character's name, listing their Pokémon one row per evolution family (the
 first stage is shown, and the whole family counts), with the highlighted
 Pokémon's icon in a box beside the list. Scroll with Up/Down; A or B closes it.
@@ -90,8 +90,8 @@ v2.1.1.1 patch, then apply [`dist/unbound-character-mode.bps`](dist/) with
 
 Feature-complete and packaged: enforcement (catch/gift/trade), organic new-game
 opt-in, save persistence, and the character-select portrait are all injected and
-live-tested. The remaining sprite work is art coverage, not mechanism: 144 of the
-193 selectable characters have a portrait staged, the other 49 show the
+live-tested. The remaining sprite work is art coverage, not mechanism: 157 of the
+193 selectable characters have a portrait staged, the other 36 show the
 confirmation on its own.
 
 ## Known limitations
@@ -103,7 +103,7 @@ confirmation on its own.
   overworld sprite, trainer card and battle back-sprite are the normal Unbound
   player art — deliberately, so the patch touches none of the game's own art
   tables and no real opponent's sprite is ever swapped.
-- 49 of the 193 selectable characters have no portrait staged yet; picking one
+- 36 of the 193 selectable characters have no portrait staged yet; picking one
   shows the confirmation with no art beside it.
 - If a character's roster can't catch a species required for a trade side quest,
   that reward may be unreachable — pick accordingly.

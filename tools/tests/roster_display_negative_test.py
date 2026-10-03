@@ -40,6 +40,7 @@ CHECKS = {
     "record": "START record 6 callback/label",
     "icon": "record 6 icon = build_patch's",
     "label": "its label reads 'Roster'",
+    "sheet": "START icon sheet = stock 10 frames",
     "case6": "builder case 6 -> append",
     "varget": "the order loops' VarGet literal",
     "wrapper": "compiled wrapper carries",
@@ -61,7 +62,7 @@ def _hit(out, key, marker):
                for line in out.splitlines())
 
 
-EXPECT_CASES = 14
+EXPECT_CASES = 16
 
 
 def main():
@@ -192,7 +193,21 @@ def main():
         case("13 the callback no longer stops the fade (the black-screen bug)", no_fade_reset,
              "callback", also_pass=("record", "wrapper"))
 
-        case("14 control again -- nothing left behind", None, None)
+        def stock_sheet(d):
+            struct.pack_into("<IH", d, bp.START_ICON_SHEET_OFF,
+                             struct.unpack_from("<I", bp.START_ICON_SHEET_ORIG)[0], 0x1400)
+        case("14 the icon sheet struct put back to the stock sheet (frame 10 is past its end)",
+             stock_sheet, "sheet", also_pass=("icon", "record"))
+
+        def bend_pixel(d):
+            # The sheet is a store-only LZ77 stream: data byte k sits at
+            # 4 + k + k // 8 + 1. Bend one byte inside frame 10.
+            k = 0x1400 + 0x50
+            d[bp.START_ICON_FILE_OFF + 4 + k + k // 8 + 1] ^= 0x11
+        case("15 one byte of the Roster icon bent", bend_pixel, "sheet",
+             also_pass=("icon", "record"))
+
+        case("16 control again -- nothing left behind", None, None)
 
     total = passes + len(fails)
     if fails:

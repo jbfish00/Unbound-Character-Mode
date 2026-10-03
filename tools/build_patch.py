@@ -55,7 +55,23 @@ ROM_BASE = 0x08000000
 START_RECORD_TABLE   = 0xA6D160               # 12 x 16 B {cb, text, u16 gfx, u8 frame, u8, u16 var, u8, u8}
 START_RECORD6_OFF    = START_RECORD_TABLE + 6 * 16
 START_RECORD6_ORIG   = bytes.fromhex("69d70108cbe4a408f1270100405001 00".replace(" ", ""))
-ROSTER_ICON_GFX, ROSTER_ICON_FRAME = 0x27F0, 2   # reuse the "Pokemon List" icon
+# Roster's own icon (2026-10-03; it used to borrow the Pokemon List icon,
+# frame 2). The bar's main sheet (tag 0x27F0) is a 10-frame LZ77 sheet; the
+# sheet struct {ptr, u16 size, u16 tag} is repointed to a copy with one more
+# frame (tools/character_mode/roster_start_icon.txt, drawn in the sheet's own
+# palette 0x27F0) and its size grows 0x1400 -> 0x1600. Nothing in the ROM
+# points at the struct; the bar reads it as base 0x08A6D0AC + 0x6C.
+ROSTER_ICON_GFX = 0x27F0
+START_ICON_SHEET_OFF  = 0xA6D118
+START_ICON_SHEET_ORIG = bytes.fromhex("b8b3b108" "0014" "f027")
+START_ICON_FRAMES     = 10
+ROSTER_ICON_FRAME     = START_ICON_FRAMES      # appended as frame 10
+ROSTER_ICON_TXT       = os.path.join(CM_DIR, "roster_start_icon.txt")
+# The new sheet lives in the 344 KB 0xFF run past the encounter markers. Unlike
+# the rest of that run, file 0x01634000-0x01635A50 has no word anywhere in the
+# ROM pointing into it (scanned 2026-10-03; 0x09635A51 is the first).
+START_ICON_FILE_OFF   = 0x01634000
+START_ICON_FILE_END   = 0x01635A50
 START_CASE6_OFF      = 0xA0BA86               # builder jump table: case 6 byte
 START_CASE6_ORIG, START_CASE6_APPEND = 0x11, 0x1D  # -> 0x08A0BAA2 skip / 0x08A0BABA append
 START_VARGET_LIT     = 0xA0C1F4               # both order loops' VarGet literal
@@ -179,6 +195,35 @@ def sha1(data):
 def run(cmd, **kw):
     print("  $", " ".join(cmd))
     subprocess.run(cmd, check=True, **kw)
+
+
+def roster_icon_tiles():
+    """32x32 4bpp, 16 tiles in 4x4 row-major order (the sheet's frame layout)."""
+    with open(ROSTER_ICON_TXT) as f:
+        rows = [l.rstrip("\n") for l in f]
+    assert len(rows) == 32 and all(len(r) == 32 for r in rows), "roster icon must be 32x32"
+    px = [[0 if c == "." else int(c, 16) for c in r] for r in rows]
+    out = bytearray()
+    for t in range(16):
+        ty, tx = (t // 4) * 8, (t % 4) * 8
+        for y in range(8):
+            for x in range(0, 8, 2):
+                out.append(px[ty + y][tx + x] | (px[ty + y][tx + x + 1] << 4))
+    return bytes(out)
+
+
+def roster_icon_sheet(rom):
+    """The START bar's main sheet with the Roster icon appended, LZ77."""
+    import lz77
+    src = struct.unpack_from("<I", rom, START_ICON_SHEET_OFF)[0] - ROM_BASE
+    size = rom[src + 1] | rom[src + 2] << 8 | rom[src + 3] << 16
+    sheet = lz77.decompress(bytes(rom[src:src + size * 2]))
+    assert len(sheet) == START_ICON_FRAMES * 0x200, hex(len(sheet))
+    raw = sheet + roster_icon_tiles()
+    blob = lz77.compress(raw)
+    assert lz77.decompress(blob) == raw
+    assert len(blob) <= START_ICON_FILE_END - START_ICON_FILE_OFF, "icon sheet overflows its gap"
+    return blob
 
 
 def thumb_bl(from_addr, to_addr):
@@ -466,6 +511,10 @@ def main():
             f"wild-encounter call site bytes changed at {label} — wrong ROM?"
     assert rom[START_RECORD6_OFF:START_RECORD6_OFF + 16] == START_RECORD6_ORIG, \
         "START record 6 (Costume Box) changed — wrong ROM?"
+    assert rom[START_ICON_SHEET_OFF:START_ICON_SHEET_OFF + 8] == START_ICON_SHEET_ORIG, \
+        "START icon sheet struct changed — wrong ROM?"
+    assert all(b == 0xFF for b in rom[START_ICON_FILE_OFF:START_ICON_FILE_END]), \
+        "START icon sheet target not 0xFF-free!"
     assert rom[START_CASE6_OFF] == START_CASE6_ORIG, \
         "START builder case-6 byte changed — wrong ROM?"
     assert struct.unpack_from("<I", rom, START_VARGET_LIT)[0] == START_VARGET_ORIG, \
@@ -483,6 +532,10 @@ def main():
     # order loops' VarGet -> the gating wrapper
     struct.pack_into("<IIHB", rom, START_RECORD6_OFF, roster_cb, roster_text,
                      ROSTER_ICON_GFX, ROSTER_ICON_FRAME)
+    icon_sheet = roster_icon_sheet(rom)
+    rom[START_ICON_FILE_OFF:START_ICON_FILE_OFF + len(icon_sheet)] = icon_sheet
+    struct.pack_into("<IH", rom, START_ICON_SHEET_OFF, ROM_BASE + START_ICON_FILE_OFF,
+                     (START_ICON_FRAMES + 1) * 0x200)
     rom[START_CASE6_OFF] = START_CASE6_APPEND
     struct.pack_into("<I", rom, START_VARGET_LIT, roster_varget)
     print(f"roster display: START record 6 -> Roster (cb {roster_cb:#010x}), case 6 -> append, "

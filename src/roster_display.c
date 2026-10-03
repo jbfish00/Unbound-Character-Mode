@@ -17,7 +17,8 @@
  * never appends it -- so the Roster row takes its slot instead of growing any
  * table, loop or stack array:
  *   - record 6's callback/text/icon are patched in place
- *     -> CM_StartMenuRosterCallback, "Roster", the Pokemon List icon;
+ *     -> CM_StartMenuRosterCallback, "Roster", and its own icon (frame 10
+ *     of the bar's sheet, appended by build_patch.py, 2026-10-03);
  *   - the builder's case-6 jump-table byte goes from "skip" to "append";
  *   - the order loops' VarGet literal -> CM_StartMenuVarGet, which returns
  *     the real VarGet for every var except record 6's (0x5040), and 0xFF
