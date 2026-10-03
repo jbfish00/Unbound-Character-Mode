@@ -2,6 +2,27 @@
 
 Cross-referenced our 156-character roster (`tools/character_mode/characters.txt`) against the ROWE Character Mode project's already-built sprite report (`/home/jbfish00/Documents/Pokemon Rowe Alteration/tools/character_mode/sprite_report.txt`), since our Gen 1-8 roster is largely the same real-world characters ROWE already sourced donor art for.
 
+## 2026-10-03 — overworld sprites SHIPPED (walk/run)
+
+The player's overworld sprite now follows the chosen character while walking
+and running (bike, surf, fishing, field moves and underwater stay the normal
+player). This supersedes the planning numbers below for the overworld column.
+Source of truth: `tools/character_mode/unbound_ow_player.py`; RE in `docs/ROUTINE_MAP.md`
+"Overworld sprite".
+
+| | count | of 193 offered |
+|---|---|---|
+| Injected player-grade sheet (`sprites/ow_player/`) | 150 | 77% |
+| Unbound's own player costume set | 4 | 2% |
+| **Total with an overworld sprite** | **154** | **79%** |
+| Normal player sprite | 39 | 20% |
+
+- Native: Red, Leaf, Ethan, Lyra.
+- Sheets with their own running frames (6): Kris, Lucas, Dawn, Hilda, Nate, Rosa. Every
+  other sheet repeats its walk frames, so those characters run with their walk
+  cycle at running speed (the fast-walk the user chose).
+- Normal player sprite: Ritchie, Brendan, May, Paul, Zoey, Nando, Trip, Clemont, Lysandre, Alain, Sawyer, Guzma, Plumeria, Lillie (anime), Kiawe (anime), Lana (anime), Mallow (anime), Rose, Goh, Chloe, Juniper, Sycamore, Samson Oak, Cerise, Volo, Dahlia, Darach, Adaman, Akari, Beni, Cogita, Hilbert, Ingo, Irida, Kamado, Rei, Thorton, Tobias, Zisu.
+
 ## Coverage summary
 
 | | count | % of 156 |
