@@ -44,7 +44,7 @@ game restricted to that character's canon Pokemon.
    `b4776b82a4c7915d0fadeaa27e013523f99dfd94`).
 2. Apply `unbound-character-mode.bps` to that ROM with Flips
    (https://github.com/Alcaro/Flips), or any BPS patcher.
-3. The result should have sha1 `32196c71279c23d823220e66e256f34b8ef82f92`.
+3. The result should have sha1 `9b3602827bd2220e48de95a7d54bc0873bd32410`.
 
 ## Known limitations
 
@@ -54,7 +54,7 @@ game restricted to that character's canon Pokemon.
 - The character portrait shown when you pick appears only on that
   confirmation screen. Your overworld sprite, trainer card and battle
   back-sprite stay the normal Unbound player art.
-- 43 of the 193 selectable characters have no portrait staged
+- 36 of the 193 selectable characters have no portrait staged
   yet; picking one shows the confirmation with no art beside it.
 - If your character's roster makes a required trade species uncatchable,
   that side quest reward may be unreachable — pick accordingly.

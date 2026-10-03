@@ -52,7 +52,7 @@ BUILT = os.environ.get("CM_BUILT_ROM",
 
 # How many checks this layer must run. A deliberate LITERAL -- see
 # tools/tests/cm_tally.py for why this must never be a derived expression.
-EXPECT_CHECKS = 88   # +6: [L] the link-trade sweep (2026-09-30); +8: [G] the PC second guard (2026-09-29); +6: [F] the build fingerprints (2026-09-29); +17: [R] the roster display START row (2026-09-27)
+EXPECT_CHECKS = 89   # +1: [R] roots-only hint (2026-10-02); +6: [L] the link-trade sweep (2026-09-30); +8: [G] the PC second guard (2026-09-29); +6: [F] the build fingerprints (2026-09-29); +17: [R] the roster display START row (2026-09-27)
                      # +21: the PC-exit sweep, 5 checks x 4 sites + the tail census (2026-09-10)
 
 failures = []
@@ -551,6 +551,12 @@ def main():
     _cl = {struct.unpack_from("<I", rom, i)[0] for i in range(_co & ~3, _next & ~3, 4)}
     check("[R] compiled callback stops the handler's fade and closes via Unbound's own routine",
           {0x08070A85, 0x08A0BD35} <= _cl, str(sorted(hex(x) for x in _cl if x > 0x08000000)[:8]))
+    # The roots-only hint (user ruling 2026-10-02): the string AND a header
+    # window tall enough for its second line, both new to the ROM.
+    _hint = bytes.fromhex("bfeae3e0e9e8dde3e2e700d7e3e9e2e800e8e3e3adff")  # "Evolutions count too."
+    _hwin = bytes([0, 1, 1, 18, 4, 15])
+    check("[R] roster header holds the 'Evolutions count too.' hint in a 4-row window",
+          _hint in rom and _hint not in orig and _hwin in rom[0xB2B280:])
 
     sha = os.path.join(ROOT, "build", "unbound-cm.gba.sha1")
     check("the build recorded its own sha1", os.path.isfile(sha))

@@ -42,8 +42,12 @@ DONORS = ROOT / "sprites" / "donors"
 # "rowe" is last: it is art staged through the ROWE project rather than from a
 # named upstream set, so CREDITS.md can only say "same original credits apply".
 # Prefer any source with specific attribution over it.
+# "emerald_enhanced" and "wolfang62" (2026-10-02) fill gaps only, so they sit
+# after every older source: a character that already had art keeps it.
+# Wolfang62's are chibi overworld-style figures on a front-pic canvas, so
+# they are last of all -- any real battle front pic wins.
 PREFERENCE = ["ashgray", "rogue", "taar", "hns", "pokesho", "dollsteak", "loulilie", "platinum",
-              "rowe"]
+              "emerald_enhanced", "rowe", "wolfang62"]
 
 slug = lambda s: re.sub(r"[^a-z0-9]+", "_", s.lower()).strip("_")
 
