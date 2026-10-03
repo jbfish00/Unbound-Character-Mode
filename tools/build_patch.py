@@ -44,6 +44,7 @@ import optin_script
 import egg_hook
 import pc_hook
 import trade_hook
+import unbound_ow_player
 
 ROM_BASE = 0x08000000
 
@@ -140,6 +141,11 @@ LINK_TRADE_BL_FILE_OFF         = 0x0540EC
 STRING_EXPAND_PLACEHOLDERS     = 0x08008FCC
 LINK_TRADE_TRAMPOLINE_FILE_OFF = 0x002BF4      # CheckHeap + 8
 LINK_TRADE_DEAD_BYTES          = bytes.fromhex("2868211c1031fff7")
+# Overworld sprite (2026-10-03, ../game_plans/overworld_sprites.md): an entry
+# trampoline over CFRU's GetCustomGraphicsIdByState sends it to
+# CharacterMode_CustomAvatarGfx; the sprite data is planned by
+# tools/character_mode/unbound_ow_player.py into pointer-free 0xFF space.
+AVATAR_FN_FILE_OFF = unbound_ow_player.AVATAR_FN - ROM_BASE
 # Character-select (v3): the reserved gSpecials[0x1B6] slot (script-
 # unreachable stale entry, docs/ROUTINE_MAP.md v8.1) is repointed to the
 # injected name-buffering special used by the number-entry select flow.
@@ -186,6 +192,21 @@ WILD_CALL_SITES = {
     "fishing_primary_0x8a15c20":    (0xA15C20, bytes.fromhex("fef70afe")),
     "fishing_double_0x8a15c54":     (0xA15C54, bytes.fromhex("fef7f0fd")),
 }
+
+
+def ow_reserved_ranges(n_chars):
+    """File ranges this build fills by other means, kept out of the overworld
+    sprite planner (which scans the BASE ROM). verify_artifacts.py replays the
+    planner with the same list."""
+    sblobs = os.path.join(CM_DIR, "cm_sprite_blobs.bin")
+    sblobs_len = os.path.getsize(sblobs) if os.path.isfile(sblobs) else 0
+    return [
+        (INJECT_FILE_OFF, INJECT_FILE_OFF + INJECT_BLOCK_LEN),
+        (CM_SPRITE_PTRS_FILE_OFF, CM_SPRITE_BLOBS_FILE_OFF + sblobs_len),
+        (CM_MARKER_FILE_OFF, CM_MARKER_FILE_OFF + n_chars * CM_MARKER_STRIDE),
+        (START_ICON_FILE_OFF, START_ICON_FILE_END),
+        (GIVEMON_VENEER_FILE_OFF, GIVEMON_VENEER_FILE_OFF + 8),
+    ]
 
 
 def sha1(data):
@@ -397,6 +418,18 @@ def main():
         struct.pack("<I", addr(off_names) + struct.unpack_from("<I", characters, 16 * i)[0])
         for i in range(n_chars))
 
+    # 3b. overworld sprites: planned now (the shim needs the id table's
+    # address), written last, after everything else is in place. The planner
+    # scans the BASE ROM, so every range this build fills is reserved here,
+    # and each write re-checks 0xFF against the ROM as built.
+    ow_reserved = ow_reserved_ranges(n_chars)
+    ow_writes, ow_patches, ow_table, ow_ids, ow_sources = unbound_ow_player.build(
+        rom, manifest["characters"], ow_reserved)
+    print(f"overworld sprites: {sum(1 for v in ow_sources.values() if v == 'sheet')} sheets + "
+          f"{sum(1 for v in ow_sources.values() if v == 'costume')} native costumes, "
+          f"{sum(len(b) for _, b in ow_writes):,} B in {len(ow_writes)} pieces; "
+          f"id table @ {ow_table:#x}")
+
     # 4. link (unbound.ld as an input script augments the default one)
     elf = os.path.join(BUILD, "character_mode.elf")
     run(["arm-none-eabi-ld",
@@ -408,6 +441,7 @@ def main():
          "--defsym", f"gCharacterCount={addr(off_count):#x}",
          "--defsym", f"gWildSpeciesMeta={addr(off_wild_meta):#x}",
          "--defsym", f"gRosterRoots={addr(off_roster_roots):#x}",
+         "--defsym", f"gCharacterOwGfx={ow_table:#x}",
          # The sprite pointer table lives in the SEPARATE free run (see
          # CM_SPRITE_PTRS_FILE_OFF), not in this injection block, so its
          # address is a fixed constant rather than an offset into `addr`.
@@ -642,6 +676,16 @@ def main():
     tramp = struct.pack("<HHI", 0x4900, 0x4708, gmtp_hook | 1)
     rom[GMTP_FILE_OFF:GMTP_FILE_OFF + 8] = tramp
     print(f"gift hook: trampoline @{ROM_BASE + GMTP_FILE_OFF:#x} -> {gmtp_hook | 1:#x}  bytes={tramp.hex()}")
+
+    # 6b'. overworld sprite: GetCustomGraphicsIdByState entry trampoline
+    # (ldr r3,[pc,#0]; bx r3; .word hook|1). The original's first instruction
+    # is `movs r3, r0`, so r3 is free; r0 (the state) reaches the hook intact.
+    avatar_hook = syms["CharacterMode_CustomAvatarGfx"] | 1
+    assert bytes(rom[AVATAR_FN_FILE_OFF:AVATAR_FN_FILE_OFF + 8]) == unbound_ow_player.AVATAR_FN_ORIG, \
+        "GetCustomGraphicsIdByState entry bytes changed -- wrong ROM?"
+    assert AVATAR_FN_FILE_OFF % 4 == 0      # the ldr reads the word at +4
+    rom[AVATAR_FN_FILE_OFF:AVATAR_FN_FILE_OFF + 8] = struct.pack("<HHI", 0x4B00, 0x4718, avatar_hook)
+    print(f"overworld hook: trampoline @{ROM_BASE + AVATAR_FN_FILE_OFF:#x} -> {avatar_hook:#010x}")
 
     # 6c. opt-in prompt splice (call <block>; nop nop nop)
     rom[optin_script.SPLICE_FILE_OFF:
@@ -1015,6 +1059,19 @@ def main():
         rom[_o:_o + 15] = _after
     print("faster battle messages: %d sites reordered, wait %d -> %d frames"
           % (len(CM_BATTLE_MSG_SITES), CM_WAIT_OLD, CM_WAIT_NEW))
+
+    # 7b. overworld sprite data, last: every byte must still be 0xFF in the
+    # ROM as built (an overlap with anything above fails here), and every word
+    # patch must still hold its base-ROM value.
+    for _off, _data in ow_writes:
+        assert all(b == 0xFF for b in rom[_off:_off + len(_data)]), \
+            f"overworld data target {_off:#x} is not 0xFF in the built ROM"
+        rom[_off:_off + len(_data)] = _data
+    for _off, _old, _new in ow_patches:
+        _cur = struct.unpack_from("<I", rom, _off)[0]
+        assert _cur == _old, f"overworld patch @{_off:#x}: {_cur:#x} != {_old:#x}"
+        struct.pack_into("<I", rom, _off, _new)
+    print(f"overworld sprites written: {len(ow_writes)} pieces, {len(ow_patches)} word patches")
 
     # 8. outputs
     out = os.path.join(BUILD, "unbound-cm.gba")

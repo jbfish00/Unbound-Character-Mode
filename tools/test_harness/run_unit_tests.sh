@@ -53,4 +53,4 @@ echo "------------------"
 # Tally assertion lives in assert_tally.py -- one copy, and it now
 # checks the NUMBER of checks, not just that each agrees with itself.
 # The literal below is deliberate: see rowe_parity.md §9 Finding 2.
-python3 "$(dirname "$0")/assert_tally.py" --expect 74 "$LOG"
+python3 "$(dirname "$0")/assert_tally.py" --expect 78 "$LOG"

@@ -51,7 +51,7 @@ def run(path):
 
 # How many tamper cases this negative test must run. A deliberate
 # LITERAL -- see cm_tally.assert_cases.
-EXPECT_CASES = 12
+EXPECT_CASES = 16
 
 
 def main():
@@ -136,6 +136,27 @@ def main():
         f.seek(bp.LINK_TRADE_TRAMPOLINE_FILE_OFF + 4)
         f.write((v + 4).to_bytes(4, "little"))
     case("the link-trade trampoline aimed 4 bytes off fails", 1, link_tramp_bent)
+    # Overworld sprite ([O], 2026-10-03). Each tamper stays inside a declared
+    # window, so only [O] can catch it. Misty (10) has a sheet.
+    import subprocess as _sp
+    import re as _re
+    sys.path.insert(0, os.path.join(ROOT, "tools", "character_mode"))
+    import unbound_ow_player as owp
+    _nm = _sp.run(["arm-none-eabi-nm", os.path.join(ROOT, "build", "character_mode.elf")],
+                  check=True, capture_output=True, text=True).stdout
+    _gtab = int(_re.search(r"^([0-9a-f]+) A gCharacterOwGfx$", _nm, _re.M).group(1), 16) - bp.ROM_BASE
+    with open(BUILT, "rb") as _f:
+        _b = _f.read()
+    _gid = int.from_bytes(_b[_gtab + 18:_gtab + 20], "little")
+    _info = int.from_bytes(_b[owp.R(owp.OW_TABLES[_gid >> 8]) + (_gid & 0xFF) * 4:][:4], "little")
+    _imgs = int.from_bytes(_b[owp.R(_info) + 0x1C:][:4], "little")
+    _frame3 = int.from_bytes(_b[owp.R(_imgs) + 8 * 3:][:4], "little") - bp.ROM_BASE
+    case("the avatar trampoline reverted fails", 1,
+         revert(bp.AVATAR_FN_FILE_OFF, owp.AVATAR_FN_ORIG))
+    case("a pixel of Misty's walk frame changed fails", 1, flip(_frame3 + 40))
+    case("Misty's id zeroed in the id table fails", 1, revert(_gtab + 18, b"\x00\x00"))
+    case("one palette-table reader left on the base table fails", 1,
+         revert(owp.R(owp.PAL_TABLE_REFS[1]), owp.PAL_TABLE.to_bytes(4, "little")))
     case("control: the untouched copy still passes", 0)
 
     shutil.rmtree(tmp, ignore_errors=True)

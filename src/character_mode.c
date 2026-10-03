@@ -89,6 +89,8 @@ extern const struct CharacterRecordBin gCharacterTable[];
 extern const u16 gCharacterRosters[]; /* rosters.bin viewed as u16 */
 extern const u8 gCharacterNames[];
 extern const u16 gCharacterCount;
+extern const u16 gCharacterOwGfx[];  /* tools/character_mode/unbound_ow_player.py */
+extern u16 GetPlayerAvatarGraphicsIdByStateIdAndGender(u8 state, u8 gender);
 
 /* ---- core (mirrors ROWE's API names) ---- */
 
@@ -1478,6 +1480,37 @@ void CharacterMode_RunSelfTest(void)
             e->raw[j] = 0;
     }
 
+    /* O: overworld sprite (2026-10-03). Calls Unbound's OWN avatar getter
+     * (GetPlayerAvatarGraphicsIdByStateIdAndGender), so the trampoline over
+     * GetCustomGraphicsIdByState is exercised, not just the shim. Misty (10)
+     * has a sheet; O3 and O4 are the controls (mode off; a character with no
+     * sprite) and O2 proves only the walk/run state changes. */
+    {
+        u16 stockWalk, stockBike, none;
+
+        FlagClear(FLAG_CHARACTER_MODE);
+        VarSet(VAR_CHARACTER_ID, 0);
+        stockWalk = GetPlayerAvatarGraphicsIdByStateIdAndGender(0, 0);
+        stockBike = GetPlayerAvatarGraphicsIdByStateIdAndGender(1, 0);
+        FlagSet(FLAG_CHARACTER_MODE);
+        VarSet(VAR_CHARACTER_ID, 10);
+        r[n++] = gCharacterOwGfx[9] != 0
+                 && GetPlayerAvatarGraphicsIdByStateIdAndGender(0, 0) == gCharacterOwGfx[9]
+                 && GetPlayerAvatarGraphicsIdByStateIdAndGender(0, 1) == gCharacterOwGfx[9]; /* O1 want 1 */
+        r[n++] = GetPlayerAvatarGraphicsIdByStateIdAndGender(1, 0) == stockBike;          /* O2 want 1 */
+        FlagClear(FLAG_CHARACTER_MODE);
+        r[n++] = GetPlayerAvatarGraphicsIdByStateIdAndGender(0, 0) == stockWalk
+                 && stockWalk != gCharacterOwGfx[9];                                      /* O3 want 1 */
+        for (none = 0; none < gCharacterCount && gCharacterOwGfx[none] != 0; none++)
+            ;
+        FlagSet(FLAG_CHARACTER_MODE);
+        VarSet(VAR_CHARACTER_ID, none + 1);
+        r[n++] = none < gCharacterCount
+                 && GetPlayerAvatarGraphicsIdByStateIdAndGender(0, 0) == stockWalk;      /* O4 want 1 */
+        FlagClear(FLAG_CHARACTER_MODE);
+        VarSet(VAR_CHARACTER_ID, 0);
+    }
+
     SELFTEST_COUNT = n;
     SELFTEST_MAGIC = 0xC0DED00D;
     CharacterMode_SelfTestDone();
@@ -1711,4 +1744,43 @@ u8 *CharacterMode_LinkTradeSweepThenExpand(u8 *dst, const u8 *src)
     __asm__ volatile ("bl CharacterMode_SweepPartyToPC"
                       ::: "r0", "r1", "r2", "r3", "r12", "lr", "memory", "cc");
     return StringExpandPlaceholders(dst, src);
+}
+
+/* ---- Overworld sprite: the player looks like the character (2026-10-03) ----
+ *
+ * CFRU's GetCustomGraphicsIdByState (0x089C9AA4) returns VarGet(<per-state
+ * costume var>) or 0, and a non-zero result replaces the gender default. Its
+ * five callers are the id getters and the reverse lookups (gfx id -> avatar
+ * state), so answering here covers both. An entry trampoline sends it here.
+ *
+ * Walk/run (state 0) only, as in Radical Red: the sheets have no bike, surf,
+ * fishing or field-move frames, so every other state keeps whatever Unbound
+ * would have drawn. Nothing is written: Unbound's own costume vars keep their
+ * values and win again the moment Character Mode is off.
+ *
+ * gCharacterOwGfx (tools/character_mode/unbound_ow_player.py) holds one id per
+ * character, 0 = no sprite (keep the stock one). */
+static const u16 sAvatarStateVars[] = {
+    0x4054, /* walk/run */
+    0x4055, /* bike */
+    0x4056, /* surf */
+    0x4057, /* field move */
+    0x4058, /* fishing */
+    0x5032, /* Vs Seeker */
+    0x4062, /* underwater */
+};
+
+u16 CharacterMode_CustomAvatarGfx(u8 state)
+{
+    u16 id;
+
+    if (state >= sizeof(sAvatarStateVars) / sizeof(sAvatarStateVars[0]))
+        return 0;
+    if (state == 0 && FlagGet(FLAG_CHARACTER_MODE))
+    {
+        id = VarGet(VAR_CHARACTER_ID);
+        if (id != 0 && id <= gCharacterCount && gCharacterOwGfx[id - 1] != 0)
+            return gCharacterOwGfx[id - 1];
+    }
+    return VarGet(sAvatarStateVars[state]);
 }

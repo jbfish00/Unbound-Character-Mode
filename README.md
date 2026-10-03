@@ -99,10 +99,15 @@ confirmation on its own.
 - The starter scene's dialogue and preview sprite still show the original
   species; the Pokémon you actually receive (and its "received!" text) is your
   character's starter.
-- The portrait appears **only on the character-select confirmation**. Your
-  overworld sprite, trainer card and battle back-sprite are the normal Unbound
-  player art — deliberately, so the patch touches none of the game's own art
-  tables and no real opponent's sprite is ever swapped.
+- **Overworld sprite:** 154 of the 193 selectable characters look like
+  themselves while **walking and running** (Red, Leaf, Ethan and Lyra wear
+  Unbound's own costumes for them; 150 more use an injected sprite). On a bike,
+  surfing, fishing, using a field move or underwater you're the normal Unbound
+  player, because the sprites have no frames for those. Most injected sprites
+  have no running frames of their own, so running shows their walk cycle at
+  running speed. The other 39 (e.g. Brendan, May, Paul, Hilbert, Volo) keep the
+  normal player sprite. No NPC's or opponent's sprite changes.
+- The trainer card and battle back-sprite are the normal Unbound player art.
 - 36 of the 193 selectable characters have no portrait staged yet; picking one
   shows the confirmation with no art beside it.
 - If a character's roster can't catch a species required for a trade side quest,

@@ -36,6 +36,17 @@ is distributed as a patch only, never as a prebuilt ROM.
 - **StreakOfSprites** (https://www.deviantart.com/streakofsprites) — Ash
   Ketchum FRLG-style overworld sprite set.
 
+## Overworld sprites now in the patch (added 2026-10-03)
+
+Since 2026-10-03 the player's walk/run sprite follows the chosen character.
+150 sheets in `sprites/ow_player/` are ROWE's built player-grade overworld
+sheets (`tools/character_mode/import_ow_sheets.py`), whose donors are the
+ones credited above: Emerald Rogue (44 sheets, with its whole credits roll),
+Team Aqua's Asset Repo (8), kalarie (2) and the ROWE project's own sheets
+built from pokefirered, pokeemerald-platinum, pokemonHnS, DiegoWT and
+StreakOfSprites art (96). Red, Leaf, Ethan and Lyra wear Unbound's own
+player costumes, which are Unbound's art and are only referenced, not copied.
+
 ## Rosters
 
 - Character Pokémon rosters compiled from **Bulbapedia**

@@ -39,6 +39,12 @@ CountPartyAliveNonEggMonsExcept = 0x0808C184 | 1;
  *      FireRed routine, byte-identical to Radical Red's here. ---- */
 StringExpandPlaceholders = 0x08008FCC | 1;
 
+/* ---- Overworld sprite self-test (2026-10-03): CFRU's avatar id getter,
+ *      whose callee GetCustomGraphicsIdByState (0x089C9AA4) is trampolined to
+ *      CharacterMode_CustomAvatarGfx. Disassembled: ldrh of
+ *      [0x08A694DC + 0x60 + (state*2+gender)*4] when the callee returns 0. ---- */
+GetPlayerAvatarGraphicsIdByStateIdAndGender = 0x089C9D30 | 1;
+
 /* ---- Pokedex, for the 1% legendary encounter's "once each" filter
  *      (game_plans/legendary_encounters.md §1.3). Both RE-VERIFIED byte-exact
  *      in THIS ROM by disassembly, not copied from the Radical Red sibling:

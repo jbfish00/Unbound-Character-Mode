@@ -68,7 +68,7 @@ gdb.execute("set $want_chars = %d" % NUM_CHARS)
 end
 echo \n=== results ===\n
 printf "MAGIC ok (want 1): %d\n", (*(unsigned int*)0x0203FEFC == 0xC0DED00D)
-printf "COUNT checks ran (want 71): %d\n", *(unsigned int*)0x0203FEF8
+printf "COUNT checks ran (want 75): %d\n", *(unsigned int*)0x0203FEF8
 printf "A1 InCharacterMode mode-off (want 0): %d\n", *(unsigned char*)(0x0203FE00 + 0)
 printf "A2 IsSpeciesAllowed(27) mode-off (want 1): %d\n", *(unsigned char*)(0x0203FE00 + 1)
 printf "A3 CatchFlagGet mode-off (want 0): %d\n", *(unsigned char*)(0x0203FE00 + 2)
@@ -140,6 +140,10 @@ printf "M2 marker case 2 (want 1): %d\n", *(unsigned char*)(0x0203FE00 + 67)
 printf "M3 marker case 3 (want 1): %d\n", *(unsigned char*)(0x0203FE00 + 68)
 printf "M4 marker case 4 (want 1): %d\n", *(unsigned char*)(0x0203FE00 + 69)
 printf "M5 marker case 5 (want 1): %d\n", *(unsigned char*)(0x0203FE00 + 70)
+printf "O1 overworld: walk/run is the character's sprite, both genders (want 1): %d\n", *(unsigned char*)(0x0203FE00 + 71)
+printf "O2 overworld: bike stays the stock sprite (want 1): %d\n", *(unsigned char*)(0x0203FE00 + 72)
+printf "O3 overworld: mode off draws the stock walker (want 1): %d\n", *(unsigned char*)(0x0203FE00 + 73)
+printf "O4 overworld: a character with no sprite keeps the stock walker (want 1): %d\n", *(unsigned char*)(0x0203FE00 + 74)
 
 echo \n=== TESTS DONE ===\n
 # mGBA's stub doesn't implement the detach packet (E07) — just drop the link

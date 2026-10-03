@@ -42,6 +42,7 @@ from cm_tally import assert_tally      # noqa: E402
 import build_patch as bp               # noqa: E402  (constants only; no side effects)
 import trade_hook                      # noqa: E402
 import egg_hook                        # noqa: E402
+import unbound_ow_player as owp        # noqa: E402
 import pc_hook                         # noqa: E402
 import optin_script                    # noqa: E402
 
@@ -52,7 +53,7 @@ BUILT = os.environ.get("CM_BUILT_ROM",
 
 # How many checks this layer must run. A deliberate LITERAL -- see
 # tools/tests/cm_tally.py for why this must never be a derived expression.
-EXPECT_CHECKS = 90   # +1: [R] Roster's own START icon (2026-10-03); +1: [R] roots-only hint (2026-10-02); +6: [L] the link-trade sweep (2026-09-30); +8: [G] the PC second guard (2026-09-29); +6: [F] the build fingerprints (2026-09-29); +17: [R] the roster display START row (2026-09-27)
+EXPECT_CHECKS = 97   # +7: [O] the overworld sprite (2026-10-03); +1: [R] Roster's own START icon (2026-10-03); +1: [R] roots-only hint (2026-10-02); +6: [L] the link-trade sweep (2026-09-30); +8: [G] the PC second guard (2026-09-29); +6: [F] the build fingerprints (2026-09-29); +17: [R] the roster display START row (2026-09-27)
                      # +21: the PC-exit sweep, 5 checks x 4 sites + the tail census (2026-09-10)
 
 failures = []
@@ -188,6 +189,15 @@ def main():
     for _label, _a, _t in bp.CM_BATTLE_MSG_SITES:
         win("battle message %s" % _label, _a - 0x08000000, 15)
 
+    # overworld sprites (2026-10-03): the planner's own writes, replayed with
+    # the builder's reserved list. Their CONTENT is checked independently in
+    # [O] below, against the source sheets and the base ROM.
+    _ow = owp.build(orig, chars, bp.ow_reserved_ranges(n_chars))
+    for _k, (_off, _data) in enumerate(_ow[0]):
+        win("overworld data %d" % _k, _off, len(_data))
+    for _off, _old, _new in _ow[1]:
+        win("overworld word %#x" % _off, _off, 4)
+    win("avatar trampoline", bp.AVATAR_FN_FILE_OFF, 8)
     check("no two declared windows overlap",
           all(not (a[1] < b[1] + b[2] and b[1] < a[1] + a[2])
               for i, a in enumerate(windows) for b in windows[i + 1:]))
@@ -706,6 +716,94 @@ def main():
           any(_bl(rom, _l0 + k) == (_sweep & ~1) for k in range(0, 0x20, 2))
           and (_sep | 1) in {struct.unpack_from("<I", _lcode, k)[0]
                              for k in range(0, len(_lcode) - 3, 4)})
+
+    # ---- [O] overworld sprite (../game_plans/overworld_sprites.md, 2026-10-03)
+    # Expected art comes from sprites/ow_player/ and the BASE ROM, never from
+    # the planner's output, so a build that wrote the wrong bytes fails here.
+    _R = lambda a: a - 0x08000000
+    _af = bp.AVATAR_FN_FILE_OFF
+    _ahook = int(_re.search(r"^([0-9a-f]+) T CharacterMode_CustomAvatarGfx$", _nm, _re.M).group(1), 16)
+    _gtab = int(_re.search(r"^([0-9a-f]+) A gCharacterOwGfx$", _nm, _re.M).group(1), 16)
+    _callers = sorted(o + 0x08000000 for o in range(0x9C0000, 0x9D0000, 2)
+                      if (orig[o + 1] & 0xF8) == 0xF0 and _bl(orig, o) == owp.AVATAR_FN)
+    check("[O] base: GetCustomGraphicsIdByState has exactly its five known callers and its "
+          "per-state var pool (walk/run 0x4054 first)",
+          bytes(orig[_af:_af + 8]) == owp.AVATAR_FN_ORIG
+          and _callers == [0x089C9D36, 0x089C9D78, 0x089C9DD0, 0x089C9E10, 0x089C9E2A]
+          and struct.unpack_from("<7I", orig, _R(owp.AVATAR_VAR_POOL)) == owp.AVATAR_POOL_ORDER,
+          [hex(c) for c in _callers])
+    check("[O] built: the trampoline is ldr r3,[pc]; bx r3 -> CharacterMode_CustomAvatarGfx",
+          bytes(rom[_af:_af + 8]) == struct.pack("<HHI", 0x4B00, 0x4718, _ahook | 1))
+    _sheets = owp.sheets()
+    _ids = struct.unpack_from("<%dH" % n_chars, rom, _R(_gtab))
+    _want_kind = []
+    for _c in chars:
+        _nmc = _c["character"]
+        _want_kind.append(None if _c.get("hidden") else
+                          "costume" if _nmc in owp.NATIVE_COSTUMES else
+                          "sheet" if _nmc in _sheets else None)
+    check("[O] built: the id table gives every offered character with art an id, and no one else",
+          all((_ids[i] != 0) == (k is not None) for i, k in enumerate(_want_kind))
+          and all(_ids[i] == owp.NATIVE_COSTUMES[c["character"]]
+                  for i, (c, k) in enumerate(zip(chars, _want_kind)) if k == "costume"),
+          "%d ids" % sum(1 for x in _ids if x))
+    _palrefs = {struct.unpack_from("<I", rom, _R(r))[0] for r in owp.PAL_TABLE_REFS}
+    _pt = _R(next(iter(_palrefs)))
+    _base_pt = bytes(orig[_R(owp.PAL_TABLE):_R(owp.PAL_TABLE) + owp.PAL_TABLE_ENTRIES * 8])
+    _pals = {}
+    _i = 0
+    while True:
+        _p, _tag = struct.unpack_from("<IH", rom, _pt + 8 * _i)
+        if _tag == owp.PAL_TAG_NONE:
+            break
+        _pals[_tag] = _p
+        _i += 1
+    check("[O] built: all three palette-table readers share one copy that starts with the "
+          "base table verbatim and ends {0, 0x11FF}",
+          len(_palrefs) == 1 and bytes(rom[_pt:_pt + len(_base_pt)]) == _base_pt
+          and struct.unpack_from("<IH", rom, _pt + 8 * _i) == (0, owp.PAL_TAG_NONE))
+    _art_bad, _ranges = [], []
+    for i, k in enumerate(_want_kind):
+        if k != "sheet":
+            continue
+        _e = _sheets[chars[i]["character"]]
+        _fb = _e["width"] * _e["height"] // 2
+        _gfx = open(os.path.join(owp.SHEETS, _e["stem"] + ".4bpp"), "rb").read()
+        _pal = open(os.path.join(owp.SHEETS, _e["stem"] + ".gbapal"), "rb").read()
+        _gid = _ids[i]
+        _slot = _R(owp.OW_TABLES[_gid >> 8]) + (_gid & 0xFF) * 4
+        _info = struct.unpack_from("<I", rom, _slot)[0]
+        _tag, _refl, _size, _w, _h = struct.unpack_from("<HHHhh", rom, _R(_info) + 2)
+        _anims, _imgs = struct.unpack_from("<II", rom, _R(_info) + 0x18)
+        _ok = (struct.unpack_from("<I", orig, _slot)[0] == 0 and (_w, _h, _size) == (_e["width"], _e["height"], _fb)
+               and _anims == owp.PLAYER_ANIMS and _refl == owp.PAL_TAG_NONE
+               and _tag in _pals and bytes(rom[_R(_pals[_tag]):_R(_pals[_tag]) + 32]) == _pal)
+        _ranges += [(_R(_info), 0x24), (_R(_imgs), 8 * owp.FRAMES), (_R(_pals.get(_tag, 0x08000000)), 32)]
+        for _f, _src in enumerate(owp.FRAME_MAP):
+            _d, _sz = struct.unpack_from("<IH", rom, _R(_imgs) + 8 * _f)
+            _ok = _ok and _sz == _fb and bytes(rom[_R(_d):_R(_d) + _fb]) == _gfx[_src * _fb:(_src + 1) * _fb]
+            _ranges.append((_R(_d), _fb))
+        if not _ok:
+            _art_bad.append(chars[i]["character"])
+    check("[O] built: every sheet character's id was a NULL slot and now draws its own sheet "
+          "(20 frames in FRAME_MAP order, its palette, player anims)",
+          not _art_bad and any(k == "sheet" for k in _want_kind), ", ".join(_art_bad[:5]))
+    _ours = set(_ids)
+    _other = [(t, e) for t in range(3) for e in range(256)
+              if ((t << 8) | e) not in _ours
+              and struct.unpack_from("<I", rom, _R(owp.OW_TABLES[t]) + 4 * e)[0]
+              != struct.unpack_from("<I", orig, _R(owp.OW_TABLES[t]) + 4 * e)[0]]
+    check("[O] built: no other overworld table entry changed (no NPC or opponent sprite)",
+          not _other, str(_other[:4]))
+    _ranges.append((_pt, 8 * (_i + 1)))
+    _ranges.append((_R(_gtab), 2 * n_chars))
+    _targets = owp.credible_targets(orig)
+    import bisect as _bis
+    _hit = [hex(s) for s, ln in _ranges
+            if any(orig[s:s + ln] != b"\xff" * ln for _ in [0])
+            or _bis.bisect_right(_targets, s - owp.POINTER_MARGIN) != _bis.bisect_left(_targets, s + ln)]   # forbidden: [t, t + margin)
+    check("[O] base: every byte the sprites occupy was 0xFF and no table or literal pool "
+          "points into it (or within 0x800 before it)", not _hit, ", ".join(_hit[:4]))
 
     if assert_tally(checks_run, EXPECT_CHECKS, "verify_artifacts"):
         return 1

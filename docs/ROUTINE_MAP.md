@@ -609,3 +609,38 @@ tooling choice. `tools/mgba_scripts/mk_checkpoint_field.lua` ports
 value, the drive answered Yes and wedged in the number loop).
 `tools/test_harness/run_roster_test.sh` runs roster (14 checks), off (2), and a
 negative control with case 6 reverted.
+
+## Overworld sprite (2026-10-03): ✅ SHIPPED, LIVE
+
+The player's walk/run sprite follows the character. Builder
+`tools/character_mode/unbound_ow_player.py` (asserts each fact below on the
+base ROM), shim `CharacterMode_CustomAvatarGfx` (`src/character_mode.c`),
+live layer `tools/test_harness/run_ow_sprite_test.sh`.
+
+| what | address | notes |
+|---|---|---|
+| CFRU `GetCustomGraphicsIdByState` | `0x089C9AA4` | `movs r3,r0; push; ...`; case table → VarGet of walk/run `0x4054`, bike `0x4055`, surf `0x4056`, field move `0x4057`, fishing `0x4058`, Vs Seeker `0x5032`, underwater `0x4062` (pool `0x089C9AE4` order: 4054 4055 4056 4057 5032 4058 4062). Non-zero replaces the gender default. **8-byte entry trampoline** → the shim. |
+| its callers | `0x089C9D36` `0x089C9D78` `0x089C9DD0` `0x089C9E10` `0x089C9E2A` | id getters (`ByStateIdAndGender 0x089C9D30`, `ByCurrentState 0x089C9DA8`) and the reverse lookups (gfx id → state, 0x089C9D60 / 0x089C9DF0) |
+| avatar defaults | `0x08A694DC + 0x60` | rows of `{u16 gfx, u8 flag, u8}` × 2 genders, per state |
+| overworld lookup | `0x089C9CB4` (vanilla `0x0805F2C8` jumps here) | high byte 0–2 → switcher `0x08A694DC+0x54` = tables `0x088110E0` / `0x088B2720` / `0x088B2B20`; anything else → table 0. NULL entry → table 0 entry 0x10 |
+| `ObjectEventGetGraphicsId` | `0x089C9E54` | **drops a high byte of 3–254**, so RR's fresh switcher slot can't work here; our ids are NULL entries of tables 2 (`0x25D`, `0x261`–`0x273`, `0x297`–`0x2FF`) and 1 (`0x1EC`–`0x1FF`, `0x1D4`–`0x1DB`) |
+| player walk template | table 0 entry 0 (`0x08EC0DBC`) | 32×32, anims `0x083A3470` (FireRed player walk/run, run frames 9–17 grouped per direction), oam `0x083A3718`, subsprites `0x083A37F0`; 16×32 sheets use `0x083A3710` / `0x083A379C` |
+| Unbound's own costume sets | Red `0x184`, Leaf `0x18C`, Ethan `0x1A4`, Lyra `0x1AC` (8 ids each) | identified by rendering every table entry; used as-is for those four |
+| `sObjectEventSpritePalettes` | `0x08EB9E9C` (Unbound's copy) | 366 `{data, tag}` entries, tags `0x1100`–`0x126D` with holes, **no 0x11FF terminator** (the vanilla loop relies on a match). Readers: exactly `0x0805F4D8`, `0x0805F570`, `0x0805F5C8`. Copied, tags `0x1400+k` appended, `{0, 0x11FF}` added, readers repointed. CFRU's dynamic OW palettes (`0x0805F510` → `0x089DCD35`) load through the vanilla lookup. |
+
+**Space.** The ROM is a full 32 MiB. The 150 sheets are 926 KB raw but 466 KB
+after deduplicating frames (147 of 155 sheets reuse their walk frames as run
+frames), so each frame is placed on its own in 0xFF runs that **no credible
+pointer** targets (an aligned ROM word with another ROM word within two words,
+i.e. a table or literal pool) within `[t, t+0x800)`. Lone pointer-looking words
+are noise: random data hits the ROM range once per ~512 B. Two real tables
+point into "free" space and are avoided: NPC frames at `0x09648800 + n×0x200`
+(from `0x083A00A8`…), and three copies of a graphics-record table at
+`0x08823540` / `0x088C88C0` / `0x088C8BD0` that point at `0x09617510`–`0x0961A480`.
+⚠️ That second table points **into the mugshot blob region** (`0x015FC800`+),
+which has held mugshot pixels since 2026-07-25. Not investigated yet.
+
+**Gait.** Unbound auto-runs: a held direction dashes (avatar flag `0x80`,
+anim 20–23), B+direction walks. The live test reads the dash flag per sample.
+Activation needs no reload: it happens in the intro, before the first map
+load creates the player.
