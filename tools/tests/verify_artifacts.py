@@ -53,7 +53,7 @@ BUILT = os.environ.get("CM_BUILT_ROM",
 
 # How many checks this layer must run. A deliberate LITERAL -- see
 # tools/tests/cm_tally.py for why this must never be a derived expression.
-EXPECT_CHECKS = 97   # +7: [O] the overworld sprite (2026-10-03); +1: [R] Roster's own START icon (2026-10-03); +1: [R] roots-only hint (2026-10-02); +6: [L] the link-trade sweep (2026-09-30); +8: [G] the PC second guard (2026-09-29); +6: [F] the build fingerprints (2026-09-29); +17: [R] the roster display START row (2026-09-27)
+EXPECT_CHECKS = 102   # +5: [H] field moves (2026-10-04); +7: [O] the overworld sprite (2026-10-03); +1: [R] Roster's own START icon (2026-10-03); +1: [R] roots-only hint (2026-10-02); +6: [L] the link-trade sweep (2026-09-30); +8: [G] the PC second guard (2026-09-29); +6: [F] the build fingerprints (2026-09-29); +17: [R] the roster display START row (2026-09-27)
                      # +21: the PC-exit sweep, 5 checks x 4 sites + the tail census (2026-09-10)
 
 failures = []
@@ -144,6 +144,9 @@ def main():
     # link-trade sweep: the CheckHeap+8 trampoline and one BL
     win("link-trade trampoline (CheckHeap+8)", bp.LINK_TRADE_TRAMPOLINE_FILE_OFF, 8)
     win("link-trade BL", bp.LINK_TRADE_BL_FILE_OFF, 4)
+    # field moves: three bls to CanMonLearnTMTutor
+    for _o, _what in bp.FIELD_MOVE_BL_SITES:
+        win("field-move bl %#x" % _o, _o, 4)
     win("catch bl", bp.CATCH_BL_FILE_OFF, 4)
     win("GiveMonToPlayer trampoline", bp.GMTP_FILE_OFF, 8)
     win("givemon bl", bp.GIVEMON_BL_FILE_OFF, 4)
@@ -716,6 +719,35 @@ def main():
           any(_bl(rom, _l0 + k) == (_sweep & ~1) for k in range(0, 0x20, 2))
           and (_sep | 1) in {struct.unpack_from("<I", _lcode, k)[0]
                              for k in range(0, len(_lcode) - 3, 4)})
+
+    # ---- [H] field moves (src/character_mode.c CharacterMode_FieldMoveCanLearn,
+    # 2026-10-04): any party mon can use an HM in the bag while the mode is on.
+    _cml = bp.CAN_MON_LEARN_TM_TUTOR
+    _fsites = [o for o, _ in bp.FIELD_MOVE_BL_SITES]
+    _base_callers = sorted(o for o in range(0, len(orig) - 4, 2)
+                           if (orig[o + 1] & 0xF8) == 0xF0 and _bl(orig, o) == _cml)
+    check("[H] base: exactly five BLs to CanMonLearnTMTutor: the three field-move sites, "
+          "Dig (0x08A035B4) and TM teaching (0x089C6D58)",
+          _base_callers == sorted(_fsites + [0xA035B4, 0x9C6D58]),
+          str([hex(0x08000000 + o) for o in _base_callers]))
+    check("[H] base: the Fly site passes HM02 (438) and the Grim Woods site HM01 (437)",
+          bytes(orig[0xA0357C:0xA03582]) == bytes.fromhex("db21019a4900")
+          and bytes(orig[0xA0350E:0xA03514]) == bytes.fromhex("b6213200ff31"))
+    _fhook = int(_re.search(r"^([0-9a-f]+) T CharacterMode_FieldMoveCanLearn$",
+                            _nm, _re.M).group(1), 16)
+    check("[H] built: the three sites call CharacterMode_FieldMoveCanLearn",
+          all(_bl(rom, o) == _fhook & ~1 for o in _fsites))
+    _left = sorted(o for o in range(0, len(rom) - 4, 2)
+                   if (rom[o + 1] & 0xF8) == 0xF0 and _bl(rom, o) == _cml)
+    _f0 = (_fhook & ~1) - 0x08000000
+    _fcode = bytes(rom[_f0:_f0 + 0x80])
+    check("[H] built: Dig and TM teaching still call CanMonLearnTMTutor directly, and "
+          "nothing else does except the compiled hook's own fallback",
+          [o for o in _left if not _f0 <= o < _f0 + 0x80] == [0x9C6D58, 0xA035B4],
+          str([hex(0x08000000 + o) for o in _left]))
+    _flits = {struct.unpack_from("<I", _fcode, k)[0] for k in range(0, len(_fcode) - 3, 4)}
+    check("[H] compiled hook (read from the ROM) carries CanMonLearnTMTutor and flag 0x18F8",
+          {_cml | 1, 0x18F8} <= _flits, str(sorted(hex(x) for x in _flits)))
 
     # ---- [O] overworld sprite (../game_plans/overworld_sprites.md, 2026-10-03)
     # Expected art comes from sprites/ow_player/ and the BASE ROM, never from

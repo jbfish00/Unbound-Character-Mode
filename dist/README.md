@@ -33,6 +33,12 @@ game restricted to that character's canon Pokemon.
   Mode is on. It lists your character's Pokemon, one row per evolution
   family, with the highlighted Pokemon's icon beside the list; A or B
   closes it. With Character Mode off the START menu is unchanged.
+- **HMs**: any Pokemon in your party can use a field move (Cut, Fly,
+  Surf, Strength, Rock Smash, Waterfall, Dive, Rock Climb, and Flash)
+  once you have that HM in your bag and the badge it needs. You don't
+  have to teach it, and the Pokemon doesn't have to be able to learn
+  it, so no character gets stuck for lack of a Surf user. Only while
+  Character Mode is on.
 - Answering "No" at the prompt (or cancelling the number entry) leaves
   the game completely vanilla. The choice is made once per save file.
 
@@ -44,7 +50,7 @@ game restricted to that character's canon Pokemon.
    `b4776b82a4c7915d0fadeaa27e013523f99dfd94`).
 2. Apply `unbound-character-mode.bps` to that ROM with Flips
    (https://github.com/Alcaro/Flips), or any BPS patcher.
-3. The result should have sha1 `9dc0daed50986a76624135317597f04b01c862a7`.
+3. The result should have sha1 `ddb790933a7e51011c8280dce1f3232d7a636440`.
 
 ## Known limitations
 

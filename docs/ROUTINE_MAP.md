@@ -644,3 +644,39 @@ which has held mugshot pixels since 2026-07-25. Not investigated yet.
 anim 20–23), B+direction walks. The live test reads the dash flag per sample.
 Activation needs no reload: it happens in the intro, before the first map
 load creates the player.
+
+## Field moves: any party mon uses an HM (2026-10-04): ✅ BUILT, LIVE
+
+Why: a roster can lack every Surf/Waterfall/Dive learner (Brandon), the catch
+gate refuses a helper, and Unbound's ADM (`FLAG_BOUGHT_ADM 0x152D`, "Buy an ADM
+in Seaport City") is post-game. The user ruled: HM in the bag + badge is
+enough, for all HMs.
+
+- Unbound builds CFRU with `ONLY_CHECK_ITEM_FOR_HM_USAGE`: a mon may use a field
+  move it doesn't know if the HM is in the bag and it can learn it. Proof: the
+  specials pass the HM item (`sp10A` Cut → `PartyHasMonWithFieldMovePotential(15,
+  437, 1)`). Sandbox flag `0x16E4`.
+- `PartyHasMonWithFieldMovePotential` **`0x08A00A64`** (move, item, surfingType):
+  requires `CheckBagHasItem(item)`, then per non-egg mon `MonKnowsMove ||
+  CanMonLearnTMTutor(mon, item, 0) == 0`. Its one compatibility bl is
+  **`0x08A00AE0`**. Ten callers, all field checks (move/item): Cut 15/437, Fly
+  -/438, Surf 57/439, Strength 70/440, Dive 291/441 (×2), Rock Smash 249/442,
+  Waterfall 127/443, Rock Climb 392/444, Flash 148/386 (**TM70**, ×2).
+- `CanMonLearnTMTutor` **`0x089F3B6C`**, 0 = CAN_LEARN_MOVE. Exactly five bl callers:
+  `0x08A00AE0` (above), `0x08A03584` (party menu Fly), `0x08A03516` (party menu
+  Cut, Grim Woods Weed Whacker only), `0x08A035B4` (party menu Dig, TM28) and
+  `0x089C6D58` (teaching a TM).
+- `SetPartyMonFieldSelectionActions` `0x08A032F4`; `sPartyMenuInternal` ptr
+  `0x0203B09C` (actions[] +0x0F, numActions +0x17; Fly's action = 21).
+  `HasBadgeToUseFieldMove` `0x08A0325C` (table `0x08A6C934`, flag `0x81F + n`).
+  `gMapHeader` `0x02036DFC` (mapType +0x17). Bag: vanilla `CheckBagHasItem
+  0x08099F40`, `AddBagItem 0x0809A084`, `RemoveBagItem 0x0809A1D8`.
+- **Patch:** the first three bls → `CharacterMode_FieldMoveCanLearn`: with the
+  mode on, an HM (437–444) or TM70 answers 0 for a non-egg mon; else the real
+  function. Bag and badge checks are untouched. Dig and TM teaching aren't
+  hooked.
+- Evidence: verify [H] (5 checks, base caller census, compiled-ROM literals),
+  verify negative +3 (19/19); live `tools/test_harness/run_field_move_test.sh`
+  (Brandon; a Splash-only Magikarp; 8 moves × with/without the HM + Fly in the
+  real party menu; OFF control; the no-hook ROM FAILS). Not live-tested: the
+  Grim Woods Cut row (needs that map and quest var).

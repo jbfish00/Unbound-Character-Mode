@@ -1784,3 +1784,141 @@ u16 CharacterMode_CustomAvatarGfx(u8 state)
     }
     return VarGet(sAvatarStateVars[state]);
 }
+
+/* ---- Field moves: any party Pokemon can use an HM (2026-10-04) ----
+ *
+ * A character's roster may have nothing that learns Surf (Brandon: no Surf,
+ * Waterfall or Dive learner at all), and the catch gate means the player
+ * can't catch a helper. Unbound's own fix, the ADM, is post-game.
+ *
+ * Unbound already lets a Pokemon use a field move it doesn't know, as long as
+ * the HM is in the bag and the Pokemon could learn it (CFRU's
+ * ONLY_CHECK_ITEM_FOR_HM_USAGE: the specials pass the HM item, e.g. Cut = 437).
+ * Every overworld check (Cut, Rock Smash, Strength, Surf, Waterfall, Dive,
+ * Rock Climb, Flash) goes through PartyHasMonWithFieldMovePotential
+ * (0x08A00A64), whose only compatibility call is the bl at 0x08A00AE0. The
+ * party menu asks again for Fly (0x08A03584) and for Cut in Grim Woods
+ * (0x08A03516). Those three bls come here.
+ *
+ * With Character Mode on, an HM item (or Flash's TM70) answers "can learn".
+ * Everything else stays as it was: the callers still require the HM in the
+ * bag and the badge, and still skip eggs. Dig (TM28, the fourth caller in
+ * the party menu) is left alone: it's an Escape Rope, not progress. */
+extern u8 CanMonLearnTMTutor(struct Pokemon *mon, u16 item, u8 tutor);
+
+#define CAN_LEARN_MOVE 0
+#define ITEM_HM01_CUT 437
+#define ITEM_HM08_ROCK_CLIMB 444
+#define ITEM_TM70_FLASH 386
+
+static bool8 CharacterMode_IsFieldMoveItem(u16 item)
+{
+    return (item >= ITEM_HM01_CUT && item <= ITEM_HM08_ROCK_CLIMB)
+        || item == ITEM_TM70_FLASH;
+}
+
+u8 CharacterMode_FieldMoveCanLearn(struct Pokemon *mon, u16 item, u8 tutor)
+{
+    if (tutor == 0 && CharacterMode_IsFieldMoveItem(item) && InCharacterMode()
+     && !GetMonData(mon, MON_DATA_IS_EGG, 0))
+        return CAN_LEARN_MOVE;
+    return CanMonLearnTMTutor(mon, item, tutor);
+}
+
+/* Live probe (tools/test_harness/run_field_move_test.sh). Queued from the
+ * free-roam checkpoint by a debug script, with the mode set by the script.
+ * The party becomes one Magikarp that knows only Splash: it learns no HM, so
+ * every "yes" below can only come from the hook. For each field move it calls
+ * the real PartyHasMonWithFieldMovePotential twice, without and then with the
+ * HM in the bag, and then builds the real party menu for Fly.
+ *
+ * FIELD_PROBE[0]     magic 0xF1E1D000 | count of moves
+ * FIELD_PROBE[1+i]   slot without the HM | slot with the HM << 8 (6 = none)
+ * FIELD_PROBE[10]    Fly in the party menu (1/0) | (2 when the HM is absent
+ *                    and Fly is listed anyway: must never happen) */
+#define FIELD_PROBE ((volatile u32 *)0x02030300)
+#define SPECIES_MAGIKARP 129
+#define MOVE_SPLASH 150
+#define MON_DATA_MOVE1 13
+#define FLAG_BADGE01_GET 0x820
+#define MENU_FIELD_FLY 21
+
+extern u8 PartyHasMonWithFieldMovePotential(u16 move, u16 item, u8 surfingType);
+extern void SetPartyMonFieldSelectionActions(struct Pokemon *mons, u8 slotId);
+extern bool8 CheckBagHasItem(u16 item, u16 count);
+extern bool8 AddBagItem(u16 item, u16 count);
+extern bool8 RemoveBagItem(u16 item, u16 count);
+extern u8 *sPartyMenuInternal;   /* actions[] at +0x0F, numActions at +0x17 */
+extern u8 gMapHeader[];          /* mapType at +0x17 */
+
+static const u16 sFieldMoveProbe[][2] = {
+    {  15, 437 }, /* Cut */
+    {  57, 439 }, /* Surf */
+    {  70, 440 }, /* Strength */
+    { 291, 441 }, /* Dive */
+    { 249, 442 }, /* Rock Smash */
+    { 127, 443 }, /* Waterfall */
+    { 392, 444 }, /* Rock Climb */
+    { 148, 386 }, /* Flash (TM70) */
+};
+#define FIELD_PROBE_N (sizeof(sFieldMoveProbe) / sizeof(sFieldMoveProbe[0]))
+
+static bool8 CharacterMode_ProbeFlyListed(void)
+{
+    u8 i, n;
+
+    SetPartyMonFieldSelectionActions(gPlayerParty, 0);
+    n = sPartyMenuInternal[0x17];
+    for (i = 0; i < n; i++)
+        if (sPartyMenuInternal[0x0F + i] == MENU_FIELD_FLY)
+            return TRUE;
+    return FALSE;
+}
+
+void CharacterMode_FieldMoveProbe(void)
+{
+    u8 menu[0x40];
+    u8 *savedMenu = sPartyMenuInternal;
+    u8 savedMapType = gMapHeader[0x17];
+    u16 v;
+    u32 i, without, with, fly;
+
+    v = SPECIES_MAGIKARP;
+    SetMonData(&gPlayerParty[0], MON_DATA_SPECIES, &v);
+    for (i = 0; i < 4; i++)
+    {
+        v = i == 0 ? MOVE_SPLASH : 0;
+        SetMonData(&gPlayerParty[0], MON_DATA_MOVE1 + i, &v);
+    }
+    for (i = 1; i < PARTY_SIZE; i++)
+        ZeroMonData(&gPlayerParty[i]);
+    CalculatePlayerPartyCount();
+    for (i = 0; i < 8; i++)
+        FlagSet(FLAG_BADGE01_GET + i);
+
+    for (i = 0; i < FIELD_PROBE_N; i++)
+    {
+        u16 move = sFieldMoveProbe[i][0], item = sFieldMoveProbe[i][1];
+
+        while (CheckBagHasItem(item, 1))
+            RemoveBagItem(item, 1);
+        without = PartyHasMonWithFieldMovePotential(move, item, 0);
+        AddBagItem(item, 1);
+        with = PartyHasMonWithFieldMovePotential(move, item, 0);
+        FIELD_PROBE[1 + i] = without | (with << 8);
+    }
+
+    /* Fly is only offered where Fly works; pin the map type to a route
+     * (MAP_TYPE_ROUTE 3) so the checkpoint's own map can't decide it. */
+    sPartyMenuInternal = menu;
+    gMapHeader[0x17] = 3;
+    while (CheckBagHasItem(438, 1))
+        RemoveBagItem(438, 1);
+    fly = CharacterMode_ProbeFlyListed() ? 2 : 0;
+    AddBagItem(438, 1);
+    fly |= CharacterMode_ProbeFlyListed();
+    gMapHeader[0x17] = savedMapType;
+    sPartyMenuInternal = savedMenu;
+    FIELD_PROBE[10] = fly;
+    FIELD_PROBE[0] = 0xF1E1D000 | FIELD_PROBE_N;
+}

@@ -97,3 +97,18 @@ SpriteCallbackDummy         = 0x0800760C | 1;
 gSprites                    = 0x0202063C;   /* stride 0x44, 64 entries */
 gDummySpriteAnimTable       = 0x08231CF0;
 gDummySpriteAffineAnimTable = 0x08231CFC;
+
+/* ---- Field moves (src/character_mode.c CharacterMode_FieldMoveCanLearn;
+ *      2026-10-04). Disassembled in this ROM: CanMonLearnTMTutor is the
+ *      callee of PartyHasMonWithFieldMovePotential's bl at 0x08A00AE0 and of
+ *      the party menu's Fly / Grim Woods Cut bls (0x08A03584 / 0x08A03516).
+ *      The bag functions are vanilla FireRed (CheckBagHasItem is what the
+ *      CFRU code calls through its 0x08A0470C veneer). ---- */
+CanMonLearnTMTutor                = 0x089F3B6C | 1;
+PartyHasMonWithFieldMovePotential = 0x08A00A64 | 1;
+SetPartyMonFieldSelectionActions  = 0x08A032F4 | 1;
+CheckBagHasItem = 0x08099F40 | 1;
+AddBagItem      = 0x0809A084 | 1;
+RemoveBagItem   = 0x0809A1D8 | 1;
+sPartyMenuInternal = 0x0203B09C;
+gMapHeader         = 0x02036DFC;

@@ -62,6 +62,12 @@ game restricted to that character's canon Pokemon.
   Mode is on. It lists your character's Pokemon, one row per evolution
   family, with the highlighted Pokemon's icon beside the list; A or B
   closes it. With Character Mode off the START menu is unchanged.
+- **HMs**: any Pokemon in your party can use a field move (Cut, Fly,
+  Surf, Strength, Rock Smash, Waterfall, Dive, Rock Climb, and Flash)
+  once you have that HM in your bag and the badge it needs. You don't
+  have to teach it, and the Pokemon doesn't have to be able to learn
+  it, so no character gets stuck for lack of a Surf user. Only while
+  Character Mode is on.
 - Answering "No" at the prompt (or cancelling the number entry) leaves
   the game completely vanilla. The choice is made once per save file.
 

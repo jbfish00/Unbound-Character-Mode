@@ -51,7 +51,7 @@ def run(path):
 
 # How many tamper cases this negative test must run. A deliberate
 # LITERAL -- see cm_tally.assert_cases.
-EXPECT_CASES = 16
+EXPECT_CASES = 19
 
 
 def main():
@@ -157,6 +157,27 @@ def main():
     case("Misty's id zeroed in the id table fails", 1, revert(_gtab + 18, b"\x00\x00"))
     case("one palette-table reader left on the base table fails", 1,
          revert(owp.R(owp.PAL_TABLE_REFS[1]), owp.PAL_TABLE.to_bytes(4, "little")))
+    # Field moves ([H], 2026-10-04). Each tamper stays inside a declared window.
+    _fh = int(_re.search(r"^([0-9a-f]+) T CharacterMode_FieldMoveCanLearn$", _nm, _re.M).group(1), 16)
+    def field_site_reverted(f):
+        o = bp.FIELD_MOVE_BL_SITES[1][0]          # Fly
+        f.seek(o)
+        f.write(bp.thumb_bl(bp.ROM_BASE + o, bp.CAN_MON_LEARN_TM_TUTOR))
+    case("the Fly site left calling CanMonLearnTMTutor fails", 1, field_site_reverted)
+    def field_site_bent(f):
+        o = bp.FIELD_MOVE_BL_SITES[0][0]          # PartyHasMonWithFieldMovePotential
+        f.seek(o)
+        f.write(bp.thumb_bl(bp.ROM_BASE + o, (_fh & ~1) + 4))
+    case("the overworld site aimed 4 bytes into the hook fails", 1, field_site_bent)
+    def field_hook_pool_bent(f):
+        o = (_fh & ~1) - bp.ROM_BASE
+        f.seek(o)
+        code = f.read(0x80)
+        k = next(k for k in range(0, 0x7D, 4)
+                 if int.from_bytes(code[k:k + 4], "little") == bp.CAN_MON_LEARN_TM_TUTOR | 1)
+        f.seek(o + k)
+        f.write((bp.CAN_MON_LEARN_TM_TUTOR + 5).to_bytes(4, "little"))
+    case("the hook's fallback literal bent fails", 1, field_hook_pool_bent)
     case("control: the untouched copy still passes", 0)
 
     shutil.rmtree(tmp, ignore_errors=True)

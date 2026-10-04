@@ -194,6 +194,19 @@ WILD_CALL_SITES = {
 }
 
 
+# Field moves (src/character_mode.c CharacterMode_FieldMoveCanLearn,
+# 2026-10-04). Every bl to CanMonLearnTMTutor (0x089F3B6C) in the ROM: five.
+# These three decide whether a party mon may use a field move it doesn't know
+# (CFRU ONLY_CHECK_ITEM_FOR_HM_USAGE, on in Unbound). Not hooked: 0x08A035B4
+# (Dig, TM28, in the party menu) and 0x089C6D58 (teaching a TM).
+CAN_MON_LEARN_TM_TUTOR = 0x089F3B6C
+FIELD_MOVE_BL_SITES = (
+    (0x00A00AE0, "PartyHasMonWithFieldMovePotential (every overworld HM + Flash)"),
+    (0x00A03584, "party menu: Fly"),
+    (0x00A03516, "party menu: Cut in Grim Woods"),
+)
+
+
 def ow_reserved_ranges(n_chars):
     """File ranges this build fills by other means, kept out of the overworld
     sprite planner (which scans the BASE ROM). verify_artifacts.py replays the
@@ -672,6 +685,20 @@ def main():
     print(f"link-trade sweep: CB2_SaveAndEndTrade's expand BL -> {link_hook:#010x} "
           f"via {ROM_BASE + _l:#x} (CheckHeap+8)")
 
+    # 6a-field. Field moves (src/character_mode.c
+    # CharacterMode_FieldMoveCanLearn): any party mon can use an HM in the bag
+    # while the mode is on. The three bls to CanMonLearnTMTutor that decide
+    # field-move use; the fourth party-menu caller (Dig) and the TM-teaching
+    # caller (0x089C6D58) stay. Each site's current bytes are asserted first.
+    field_hook = syms["CharacterMode_FieldMoveCanLearn"]
+    for _site, _what in FIELD_MOVE_BL_SITES:
+        _cur = bytes(rom[_site:_site + 4])
+        _exp = thumb_bl(ROM_BASE + _site, CAN_MON_LEARN_TM_TUTOR)
+        assert _cur == _exp, f"field-move site {_what} {_site:#x}: {_cur.hex()} != {_exp.hex()}"
+        rom[_site:_site + 4] = thumb_bl(ROM_BASE + _site, field_hook & ~1)
+    print(f"field moves: {len(FIELD_MOVE_BL_SITES)} bls to CanMonLearnTMTutor -> "
+          f"{field_hook | 1:#010x}")
+
     # 6b. entry trampoline: ldr r1,[pc,#0]; bx r1; .word hook|1
     tramp = struct.pack("<HHI", 0x4900, 0x4708, gmtp_hook | 1)
     rom[GMTP_FILE_OFF:GMTP_FILE_OFF + 8] = tramp
@@ -861,7 +888,27 @@ def main():
     off_pc_tails = off_egg_tail + len(egg_blob)
     pc_blob, pc_patches, pc_addrs = pc_hook.build(addr(off_pc_tails))
 
-    total_len = off_pc_tails + len(pc_blob)
+    # Field-move live test (run_field_move_test.sh): set the mode, then
+    # callnative the probe. ON plays as Brandon (no Surf, Waterfall or Dive
+    # learner on his roster: the case that started this); OFF is the control.
+    field_probe = syms["CharacterMode_FieldMoveProbe"] | 1
+    field_char = next(i + 1 for i, c in enumerate(manifest["characters"])
+                      if c["character"] == "Brandon")
+
+    def field_debug_script(on):
+        s = bytearray()
+        s += bytes([0x29 if on else 0x2A]) + struct.pack("<H", 0x18F8)  # set/clearflag CM
+        s += bytes([0x16]) + struct.pack("<HH", 0x51FC, field_char if on else 0)
+        s += bytes([0x23]) + struct.pack("<I", field_probe)            # callnative
+        s += bytes([0x02])                                             # end
+        return bytes(s)
+
+    off_dbg_field_on = off_pc_tails + len(pc_blob)
+    dbg_field_on = field_debug_script(True)
+    off_dbg_field_off = off_dbg_field_on + len(dbg_field_on)
+    dbg_field_off = field_debug_script(False)
+
+    total_len = off_dbg_field_off + len(dbg_field_off)
     assert total_len <= INJECT_BLOCK_LEN, "injection block overflow (debug scripts)"
     span2 = rom[INJECT_FILE_OFF + off_dbg_block:INJECT_FILE_OFF + total_len]
     assert all(b == 0xFF for b in span2), "debug-script target not 0xFF-free!"
@@ -877,6 +924,8 @@ def main():
     rom[INJECT_FILE_OFF + off_dbg_gate_shown:INJECT_FILE_OFF + off_dbg_gate_shown + len(dbg_gate_shown)] = dbg_gate_shown
     rom[INJECT_FILE_OFF + off_egg_tail:INJECT_FILE_OFF + off_egg_tail + len(egg_blob)] = egg_blob
     rom[INJECT_FILE_OFF + off_pc_tails:INJECT_FILE_OFF + off_pc_tails + len(pc_blob)] = pc_blob
+    rom[INJECT_FILE_OFF + off_dbg_field_on:INJECT_FILE_OFF + off_dbg_field_on + len(dbg_field_on)] = dbg_field_on
+    rom[INJECT_FILE_OFF + off_dbg_field_off:INJECT_FILE_OFF + off_dbg_field_off + len(dbg_field_off)] = dbg_field_off
     # json is imported at module scope (a second local import here made json
     # function-local, so the manifest load above raised UnboundLocalError)
     with open(os.path.join(BUILD, "debug_addrs.json"), "w") as f:
@@ -896,7 +945,10 @@ def main():
                    "trade_test_swept_char": swept_name,
                    "trade_test_stays_char": stays_name,
                    "pc_test_swept_char": swept_name,
-                   "pc_test_stays_char": stays_name}, f)
+                   "pc_test_stays_char": stays_name,
+                   "field_test_script_on": addr(off_dbg_field_on),
+                   "field_test_script_off": addr(off_dbg_field_off),
+                   "field_test_char": field_char}, f)
     print(f"debug scripts: block @ {addr(off_dbg_block):#010x}, catch @ {addr(off_dbg_catch):#010x}, "
           f"starter @ {addr(off_dbg_starter):#010x}")
     print(f"trade tails @ {addr(off_trade_tails):#010x}, trade tests red/bruno @ "

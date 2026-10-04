@@ -69,6 +69,13 @@ switch Character Mode off afterwards — start a new game to change or disable i
   [`../game_plans/legendary_encounters.md`](../game_plans/legendary_encounters.md);
   per-character pools in [`ENCOUNTERS.md`](ENCOUNTERS.md).
 
+- **HMs** — any party Pokémon can use a field move (Cut, Fly, Surf, Strength,
+  Rock Smash, Waterfall, Dive, Rock Climb, and Flash, which is TM70 here) once
+  the HM is in your bag and you have its badge. It needn't know or be able to
+  learn the move. Some rosters have no Surf learner at all (Brandon), the catch
+  gate stops you catching one, and Unbound's own ADM is post-game. Only while
+  Character Mode is on; Dig (a TM) is unchanged.
+
 ## Seeing your roster in-game
 
 With Character Mode on, the **START menu** gets a **Roster** icon (a clipboard of Poké Balls,
