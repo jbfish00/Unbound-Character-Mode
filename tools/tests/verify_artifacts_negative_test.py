@@ -51,7 +51,7 @@ def run(path):
 
 # How many tamper cases this negative test must run. A deliberate
 # LITERAL -- see cm_tally.assert_cases.
-EXPECT_CASES = 19
+EXPECT_CASES = 22
 
 
 def main():
@@ -178,6 +178,23 @@ def main():
         f.seek(o + k)
         f.write((bp.CAN_MON_LEARN_TM_TUTOR + 5).to_bytes(4, "little"))
     case("the hook's fallback literal bent fails", 1, field_hook_pool_bent)
+    # Lava Surf ([H], 2026-10-05)
+    case("the magma script's Fire search left in place fails", 1,
+         revert(bp.LAVA_SPLICE_FILE_OFF, bp.LAVA_SPLICE_ORIG))
+    def lava_tail_at(f):
+        f.seek(bp.LAVA_SPLICE_FILE_OFF + 1)
+        return int.from_bytes(f.read(4), "little") - bp.ROM_BASE
+    def lava_rejoin_bent(f):
+        t = lava_tail_at(f)
+        f.seek(t + 17)                            # the first goto's operand
+        f.write((bp.LAVA_REJOIN_ROM_ADDR + 5).to_bytes(4, "little"))
+    case("the lava tail rejoining 5 bytes late fails", 1, lava_rejoin_bent)
+    _lsetup = int(_re.search(r"^([0-9a-f]+) T CharacterMode_LavaSurfSetup$", _nm, _re.M).group(1), 16)
+    def lava_callasm_wrong(f):
+        t = lava_tail_at(f)
+        f.seek(t + 1)
+        f.write((_lsetup | 1).to_bytes(4, "little"))
+    case("the lava tail calling the test setup instead fails", 1, lava_callasm_wrong)
     case("control: the untouched copy still passes", 0)
 
     shutil.rmtree(tmp, ignore_errors=True)

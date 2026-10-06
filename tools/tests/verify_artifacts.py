@@ -53,7 +53,7 @@ BUILT = os.environ.get("CM_BUILT_ROM",
 
 # How many checks this layer must run. A deliberate LITERAL -- see
 # tools/tests/cm_tally.py for why this must never be a derived expression.
-EXPECT_CHECKS = 102   # +5: [H] field moves (2026-10-04); +7: [O] the overworld sprite (2026-10-03); +1: [R] Roster's own START icon (2026-10-03); +1: [R] roots-only hint (2026-10-02); +6: [L] the link-trade sweep (2026-09-30); +8: [G] the PC second guard (2026-09-29); +6: [F] the build fingerprints (2026-09-29); +17: [R] the roster display START row (2026-09-27)
+EXPECT_CHECKS = 105   # +3: [H] lava Surf (2026-10-05); +5: [H] field moves (2026-10-04); +7: [O] the overworld sprite (2026-10-03); +1: [R] Roster's own START icon (2026-10-03); +1: [R] roots-only hint (2026-10-02); +6: [L] the link-trade sweep (2026-09-30); +8: [G] the PC second guard (2026-09-29); +6: [F] the build fingerprints (2026-09-29); +17: [R] the roster display START row (2026-09-27)
                      # +21: the PC-exit sweep, 5 checks x 4 sites + the tail census (2026-09-10)
 
 failures = []
@@ -147,6 +147,7 @@ def main():
     # field moves: three bls to CanMonLearnTMTutor
     for _o, _what in bp.FIELD_MOVE_BL_SITES:
         win("field-move bl %#x" % _o, _o, 4)
+    win("lava Surf splice", bp.LAVA_SPLICE_FILE_OFF, len(bp.LAVA_SPLICE_ORIG))
     win("catch bl", bp.CATCH_BL_FILE_OFF, 4)
     win("GiveMonToPlayer trampoline", bp.GMTP_FILE_OFF, 8)
     win("givemon bl", bp.GIVEMON_BL_FILE_OFF, 4)
@@ -748,6 +749,32 @@ def main():
     _flits = {struct.unpack_from("<I", _fcode, k)[0] for k in range(0, len(_fcode) - 3, 4)}
     check("[H] compiled hook (read from the ROM) carries CanMonLearnTMTutor and flag 0x18F8",
           {_cml | 1, 0x18F8} <= _flits, str(sorted(hex(x) for x in _flits)))
+
+    # ---- [H] lava Surf (2026-10-05): the magma script's Fire-type search is
+    # reached through a tail that first asks the ordinary Surf question.
+    _ls = bp.LAVA_SPLICE_FILE_OFF
+    check("[H] base: CFRU's water routine returns the magma script, whose Fire search "
+          "(setvar 0x8000, 10; special 0xB2) sits at the splice and rejoins at compare VAR_RESULT, 6",
+          struct.unpack_from("<I", orig, 0xA00DA4)[0] == 0x089A4A52
+          and bytes(orig[_ls:_ls + 8]) == bytes.fromhex("1600800a0025b200")
+          and bytes(orig[0x9A4A6F:0x9A4A74]) == bytes.fromhex("210d800600"))
+    _lslot = int(_re.search(r"^([0-9a-f]+) T CharacterMode_LavaSurfSlot$", _nm, _re.M).group(1), 16)
+    _lt = struct.unpack_from("<I", rom, _ls + 1)[0]
+    _t = _lt - 0x08000000
+    _want = (bytes([0x23]) + struct.pack("<I", _lslot | 1)
+             + bytes.fromhex("210d800600") + bytes([0x06, 0x01]) + struct.pack("<I", _lt + 21)
+             + bytes([0x05]) + struct.pack("<I", 0x089A4A6F)
+             + bytes.fromhex("1600800a0025b200") + bytes([0x05]) + struct.pack("<I", 0x089A4A6F))
+    check("[H] built: the splice is goto <tail>; nop x3, and the tail callasms "
+          "CharacterMode_LavaSurfSlot, keeps the Fire search as its fallback and rejoins at 0x089A4A6F",
+          rom[_ls] == 0x05 and bytes(rom[_ls + 5:_ls + 8]) == b"\x00\x00\x00"
+          and 0 <= _t < len(rom) - len(_want) and bytes(rom[_t:_t + len(_want)]) == _want,
+          bytes(rom[_ls:_ls + 8]).hex())
+    _l0 = (_lslot & ~1) - 0x08000000
+    _llits = {struct.unpack_from("<I", rom, a)[0] for a in range(_l0, _l0 + 0x80) if a % 4 == 0}
+    check("[H] compiled CharacterMode_LavaSurfSlot (read from the ROM) carries flag 0x18F8 "
+          "and PartyHasMonWithFieldMovePotential",
+          {0x18F8, 0x08A00A65} <= _llits)
 
     # ---- [O] overworld sprite (../game_plans/overworld_sprites.md, 2026-10-03)
     # Expected art comes from sprites/ow_player/ and the BASE ROM, never from

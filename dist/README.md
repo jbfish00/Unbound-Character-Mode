@@ -39,6 +39,10 @@ game restricted to that character's canon Pokemon.
   have to teach it, and the Pokemon doesn't have to be able to learn
   it, so no character gets stuck for lack of a Surf user. Only while
   Character Mode is on.
+- **Lava**: surfing on magma no longer needs a Fire-type Pokemon.
+  With HM03 Surf in your bag and the Surf badge, any party Pokemon
+  can do it (a Fire-type still works too). Only while Character Mode
+  is on.
 - Answering "No" at the prompt (or cancelling the number entry) leaves
   the game completely vanilla. The choice is made once per save file.
 
@@ -50,7 +54,7 @@ game restricted to that character's canon Pokemon.
    `b4776b82a4c7915d0fadeaa27e013523f99dfd94`).
 2. Apply `unbound-character-mode.bps` to that ROM with Flips
    (https://github.com/Alcaro/Flips), or any BPS patcher.
-3. The result should have sha1 `ddb790933a7e51011c8280dce1f3232d7a636440`.
+3. The result should have sha1 `3d2abe68f2eb263d85e310f29274f59dbfd8e1af`.
 
 ## Known limitations
 

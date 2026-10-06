@@ -68,6 +68,10 @@ game restricted to that character's canon Pokemon.
   have to teach it, and the Pokemon doesn't have to be able to learn
   it, so no character gets stuck for lack of a Surf user. Only while
   Character Mode is on.
+- **Lava**: surfing on magma no longer needs a Fire-type Pokemon.
+  With HM03 Surf in your bag and the Surf badge, any party Pokemon
+  can do it (a Fire-type still works too). Only while Character Mode
+  is on.
 - Answering "No" at the prompt (or cancelling the number entry) leaves
   the game completely vanilla. The choice is made once per save file.
 

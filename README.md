@@ -75,6 +75,9 @@ switch Character Mode off afterwards — start a new game to change or disable i
   learn the move. Some rosters have no Surf learner at all (Brandon), the catch
   gate stops you catching one, and Unbound's own ADM is post-game. Only while
   Character Mode is on; Dig (a TM) is unchanged.
+- **Lava** — surfing on magma no longer needs a Fire-type: HM03 Surf in your
+  bag plus the Surf badge is enough, with any party Pokémon. A Fire-type still
+  works as before. Only while Character Mode is on.
 
 ## Seeing your roster in-game
 

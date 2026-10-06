@@ -1922,3 +1922,55 @@ void CharacterMode_FieldMoveProbe(void)
     FIELD_PROBE[10] = fly;
     FIELD_PROBE[0] = 0xF1E1D000 | FIELD_PROBE_N;
 }
+
+/* Lava Surf (2026-10-05, user: "you don't need a fire type, just surf and the
+ * needed badge"). CFRU's magma script (0x089A4A52; reached only after the Surf
+ * badge check in the interacted-water routine) looks for a Fire-type with
+ * `setvar 0x8000, 10; special 0xB2`. build_patch.py replaces those 8 bytes
+ * with a goto to a tail that callasms this first: with the mode on it asks
+ * the same question as ordinary Surf (HM03 in the bag; any party mon thanks
+ * to CharacterMode_FieldMoveCanLearn) and sets VAR_RESULT to that slot. When
+ * the mode is off, or nobody can Surf, it sets PARTY_SIZE and the tail runs
+ * the original Fire-type search, so nothing that worked before stops working. */
+#define MOVE_SURF 57
+#define ITEM_HM03_SURF 439
+
+void CharacterMode_LavaSurfSlot(void)
+{
+    u8 slot = PARTY_SIZE;
+
+    if (InCharacterMode())
+        slot = PartyHasMonWithFieldMovePotential(MOVE_SURF, ITEM_HM03_SURF, 1);
+    VarSet(0x800D, slot < PARTY_SIZE ? slot : PARTY_SIZE);
+}
+
+/* Live setup for the lava case (run_field_move_test.sh). 0x8005 picks the
+ * fixture: bit0 = HM03 in the bag, bit1 = the one party mon is a Charmander
+ * (Fire) instead of a Magikarp (learns no HM). All eight badges. The debug
+ * script then jumps into the REAL magma script. */
+#define LAVA_PROBE ((volatile u32 *)0x02030340)
+#define SPECIES_CHARMANDER 4
+
+void CharacterMode_LavaSurfSetup(void)
+{
+    u16 mode = VarGet(0x8005), v;
+    u32 i;
+
+    v = (mode & 2) ? SPECIES_CHARMANDER : SPECIES_MAGIKARP;
+    SetMonData(&gPlayerParty[0], MON_DATA_SPECIES, &v);
+    for (i = 0; i < 4; i++)
+    {
+        v = i == 0 ? MOVE_SPLASH : 0;
+        SetMonData(&gPlayerParty[0], MON_DATA_MOVE1 + i, &v);
+    }
+    for (i = 1; i < PARTY_SIZE; i++)
+        ZeroMonData(&gPlayerParty[i]);
+    CalculatePlayerPartyCount();
+    for (i = 0; i < 8; i++)
+        FlagSet(FLAG_BADGE01_GET + i);
+    while (CheckBagHasItem(ITEM_HM03_SURF, 1))
+        RemoveBagItem(ITEM_HM03_SURF, 1);
+    if (mode & 1)
+        AddBagItem(ITEM_HM03_SURF, 1);
+    LAVA_PROBE[0] = 0x1A7A0000 | mode;
+}

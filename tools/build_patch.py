@@ -206,6 +206,31 @@ FIELD_MOVE_BL_SITES = (
     (0x00A03516, "party menu: Cut in Grim Woods"),
 )
 
+# Lava Surf (2026-10-05). CFRU's magma script asks for a Fire-type with
+# `setvar 0x8000, 10; special 0xB2` at LAVA_SPLICE_FILE_OFF. Those 8 bytes
+# become `goto <tail>; nop x3`. The tail callasms CharacterMode_LavaSurfSlot
+# (mode on: the ordinary Surf check) and falls back to the original two
+# commands, then rejoins at the script's `compare VAR_RESULT, 6`.
+LAVA_SCRIPT_ROM_ADDR = 0x089A4A52
+LAVA_SPLICE_FILE_OFF = 0x009A4A67
+LAVA_SPLICE_ORIG = bytes.fromhex("1600800a0025b200")   # setvar 0x8000,10; special 0xB2
+LAVA_REJOIN_ROM_ADDR = 0x089A4A6F
+LAVA_REJOIN_ORIG = bytes.fromhex("210d800600")         # compare VAR_RESULT, 6
+
+
+def lava_tail(tail_addr, slot_fn):
+    """The script the magma splice jumps to (34 bytes)."""
+    orig = tail_addr + 5 + 5 + 6 + 5
+    s = bytearray()
+    s += bytes([0x23]) + struct.pack("<I", slot_fn | 1)        # callasm
+    s += bytes([0x21]) + struct.pack("<HH", 0x800D, 6)         # compare VAR_RESULT, 6
+    s += bytes([0x06, 0x01]) + struct.pack("<I", orig)         # if == goto ORIG
+    s += bytes([0x05]) + struct.pack("<I", LAVA_REJOIN_ROM_ADDR)
+    assert tail_addr + len(s) == orig
+    s += LAVA_SPLICE_ORIG                                      # ORIG: the Fire search
+    s += bytes([0x05]) + struct.pack("<I", LAVA_REJOIN_ROM_ADDR)
+    return bytes(s)
+
 
 def ow_reserved_ranges(n_chars):
     """File ranges this build fills by other means, kept out of the overworld
@@ -908,7 +933,32 @@ def main():
     off_dbg_field_off = off_dbg_field_on + len(dbg_field_on)
     dbg_field_off = field_debug_script(False)
 
-    total_len = off_dbg_field_off + len(dbg_field_off)
+    # Lava Surf: the shipped tail, then its live-test scripts. Each test script
+    # sets the mode, picks the fixture in 0x8005 (bit0 HM03, bit1 Charmander),
+    # callasms the setup and jumps into the REAL magma script.
+    off_lava_tail = off_dbg_field_off + len(dbg_field_off)
+    lava_blob = lava_tail(addr(off_lava_tail), syms["CharacterMode_LavaSurfSlot"])
+    lava_setup = syms["CharacterMode_LavaSurfSetup"] | 1
+
+    def lava_debug_script(on, mode):
+        s = bytearray()
+        s += bytes([0x29 if on else 0x2A]) + struct.pack("<H", 0x18F8)
+        s += bytes([0x16]) + struct.pack("<HH", 0x51FC, field_char if on else 0)
+        s += bytes([0x16]) + struct.pack("<HH", 0x8005, mode)
+        s += bytes([0x23]) + struct.pack("<I", lava_setup)
+        s += bytes([0x05]) + struct.pack("<I", LAVA_SCRIPT_ROM_ADDR)
+        return bytes(s)
+
+    lava_cases = {"on_hm": (True, 1), "on_nohm": (True, 0), "off_hm": (False, 1),
+                  "off_fire": (False, 2), "on_fire_nohm": (True, 2)}
+    lava_dbg = {}
+    _o = off_lava_tail + len(lava_blob)
+    for _k, (_on, _mode) in lava_cases.items():
+        _b = lava_debug_script(_on, _mode)
+        lava_dbg[_k] = (_o, _b)
+        _o += len(_b)
+
+    total_len = _o
     assert total_len <= INJECT_BLOCK_LEN, "injection block overflow (debug scripts)"
     span2 = rom[INJECT_FILE_OFF + off_dbg_block:INJECT_FILE_OFF + total_len]
     assert all(b == 0xFF for b in span2), "debug-script target not 0xFF-free!"
@@ -926,6 +976,16 @@ def main():
     rom[INJECT_FILE_OFF + off_pc_tails:INJECT_FILE_OFF + off_pc_tails + len(pc_blob)] = pc_blob
     rom[INJECT_FILE_OFF + off_dbg_field_on:INJECT_FILE_OFF + off_dbg_field_on + len(dbg_field_on)] = dbg_field_on
     rom[INJECT_FILE_OFF + off_dbg_field_off:INJECT_FILE_OFF + off_dbg_field_off + len(dbg_field_off)] = dbg_field_off
+    rom[INJECT_FILE_OFF + off_lava_tail:INJECT_FILE_OFF + off_lava_tail + len(lava_blob)] = lava_blob
+    for _o, _b in lava_dbg.values():
+        rom[INJECT_FILE_OFF + _o:INJECT_FILE_OFF + _o + len(_b)] = _b
+    _l = LAVA_SPLICE_FILE_OFF
+    assert bytes(rom[_l:_l + 8]) == LAVA_SPLICE_ORIG, f"lava splice {_l:#x}: {bytes(rom[_l:_l + 8]).hex()}"
+    _r = LAVA_REJOIN_ROM_ADDR - ROM_BASE
+    assert bytes(rom[_r:_r + 5]) == LAVA_REJOIN_ORIG, "lava rejoin moved -- wrong ROM?"
+    rom[_l:_l + 8] = bytes([0x05]) + struct.pack("<I", addr(off_lava_tail)) + b"\x00\x00\x00"
+    print(f"lava surf: magma script's Fire search @ {ROM_BASE + _l:#x} -> tail "
+          f"{addr(off_lava_tail):#010x} ({len(lava_blob)} bytes)")
     # json is imported at module scope (a second local import here made json
     # function-local, so the manifest load above raised UnboundLocalError)
     with open(os.path.join(BUILD, "debug_addrs.json"), "w") as f:
@@ -948,7 +1008,9 @@ def main():
                    "pc_test_stays_char": stays_name,
                    "field_test_script_on": addr(off_dbg_field_on),
                    "field_test_script_off": addr(off_dbg_field_off),
-                   "field_test_char": field_char}, f)
+                   "field_test_char": field_char,
+                   "lava_tail": addr(off_lava_tail),
+                   "lava_test_scripts": {k: addr(o) for k, (o, _) in lava_dbg.items()}}, f)
     print(f"debug scripts: block @ {addr(off_dbg_block):#010x}, catch @ {addr(off_dbg_catch):#010x}, "
           f"starter @ {addr(off_dbg_starter):#010x}")
     print(f"trade tails @ {addr(off_trade_tails):#010x}, trade tests red/bruno @ "

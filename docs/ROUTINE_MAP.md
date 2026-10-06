@@ -680,3 +680,45 @@ enough, for all HMs.
   (Brandon; a Splash-only Magikarp; 8 moves × with/without the HM + Fly in the
   real party menu; OFF control; the no-hook ROM FAILS). Not live-tested: the
   Grim Woods Cut row (needs that map and quest var).
+
+### Lava Surf without a Fire-type (2026-10-05): ✅ BUILT, LIVE
+
+User: "To be able to surf in lava lakes in Unbound you need a fire type. Make
+it so you don't need a fire type, just surf and the needed badge."
+
+- CFRU's interacted-water routine **`0x08A00B98`** (vanilla
+  `GetInteractedWaterScript 0x0806D548` is a `ldr r3; bx r3` into it, so the
+  vanilla body there, and Unbound's older "use Lava Plume?" script
+  `0x087ECE56` it points at, are dead). Lava case: elevation checks, metatile
+  behavior **0xA6**, then **`0x08A03608`** (the Surf badge check, the same call
+  the ordinary Surf case makes), then a follower check (`0x0203B818`) picks the
+  magma script **`0x089A4A52`** (pool `0x08A00DA4`) or the text-only
+  "The magma glistens a crimson red." `0x089A4AC2`. No HM03 check anywhere.
+- Magma script `0x089A4A52`:
+  `setvar 0x8004, 405; callasm 0x08A00DFD` (0x8004 = slot of a species-405 mon,
+  else 6) `; compare 0x8004, 6; goto_if < 0x089A4A7F;`
+  **`0x089A4A67`: `setvar 0x8000, 10; special 0xB2`** (find a party mon of type
+  10 = Fire → VAR_RESULT) **`0x089A4A6F`: `compare VAR_RESULT, 6; goto_if ==
+  0x089A4AC2`**`; copyvar 0x8004, VAR_RESULT;` `0x089A4A7F`:
+  `bufferpartymonnick 0, 0x8004; callasm 0x08A009F9; …; checkflag 0x0902`
+  (set → skip the yes/no) `; msgbox "…surf on it?" yesno; …; dofieldeffect 9`.
+- **Patch** (`build_patch.LAVA_*`): the 8 bytes at `0x089A4A67` become
+  `goto <tail>; nop ×3`. The 34-byte tail in the injection block:
+  `callasm CharacterMode_LavaSurfSlot; compare VAR_RESULT, 6; goto_if == ORIG;
+  goto 0x089A4A6F; ORIG: setvar 0x8000, 10; special 0xB2; goto 0x089A4A6F`.
+  `CharacterMode_LavaSurfSlot`: mode on → VAR_RESULT =
+  `PartyHasMonWithFieldMovePotential(57, 439, 1)` (HM03 in the bag; any
+  non-egg mon via `CharacterMode_FieldMoveCanLearn`), else 6. 6 falls back to
+  the Fire search, so a Fire-type still works with or without the mode.
+- With the mode on, lava now needs **HM03 in the bag** (or a Fire-type, as
+  before) on top of the Surf badge the engine already checks.
+- Evidence: verify [H] +3 (base anchors, the splice + tail bytes rebuilt
+  independently, compiled literals 0x18F8 + `0x08A00A65`), verify negative +3
+  (22/22, each failing only that check); live in `run_field_move_test.sh` via
+  `tools/mgba_scripts/cm_lava_surf_test.lua`, which jumps into the REAL magma
+  script: on + HM03 Magikarp → surfs; on, no HM03 → dead end; off + HM03 →
+  dead end; off + Charmander → surfs; on + Charmander, no HM03 → surfs; a
+  lava-only no-hook ROM → FAILS. Screenshot: the Magikarp case does the
+  field-move pose and mounts (flag `0x0902` is set in the checkpoint, so no
+  yes/no). Not live-tested: a real lava tile (the probe runs the script off
+  a floor tile).
