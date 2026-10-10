@@ -53,7 +53,7 @@ BUILT = os.environ.get("CM_BUILT_ROM",
 
 # How many checks this layer must run. A deliberate LITERAL -- see
 # tools/tests/cm_tally.py for why this must never be a derived expression.
-EXPECT_CHECKS = 105   # +3: [H] lava Surf (2026-10-05); +5: [H] field moves (2026-10-04); +7: [O] the overworld sprite (2026-10-03); +1: [R] Roster's own START icon (2026-10-03); +1: [R] roots-only hint (2026-10-02); +6: [L] the link-trade sweep (2026-09-30); +8: [G] the PC second guard (2026-09-29); +6: [F] the build fingerprints (2026-09-29); +17: [R] the roster display START row (2026-09-27)
+EXPECT_CHECKS = 109   # +4: [S] 100% roster catch (2026-10-09); +3: [H] lava Surf (2026-10-05); +5: [H] field moves (2026-10-04); +7: [O] the overworld sprite (2026-10-03); +1: [R] Roster's own START icon (2026-10-03); +1: [R] roots-only hint (2026-10-02); +6: [L] the link-trade sweep (2026-09-30); +8: [G] the PC second guard (2026-09-29); +6: [F] the build fingerprints (2026-09-29); +17: [R] the roster display START row (2026-09-27)
                      # +21: the PC-exit sweep, 5 checks x 4 sites + the tail census (2026-09-10)
 
 failures = []
@@ -149,6 +149,7 @@ def main():
         win("field-move bl %#x" % _o, _o, 4)
     win("lava Surf splice", bp.LAVA_SPLICE_FILE_OFF, len(bp.LAVA_SPLICE_ORIG))
     win("catch bl", bp.CATCH_BL_FILE_OFF, 4)
+    win("100% catch odds compare", bp.CATCH_ODDS_FILE_OFF, 4)
     win("GiveMonToPlayer trampoline", bp.GMTP_FILE_OFF, 8)
     win("givemon bl", bp.GIVEMON_BL_FILE_OFF, 4)
     win("givemon veneer", bp.GIVEMON_VENEER_FILE_OFF, 8)
@@ -863,6 +864,40 @@ def main():
             or _bis.bisect_right(_targets, s - owp.POINTER_MARGIN) != _bis.bisect_left(_targets, s + ln)]   # forbidden: [t, t + margin)
     check("[O] base: every byte the sprites occupy was 0xFF and no table or literal pool "
           "points into it (or within 0x800 before it)", not _hit, ", ".join(_hit[:4]))
+
+    # ---- [S] 100% catch for on-roster species (2026-10-09) ----------------
+    _syms = {}
+    for _l in subprocess.run(["arm-none-eabi-nm", os.path.join(ROOT, "build", "character_mode.elf")],
+                             check=True, capture_output=True, text=True).stdout.splitlines():
+        _p = _l.split()
+        if len(_p) == 3:
+            _syms[_p[2]] = int(_p[0], 16)
+    _stub, _fn = _syms["CharacterMode_CatchOddsStub"], _syms["CharacterMode_CatchOdds"]
+    _site = bp.CATCH_ODDS_FILE_OFF
+    check("[S] base: atkEF_handleballthrow's `cmp r5,#254 ; bls 0x089C8E24` is at the site, "
+          "and its literals give gBattlerPartyIndexes 0x02023BCE / gEnemyParty 0x0202402C",
+          orig[_site:_site + 4] == bytes.fromhex("fe2d63d9")
+          and struct.unpack_from("<I", orig, 0x9C8E10)[0] == 0x02023BCE
+          and struct.unpack_from("<I", orig, 0x9C8E14)[0] == 0x0202402C)
+    check("[S] built: the odds compare is a BL to CharacterMode_CatchOddsStub",
+          bl_target(_site) == _stub & ~1, hex(bl_target(_site) or 0))
+    _so = (_stub & ~1) - bp.ROM_BASE
+    _sh = struct.unpack_from("<10H", rom, _so)
+    check("[S] built: the stub passes r5 to CharacterMode_CatchOdds, writes it back, and "
+          "returns to 0x089C8D5C when it is above 254, else to 0x089C8E24",
+          _sh[0] == 0xB500 and _sh[1] == 0x1C28 and bl_target(_so + 4) == _fn & ~1
+          and _sh[4] == 0x1C05 and _sh[5] == 0xBC02 and _sh[6] == 0x2DFE
+          and _sh[7] == 0xD800 and _sh[8] == 0x31C8 and _sh[9] == 0x4708
+          and bp.ROM_BASE + _site + 4 + 1 + 200 == 0x089C8E25)
+    _fc = rom[(_fn & ~1) - bp.ROM_BASE:_so]
+    _fl = {struct.unpack_from("<I", _fc, k)[0] for k in range(0, len(_fc) - 3, 4)}
+    check("[S] built: CharacterMode_CatchOdds reads gBankTarget, gBattlerPartyIndexes and "
+          "gEnemyParty, asks IsSpeciesAllowedForCharacter and returns 255",
+          {0x02023D6C, 0x02023BCE, 0x0202402C} <= _fl
+          and any(bl_target((_fn & ~1) - bp.ROM_BASE + k) == _syms["IsSpeciesAllowedForCharacter"] & ~1
+                  for k in range(0, len(_fc) - 3, 2))
+          and any(struct.unpack_from("<H", _fc, k)[0] & 0xF8FF == 0x20FF
+                  for k in range(0, len(_fc) - 1, 2)))
 
     if assert_tally(checks_run, EXPECT_CHECKS, "verify_artifacts"):
         return 1

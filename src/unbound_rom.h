@@ -101,6 +101,7 @@ extern struct Pokemon gPlayerParty[PARTY_SIZE];
 extern struct Pokemon gEnemyParty[PARTY_SIZE];
 extern u8 gPlayerPartyCount;
 extern u8 gBankTarget;                /* CFRU name for gBattlerTarget */
+extern u16 gBattlerPartyIndexes[];   /* 0x02023BCE (handleballthrow's literal 0x089C8E10) */
 extern u8 gBattleMons[];              /* stride 0x58, species u16 at +0 */
 extern u32 gBattleTypeFlags;
 extern u8 gMainInBattleByte;          /* gMain + 0x439 */

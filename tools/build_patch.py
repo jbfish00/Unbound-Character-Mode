@@ -107,6 +107,10 @@ CM_MARKER_ORIG_TARGET   = 0x080D77F5
 # Hook sites (docs/ROUTINE_MAP.md v8)
 CATCH_BL_FILE_OFF = 0x9C8CA6          # bl call_via_r6 (FlagGet) inside atkEF_handleballthrow
 CATCH_BL_ORIG = bytes.fromhex("00F0E6FE")
+# 100% catch for on-roster species (2026-10-09): atkEF_handleballthrow's final
+# `cmp r5,#254 ; bls 0x089C8E24` -> bl CharacterMode_CatchOddsStub.
+CATCH_ODDS_FILE_OFF = 0x9C8D58
+CATCH_ODDS_ORIG = bytes.fromhex("FE2D63D9")
 GMTP_FILE_OFF = 0x9C905C              # GiveMonToPlayer entry
 GMTP_ORIG = bytes.fromhex("70B504001CF0CEFE")
 # Starter grant: the givemon(0x79) handler's `bl ScriptGiveMon 0x080A011C`
@@ -665,6 +669,13 @@ def main():
     bl = thumb_bl(ROM_BASE + CATCH_BL_FILE_OFF, catch_hook & ~1)
     rom[CATCH_BL_FILE_OFF:CATCH_BL_FILE_OFF + 4] = bl
     print(f"catch hook: bl @{ROM_BASE + CATCH_BL_FILE_OFF:#x} -> {catch_hook & ~1:#x}  bytes={bl.hex()}")
+
+    sure_stub = syms["CharacterMode_CatchOddsStub"]
+    _cur = bytes(rom[CATCH_ODDS_FILE_OFF:CATCH_ODDS_FILE_OFF + 4])
+    assert _cur == CATCH_ODDS_ORIG, f"handleballthrow odds compare: {_cur.hex()}"
+    bl = thumb_bl(ROM_BASE + CATCH_ODDS_FILE_OFF, sure_stub & ~1)
+    rom[CATCH_ODDS_FILE_OFF:CATCH_ODDS_FILE_OFF + 4] = bl
+    print(f"100% roster catch: bl @{ROM_BASE + CATCH_ODDS_FILE_OFF:#x} -> {sure_stub & ~1:#x}")
 
     # 6a'. starter grant: bl -> near veneer -> far wrapper
     veneer = struct.pack("<HHI", 0x4B00, 0x4718, sgm_hook | 1)  # ldr r3,[pc,#0]; bx r3

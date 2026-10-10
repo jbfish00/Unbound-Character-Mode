@@ -26,7 +26,8 @@ GetSpeciesName = 0x08040FD0 | 1;  /* reads the live (DPE-repointed) gSpeciesName
 Random         = 0x08044EC8 | 1;  /* LCG: gRngValue = gRngValue*MULT+INC; return >>16; confirmed by decompiled shape */
 CreateWildMon  = 0x08A14838 | 1;  /* wild_encounter.c; real body behind the 0x080829FC veneer (docs/ROUTINE_MAP.md v17) */
 TryGenerateWildMon = 0x08A14EC4 | 1; /* live land/water/rock generator; contains the hooked bl @0x08A14FE6 (v17) */
-gEnemyParty    = 0x0202402C;       /* wild mon built here by CreateWildMon (BPRE.ld) */
+gEnemyParty    = 0x0202402C;
+gBattlerPartyIndexes = 0x02023BCE; /* atkEF_handleballthrow literal 0x089C8E10 (2026-10-09) */       /* wild mon built here by CreateWildMon (BPRE.ld) */
 
 /* ---- PC second guard (src/character_mode.c CM_PSSLastMonGuard; 2026-09-29).
  *      Byte-identical to Radical Red's at these addresses, checked: special

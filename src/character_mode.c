@@ -245,6 +245,54 @@ u8 CharacterMode_CatchFlagGet(u16 flagId)
 }
 
 /*
+ * 100% catch for on-roster species (user, 2026-10-09).
+ *
+ * CFRU's atkEF_handleballthrow builds the capture odds in r5 (base odds, then
+ * the low-level, status and raid modifiers) and decides at 0x089C8D58:
+ *     cmp r5, #254 ; bls 0x089C8E24        (> 254: caught, three shakes)
+ * Those 4 bytes become a BL to CharacterMode_CatchOddsStub. There is no room
+ * to keep the `bls`, so the stub takes the branch itself: back to 0x089C8D5C
+ * (caught) when the odds are above 254, else to 0x089C8E24 -- where the
+ * original pair went. With Character Mode on and the target's species on the
+ * active roster the odds become 255. The final odds are hooked, after every
+ * modifier, so none can pull a guaranteed catch back under 255.
+ *
+ * Off-roster species never get here with the mode on: CharacterMode_CatchFlagGet
+ * dodges the ball first. The species is the PARTY Pokemon's
+ * (gEnemyParty[gBattlerPartyIndexes[gBankTarget]]): Transform overwrites the
+ * battle species (Platinum, 2026-10-08). r0-r3 and r12 are dead at the site
+ * (both successors reload them); r5 carries the odds.
+ */
+#define CATCH_ODDS_SURE 255
+
+u32 CharacterMode_CatchOdds(u32 odds)
+{
+    if (InCharacterMode())
+    {
+        u16 species = GetMonData(&gEnemyParty[gBattlerPartyIndexes[gBankTarget]],
+                                 MON_DATA_SPECIES, 0);
+        if (species != SPECIES_NONE && IsSpeciesAllowedForCharacter(species))
+            return CATCH_ODDS_SURE;
+    }
+    return odds;
+}
+
+__attribute__((naked)) void CharacterMode_CatchOddsStub(void)
+{
+    __asm__ volatile(
+        "push {lr}\n\t"
+        "mov r0, r5\n\t"
+        "bl CharacterMode_CatchOdds\n\t"
+        "mov r5, r0\n\t"
+        "pop {r1}\n\t"          /* 0x089C8D5D: the caught path, Thumb bit set */
+        "cmp r5, #254\n\t"
+        "bhi 1f\n\t"
+        "add r1, #200\n\t"      /* 0x089C8E25: the original bls target */
+        "1:\n\t"
+        "bx r1\n\t");
+}
+
+/*
  * Full replacement for CFRU's GiveMonToPlayer (entry trampoline at
  * 0x089C905C). Reimplements the original exactly (every callee pinned in
  * unbound.ld; layout facts from docs/ROUTINE_MAP.md v8) and adds ROWE's
