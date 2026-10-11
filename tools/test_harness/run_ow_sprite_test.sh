@@ -13,6 +13,8 @@
 #   Lucas  (60)  32x32 sheet with real run frames (sideways running is the
 #                case that showed RR a running player's back)
 #   Leaf    (2)  Unbound's own costume set
+#   Rose  (154)  GENERATED 16x32 sheet (2026-10-10, ../game_plans/ow_generated)
+#   Cogita(185)  GENERATED 32x32 sheet, id 0x1C0 in a table-1 hole opened 2026-10-10
 # Plus CM OFF (a fresh game answered No: the player is not Misty), and a
 # NEGATIVE CONTROL: a copy with the GetCustomGraphicsIdByState trampoline put
 # back, with its OWN checkpoint (a savestate made on the shipped ROM would
@@ -65,7 +67,7 @@ run() {  # label char mode checks rom checkpoint want
 }
 
 eval "$(python3 tools/tests/ow_sprite_env.py 10 2>/dev/null)"    # opt-in block addresses
-for c in 10 23 60 2; do
+for c in 10 23 60 2 154 185; do
     checkpoint $c "$ROM" "$TMP/cm$c.ss" && run "char$c" $c on $EXPECT_ON "$ROM" "$TMP/cm$c.ss" PASS
 done
 # CM off: the stock free-roam checkpoint (opt-in answered No)

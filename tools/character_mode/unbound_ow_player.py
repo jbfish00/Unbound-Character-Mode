@@ -69,8 +69,12 @@ OW_SWITCHER = 0x08A69530                # == 0x08A694DC + 0x54, three slots
 # rest of table 2, then table 1's tail, then the last costume-sized hole in
 # table 1 (0x1D4-0x1DB; the holes between costume sets look like reserved
 # costumes, so they come last and the earlier ones stay untouched).
+# 2026-10-10: the generated sheets need 189 ids, more than those 153, so the
+# other two table-1 holes follow (0x1B4-0x1D3, 0x19C-0x1A3). No script setvars a
+# costume var (0x4054-0x4062, 0x5032) to any id in them: the values Unbound
+# writes are 0, 1, 4, 5, 0xA5, 0xBC, 0xE4, 0x100-0x105, 0x194, 0x293, 0x294.
 ID_RANGES = ((0x297, 0x300), (0x25D, 0x25E), (0x261, 0x274), (0x1EC, 0x200),
-             (0x1D4, 0x1DC))
+             (0x1D4, 0x1DC), (0x1B4, 0x1D4), (0x19C, 0x1A4))
 PLAYER_WALK = (0, 0x00)                 # table 0 entry 0: Unbound's male walk/run
 OAM_16x32, SUBSPRITES_16x32 = 0x083A3710, 0x083A379C
 PLAYER_ANIMS = 0x083A3470
