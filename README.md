@@ -79,6 +79,16 @@ switch Character Mode off afterwards — start a new game to change or disable i
   bag plus the Surf badge is enough, with any party Pokémon. A Fire-type still
   works as before. Only while Character Mode is on.
 
+## Quality-of-life rules (added 2026-10)
+
+While Character Mode is on:
+- **Every on-roster Pokémon is caught at 100%**, with any ball. **Off-roster wild Pokémon cannot be caught at all**
+  (the ball is dodged or bounces off with no shakes). Gifts, eggs and trades keep their PC routing.
+- **TMs are reusable.** Native to Unbound.
+- **Exp. Share, party-wide.** Native to Unbound; the party-wide Exp. Share is available from the start.
+- **HMs** need no compatible Pokémon: with the HM in the bag and its badge, any party Pokémon uses the field move (all HMs, Flash, and lava Surf without a Fire-type).
+- **Overworld sprite**: you walk and run as your character (all 193 offered characters, including Unbound's own Red, Leaf, Ethan and Lyra costumes).
+
 ## Seeing your roster in-game
 
 With Character Mode on, the **START menu** gets a **Roster** icon (a clipboard of Poké Balls,
