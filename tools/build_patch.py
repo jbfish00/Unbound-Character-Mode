@@ -308,6 +308,87 @@ CM_BATTLE_MSG_SITES = (
 )
 CM_WAIT_OLD, CM_WAIT_NEW = 0x0040, 0x0020
 
+# ---- QoL (user 2026-10-17): move tutors, relearners and the egg-move tutor are free --------------------------------
+# Addresses read off Unbound v2.1.1.1 (every write asserts the bytes it replaces). CM_NO_FREETUTOR=1: the control.
+#  - Heart Scale relearners: the Move Maniac (two checkitem gates + removeitem) and his older brother (one gate +
+#    removeitem): each gate (checkitem 0x6F; compare; goto_if = 17 bytes) becomes a goto to the ask; after a lesson,
+#    removeitem + "handed over" becomes a goto back to "which Pokemon"; the Heart Scale texts are repointed (the ask and
+#    goodbye to Unbound's own level-up wording, the intros to new free texts).
+#  - the egg-move teacher (the little sister, 15 BP): her BP compare and the price she subtracts become 0
+#  - the BP move tutors (one shared purchase routine): its "BP < price" compare is against 0, its subtraction is gone
+#  - 10 shard tutors (checkitem SHARD, N + removeitem): each op becomes setvar VAR_RESULT, 1
+FT_HS_GATES = [(0x09E5B32F, 0x09E5B354), (0x09E5B344, 0x09E5B354), (0x09EA1D69, 0x09EA1D79)]   # (gate, ask)
+FT_HS_PAYS = [(0x09E5B3AE, 0x09E5B367), (0x09EA1DD6, 0x09EA1D8C)]                              # (removeitem, choose mon)
+FT_ASK_PTRS = [0x09E5B356, 0x09EA1D7B]          # loadword operands of "That's a Heart Scale! ... teach a move?"
+FT_BYE_PTRS = [0x09E5B3BD, 0x09EA1DE8]          # loadword operands of "... I need a Heart Scale"
+FT_INTRO_PTRS = [(0x09E5B326, "maniac"), (0x09EA1D60, "brother")]
+FT_ASK_TEXT, FT_BYE_TEXT = 0x09EEF402, 0x09EEF4CA   # "Should I teach a level-up move?" / "... I'm your guy."
+FT_SISTER = [(0x09EA1E43, bytes.fromhex("2134500f00"), bytes.fromhex("2134500000"))]   # compare BP, 15 -> 0
+FT_BP_ROUTINE = [(0x09EA29F9, bytes.fromhex("2234500480"), bytes.fromhex("2134500000")),      # BP vs price -> BP vs 0
+                 (0x09EA2A33, bytes.fromhex("253f00"), bytes.fromhex("000000"))]                # special 0x3F (subtract)
+FT_SHARD_OPS = [0x0875B76D, 0x0875B78F, 0x087C39A3, 0x087C39C5, 0x087E7A15, 0x087E7A42, 0x09E56E23, 0x09E56E4F,
+                0x09E637EE, 0x09E63830, 0x09E7A551, 0x09E7A595, 0x09E892FE, 0x09E89349, 0x09E8930E, 0x09E89344,
+                0x09E94602, 0x09E94644, 0x09E9B8A9, 0x09E9B8EB]
+FT_TEXT_ADDR = 0x09FE7000              # blank in base + build, no pointer into 0x09FE6F00..0x09FE7400
+
+
+def _ft_enc(s):
+    cm = {}
+    for ln in open(os.path.join(HERE, "charmap.txt"), encoding="utf-8"):
+        if ln.startswith("'") and " = " in ln:
+            k, v = ln.split(" = ", 1)
+            k = k.strip()
+            if len(k) == 3:
+                cm.setdefault(k[1], int(v.split()[0], 16))
+    out = bytearray()
+    for ch in s:
+        out.append(0xFE if ch == "\n" else 0xFA if ch == "|" else cm[ch])
+    return bytes(out) + b"\xFF"
+
+
+def free_tutors(rom):
+    if os.environ.get("CM_NO_FREETUTOR") == "1":
+        return {}
+    def w(a, old, new):
+        o = a - ROM_BASE
+        assert bytes(rom[o:o + len(old)]) == old, "%08X holds %s, want %s" % (a, bytes(rom[o:o + len(old)]).hex(), old.hex())
+        rom[o:o + len(new)] = new
+    for gate, ask in FT_HS_GATES:
+        o = gate - ROM_BASE
+        assert rom[o:o + 3] == b"\x47\x6f\x00" and rom[o + 5] == 0x21 and rom[o + 10] == 0x06, "Heart Scale gate %08X" % gate
+        rom[o:o + 17] = b"\x05" + struct.pack("<I", ask) + b"\x00" * 12
+    for pay, choose in FT_HS_PAYS:
+        o = pay - ROM_BASE
+        assert rom[o:o + 5] == bytes.fromhex("456f000100") and rom[o + 5] == 0x0F, "Heart Scale payment %08X" % pay
+        rom[o:o + 13] = b"\x05" + struct.pack("<I", choose) + b"\x00" * 8
+    for p in FT_ASK_PTRS:
+        w(p, struct.pack("<I", 0x09EEF3A9), struct.pack("<I", FT_ASK_TEXT))
+    for p in FT_BYE_PTRS:
+        w(p, struct.pack("<I", 0x09EEF488), struct.pack("<I", FT_BYE_TEXT))
+    t = FT_TEXT_ADDR
+    texts = {"maniac": "I am the POKéMON MOVE MANIAC.|I know every single move that\nPOKéMON learn growing up.|I will teach one to your POKéMON\nfree of charge!",
+             "brother": "I am the older brother of the\nPOKéMON MOVE MANIAC.|I will teach your POKéMON a move it\ncan learn while leveling up, for free!"}
+    for p, k in FT_INTRO_PTRS:
+        e = _ft_enc(texts[k])
+        assert set(rom[t - ROM_BASE:t - ROM_BASE + len(e)]) == {0xFF}, "text space %08X not blank" % t
+        rom[t - ROM_BASE:t - ROM_BASE + len(e)] = e
+        o = p - ROM_BASE
+        assert rom[o - 2] == 0x0F, "intro loadword %08X" % p
+        rom[o:o + 4] = struct.pack("<I", t)
+        t = (t + len(e) + 3) & ~3
+    for a, old, new in FT_SISTER + FT_BP_ROUTINE:
+        w(a, old, new)
+    # the sister's price: `setvar 0x8000, 15` right before her call into the BP-subtract routine
+    o = 0x09EA1EA2 - ROM_BASE
+    pv = bytes(rom[o - 0x10:o]).rfind(bytes.fromhex("1600800f00"))
+    assert pv >= 0 and bytes(rom[o:o + 5]) == b"\x04" + struct.pack("<I", 0x09EA1881), "sister price"
+    rom[o - 0x10 + pv + 3:o - 0x10 + pv + 5] = b"\x00\x00"
+    for a in FT_SHARD_OPS:
+        o = a - ROM_BASE
+        assert rom[o] in (0x45, 0x47) and rom[o + 1] in (0x30, 0x31, 0x32, 0x33) and rom[o + 2] == 0, "shard op %08X" % a
+        rom[o:o + 5] = bytes.fromhex("160d800100")
+    return {"heart_scale_relearners": 2, "egg_move_teacher": 1, "bp_tutors": 1, "shard_ops": len(FT_SHARD_OPS)}
+
 
 def main():
     os.makedirs(BUILD, exist_ok=True)
@@ -1197,6 +1278,8 @@ def main():
         assert _cur == _old, f"overworld patch @{_off:#x}: {_cur:#x} != {_old:#x}"
         struct.pack_into("<I", rom, _off, _new)
     print(f"overworld sprites written: {len(ow_writes)} pieces, {len(ow_patches)} word patches")
+
+    print("free tutors:", free_tutors(rom))
 
     # 8. outputs
     out = os.path.join(BUILD, "unbound-cm.gba")

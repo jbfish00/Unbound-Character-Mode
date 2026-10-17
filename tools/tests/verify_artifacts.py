@@ -53,7 +53,7 @@ BUILT = os.environ.get("CM_BUILT_ROM",
 
 # How many checks this layer must run. A deliberate LITERAL -- see
 # tools/tests/cm_tally.py for why this must never be a derived expression.
-EXPECT_CHECKS = 109   # +4: [S] 100% roster catch (2026-10-09); +3: [H] lava Surf (2026-10-05); +5: [H] field moves (2026-10-04); +7: [O] the overworld sprite (2026-10-03); +1: [R] Roster's own START icon (2026-10-03); +1: [R] roots-only hint (2026-10-02); +6: [L] the link-trade sweep (2026-09-30); +8: [G] the PC second guard (2026-09-29); +6: [F] the build fingerprints (2026-09-29); +17: [R] the roster display START row (2026-09-27)
+EXPECT_CHECKS = 112   # +3: [Q] free move tutors (2026-10-17); +4: [S] 100% roster catch (2026-10-09); +3: [H] lava Surf (2026-10-05); +5: [H] field moves (2026-10-04); +7: [O] the overworld sprite (2026-10-03); +1: [R] Roster's own START icon (2026-10-03); +1: [R] roots-only hint (2026-10-02); +6: [L] the link-trade sweep (2026-09-30); +8: [G] the PC second guard (2026-09-29); +6: [F] the build fingerprints (2026-09-29); +17: [R] the roster display START row (2026-09-27)
                      # +21: the PC-exit sweep, 5 checks x 4 sites + the tail census (2026-09-10)
 
 failures = []
@@ -203,6 +203,21 @@ def main():
     for _off, _old, _new in _ow[1]:
         win("overworld word %#x" % _off, _off, 4)
     win("avatar trampoline", bp.AVATAR_FN_FILE_OFF, 8)
+    # QoL free tutors (2026-10-17): the [Q] section below checks their content
+    _B = bp.ROM_BASE
+    for _g, _a in bp.FT_HS_GATES:
+        win("Heart Scale gate %#x" % _g, _g - _B, 17)
+    for _p, _c in bp.FT_HS_PAYS:
+        win("Heart Scale payment %#x" % _p, _p - _B, 13)
+    for _p in bp.FT_ASK_PTRS + bp.FT_BYE_PTRS + [x for x, _k in bp.FT_INTRO_PTRS]:
+        win("relearner text pointer %#x" % _p, _p - _B, 4)
+    win("relearner intro texts", bp.FT_TEXT_ADDR - _B, 0x200)
+    for _a, _old, _new in bp.FT_SISTER + bp.FT_BP_ROUTINE:
+        win("BP tutor %#x" % _a, _a - _B, len(_old))
+    _so = 0x09EA1EA2 - _B
+    win("egg-move teacher price", _so - 0x10 + bytes(orig[_so - 0x10:_so]).rfind(bytes.fromhex("1600800f00")) + 3, 2)
+    for _a in bp.FT_SHARD_OPS:
+        win("shard tutor op %#x" % _a, _a - _B, 5)
     check("no two declared windows overlap",
           all(not (a[1] < b[1] + b[2] and b[1] < a[1] + a[2])
               for i, a in enumerate(windows) for b in windows[i + 1:]))
@@ -898,6 +913,25 @@ def main():
                   for k in range(0, len(_fc) - 3, 2))
           and any(struct.unpack_from("<H", _fc, k)[0] & 0xF8FF == 0x20FF
                   for k in range(0, len(_fc) - 1, 2)))
+
+    # ---- Q. free move tutors (QoL 2026-10-17) --------------------------------------------------------------------
+    _B = bp.ROM_BASE
+    check("[Q] Heart Scale relearners (Move Maniac x2, his brother): gates are gotos to the ask, payments loop back "
+          "(base: checkitem / removeitem 0x6F)",
+          all(rom[g - _B] == 0x05 and struct.unpack_from("<I", rom, g - _B + 1)[0] == a and orig[g - _B:g - _B + 2] == b"\x47\x6f"
+              for g, a in bp.FT_HS_GATES)
+          and all(rom[p_ - _B] == 0x05 and struct.unpack_from("<I", rom, p_ - _B + 1)[0] == c and orig[p_ - _B:p_ - _B + 2] == b"\x45\x6f"
+                  for p_, c in bp.FT_HS_PAYS))
+    _so = 0x09EA1EA2 - _B
+    _pv = _so - 0x10 + bytes(orig[_so - 0x10:_so]).rfind(bytes.fromhex("1600800f00"))
+    check("[Q] BP: the egg-move teacher's compare and price are 0 (base 15); the BP tutors' purchase compares BP to 0 "
+          "and no longer subtracts",
+          all(bytes(rom[a - _B:a - _B + len(new)]) == new and bytes(orig[a - _B:a - _B + len(old)]) == old
+              for a, old, new in bp.FT_SISTER + bp.FT_BP_ROUTINE)
+          and bytes(rom[_pv:_pv + 5]) == bytes.fromhex("1600800000"))
+    check("[Q] 10 shard tutors: 20 checkitem/removeitem SHARD ops -> setvar VAR_RESULT, 1",
+          all(bytes(rom[a - _B:a - _B + 5]) == bytes.fromhex("160d800100") and orig[a - _B] in (0x45, 0x47)
+              for a in bp.FT_SHARD_OPS) and len(bp.FT_SHARD_OPS) == 20)
 
     if assert_tally(checks_run, EXPECT_CHECKS, "verify_artifacts"):
         return 1
