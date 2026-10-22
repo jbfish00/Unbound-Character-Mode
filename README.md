@@ -85,7 +85,8 @@ While Character Mode is on:
 - **Every on-roster Pokémon is caught at 100%**, with any ball. **Off-roster wild Pokémon cannot be caught at all**
   (the ball is dodged or bounces off with no shakes). Gifts, eggs and trades keep their PC routing.
 - **TMs are reusable.** Native to Unbound.
-- **Exp. Share, party-wide.** Native to Unbound; the party-wide Exp. Share is available from the start.
+- **Exp. Share, party-wide.** Native to Unbound; the party-wide Exp. Share is available from the start, with
+  Character Mode on or off (Options > Exp. Gain; Character Mode never changes it).
 - **HMs** need no compatible Pokémon: with the HM in the bag and its badge, any party Pokémon uses the field move (all HMs, Flash, and lava Surf without a Fire-type).
 - **Overworld sprite**: you walk and run as your character (all 193 offered characters, including Unbound's own Red, Leaf, Ethan and Lyra costumes).
 
