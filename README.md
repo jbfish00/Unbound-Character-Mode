@@ -309,7 +309,7 @@ nothing is renumbered.
 | **122** | Lysandre | Villain | Magikarp |
 | **123** | Alain | Anime | Charmander |
 | **124** | Sawyer | Anime | Treecko |
-| **162** | Sycamore | Professor | Bulbasaur |
+| **162** | Sycamore | Professor | Gible |
 
 ### Generation 7
 

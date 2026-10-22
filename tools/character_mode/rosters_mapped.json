@@ -12005,6 +12005,10 @@
   "category": "professor",
   "gen": 6,
   "page": "Professor Sycamore + Sycamore (anime)",
+  "signature": {
+   "const": "SPECIES_GIBLE",
+   "id": 496
+  },
   "species": [
    {
     "const": "SPECIES_BULBASAUR",

@@ -191,7 +191,7 @@ SIGNATURES = {
  "Siebold":"Clawitzer","Wikstrom":"Aegislash","Drasna":"Noivern","Viola":"Vivillon",
  "Grant":"Tyrunt","Korrina":"Lucario","Ramos":"Gogoat","Clemont":"Heliolisk",
  "Valerie":"Sylveon","Olympia":"Meowstic","Wulfric":"Avalugg","Lysandre":"Gyarados",
- "Alain":"Charizard","Sawyer":"Sceptile",
+ "Alain":"Charizard","Sawyer":"Sceptile","Sycamore":"Gible",
  "Kukui":"Incineroar","Hau":"Raichu",
  "Molayne":"Dugtrio","Kahili":"Toucannon","Acerola":"Palossand",
  "Olivia":"Lycanroc","Gladion":"Type: Null",
