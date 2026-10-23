@@ -232,7 +232,7 @@ are the ones the game accepts — enter them exactly as shown.
 
 | # | Character | Category | Starter | Roster size |
 |---|-----------|----------|---------|-------------|
-| 162 | Sycamore | Professor | Bulbasaur | 47 |
+| 162 | Sycamore | Professor | Gible | 47 |
 
 ## Generation 7
 
