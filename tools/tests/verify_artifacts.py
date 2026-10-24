@@ -53,7 +53,7 @@ BUILT = os.environ.get("CM_BUILT_ROM",
 
 # How many checks this layer must run. A deliberate LITERAL -- see
 # tools/tests/cm_tally.py for why this must never be a derived expression.
-EXPECT_CHECKS = 112   # +3: [Q] free move tutors (2026-10-17); +4: [S] 100% roster catch (2026-10-09); +3: [H] lava Surf (2026-10-05); +5: [H] field moves (2026-10-04); +7: [O] the overworld sprite (2026-10-03); +1: [R] Roster's own START icon (2026-10-03); +1: [R] roots-only hint (2026-10-02); +6: [L] the link-trade sweep (2026-09-30); +8: [G] the PC second guard (2026-09-29); +6: [F] the build fingerprints (2026-09-29); +17: [R] the roster display START row (2026-09-27)
+EXPECT_CHECKS = 114   # +2: [X] native new-game Exp. Share pinned (2026-10-24); +3: [Q] free move tutors (2026-10-17); +4: [S] 100% roster catch (2026-10-09); +3: [H] lava Surf (2026-10-05); +5: [H] field moves (2026-10-04); +7: [O] the overworld sprite (2026-10-03); +1: [R] Roster's own START icon (2026-10-03); +1: [R] roots-only hint (2026-10-02); +6: [L] the link-trade sweep (2026-09-30); +8: [G] the PC second guard (2026-09-29); +6: [F] the build fingerprints (2026-09-29); +17: [R] the roster display START row (2026-09-27)
                      # +21: the PC-exit sweep, 5 checks x 4 sites + the tail census (2026-09-10)
 
 failures = []
@@ -932,6 +932,17 @@ def main():
     check("[Q] 10 shard tutors: 20 checkitem/removeitem SHARD ops -> setvar VAR_RESULT, 1",
           all(bytes(rom[a - _B:a - _B + 5]) == bytes.fromhex("160d800100") and orig[a - _B] in (0x45, 0x47)
               for a in bp.FT_SHARD_OPS) and len(bp.FT_SHARD_OPS) == 20)
+
+    # ---- X. party-wide Exp. Share with CM off: native, pinned (2026-10-24) ----------------------------------------
+    # Unbound's new-game init script (traced live: ScrCmd_setflag, script 0x09E70DB0) runs a straight line of setflags
+    # that includes setflag 0x9F2, and the exp award's party share reads FlagGet(0x9F2) (literal pools 0x089E2154 /
+    # 0x089E268C). Live layer: tools/test_harness/run_expshare_test.sh.
+    check("[X] the new-game script's unconditional `setflag 0x9F2` is intact (base and built)",
+          orig[0x1E70E21:0x1E70E24] == b"\x29\xf2\x09" and rom[0x1E70DB0:0x1E70E40] == orig[0x1E70DB0:0x1E70E40]
+          and all(orig[o] == 0x29 for o in range(0x1E70DB5, 0x1E70DDD, 3)))
+    check("[X] the exp award's two FlagGet(0x9F2) literals are intact (base and built)",
+          all(struct.unpack_from("<I", orig, o)[0] == 0x9F2 and rom[o:o + 4] == orig[o:o + 4]
+              for o in (0x9E2154, 0x9E268C)))
 
     if assert_tally(checks_run, EXPECT_CHECKS, "verify_artifacts"):
         return 1

@@ -722,3 +722,15 @@ it so you don't need a fire type, just surf and the needed badge."
   field-move pose and mounts (flag `0x0902` is set in the checkpoint, so no
   yes/no). Not live-tested: a real lava tile (the probe runs the script off
   a floor tile).
+
+## Party-wide Exp. Share with Character Mode off (2026-10-24): native, ✅ LIVE
+
+| what | addr | how found |
+|---|---|---|
+| the share switch | flag `0x9F2` | live trace: `FlagGet` breakpoints during a real battle's exp award (callers `0x089E1EA0` / `0x089E2568`); clearing it stops the bench's Exp. CFRU's `FLAG_EXP_SHARE 0x906` does nothing here |
+| who sets it | new-game init script `0x09E70DB0`, `setflag 0x9F2` at `0x09E70E21` | live trace: the only `FlagSet(0x9F2)` in a fresh intro, from `ScrCmd_setflag` (lr `0x0806A83B`), context `scriptPtr` just past it. A straight run of setflags, no branch |
+| who clears it | the Options menu's "Exp. Gain" (the player's own choice) | not traced; the intro never clears it |
+| party struct | `gPlayerParty 0x02024284`, **unencrypted**, Growth at +32 (species u16, item u16, exp u32) | dumped a fresh givemon Pikachu L50: +32 = 25, +36 = 125000. The WIP probe's vanilla PID^OTID decrypt read garbage |
+
+Evidence: verify [X] (2), `verify_artifacts_negative_test.py` +2 cases, live `tools/test_harness/run_expshare_test.sh`
+3/3 (shipped: bench Caterpie 125 -> 129 Exp.; 0x9F2 cleared: 125 -> 125; and that control fails "share").

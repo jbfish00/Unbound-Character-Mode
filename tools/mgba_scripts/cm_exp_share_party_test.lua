@@ -7,30 +7,28 @@
 -- poked to 1 and the lead's first move to Tackle; A is mashed until the battle
 -- ends. The benched Caterpie never battles, so any Exp. it gains is the share.
 --   EXPECT=share -> the benched mon gained Exp. (party-wide share is on)
---   EXPECT=none  -> it gained none (CLEAR_FLAG, e.g. 0x906, cleared first)
+--   EXPECT=none  -> it gained none (CLEAR_FLAG=9F2 cleared first: the flag the exp
+--                   award reads, set unconditionally by the new-game init script
+--                   0x09E70DB0; CFRU's 0x906 does nothing here, measured 2026-10-24)
 -- Env: QUEUE_CB1, EXPECT, CLEAR_FLAG (hex, optional), CM_EXPECT_CHECKS, SHOTS.
 local A = 0
 local QUEUE = tonumber(os.getenv("QUEUE_CB1"))
 local EXPECT = os.getenv("EXPECT") or "share"
-local CLEAR = os.getenv("CLEAR_FLAG")
+local CLEAR = os.getenv("CLEAR_FLAG"); if CLEAR == "" then CLEAR = nil end
 local SHOTS = os.getenv("SHOTS")
 local SCRATCH, SLOT, CB1 = 0x0203FD00, 0x0203B764, 0x030030F0
 local INBATTLE, PARTY_COUNT, PARTY = 0x03003529, 0x02024029, 0x02024284
 local BMONS = 0x02023BE4            -- gBattleMons (FireRed), stride 0x58
-local f, passes, fails, battleAt, endAt, poked, n0 = 0, 0, {}, nil, nil, false, nil
+local f, passes, fails, battleAt, endAt, poked, n0, done = 0, 0, {}, nil, nil, false, nil, false
 local function u16(v) return string.char(v & 0xFF, (v >> 8) & 0xFF) end
 
--- party EXP: decrypt the Growth substructure (vanilla Gen 3 layout)
-local ORDER = {"GAEM","GAME","GEAM","GEMA","GMAE","GMEA","AGEM","AGME","AEGM","AEMG","AMGE","AMEG",
-               "EGAM","EGMA","EAGM","EAMG","EMGA","EMAG","MGAE","MGEA","MAGE","MAEG","MEGA","MEAG"}
+-- party EXP. ⚠️ Unbound's party mons are NOT encrypted and the substructure
+-- order is fixed: Growth sits at +32 in plain text (species u16, item u16, exp
+-- u32). Measured 2026-10-24 by dumping a fresh givemon Pikachu L50: +32 = 25,
+-- +36 = 125000. The vanilla PID^OTID decrypt this probe first used read garbage.
 local function expOf(slot)
     local base = PARTY + 100 * slot
-    local pid, otid = emu:read32(base), emu:read32(base + 4)
-    local key = pid ~ otid
-    local g = ORDER[(pid % 24) + 1]:find("G") - 1
-    local w0 = emu:read32(base + 32 + 12 * g) ~ key
-    local w1 = emu:read32(base + 32 + 12 * g + 4) ~ key
-    return w0 & 0xFFFF, w1
+    return emu:read16(base + 32), emu:read32(base + 36)
 end
 
 local s = ""
@@ -67,7 +65,8 @@ callbacks:add("frame", function()
         if SHOTS and (f - battleAt) % 200 == 0 then emu:screenshot(string.format("%s/%05d.png", SHOTS, f)) end
         if f > battleAt + 120 and not inb then endAt = f; emu:clearKey(A) end
     end
-    if (endAt and f == endAt + 30) or f == 12000 then
+    if not done and ((endAt and f == endAt + 30) or f == 12000) then
+        done = true
         local n = emu:read8(PARTY_COUNT)
         local sp1, e1 = expOf(n - 2)
         local sp2, e2 = expOf(n - 1)
@@ -85,6 +84,6 @@ callbacks:add("frame", function()
         local ran = passes + #fails
         console:log(string.format("EXPSHARE RESULT: %s (%d passed, %d failed, %d ran, want %d)",
             (#fails == 0 and ran == want) and "PASS" or "FAIL", passes, #fails, ran, want))
-        emu:pause()
+        os.exit((#fails == 0 and ran == want) and 0 or 1)
     end
 end)

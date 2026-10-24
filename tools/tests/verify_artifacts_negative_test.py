@@ -51,7 +51,7 @@ def run(path):
 
 # How many tamper cases this negative test must run. A deliberate
 # LITERAL -- see cm_tally.assert_cases.
-EXPECT_CASES = 22
+EXPECT_CASES = 24   # +2: [X] native new-game Exp. Share (2026-10-24)
 
 
 def main():
@@ -195,6 +195,8 @@ def main():
         f.seek(t + 1)
         f.write((_lsetup | 1).to_bytes(4, "little"))
     case("the lava tail calling the test setup instead fails", 1, lava_callasm_wrong)
+    case("the new-game `setflag 0x9F2` made 0x9F3 fails", 1, revert(0x1E70E22, b"\xf3"))
+    case("the exp award's FlagGet(0x9F2) literal bent fails", 1, revert(0x9E2154, b"\xf3"))
     case("control: the untouched copy still passes", 0)
 
     shutil.rmtree(tmp, ignore_errors=True)
