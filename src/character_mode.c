@@ -2022,3 +2022,42 @@ void CharacterMode_LavaSurfSetup(void)
         AddBagItem(ITEM_HM03_SURF, 1);
     LAVA_PROBE[0] = 0x1A7A0000 | mode;
 }
+
+/* ---------------------------------------------------------------------------
+ * Mart evolution items (QoL A1, 2026-10-24). game_plans/tools/evo_item_census.py
+ * found 8 evolution items no Mart in Unbound sells (Sun/Moon/Dusk/Dawn/Shiny/Ice
+ * Stone, Metal Coat, Metal Powder; Moon Stone and the Alolan stones are only
+ * species-gated NPC rewards the catch gate makes unreachable), a dead end for 126
+ * of 193 offered characters. With Character Mode on, every Mart also sells the
+ * evolution items the character's roster needs. ScrCmd_pokemart's BL
+ * CreatePokemartMenu (0x0806C3B2) reaches here through the CheckHeap+16
+ * trampoline. tools/build_patch.py precomputes, per `pokemart` list in the ROM and
+ * per distinct item set, the stock followed by the set's missing items:
+ * gMartPtrs (gMartCount list addresses), gMartSet (set per character, 0 = none),
+ * gMartLists ([mart][set - 1]). An unknown list, mode off, or no set: the stock.
+ * ------------------------------------------------------------------------- */
+#define CreatePokemartMenu ((void (*)(const u16 *)) 0x0809C165)
+extern const u32 gMartPtrs[];
+extern const u8 gMartSet[];
+extern const u16 *const gMartLists[];
+extern const u16 gMartCount;
+extern const u16 gMartSetCount;
+
+void CharacterMode_CreatePokemartMenu(const u16 *items)
+{
+    u32 i;
+    u8 set;
+
+    if (InCharacterMode())
+    {
+        set = gMartSet[VarGet(VAR_CHARACTER_ID) - 1];
+        if (set)
+            for (i = 0; i < gMartCount; i++)
+                if (gMartPtrs[i] == (u32) items)
+                {
+                    items = gMartLists[i * gMartSetCount + set - 1];
+                    break;
+                }
+    }
+    CreatePokemartMenu(items);
+}

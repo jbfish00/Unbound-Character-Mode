@@ -53,7 +53,7 @@ BUILT = os.environ.get("CM_BUILT_ROM",
 
 # How many checks this layer must run. A deliberate LITERAL -- see
 # tools/tests/cm_tally.py for why this must never be a derived expression.
-EXPECT_CHECKS = 114   # +2: [X] native new-game Exp. Share pinned (2026-10-24); +3: [Q] free move tutors (2026-10-17); +4: [S] 100% roster catch (2026-10-09); +3: [H] lava Surf (2026-10-05); +5: [H] field moves (2026-10-04); +7: [O] the overworld sprite (2026-10-03); +1: [R] Roster's own START icon (2026-10-03); +1: [R] roots-only hint (2026-10-02); +6: [L] the link-trade sweep (2026-09-30); +8: [G] the PC second guard (2026-09-29); +6: [F] the build fingerprints (2026-09-29); +17: [R] the roster display START row (2026-09-27)
+EXPECT_CHECKS = 116   # +2: [M] Mart evolution items (2026-10-24); +2: [X] native new-game Exp. Share pinned (2026-10-24); +3: [Q] free move tutors (2026-10-17); +4: [S] 100% roster catch (2026-10-09); +3: [H] lava Surf (2026-10-05); +5: [H] field moves (2026-10-04); +7: [O] the overworld sprite (2026-10-03); +1: [R] Roster's own START icon (2026-10-03); +1: [R] roots-only hint (2026-10-02); +6: [L] the link-trade sweep (2026-09-30); +8: [G] the PC second guard (2026-09-29); +6: [F] the build fingerprints (2026-09-29); +17: [R] the roster display START row (2026-09-27)
                      # +21: the PC-exit sweep, 5 checks x 4 sites + the tail census (2026-09-10)
 
 failures = []
@@ -218,6 +218,9 @@ def main():
     win("egg-move teacher price", _so - 0x10 + bytes(orig[_so - 0x10:_so]).rfind(bytes.fromhex("1600800f00")) + 3, 2)
     for _a in bp.FT_SHARD_OPS:
         win("shard tutor op %#x" % _a, _a - _B, 5)
+    # QoL A1 Mart evolution items (2026-10-24): the pokemart BL and its CheckHeap+16 trampoline ([M] below)
+    win("pokemart BL", bp.MART_SITE_FILE_OFF, 4)
+    win("mart trampoline (CheckHeap+16)", bp.MART_TRAMPOLINE_FILE_OFF, 8)
     check("no two declared windows overlap",
           all(not (a[1] < b[1] + b[2] and b[1] < a[1] + a[2])
               for i, a in enumerate(windows) for b in windows[i + 1:]))
@@ -932,6 +935,37 @@ def main():
     check("[Q] 10 shard tutors: 20 checkitem/removeitem SHARD ops -> setvar VAR_RESULT, 1",
           all(bytes(rom[a - _B:a - _B + 5]) == bytes.fromhex("160d800100") and orig[a - _B] in (0x45, 0x47)
               for a in bp.FT_SHARD_OPS) and len(bp.FT_SHARD_OPS) == 20)
+
+    # ---- M. Mart evolution items (QoL A1, 2026-10-24) --------------------------------------------------------------
+    # Every [mart][set] list is rebuilt from the BASE ROM (its pokemart lists, its evolution table, the rosters) and
+    # compared with the built ROM's; the BL reaches CharacterMode_CreatePokemartMenu through CheckHeap+16.
+    _msym = {k: _syms[k] for k in ("gMartPtrs", "gMartSet", "gMartCount", "gMartSetCount", "gMartLists",
+                                  "CharacterMode_CreatePokemartMenu")}
+    _marts = bp.find_marts(orig)
+    with open(os.path.join(bp.CM_DIR, "rosters.bin"), "rb") as _f:
+        _sets = bp.mart_need_sets(orig, _f.read(), manifest)
+    _dist = sorted({x for x in _sets if x})
+    _R = lambda a: a - bp.ROM_BASE
+    _nm, _ns = struct.unpack_from("<HH", rom, _R(_msym["gMartCount"]))
+    _good = (_nm, _ns) == (len(_marts), len(_dist)) and \
+        list(struct.unpack_from("<%dI" % _nm, rom, _R(_msym["gMartPtrs"]))) == list(_marts)
+    for _i, (_mp, _stock) in enumerate(_marts.items()):
+        for _k, _st in enumerate(_dist):
+            _q = _R(struct.unpack_from("<I", rom, _R(_msym["gMartLists"]) + 4 * (_i * _ns + _k))[0])
+            _got = []
+            while struct.unpack_from("<H", rom, _q)[0]:
+                _got.append(struct.unpack_from("<H", rom, _q)[0]); _q += 2
+            _good = _good and _got == _stock + [x for x in _st if x not in _stock]
+    _good = _good and all(rom[_R(_msym["gMartSet"]) + c] == (_dist.index(_sets[c]) + 1 if _sets[c] else 0)
+                          for c in range(len(_sets)))
+    check("[M] Mart evolution items: every [mart][set] list = the base ROM's stock + the set's missing items; "
+          "per-character set index (%d marts x %d sets)" % (len(_marts), len(_dist)), _good)
+    _mt = bp.MART_TRAMPOLINE_FILE_OFF
+    check("[M] the pokemart BL -> CheckHeap+16 trampoline -> CharacterMode_CreatePokemartMenu (base: BL CreatePokemartMenu)",
+          rom[bp.MART_SITE_FILE_OFF:bp.MART_SITE_FILE_OFF + 4] == bp.thumb_bl(bp.ROM_BASE + bp.MART_SITE_FILE_OFF, bp.ROM_BASE + _mt)
+          and rom[_mt:_mt + 8] == struct.pack("<HHI", 0x4B00, 0x4718, _msym["CharacterMode_CreatePokemartMenu"] | 1)
+          and orig[bp.MART_SITE_FILE_OFF:bp.MART_SITE_FILE_OFF + 4] == bp.thumb_bl(bp.ROM_BASE + bp.MART_SITE_FILE_OFF, bp.CREATE_POKEMART_MENU)
+          and orig[_mt:_mt + 8] == bp.MART_TRAMPOLINE_ORIG)
 
     # ---- X. party-wide Exp. Share with CM off: native, pinned (2026-10-24) ----------------------------------------
     # Unbound's new-game init script (traced live: ScrCmd_setflag, script 0x09E70DB0) runs a straight line of setflags

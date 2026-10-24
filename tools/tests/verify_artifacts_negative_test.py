@@ -20,6 +20,7 @@ The cases target the things this layer exists to catch, one each:
 """
 import os
 import shutil
+import struct
 import subprocess
 import sys
 import os as _os
@@ -51,7 +52,13 @@ def run(path):
 
 # How many tamper cases this negative test must run. A deliberate
 # LITERAL -- see cm_tally.assert_cases.
-EXPECT_CASES = 24   # +2: [X] native new-game Exp. Share (2026-10-24)
+EXPECT_CASES = 26   # +2: [M] Mart evolution items (2026-10-24); +2: [X] native new-game Exp. Share (2026-10-24)
+
+
+def _mart_lists_addr():
+    out = subprocess.run(["arm-none-eabi-nm", os.path.join(ROOT, "build", "character_mode.elf")],
+                         check=True, capture_output=True, text=True).stdout
+    return next(int(l.split()[0], 16) for l in out.splitlines() if l.endswith(" gMartLists"))
 
 
 def main():
@@ -195,6 +202,15 @@ def main():
         f.seek(t + 1)
         f.write((_lsetup | 1).to_bytes(4, "little"))
     case("the lava tail calling the test setup instead fails", 1, lava_callasm_wrong)
+    _mbl = bp.MART_SITE_FILE_OFF
+    case("the pokemart BL restored to CreatePokemartMenu fails", 1,
+         revert(_mbl, bp.thumb_bl(bp.ROM_BASE + _mbl, bp.CREATE_POKEMART_MENU)))
+    _rom = open(BUILT, "rb").read()
+    _ml = _mart_lists_addr() - bp.ROM_BASE
+    _q = struct.unpack_from("<I", _rom, _ml)[0] - bp.ROM_BASE
+    while struct.unpack_from("<H", _rom, _q + 2)[0]:     # the first merged list's last item: an added evolution item
+        _q += 2
+    case("an added evolution item dropped from a merged Mart list fails", 1, revert(_q, b"\x00\x00"))
     case("the new-game `setflag 0x9F2` made 0x9F3 fails", 1, revert(0x1E70E22, b"\xf3"))
     case("the exp award's FlagGet(0x9F2) literal bent fails", 1, revert(0x9E2154, b"\xf3"))
     case("control: the untouched copy still passes", 0)

@@ -88,6 +88,10 @@ While Character Mode is on:
 - **Exp. Share, party-wide.** Native to Unbound: every new game starts with it on (Unbound's own new-game setup sets
   it), with Character Mode on or off. You can change it in Options > Exp. Gain; Character Mode never touches it.
   Proven live on a fresh new game with Character Mode declined (`tools/test_harness/run_expshare_test.sh`).
+- **Evolution items in every Mart** (Character Mode on): every Mart also sells the evolution items your character's
+  roster needs. Unbound sells no Sun, Moon, Dusk, Dawn, Shiny or Ice Stone, Metal Coat or Metal Powder anywhere (Moon
+  Stone and the Alolan stones are only rewards from NPCs who want a Pokémon the catch gate refuses), so without this
+  126 of 193 characters could not fully evolve their roster (2026-10-24).
 - **HMs** need no compatible Pokémon: with the HM in the bag and its badge, any party Pokémon uses the field move (all HMs, Flash, and lava Surf without a Fire-type).
 - **Overworld sprite**: you walk and run as your character (all 193 offered characters, including Unbound's own Red, Leaf, Ethan and Lyra costumes).
 

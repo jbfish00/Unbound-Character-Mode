@@ -734,3 +734,17 @@ it so you don't need a fire type, just surf and the needed badge."
 
 Evidence: verify [X] (2), `verify_artifacts_negative_test.py` +2 cases, live `tools/test_harness/run_expshare_test.sh`
 3/3 (shipped: bench Caterpie 125 -> 129 Exp.; 0x9F2 cleared: 125 -> 125; and that control fails "share").
+
+## Mart evolution items (QoL A1, 2026-10-24): ✅ LIVE
+
+| what | addr | note |
+|---|---|---|
+| `ScrCmd_pokemart` | `0x0806C3AC` | byte-identical to FireRed; its `BL CreatePokemartMenu` at `0x0806C3B2` is the hook |
+| `CreatePokemartMenu` / `SetShopItemsForSale` | `0x0809C164` / `0x0809ABD8` | FireRed's (byte-identical); the list menu is allocated from the item count. `BuyMenuBuildListMenuTemplate` differs (CFRU) but takes the longer lists (seen live) |
+| trampoline | `CheckHeap+16` `0x08002BFC` (8 B) | after the PSS guard (+0) and link-trade (+8) trampolines; inside the dead routine's body |
+| `gEvolutionTable` | `0x099F3A7A` (unaligned; 6 code literals) | 16 entries x 8 B per species. Item-param methods counted: 7, 24, 25, 34, 36, 39 (CFRU enum; 6 = trade-with-item, not fixable by a Mart) |
+| data | injection block, after `gRosterRoots`: `gMartPtrs` (31 lists), `gMartSet` (u8/char), `gMartCount`/`gMartSetCount`, `gMartLists` [mart][set] -> stock + missing items | 81 item sets, 154 characters, 67.8 KB. The code moved down by that much (every address is derived) |
+
+Evidence: verify [M] (2; rebuilds every list from the base ROM), negative +2 (26/26), live
+`tools/test_harness/run_mart_test.sh` 4/4 (Red at the first Mart lacking his items: stock + Fire/Thunder/Water/Leaf/Oval/Ice
+Stone, photographed in the Buy menu; CM off: stock; BL restored: stock, and it fails "merged").

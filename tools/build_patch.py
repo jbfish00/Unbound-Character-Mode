@@ -28,6 +28,7 @@ Distribution is ALWAYS the patch, never the ROM.
 import hashlib
 import json
 import os
+import re
 import shutil
 import struct
 import subprocess
@@ -215,6 +216,68 @@ FIELD_MOVE_BL_SITES = (
 # become `goto <tail>; nop x3`. The tail callasms CharacterMode_LavaSurfSlot
 # (mode on: the ordinary Surf check) and falls back to the original two
 # commands, then rejoins at the script's `compare VAR_RESULT, 6`.
+# Mart evolution items (QoL A1, 2026-10-24; src/character_mode.c
+# CharacterMode_CreatePokemartMenu). ScrCmd_pokemart (byte-identical to
+# FireRed) calls CreatePokemartMenu at MART_SITE_FILE_OFF; the shim is out of BL
+# reach, so the BL goes through 8 bytes at CheckHeap+16 (the dead routine's body,
+# after the PSS guard (+0) and link-trade (+8) trampolines; RR uses +16 the same way).
+MART_SITE_FILE_OFF = 0x06C3B2
+CREATE_POKEMART_MENU = 0x0809C164
+MART_TRAMPOLINE_FILE_OFF = 0x002BFC
+MART_TRAMPOLINE_ORIG = bytes.fromhex("95ff0028" "08d0e468")
+EVO_TABLE_FILE_OFF = 0x19F3A7A          # gEvolutionTable (6 code literals point here), 16 x 8 B per species
+EVO_STRIDE = 128
+# CFRU methods whose param is an item: ITEM 7, HOLD_ITEM_NIGHT 24, HOLD_ITEM_DAY 25,
+# ITEM_LOCATION 34, ITEM_HOLD_ITEM 36, ITEM_NIGHT 39 (TRADE_ITEM 6 needs a trade: no Mart fixes it)
+MART_ITEM_METHODS = (7, 24, 25, 34, 36, 39)
+
+
+def find_marts(rom):
+    """Every `pokemart <list>` (script cmd 0x86) whose target is a 0-terminated list of 2..63 distinct items."""
+    marts = {}
+    for m in re.finditer(rb"\x86(....)", bytes(rom)):
+        p = struct.unpack("<I", m.group(1))[0]
+        if not (ROM_BASE <= p < ROM_BASE + len(rom) and p % 2 == 0):
+            continue
+        o, items = p - ROM_BASE, []
+        while len(items) < 64:
+            v = struct.unpack_from("<H", rom, o + 2 * len(items))[0]
+            if v == 0:
+                break
+            items.append(v)
+        if 2 <= len(items) < 64 and all(0 < v < 2000 for v in items) and len(set(items)) == len(items):
+            marts[p] = items
+    return dict(sorted(marts.items()))
+
+
+def mart_need_sets(rom, rosters, manifest):
+    """Per character: the evolution items its (pre-expanded) roster needs: item-method edges to an on-roster
+    target that no other edge reaches. Hidden characters get none."""
+    def evos(sp):
+        out = []
+        for j in range(EVO_STRIDE // 8):
+            mt, prm, t, _ = struct.unpack_from("<HHHH", rom, EVO_TABLE_FILE_OFF + sp * EVO_STRIDE + 8 * j)
+            if t:
+                out.append((mt, prm, t))
+        return out
+    sets = []
+    for rec in manifest["characters"]:
+        off, on = rec["roster_offset"], set()
+        while True:
+            (sid,) = struct.unpack_from("<H", rosters, off)
+            off += 2
+            if sid == 0:
+                break
+            on.add(sid)
+        need = set()
+        for sp in on:
+            es = evos(sp)
+            other = {t for mt, _, t in es if mt not in MART_ITEM_METHODS}
+            need |= {prm for mt, prm, t in es if mt in MART_ITEM_METHODS and t in on and t not in other and prm}
+        sets.append(tuple(sorted(need)) if not rec.get("hidden") else ())
+    return sets
+
+
 LAVA_SCRIPT_ROM_ADDR = 0x089A4A52
 LAVA_SPLICE_FILE_OFF = 0x009A4A67
 LAVA_SPLICE_ORIG = bytes.fromhex("1600800a0025b200")   # setvar 0x8000,10; special 0xB2
@@ -531,9 +594,35 @@ def main():
     off_count = off_nameptrs + n_chars * 4
     off_wild_meta = (off_count + 2 + 3) & ~3
     off_roster_roots = (off_wild_meta + len(wild_meta) + 3) & ~3
-    off_code = (off_roster_roots + len(roster_roots) + 3) & ~3
-
     addr = lambda off: INJECT_ROM_ADDR + off
+
+    # Mart evolution items (QoL A1): per pokemart list x distinct roster item set, the stock + missing items.
+    # CM_NO_MART=1 builds the control (no data, the BL untouched).
+    no_mart = os.environ.get("CM_NO_MART") == "1"
+    mart_sets = mart_need_sets(rom, rosters, manifest)
+    mart_distinct = [] if no_mart else sorted({x for x in mart_sets if x})
+    marts = {} if no_mart else find_marts(rom)
+    off_mart_ptrs = (off_roster_roots + len(roster_roots) + 3) & ~3
+    off_mart_set = off_mart_ptrs + 4 * len(marts)
+    off_mart_counts = (off_mart_set + n_chars + 1) & ~1
+    off_mart_lists = (off_mart_counts + 4 + 3) & ~3
+    off_mart_data = off_mart_lists + 4 * len(marts) * len(mart_distinct)
+    mart_data, mart_list_ptrs = b"", b""
+    for _mp, _stock in marts.items():
+        for _st in mart_distinct:
+            mart_list_ptrs += struct.pack("<I", addr(off_mart_data + len(mart_data)))
+            _merged = _stock + [x for x in _st if x not in _stock] + [0]
+            mart_data += struct.pack("<%dH" % len(_merged), *_merged)
+    mart_blob = (b"".join(struct.pack("<I", _mp) for _mp in marts)
+                 + bytes(mart_distinct.index(x) + 1 if (x and not no_mart) else 0 for x in mart_sets))
+    mart_blob += b"\x00" * (off_mart_counts - off_mart_ptrs - len(mart_blob))
+    mart_blob += struct.pack("<HH", len(marts), len(mart_distinct))
+    mart_blob += b"\x00" * (off_mart_lists - off_mart_ptrs - len(mart_blob))
+    mart_blob += mart_list_ptrs + mart_data
+    print(f"mart evolution items: {len(marts)} marts x {len(mart_distinct)} item sets for "
+          f"{sum(1 for x in mart_sets if x)} characters ({len(mart_blob):,} B)"
+          + (" -- OFF (CM_NO_MART control)" if no_mart else ""))
+    off_code = (off_mart_ptrs + len(mart_blob) + 3) & ~3
 
     # per-character name pointer array (for the scrolling character list):
     # record layout characters.bin: nameOffset u32 at +0 of each 16B record
@@ -564,6 +653,11 @@ def main():
          "--defsym", f"gCharacterCount={addr(off_count):#x}",
          "--defsym", f"gWildSpeciesMeta={addr(off_wild_meta):#x}",
          "--defsym", f"gRosterRoots={addr(off_roster_roots):#x}",
+         "--defsym", f"gMartPtrs={addr(off_mart_ptrs):#x}",
+         "--defsym", f"gMartSet={addr(off_mart_set):#x}",
+         "--defsym", f"gMartCount={addr(off_mart_counts):#x}",
+         "--defsym", f"gMartSetCount={addr(off_mart_counts + 2):#x}",
+         "--defsym", f"gMartLists={addr(off_mart_lists):#x}",
          "--defsym", f"gCharacterOwGfx={ow_table:#x}",
          # The sprite pointer table lives in the SEPARATE free run (see
          # CM_SPRITE_PTRS_FILE_OFF), not in this injection block, so its
@@ -685,6 +779,7 @@ def main():
     rom[INJECT_FILE_OFF + off_count:INJECT_FILE_OFF + off_count + 2] = struct.pack("<H", n_chars)
     rom[INJECT_FILE_OFF + off_wild_meta:INJECT_FILE_OFF + off_wild_meta + len(wild_meta)] = wild_meta
     rom[INJECT_FILE_OFF + off_roster_roots:INJECT_FILE_OFF + off_roster_roots + len(roster_roots)] = roster_roots
+    rom[INJECT_FILE_OFF + off_mart_ptrs:INJECT_FILE_OFF + off_mart_ptrs + len(mart_blob)] = mart_blob
     # roster display: record 6 -> Roster (callback, label, icon), case 6 -> append,
     # order loops' VarGet -> the gating wrapper
     struct.pack_into("<IIHB", rom, START_RECORD6_OFF, roster_cb, roster_text,
@@ -815,6 +910,19 @@ def main():
         rom[_site:_site + 4] = thumb_bl(ROM_BASE + _site, field_hook & ~1)
     print(f"field moves: {len(FIELD_MOVE_BL_SITES)} bls to CanMonLearnTMTutor -> "
           f"{field_hook | 1:#010x}")
+
+    # 6a-mart. Mart evolution items: ScrCmd_pokemart's BL CreatePokemartMenu -> CheckHeap+16 trampoline
+    # (ldr r3,[pc,#0]; bx r3; .word hook|1) -> CharacterMode_CreatePokemartMenu. Off in the CM_NO_MART control.
+    _ms, _mt = MART_SITE_FILE_OFF, MART_TRAMPOLINE_FILE_OFF
+    assert bytes(rom[_ms:_ms + 4]) == thumb_bl(ROM_BASE + _ms, CREATE_POKEMART_MENU), \
+        "ScrCmd_pokemart's BL CreatePokemartMenu is not at %#x -- re-derive" % (ROM_BASE + _ms)
+    assert bytes(rom[_mt:_mt + 8]) == MART_TRAMPOLINE_ORIG and _mt % 4 == 0, \
+        "CheckHeap+16 is not the dead routine's bytes -- re-derive"
+    if not no_mart:
+        rom[_mt:_mt + 8] = struct.pack("<HHI", 0x4B00, 0x4718, syms["CharacterMode_CreatePokemartMenu"] | 1)
+        rom[_ms:_ms + 4] = thumb_bl(ROM_BASE + _ms, ROM_BASE + _mt)
+        print(f"mart evolution items: ScrCmd_pokemart BL -> {ROM_BASE + _mt:#x} (CheckHeap+16) -> "
+              f"{syms['CharacterMode_CreatePokemartMenu'] | 1:#010x}")
 
     # 6b. entry trampoline: ldr r1,[pc,#0]; bx r1; .word hook|1
     tramp = struct.pack("<HHI", 0x4900, 0x4708, gmtp_hook | 1)
