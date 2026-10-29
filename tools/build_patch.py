@@ -426,6 +426,25 @@ def anim_default(rom):
     return {"battle_anims_off_default": 1}
 
 
+# QoL A3 instant HP bar (2026-10-28): Unbound has no HP-bar option (its battle options: Effects, Difficulty, Exp. Gain,
+# Item Restrictions, Fast Messages, Type Icons). FireRed's MoveBattleBar (0x08049FD8) jumps at 0x0804A00C into CFRU's
+# 0x089A35C4, which passes CalcNewBarValue scale 6 (`movs r4,#6`) and a toAdd from 0x089B315C (max HP / 48, rounded up).
+# Scale 0 keeps every bar on the integer path (no 1/48-of-a-bar steps below 48 max HP) and toAdd 255 replaces the call
+# (`movs r4,#255; nop; nop`; the push/pop around it stay): the bar settles in 1-3 frames. CM_NO_INSTANTHP=1: the control.
+HPBAR_SCALE_SITE = (0x089A35C4, bytes.fromhex("0624"), bytes.fromhex("0024"))
+HPBAR_TOADD_SITE = (0x089A35CC, bytes.fromhex("0ff0c6fd041c"), bytes.fromhex("ff24c046c046"))
+
+
+def instant_hp(rom):
+    if os.environ.get("CM_NO_INSTANTHP") == "1":
+        return {}
+    for a, old, new in (HPBAR_SCALE_SITE, HPBAR_TOADD_SITE):
+        o = a - ROM_BASE
+        assert bytes(rom[o:o + len(old)]) == old, "%08X holds %s, want %s" % (a, bytes(rom[o:o + len(old)]).hex(), old.hex())
+        rom[o:o + len(new)] = new
+    return {"instant_hp_bar": 1}
+
+
 def free_tutors(rom):
     if os.environ.get("CM_NO_FREETUTOR") == "1":
         return {}
@@ -1406,6 +1425,7 @@ def main():
 
     print("free tutors:", free_tutors(rom))
     print("battle animations off on new games:", anim_default(rom))
+    print("instant HP bar:", instant_hp(rom))
 
     # 8. outputs
     out = os.path.join(BUILD, "unbound-cm.gba")

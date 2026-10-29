@@ -90,6 +90,7 @@ While Character Mode is on:
   Proven live on a fresh new game with Character Mode declined (`tools/test_harness/run_expshare_test.sh`).
 - **Battle animations off by default** (Character Mode on or off, 2026-10-28): a game with no save starts with battle
   animations off. Options turns them back on; an existing save keeps its own setting.
+- **Instant HP bar** (every save, 2026-10-28): the HP bar jumps straight to its new value in battle.
 - **Evolution items in every Mart** (Character Mode on): every Mart also sells the evolution items your character's
   roster needs. Unbound sells no Sun, Moon, Dusk, Dawn, Shiny or Ice Stone, Metal Coat or Metal Powder anywhere (Moon
   Stone and the Alolan stones are only rewards from NPCs who want a Pokémon the catch gate refuses), so without this

@@ -11,6 +11,10 @@
 --                   award reads, set unconditionally by the new-game init script
 --                   0x09E70DB0; CFRU's 0x906 does nothing here, measured 2026-10-24)
 -- Env: QUEUE_CB1, EXPECT, CLEAR_FLAG (hex, optional), CM_EXPECT_CHECKS, SHOTS.
+-- WANT_HPBAR=1|0 (QoL A3 instant HP bar, 2026-10-28): the wild HP is NOT poked to 1 (the L50 Tackle still KOs it, so
+-- a full bar drains), and every MoveBattleBar(HEALTH_BAR) call (0x08049FD8, r2 == 0) is counted by frame, with the bar
+-- updates they belong to (an update starts while gBattleSpritesDataPtr->battleBars[b].currValue holds -32768).
+-- 1: at most 4 frames an update (instant); 0: more (CFRU's own bar: the CM_NO_INSTANTHP control). One more check.
 local A = 0
 local QUEUE = tonumber(os.getenv("QUEUE_CB1"))
 local EXPECT = os.getenv("EXPECT") or "share"
@@ -21,6 +25,16 @@ local INBATTLE, PARTY_COUNT, PARTY = 0x03003529, 0x02024029, 0x02024284
 local BMONS = 0x02023BE4            -- gBattleMons (FireRed), stride 0x58
 local f, passes, fails, battleAt, endAt, poked, n0, done = 0, 0, {}, nil, nil, false, nil, false
 local function u16(v) return string.char(v & 0xFF, (v >> 8) & 0xFF) end
+local HPBAR = os.getenv("WANT_HPBAR"); if HPBAR == "" then HPBAR = nil end
+local hpFrames, hpUpdates, hpLast = 0, 0, -1
+if HPBAR then
+    emu:setBreakpoint(function()
+        if emu:readRegister("r2") & 0xFF ~= 0 then return end
+        local bars = emu:read32(emu:read32(0x02024018) + 12)
+        if f ~= hpLast then hpFrames = hpFrames + 1; hpLast = f end
+        if emu:read32(bars + (emu:readRegister("r0") & 0xFF) * 20 + 16) == 0xFFFF8000 then hpUpdates = hpUpdates + 1 end
+    end, 0x08049FD8)
+end
 
 -- party EXP. ⚠️ Unbound's party mons are NOT encrypted and the substructure
 -- order is fixed: Growth sits at +32 in plain text (species u16, item u16, exp
@@ -58,7 +72,7 @@ callbacks:add("frame", function()
     end
     if battleAt and not endAt then
         if f > battleAt + 60 and f < battleAt + 600 then          -- both battlers are set up by now
-            emu:write16(BMONS + 0x58 + 0x28, 1)                   -- wild HP 1
+            if not HPBAR then emu:write16(BMONS + 0x58 + 0x28, 1) end   -- wild HP 1
             emu:write16(BMONS + 0x0C, 33); emu:write8(BMONS + 0x24, 35)   -- lead move 1 = Tackle, PP
         end
         if (f - battleAt) % 40 == 0 then emu:addKey(A) elseif (f - battleAt) % 40 == 8 then emu:clearKey(A) end
@@ -79,6 +93,11 @@ callbacks:add("frame", function()
             check("the benched Caterpie gained Exp. (party-wide share)", e2 > base)
         else
             check("the benched Caterpie gained no Exp. (share off)", e2 == base)
+        end
+        if HPBAR then
+            console:log(string.format("EXPSHARE HP bar: %d frames of MoveBattleBar calls over %d updates", hpFrames, hpUpdates))
+            if HPBAR == "1" then check("instant HP bar: at most 4 frames per update", hpUpdates > 0 and hpFrames <= 4 * hpUpdates)
+            else check("animated HP bar: more than 4 frames per update", hpUpdates > 0 and hpFrames > 4 * hpUpdates) end
         end
         local want = tonumber(os.getenv("CM_EXPECT_CHECKS") or "3")
         local ran = passes + #fails
