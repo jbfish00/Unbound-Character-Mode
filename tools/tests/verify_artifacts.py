@@ -53,7 +53,7 @@ BUILT = os.environ.get("CM_BUILT_ROM",
 
 # How many checks this layer must run. A deliberate LITERAL -- see
 # tools/tests/cm_tally.py for why this must never be a derived expression.
-EXPECT_CHECKS = 116   # +2: [M] Mart evolution items (2026-10-24); +2: [X] native new-game Exp. Share pinned (2026-10-24); +3: [Q] free move tutors (2026-10-17); +4: [S] 100% roster catch (2026-10-09); +3: [H] lava Surf (2026-10-05); +5: [H] field moves (2026-10-04); +7: [O] the overworld sprite (2026-10-03); +1: [R] Roster's own START icon (2026-10-03); +1: [R] roots-only hint (2026-10-02); +6: [L] the link-trade sweep (2026-09-30); +8: [G] the PC second guard (2026-09-29); +6: [F] the build fingerprints (2026-09-29); +17: [R] the roster display START row (2026-09-27)
+EXPECT_CHECKS = 117   # +1: [A] battle animations off on new games (QoL A3, 2026-10-28); +2: [M] Mart evolution items (2026-10-24); +2: [X] native new-game Exp. Share pinned (2026-10-24); +3: [Q] free move tutors (2026-10-17); +4: [S] 100% roster catch (2026-10-09); +3: [H] lava Surf (2026-10-05); +5: [H] field moves (2026-10-04); +7: [O] the overworld sprite (2026-10-03); +1: [R] Roster's own START icon (2026-10-03); +1: [R] roots-only hint (2026-10-02); +6: [L] the link-trade sweep (2026-09-30); +8: [G] the PC second guard (2026-09-29); +6: [F] the build fingerprints (2026-09-29); +17: [R] the roster display START row (2026-09-27)
                      # +21: the PC-exit sweep, 5 checks x 4 sites + the tail census (2026-09-10)
 
 failures = []
@@ -221,6 +221,7 @@ def main():
     # QoL A1 Mart evolution items (2026-10-24): the pokemart BL and its CheckHeap+16 trampoline ([M] below)
     win("pokemart BL", bp.MART_SITE_FILE_OFF, 4)
     win("mart trampoline (CheckHeap+16)", bp.MART_TRAMPOLINE_FILE_OFF, 8)
+    win("SetDefaultOptions' +0x15 value (QoL A3)", 0x5499C, 1)
     check("no two declared windows overlap",
           all(not (a[1] < b[1] + b[2] and b[1] < a[1] + a[2])
               for i, a in enumerate(windows) for b in windows[i + 1:]))
@@ -916,6 +917,10 @@ def main():
                   for k in range(0, len(_fc) - 3, 2))
           and any(struct.unpack_from("<H", _fc, k)[0] & 0xF8FF == 0x20FF
                   for k in range(0, len(_fc) - 1, 2)))
+
+    # ---- A. new games start with battle animations off (QoL A3, 2026-10-28) ----------------------------------------
+    check("[A] SetDefaultOptions stores +0x15 = 0xFD (Unbound's own bits + battle scene off; base: movs r0,#0xF9)",
+          bytes(orig[0x5499A:0x549A0]) == bytes.fromhex("4042f9205075") and bytes(rom[0x5499A:0x549A0]) == bytes.fromhex("4042fd205075"))
 
     # ---- Q. free move tutors (QoL 2026-10-17) --------------------------------------------------------------------
     _B = bp.ROM_BASE

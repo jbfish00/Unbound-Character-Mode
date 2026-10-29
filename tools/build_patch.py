@@ -409,6 +409,23 @@ def _ft_enc(s):
     return bytes(out) + b"\xFF"
 
 
+# QoL A3 (2026-10-28): new games start with battle animations off. FireRed's SetDefaultOptions (0x08054954, run at
+# boot and on a title-screen reset; a save's own options replace it) ends with Unbound's `movs r0,#0xF9 ; strb
+# r0,[r2,#0x15]` (its own option bits, scene bit 2 clear). 0xFD adds optionsBattleSceneOff (+0x15 bit 2). The
+# Options menu still turns animations on. CM_NO_ANIMDEFAULT=1 builds the control.
+ANIM_DEFAULT_SITE = 0x0805499C
+
+
+def anim_default(rom):
+    if os.environ.get("CM_NO_ANIMDEFAULT") == "1":
+        return {}
+    o = ANIM_DEFAULT_SITE - ROM_BASE
+    assert bytes(rom[o - 2:o + 4]) == bytes.fromhex("4042f9205075"), \
+        "SetDefaultOptions' last +0x15 store at %08X holds %s" % (ANIM_DEFAULT_SITE, bytes(rom[o - 2:o + 4]).hex())
+    rom[o] = 0xFD                                   # movs r0,#0xFD
+    return {"battle_anims_off_default": 1}
+
+
 def free_tutors(rom):
     if os.environ.get("CM_NO_FREETUTOR") == "1":
         return {}
@@ -1388,6 +1405,7 @@ def main():
     print(f"overworld sprites written: {len(ow_writes)} pieces, {len(ow_patches)} word patches")
 
     print("free tutors:", free_tutors(rom))
+    print("battle animations off on new games:", anim_default(rom))
 
     # 8. outputs
     out = os.path.join(BUILD, "unbound-cm.gba")

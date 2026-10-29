@@ -88,6 +88,8 @@ While Character Mode is on:
 - **Exp. Share, party-wide.** Native to Unbound: every new game starts with it on (Unbound's own new-game setup sets
   it), with Character Mode on or off. You can change it in Options > Exp. Gain; Character Mode never touches it.
   Proven live on a fresh new game with Character Mode declined (`tools/test_harness/run_expshare_test.sh`).
+- **Battle animations off by default** (Character Mode on or off, 2026-10-28): a game with no save starts with battle
+  animations off. Options turns them back on; an existing save keeps its own setting.
 - **Evolution items in every Mart** (Character Mode on): every Mart also sells the evolution items your character's
   roster needs. Unbound sells no Sun, Moon, Dusk, Dawn, Shiny or Ice Stone, Metal Coat or Metal Powder anywhere (Moon
   Stone and the Alolan stones are only rewards from NPCs who want a Pokémon the catch gate refuses), so without this
