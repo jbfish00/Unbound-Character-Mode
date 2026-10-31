@@ -53,7 +53,7 @@ BUILT = os.environ.get("CM_BUILT_ROM",
 
 # How many checks this layer must run. A deliberate LITERAL -- see
 # tools/tests/cm_tally.py for why this must never be a derived expression.
-EXPECT_CHECKS = 118   # +1: [A] instant HP bar (QoL A3, 2026-10-28); +1: [A] battle animations off on new games (QoL A3, 2026-10-28); +2: [M] Mart evolution items (2026-10-24); +2: [X] native new-game Exp. Share pinned (2026-10-24); +3: [Q] free move tutors (2026-10-17); +4: [S] 100% roster catch (2026-10-09); +3: [H] lava Surf (2026-10-05); +5: [H] field moves (2026-10-04); +7: [O] the overworld sprite (2026-10-03); +1: [R] Roster's own START icon (2026-10-03); +1: [R] roots-only hint (2026-10-02); +6: [L] the link-trade sweep (2026-09-30); +8: [G] the PC second guard (2026-09-29); +6: [F] the build fingerprints (2026-09-29); +17: [R] the roster display START row (2026-09-27)
+EXPECT_CHECKS = 122   # +4: [E] EXP rate, +1/-1: [R] Extras row (2026-10-30); +1: [A] instant HP bar (QoL A3, 2026-10-28); +1: [A] battle animations off on new games (QoL A3, 2026-10-28); +2: [M] Mart evolution items (2026-10-24); +2: [X] native new-game Exp. Share pinned (2026-10-24); +3: [Q] free move tutors (2026-10-17); +4: [S] 100% roster catch (2026-10-09); +3: [H] lava Surf (2026-10-05); +5: [H] field moves (2026-10-04); +7: [O] the overworld sprite (2026-10-03); +1: [R] Roster's own START icon (2026-10-03); +1: [R] roots-only hint (2026-10-02); +6: [L] the link-trade sweep (2026-09-30); +8: [G] the PC second guard (2026-09-29); +6: [F] the build fingerprints (2026-09-29); +17: [R] the roster display START row (2026-09-27)
                      # +21: the PC-exit sweep, 5 checks x 4 sites + the tail census (2026-09-10)
 
 failures = []
@@ -127,15 +127,16 @@ def main():
         windows.append((name, off, ln))
 
     win("injection block", bp.INJECT_FILE_OFF, bp.INJECT_BLOCK_LEN)
-    # roster display: record 6 (callback, label, icon gfx + frame = 11 B),
-    # the builder's case-6 byte, and the order loops' VarGet literal
+    # START record 6 ("Extras": callback, label, icon gfx + frame = 11 B) and
+    # the builder's case-6 byte (the order loops' VarGet literal is untouched
+    # since 2026-10-30)
     win("START record 6", bp.START_RECORD6_OFF, 11)
     win("START builder case-6 byte", bp.START_CASE6_OFF, 1)
     # Roster's own icon: the sheet struct's {ptr, size} and the repointed sheet
     win("START icon sheet struct", bp.START_ICON_SHEET_OFF, 6)
     win("START icon sheet (with Roster)", bp.START_ICON_FILE_OFF,
         bp.START_ICON_FILE_END - bp.START_ICON_FILE_OFF)
-    win("START VarGet literal", bp.START_VARGET_LIT, 4)
+    win("EXP rate: atk23_getexp BL MathMin", bp.EXPRATE_BL_OFF, 4)
     # PC second guard: the trampoline over CheckHeap, two BLs, CanShiftMon's tail
     win("PC guard trampoline (CheckHeap)", bp.PSS_GUARD_TRAMPOLINE_FILE_OFF, 8)
     for _o in bp.PSS_GUARD_BL_FILE_OFFS + (bp.PSS_CANSHIFT_BL_FILE_OFF,):
@@ -578,8 +579,8 @@ def main():
           and _new[0x1400:] not in [_old[i * 0x200:(i + 1) * 0x200] for i in range(10)],
           "%#x %#x" % (_osz, _nsz))
     _lbl = rom[_tx - 0x08000000:_tx - 0x08000000 + 8] if 0x08000000 <= _tx < 0x0A000000 else b""
-    check("[R] its label reads 'Roster'",
-          _lbl[:7] == bytes([0xCC, 0xE3, 0xE7, 0xE8, 0xD9, 0xE6, 0xFF]), _lbl.hex())
+    check("[R] its label reads 'Extras'",
+          _lbl[:7] == bytes([0xBF, 0xEC, 0xE8, 0xE6, 0xD5, 0xE7, 0xFF]), _lbl.hex())
     check("[R] builder case 6 -> append (the rest of the jump table untouched)",
           rom[bp.START_CASE6_OFF] == bp.START_CASE6_APPEND
           and orig[bp.START_CASE6_OFF] == bp.START_CASE6_ORIG
@@ -589,17 +590,13 @@ def main():
     _tgt = 0x08A0BA80 + bp.START_CASE6_APPEND * 2 - 0x08000000
     check("[R] case 6's target is the append path (lsls r0,r4,#24; lsrs; ldr r3,[sp]; bl)",
           rom[_tgt:_tgt + 6] == bytes.fromhex("2006000e009b"), rom[_tgt:_tgt + 6].hex())
-    _wrap = _sym.get("CM_StartMenuVarGet", -2) | 1
-    _lits = [i for i in range(0, len(rom) - 3, 4) if struct.unpack_from("<I", rom, i)[0] == _wrap]
-    check("[R] the order loops' VarGet literal -> CM_StartMenuVarGet, and nothing else points at it",
-          struct.unpack_from("<I", orig, bp.START_VARGET_LIT)[0] == bp.START_VARGET_ORIG
-          and _lits == [bp.START_VARGET_LIT], str([hex(a) for a in _lits]))
-    # the compiled wrapper carries its gate: record 6's var, the CM flag,
-    # VarGet, and the roots blob it checks for an empty roster
-    _wo = (_wrap & ~1) - 0x08000000
-    _wl = {struct.unpack_from("<I", rom, i)[0] for i in range(_wo & ~3, (_wo & ~3) + 0x80, 4)}
-    check("[R] compiled wrapper carries 0x5040, flag 0x18F8, var 0x51FC, VarGet and gRosterRoots",
-          {0x5040, 0x18F8, 0x51FC, bp.START_VARGET_ORIG, _sym["gRosterRoots"]} <= _wl)
+    # 2026-10-30: Extras is in every save, so the order loops read the real
+    # VarGet again (the CM-only wrapper is gone)
+    _VARGET_LIT, _VARGET = 0xA0C1F4, 0x0806E569
+    check("[R] the order loops' VarGet literal is the stock VarGet (Extras shows in every save)",
+          struct.unpack_from("<I", rom, _VARGET_LIT)[0] == _VARGET
+          and struct.unpack_from("<I", orig, _VARGET_LIT)[0] == _VARGET
+          and "CM_StartMenuVarGet" not in _sym)
     # scan the callback's whole extent (to the next symbol): CM_RosterOpen is
     # inlined into it, so its literal pool is well past a fixed window
     _co = (_sym["CM_StartMenuRosterCallback"] & ~1) - 0x08000000
@@ -607,6 +604,31 @@ def main():
     _cl = {struct.unpack_from("<I", rom, i)[0] for i in range(_co & ~3, _next & ~3, 4)}
     check("[R] compiled callback stops the handler's fade and closes via Unbound's own routine",
           {0x08070A85, 0x08A0BD35} <= _cl, str(sorted(hex(x) for x in _cl if x > 0x08000000)[:8]))
+    check("[R] compiled callback opens the EXP rate chooser (no roster to show) and reads the CM flag",
+          (_sym.get("CM_ExpRateOpen", -2) | 1) in _cl and 0x18F8 in _cl,
+          str(sorted(hex(x) for x in _cl)[:12]))
+
+    # ---- [E] EXP rate (2026-10-30, src/exp_rate.c) -----------------------
+    _eb = bp.EXPRATE_BL_OFF
+    check("[E] atk23_getexp's BL MathMin (0x089E2006) -> CM_ExpRateMin; the base ROM has the stock BL",
+          bytes(rom[_eb:_eb + 4]) == bp.thumb_bl(0x08000000 + _eb, _sym.get("CM_ExpRateMin", 0) & ~1)
+          and bytes(orig[_eb:_eb + 4]) == bp.thumb_bl(0x08000000 + _eb, bp.MATH_MIN))
+    _mo = (_sym["CM_ExpRateMin"] & ~1) - 0x08000000
+    _ml = {struct.unpack_from("<I", rom, i)[0] for i in range(_mo & ~3, (_mo & ~3) + 0x60, 4)}
+    _fp = _sym.get("CM_ExpRateFingerprint", 0) - 0x08000000
+    check("[E] compiled CM_ExpRateMin calls VarGet; its unit's fingerprint reads var 0x51FD, cap 0x190640, rate ON",
+          0x0806E569 in _ml and 0 <= _fp < len(rom)
+          and struct.unpack_from("<4I", rom, _fp) == (0x52505845, bp.VAR_EXP_RATE, 0x190640, 1),
+          str(sorted(hex(x) for x in _ml)))
+    _ro = (_sym["CM_ExpRateOpen"] & ~1) - 0x08000000
+    _rl = {struct.unpack_from("<I", rom, i)[0] for i in range(_ro & ~3, (_ro & ~3) + 0x100, 4)}
+    check("[E] compiled chooser reads var 0x51FD (preselects the current rate)", bp.VAR_EXP_RATE in _rl)
+    _ids = b"".join(struct.pack("<I", v) for v in (4, 0, 1, 2, 3))
+    _code = rom[0xB2B280:0xB2B280 + bp.INJECT_BLOCK_LEN]
+    check("[E] the chooser's rows are x0.5 x1 x1.5 x2 x3 = stored 4 0 1 2 3, labelled 'Exp. Rate'",
+          any(_code[k + 4:k + 8] + _code[k + 12:k + 16] + _code[k + 20:k + 24] + _code[k + 28:k + 32]
+              + _code[k + 36:k + 40] == _ids for k in range(0, len(_code) - 40, 4))
+          and bytes.fromhex("bfece4ad00ccd5e8d9ff") in _code)
     # The roots-only hint (user ruling 2026-10-02): the string AND a header
     # window tall enough for its second line, both new to the ROM.
     _hint = bytes.fromhex("bfeae3e0e9e8dde3e2e700d7e3e9e2e800e8e3e3adff")  # "Evolutions count too."

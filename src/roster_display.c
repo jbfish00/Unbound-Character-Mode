@@ -14,16 +14,18 @@
  * like the START menu ... cheapest and least intrusive"). Unbound's START menu
  * is its own graphical icon bar built from a 12-record table (0x08A6D160).
  * Record 6, "Costume Box", is DEAD in this version -- the builder's case 6
- * never appends it -- so the Roster row takes its slot instead of growing any
- * table, loop or stack array:
+ * never appends it -- so the row takes its slot instead of growing any table,
+ * loop or stack array:
  *   - record 6's callback/text/icon are patched in place
- *     -> CM_StartMenuRosterCallback, "Roster", and its own icon (frame 10
+ *     -> CM_StartMenuRosterCallback, "Extras", and its own icon (frame 10
  *     of the bar's sheet, appended by build_patch.py, 2026-10-03);
- *   - the builder's case-6 jump-table byte goes from "skip" to "append";
- *   - the order loops' VarGet literal -> CM_StartMenuVarGet, which returns
- *     the real VarGet for every var except record 6's (0x5040), and 0xFF
- *     (= not in the menu) for that one unless Character Mode is on. With CM
- *     off the START menu is exactly what it was.
+ *   - the builder's case-6 jump-table byte goes from "skip" to "append".
+ * 2026-10-30 (EXP rate, user: "share the Roster slot"): the bar has no spare
+ * record, so the row is now "Extras" and ALWAYS shown (until then the order
+ * loops' VarGet went through a wrapper that hid it with CM off; the wrapper
+ * and its literal patch are gone). With Character Mode on and a roster to show
+ * it asks Roster / Exp. Rate; otherwise it opens the EXP rate chooser
+ * (src/exp_rate.c) straight away.
  * The callback closes the menu with Unbound's own Exit routine, re-freezes the
  * field, and opens the screen; closing the screen unfreezes it again -- the
  * mirror of Exit.
@@ -51,8 +53,6 @@ extern const u16 gRosterRoots[];
 #endif
 #define VAR_CHARACTER_ID    0x51FC
 #define FLAG_CHARACTER_MODE 0x18F8
-/* record 6's position var: the one var whose order the wrapper gates */
-#define ROSTER_ORDER_VAR    0x5040
 /* build_patch.py places the header names (already in ROM for the opt-in list) */
 extern const u8 *const gCharacterNamePtrs[];
 #define EOS 0xFF
@@ -88,6 +88,7 @@ extern const u8 *const gCharacterNamePtrs[];
 #define ListMenuInit         ((u8 (*)(const void *, u16, u16)) 0x08106FF9)
 #define ListMenu_ProcessInput ((s32 (*)(u8)) 0x08107079)
 #define DestroyListMenuTask  ((void (*)(u8, u16 *, u16 *)) 0x0810713D)
+#define ListMenuDefaultCursorMoveFunc ((void *) 0x08107AED)
 #define CreateTask           ((u8 (*)(void (*)(u8), u8)) 0x0807741D)
 #define DestroyTask          ((void (*)(u8)) 0x08077509)
 #define FindTaskIdByFunc     ((u8 (*)(void (*)(u8))) 0x08077689)
@@ -179,8 +180,14 @@ static const struct WindowTemplate sIconWindow TEXT = {
 /* "'s roster" in the game charmap: ' s space r o s t e r */
 static const u8 sText_Suffix[] TEXT = { 0xB4, 0xE7, 0x00, 0xE6, 0xE3, 0xE7, 0xE8, 0xD9, 0xE6, EOS };
 
-/* Record 6's START-menu label, "Roster" in the game charmap. */
-const u8 gCMRosterMenuText[] TEXT = { 0xCC, 0xE3, 0xE7, 0xE8, 0xD9, 0xE6, EOS };
+/* Record 6's START-menu label, "Extras" in the game charmap (2026-10-30; it read
+ * "Roster" while the row was the roster alone). */
+const u8 gCMRosterMenuText[] TEXT = { 0xBF, 0xEC, 0xE8, 0xE6, 0xD5, 0xE7, EOS };
+/* the Extras list's first row, "Roster" */
+static const u8 sText_Roster[] TEXT = { 0xCC, 0xE3, 0xE7, 0xE8, 0xD9, 0xE6, EOS };
+/* src/exp_rate.c */
+extern const u8 gCMExpRateText[];
+void CM_ExpRateOpen(void);
 
 static void RosterMenu_HandleInput(u8 taskId);
 
@@ -353,8 +360,81 @@ static void RosterMenu_HandleInput(u8 taskId)
         RosterMenu_Destroy(taskId);
 }
 
+/* Is there a roster to show? Character Mode on, a valid character, and rows. */
+static u8 RosterAvailable(void)
+{
+    u16 id;
+    if (!FlagGet(FLAG_CHARACTER_MODE))
+        return 0;
+    id = *GetVarPointer(VAR_CHARACTER_ID);
+    return id >= 1 && id <= NUM_CHARACTERS && gRosterRoots[(u32) (id - 1) * 2 + 1] != 0;
+}
+
+/* The Extras list (Character Mode on): Roster / Exp. Rate. A opens the row's
+ * screen, B gives the field back. */
+#define EXTRAS_ROSTER  0
+#define EXTRAS_EXPRATE 1
+#define tExtrasList data[0]
+#define tExtrasWin  data[1]
+static const struct WindowTemplate sExtrasWindow TEXT = { 0, 1, 1, 9, 4, 15, 1 };
+static const struct ListMenuItem sExtrasItems[2] TEXT = {
+    { sText_Roster, EXTRAS_ROSTER }, { gCMExpRateText, EXTRAS_EXPRATE },
+};
+
+static void Extras_HandleInput(u8 taskId)
+{
+    s32 r = ListMenu_ProcessInput(gTasks[taskId].tExtrasList);
+
+    if (r == LIST_NOTHING_CHOSEN)
+        return;
+    DestroyListMenuTask(gTasks[taskId].tExtrasList, 0, 0);
+    ClearStdWindowAndFrame(gTasks[taskId].tExtrasWin, 1);
+    RemoveWindow(gTasks[taskId].tExtrasWin);
+    DestroyTask(taskId);
+    if (r == EXTRAS_ROSTER)
+        CM_RosterOpen();
+    else if (r == EXTRAS_EXPRATE)
+        CM_ExpRateOpen();
+    else
+        ReleaseField();                 /* B */
+}
+
+static void CM_ExtrasOpen(void)
+{
+    struct ListMenuTemplate t;
+    u8 taskId, win;
+
+    LoadStdWindowFrameGfx();
+    win = AddWindow(&sExtrasWindow);
+    DrawStdWindowFrame(win, 0);
+    taskId = CreateTask(Extras_HandleInput, 3);
+    gTasks[taskId].tExtrasWin = win;
+
+    t.items = sExtrasItems;
+    t.moveCursorFunc = ListMenuDefaultCursorMoveFunc;
+    t.itemPrintFunc = 0;
+    t.totalItems = 2;
+    t.maxShowed = 2;
+    t.windowId = win;
+    t.header_X = 0;
+    t.item_X = 8;
+    t.cursor_X = 0;
+    t.upText_Y = 1;
+    t.cursorPal = 2;
+    t.fillValue = 1;
+    t.cursorShadowPal = 3;
+    t.lettersSpacing = 1;
+    t.itemVerticalPadding = 0;
+    t.scrollMultiple = 0;
+    t.fontId = FONT_NORMAL;
+    t.cursorKind = 0;
+    gTasks[taskId].tExtrasList = ListMenuInit(&t, 0, 0);
+    CopyWindowToVram(win, 3);
+}
+
 /* Record 6's START-menu callback. Close the menu exactly as Exit does, then
- * take the field back and open the screen. TRUE = the menu is finished. */
+ * take the field back and open Extras (or the EXP rate chooser when there is
+ * no roster to show). TRUE = the menu is finished. */
 u8 CM_StartMenuRosterCallback(void)
 {
     /* ⚠️ The START handler starts a fade-to-black before calling any row it
@@ -369,26 +449,11 @@ u8 CM_StartMenuRosterCallback(void)
     UnboundStartMenuClose();
     ScriptContext2_Enable();
     FreezeEventObjects();
-    CM_RosterOpen();
+    if (RosterAvailable())
+        CM_ExtrasOpen();
+    else
+        CM_ExpRateOpen();
     return 1;
-}
-
-/* Replaces VarGet in the START menu's two order loops (literal 0x08A0C1F4).
- * Every var but record 6's goes straight to VarGet. Record 6 is in the menu
- * only while Character Mode is on AND the active character has rows; 0xFF is
- * the loops' "not in the menu" value. */
-u16 CM_StartMenuVarGet(u16 var)
-{
-    u16 id;
-    if (var != ROSTER_ORDER_VAR)
-        return VarGet(var);
-    if (!FlagGet(FLAG_CHARACTER_MODE))
-        return 0xFF;
-    id = *GetVarPointer(VAR_CHARACTER_ID);
-    if (id < 1 || id > NUM_CHARACTERS
-        || gRosterRoots[(u32) (id - 1) * 2 + 1] == 0)
-        return 0xFF;
-    return VarGet(var);
 }
 
 /* Build fingerprint: the values this unit ACTUALLY compiled with, parked in

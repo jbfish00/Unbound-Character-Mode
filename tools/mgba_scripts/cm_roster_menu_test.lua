@@ -16,8 +16,11 @@
 --                icon table and matches VRAM and palette, one DOWN hands the
 --                cursor callback the SECOND root's species ("ID, not index"),
 --                B closes it all, and the player can walk again.
---   MODE=off     CM off: START must NOT contain action 6 -- with CM off the
---                menu is what it was.
+--                (2026-10-30: action 6 is "Extras"; with CM on it opens
+--                Roster / Exp. Rate first, and A takes the first row.)
+--   MODE=off     CM off: START still contains action 6 ("Extras" is in every
+--                save since 2026-10-30; tools/test_harness/run_exprate_test.sh
+--                drives what it opens).
 local K = { A = 0, B = 1, START = 3, RIGHT = 4, LEFT = 5, UP = 6, DOWN = 7 }
 local MODE = os.getenv("MODE") or "roster"
 local CM_CHAR = tonumber(os.getenv("CM_CHAR") or "10")
@@ -152,6 +155,7 @@ callbacks:add("frame", function()
         emu:screenshot("build/roster_start_selected.png")
         hold(K.A, 12); step, at = "wait_list", f
     elseif step == "wait_list" then
+        if cbHits > 0 and moves == 0 and f - at == 60 then hold(K.A, 12) end   -- Extras: Roster is row 1
         if cbHits > 0 and moves > 0 then step, at = "list_shot", f
         elseif f - at > 600 then step = "done" end
     elseif step == "list_shot" and f - at == 40 then
@@ -213,7 +217,7 @@ callbacks:add("frame", function()
             check("B closed it: no roster task, no roster icon", rosterTask() == nil and not anyRosterIcon())
             check("the field is back: the player walked after the close", t.walked == true)
         else
-            check("CM off: START has no Roster row", t.acts and not has6(t.acts), table.concat(t.acts or {}, ","))
+            check("CM off: START still has the Extras row", t.acts and has6(t.acts), table.concat(t.acts or {}, ","))
             check("CM off: the roster never opened", cbHits == 0)
         end
         finish()

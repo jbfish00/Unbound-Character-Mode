@@ -29,10 +29,14 @@ game restricted to that character's canon Pokemon.
   area's level. Each one is offered until you catch it, then stops
   appearing — unless your character's roster is legendaries only, in
   which case they keep appearing so you always have something to catch.
-- **Roster screen**: the START menu gains a "Roster" icon while Character
-  Mode is on. It lists your character's Pokemon, one row per evolution
-  family, with the highlighted Pokemon's icon beside the list; A or B
-  closes it. With Character Mode off the START menu is unchanged.
+- **Roster screen**: the START menu's "Extras" icon asks Roster or
+  Exp. Rate while Character Mode is on. Roster lists your character's
+  Pokemon, one row per evolution family, with the highlighted Pokemon's
+  icon beside the list; A or B closes it.
+- **EXP rate** (every save, Character Mode on or off): START, Extras,
+  Exp. Rate picks how much EXP battles give: x0.5, x1, x1.5, x2 or x3.
+  An older save starts at x1. With Character Mode off, Extras opens this
+  list straight away.
 - **HMs**: any Pokemon in your party can use a field move (Cut, Fly,
   Surf, Strength, Rock Smash, Waterfall, Dive, Rock Climb, and Flash)
   once you have that HM in your bag and the badge it needs. You don't
@@ -54,7 +58,7 @@ game restricted to that character's canon Pokemon.
    `b4776b82a4c7915d0fadeaa27e013523f99dfd94`).
 2. Apply `unbound-character-mode.bps` to that ROM with Flips
    (https://github.com/Alcaro/Flips), or any BPS patcher.
-3. The result should have sha1 `409229b974f0dcf4af1d383c83fb65085b93c372`.
+3. The result should have sha1 `d2ce9daeca42947c972b3a87e331c5a5979e41b7`.
 
 ## Known limitations
 

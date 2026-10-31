@@ -52,7 +52,7 @@ def run(path):
 
 # How many tamper cases this negative test must run. A deliberate
 # LITERAL -- see cm_tally.assert_cases.
-EXPECT_CASES = 26   # +2: [M] Mart evolution items (2026-10-24); +2: [X] native new-game Exp. Share (2026-10-24)
+EXPECT_CASES = 28   # +2: [E] EXP rate (2026-10-30); +2: [M] Mart evolution items (2026-10-24); +2: [X] native new-game Exp. Share (2026-10-24)
 
 
 def _mart_lists_addr():
@@ -213,6 +213,14 @@ def main():
     case("an added evolution item dropped from a merged Mart list fails", 1, revert(_q, b"\x00\x00"))
     case("the new-game `setflag 0x9F2` made 0x9F3 fails", 1, revert(0x1E70E22, b"\xf3"))
     case("the exp award's FlagGet(0x9F2) literal bent fails", 1, revert(0x9E2154, b"\xf3"))
+    # EXP rate (2026-10-30)
+    case("the getexp BL restored to MathMin fails", 1,
+         revert(bp.EXPRATE_BL_OFF, bp.thumb_bl(bp.ROM_BASE + bp.EXPRATE_BL_OFF, bp.MATH_MIN)))
+    _nm = subprocess.run(["arm-none-eabi-nm", os.path.join(ROOT, "build", "character_mode.elf")],
+                         capture_output=True, text=True, check=True).stdout
+    _fp = int([l.split()[0] for l in _nm.splitlines() if l.endswith(" CM_ExpRateFingerprint")][0], 16)
+    case("the EXP rate fingerprint saying CM_NO_EXPRATE (rate ignored) fails", 1,
+         revert(_fp - bp.ROM_BASE + 12, b"\x00"))
     case("control: the untouched copy still passes", 0)
 
     shutil.rmtree(tmp, ignore_errors=True)

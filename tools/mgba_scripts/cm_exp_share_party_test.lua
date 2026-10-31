@@ -15,7 +15,13 @@
 -- a full bar drains), and every MoveBattleBar(HEALTH_BAR) call (0x08049FD8, r2 == 0) is counted by frame, with the bar
 -- updates they belong to (an update starts while gBattleSpritesDataPtr->battleBars[b].currValue holds -32768).
 -- 1: at most 4 frames an update (instant); 0: more (CFRU's own bar: the CM_NO_INSTANTHP control). One more check.
+-- RATE=0..4 (EXP rate, 2026-10-30, src/exp_rate.c): `setvar 0x51FD,RATE` runs first; the lead's and the bench's
+-- EXP gains are logged as "GAINS <lead> <bench>", and WANT_GAIN0 / WANT_GAIN1 (when set) are one more check each.
+-- LEAD_LV (default 50) sets the lead's level; a low one stays under Unbound's level cap (a capped mon gets 1 EXP).
 local A = 0
+local RATE = os.getenv("RATE"); if RATE == "" then RATE = nil end
+local LEAD_LV = tonumber(os.getenv("LEAD_LV") or "50")
+local e0before, e1before
 local QUEUE = tonumber(os.getenv("QUEUE_CB1"))
 local EXPECT = os.getenv("EXPECT") or "share"
 local CLEAR = os.getenv("CLEAR_FLAG"); if CLEAR == "" then CLEAR = nil end
@@ -46,8 +52,9 @@ local function expOf(slot)
 end
 
 local s = ""
+if RATE then s = s .. string.char(0x16) .. u16(0x51FD) .. u16(tonumber(RATE)) end                -- setvar 0x51FD
 if CLEAR then s = s .. string.char(0x2A) .. u16(tonumber(CLEAR, 16)) end                     -- clearflag
-s = s .. string.char(0x79) .. u16(25) .. string.char(50) .. u16(0) .. string.rep("\0", 9)  -- givemon Pikachu L50
+s = s .. string.char(0x79) .. u16(25) .. string.char(LEAD_LV) .. u16(0) .. string.rep("\0", 9)  -- givemon Pikachu L50
 s = s .. string.char(0x79) .. u16(10) .. string.char(5) .. u16(0) .. string.rep("\0", 9)   -- givemon Caterpie L5
 s = s .. string.char(0xB6) .. u16(129) .. string.char(2) .. u16(0)                         -- setwildbattle Magikarp L2
 s = s .. string.char(0xB7, 0x27, 0x02)                                                     -- dowildbattle; waitstate; end
@@ -71,6 +78,10 @@ callbacks:add("frame", function()
         console:log("EXPSHARE battle started at frame " .. f .. ", party " .. emu:read8(PARTY_COUNT))
     end
     if battleAt and not endAt then
+        if f == battleAt + 50 then
+            local n = emu:read8(PARTY_COUNT)
+            e0before = select(2, expOf(n - 2)); e1before = select(2, expOf(n - 1))
+        end
         if f > battleAt + 60 and f < battleAt + 600 then          -- both battlers are set up by now
             if not HPBAR then emu:write16(BMONS + 0x58 + 0x28, 1) end   -- wild HP 1
             emu:write16(BMONS + 0x0C, 33); emu:write8(BMONS + 0x24, 35)   -- lead move 1 = Tackle, PP
@@ -93,6 +104,12 @@ callbacks:add("frame", function()
             check("the benched Caterpie gained Exp. (party-wide share)", e2 > base)
         else
             check("the benched Caterpie gained no Exp. (share off)", e2 == base)
+        end
+        if e0before then
+            local g0, g1 = e1 - e0before, e2 - e1before
+            console:log(string.format("EXPSHARE GAINS %d %d", g0, g1))
+            if os.getenv("WANT_GAIN0") then check("lead EXP gain == " .. os.getenv("WANT_GAIN0"), g0 == tonumber(os.getenv("WANT_GAIN0"))) end
+            if os.getenv("WANT_GAIN1") then check("bench EXP gain == " .. os.getenv("WANT_GAIN1"), g1 == tonumber(os.getenv("WANT_GAIN1"))) end
         end
         if HPBAR then
             console:log(string.format("EXPSHARE HP bar: %d frames of MoveBattleBar calls over %d updates", hpFrames, hpUpdates))

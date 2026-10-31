@@ -91,6 +91,9 @@ While Character Mode is on:
 - **Battle animations off by default** (Character Mode on or off, 2026-10-28): a game with no save starts with battle
   animations off. Options turns them back on; an existing save keeps its own setting.
 - **Instant HP bar** (every save, 2026-10-28): the HP bar jumps straight to its new value in battle.
+- **EXP rate** (every save, Character Mode on or off, 2026-10-30): START, then **Extras** (the clipboard icon), then
+  **Exp. Rate** picks how much EXP battles give: x0.5, x1, x1.5, x2 or x3. The cursor starts on the current rate; B
+  keeps it. An older save starts at x1. With Character Mode off, Extras opens the rate list straight away.
 - **Evolution items in every Mart** (Character Mode on): every Mart also sells the evolution items your character's
   roster needs. Unbound sells no Sun, Moon, Dusk, Dawn, Shiny or Ice Stone, Metal Coat or Metal Powder anywhere (Moon
   Stone and the Alolan stones are only rewards from NPCs who want a Pokémon the catch gate refuses), so without this
@@ -100,13 +103,14 @@ While Character Mode is on:
 
 ## Seeing your roster in-game
 
-With Character Mode on, the **START menu** gets a **Roster** icon (a clipboard of Poké Balls,
-labelled "Roster"). Choose it to see a screen headed with
+The **START menu** has an **Extras** icon (a clipboard of Poké Balls) in every save.
+With Character Mode on, Extras asks **Roster** or **Exp. Rate**. Roster shows a screen headed with
 your character's name, listing their Pokémon one row per evolution family (the
 first stage is shown, and the whole family counts), with the highlighted
 Pokémon's icon in a box beside the list. Scroll with Up/Down; A or B closes it.
 
-With Character Mode off, the START menu is exactly the same as vanilla Unbound.
+With Character Mode off, Extras opens the EXP rate list (the only other change to
+the START menu; the icon was the unused "Costume Box" slot).
 
 ## Installing
 

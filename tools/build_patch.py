@@ -76,8 +76,8 @@ START_ICON_FILE_OFF   = 0x01634000
 START_ICON_FILE_END   = 0x01635A50
 START_CASE6_OFF      = 0xA0BA86               # builder jump table: case 6 byte
 START_CASE6_ORIG, START_CASE6_APPEND = 0x11, 0x1D  # -> 0x08A0BAA2 skip / 0x08A0BABA append
-START_VARGET_LIT     = 0xA0C1F4               # both order loops' VarGet literal
-START_VARGET_ORIG    = 0x0806E569
+# 2026-10-30: the order loops' VarGet literal (0xA0C1F4) is no longer patched: record 6
+# is "Extras" and always shown (EXP rate, user: "share the Roster slot").
 # Injection block: confirmed 0xFF-free, 147 KiB @ file 0x00B2B280 (docs/FREE_SPACE.md)
 INJECT_FILE_OFF = 0x00B2B280
 INJECT_ROM_ADDR = ROM_BASE + INJECT_FILE_OFF
@@ -435,6 +435,14 @@ HPBAR_SCALE_SITE = (0x089A35C4, bytes.fromhex("0624"), bytes.fromhex("0024"))
 HPBAR_TOADD_SITE = (0x089A35CC, bytes.fromhex("0ff0c6fd041c"), bytes.fromhex("ff24c046c046"))
 
 
+# EXP rate (user 2026-10-29, ../game_plans/EXP_RATE_PLAN.md; src/exp_rate.c): CFRU's atk23_getexp clamps the award
+# with `MathMin(0x190640, exp)`; that BL (byte-identical to RR's 0x09094A82) -> CM_ExpRateMin. The hard-level-cap path
+# (award 1) branches to 0x089E200C, past it. The rate is var 0x51FD (0 = x1).
+EXPRATE_BL_OFF = 0x089E2006 - ROM_BASE
+MATH_MIN = 0x08A13BF0
+VAR_EXP_RATE = 0x51FD
+
+
 def instant_hp(rom):
     if os.environ.get("CM_NO_INSTANTHP") == "1":
         return {}
@@ -585,6 +593,12 @@ def main():
     with open(os.path.join(CM_DIR, "roster_roots_manifest.json")) as f:
         roots_manifest = json.load(f)
     roster_obj = os.path.join(BUILD, "roster_display.o")
+    # 2c. the EXP rate unit (src/exp_rate.c; CM_NO_EXPRATE=1 builds the control: the hook ignores the rate)
+    exprate_obj = os.path.join(BUILD, "exp_rate.o")
+    run(["arm-none-eabi-gcc", "-c", "-g", "-mthumb", "-mcpu=arm7tdmi", "-mtune=arm7tdmi",
+         "-O2", "-ffreestanding", "-fno-builtin", "-mlong-calls", "-Wall", "-Wextra",
+         *(["-DCM_NO_EXPRATE"] if os.environ.get("CM_NO_EXPRATE") == "1" else []),
+         "-Werror", "-o", exprate_obj, os.path.join(ROOT, "src", "exp_rate.c")])
     run(["arm-none-eabi-gcc", "-c", "-g", "-mthumb", "-mcpu=arm7tdmi", "-mtune=arm7tdmi",
          "-O2", "-ffreestanding", "-fno-builtin", "-mlong-calls", "-Wall", "-Wextra",
          f"-DNUM_CHARACTERS={roots_manifest['characters']}",
@@ -699,7 +713,7 @@ def main():
          # CM_SPRITE_PTRS_FILE_OFF), not in this injection block, so its
          # address is a fixed constant rather than an offset into `addr`.
          "--defsym", f"gCharacterSpritePtrs={ROM_BASE + CM_SPRITE_PTRS_FILE_OFF:#x}",
-         "-o", elf, obj, roster_obj, os.path.join(ROOT, "src", "unbound.ld")])
+         "-o", elf, obj, roster_obj, exprate_obj, os.path.join(ROOT, "src", "unbound.ld")])
     code_bin = os.path.join(BUILD, "character_mode.bin")
     run(["arm-none-eabi-objcopy", "-O", "binary", "--only-section=.text",
          "--only-section=.rodata", elf, code_bin])
@@ -722,10 +736,9 @@ def main():
         "roster_roots.bin was emitted for %d characters, this build has %d -- re-run "
         "emit_roster_roots.py" % (roots_manifest["characters"], n_chars))
     roster_cb = syms["CM_StartMenuRosterCallback"] | 1
-    roster_varget = syms["CM_StartMenuVarGet"] | 1
     roster_text = syms["gCMRosterMenuText"]
-    print(f"CM_StartMenuRosterCallback   @ {roster_cb:#010x}; VarGet wrapper {roster_varget:#010x}; "
-          f"label @ {roster_text:#010x}")
+    exprate_min = syms["CM_ExpRateMin"]
+    print(f"CM_StartMenuRosterCallback   @ {roster_cb:#010x}; label @ {roster_text:#010x}")
     print(f"CharacterMode_CatchFlagGet   @ {catch_hook:#010x}")
     print(f"CharacterMode_GiveMonToPlayer@ {gmtp_hook:#010x}")
     print(f"CharacterMode_ScriptGiveMon  @ {sgm_hook:#010x}")
@@ -804,8 +817,8 @@ def main():
         "START icon sheet target not 0xFF-free!"
     assert rom[START_CASE6_OFF] == START_CASE6_ORIG, \
         "START builder case-6 byte changed — wrong ROM?"
-    assert struct.unpack_from("<I", rom, START_VARGET_LIT)[0] == START_VARGET_ORIG, \
-        "START order loops' VarGet literal changed — wrong ROM?"
+    assert bytes(rom[EXPRATE_BL_OFF:EXPRATE_BL_OFF + 4]) == thumb_bl(ROM_BASE + EXPRATE_BL_OFF, MATH_MIN), \
+        "atk23_getexp's BL MathMin is not at %#x -- re-derive" % (ROM_BASE + EXPRATE_BL_OFF)
 
     # 5. splice data + code
     rom[INJECT_FILE_OFF + off_characters:INJECT_FILE_OFF + off_characters + len(characters)] = characters
@@ -816,8 +829,7 @@ def main():
     rom[INJECT_FILE_OFF + off_wild_meta:INJECT_FILE_OFF + off_wild_meta + len(wild_meta)] = wild_meta
     rom[INJECT_FILE_OFF + off_roster_roots:INJECT_FILE_OFF + off_roster_roots + len(roster_roots)] = roster_roots
     rom[INJECT_FILE_OFF + off_mart_ptrs:INJECT_FILE_OFF + off_mart_ptrs + len(mart_blob)] = mart_blob
-    # roster display: record 6 -> Roster (callback, label, icon), case 6 -> append,
-    # order loops' VarGet -> the gating wrapper
+    # START record 6 -> Extras (callback, label, icon), case 6 -> append
     struct.pack_into("<IIHB", rom, START_RECORD6_OFF, roster_cb, roster_text,
                      ROSTER_ICON_GFX, ROSTER_ICON_FRAME)
     icon_sheet = roster_icon_sheet(rom)
@@ -825,9 +837,11 @@ def main():
     struct.pack_into("<IH", rom, START_ICON_SHEET_OFF, ROM_BASE + START_ICON_FILE_OFF,
                      (START_ICON_FRAMES + 1) * 0x200)
     rom[START_CASE6_OFF] = START_CASE6_APPEND
-    struct.pack_into("<I", rom, START_VARGET_LIT, roster_varget)
-    print(f"roster display: START record 6 -> Roster (cb {roster_cb:#010x}), case 6 -> append, "
-          f"VarGet literal -> {roster_varget:#010x}; roots {len(roster_roots)} B @ {addr(off_roster_roots):#010x}")
+    print(f"roster display: START record 6 -> Extras (cb {roster_cb:#010x}), case 6 -> append; "
+          f"roots {len(roster_roots)} B @ {addr(off_roster_roots):#010x}")
+    rom[EXPRATE_BL_OFF:EXPRATE_BL_OFF + 4] = thumb_bl(ROM_BASE + EXPRATE_BL_OFF, exprate_min & ~1)
+    print(f"EXP rate: atk23_getexp BL MathMin @ {ROM_BASE + EXPRATE_BL_OFF:#x} -> CM_ExpRateMin {exprate_min:#010x}"
+          + (" (CM_NO_EXPRATE control: the rate is ignored)" if os.environ.get("CM_NO_EXPRATE") == "1" else ""))
     rom[INJECT_FILE_OFF + off_code:INJECT_FILE_OFF + off_code + len(code)] = code
     rom[INJECT_FILE_OFF + off_optin:INJECT_FILE_OFF + off_optin + len(optin_blob)] = optin_blob
 

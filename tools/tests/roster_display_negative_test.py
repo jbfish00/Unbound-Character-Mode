@@ -39,11 +39,11 @@ CHECKS = {
     "empty": "characters with zero roots in-ROM ==",
     "record": "START record 6 callback/label",
     "icon": "record 6 icon = build_patch's",
-    "label": "its label reads 'Roster'",
+    "label": "its label reads 'Extras'",
     "sheet": "START icon sheet = stock 10 frames",
     "case6": "builder case 6 -> append",
     "varget": "the order loops' VarGet literal",
-    "wrapper": "compiled wrapper carries",
+    "exprate": "compiled callback opens the EXP rate chooser",
     "callback": "compiled callback stops the handler's fade",
 }
 
@@ -156,7 +156,7 @@ def main():
         def mission_cb(d):
             struct.pack_into("<I", d, bp.START_RECORD6_OFF, 0x0801D769)   # the Mission Log callback
         case("7 record 6's callback put back to the stock one", mission_cb, "record",
-             also_pass=("icon", "case6", "varget"))
+             also_pass=("icon", "case6", "varget", "exprate"))
 
         def bend_icon(d):
             d[bp.START_RECORD6_OFF + 10] ^= 0x01
@@ -165,24 +165,24 @@ def main():
         def bend_label(d):
             t = struct.unpack_from("<I", d, bp.START_RECORD6_OFF + 4)[0] - 0x08000000
             d[t] ^= 0x01
-        case("9 the 'Roster' label bent", bend_label, "label", also_pass=("record", "icon"))
+        case("9 the 'Extras' label bent", bend_label, "label", also_pass=("record", "icon"))
 
         def case6_skip(d):
             d[bp.START_CASE6_OFF] = bp.START_CASE6_ORIG
         case("10 builder case 6 back to skip (the row would never show)", case6_skip, "case6",
              also_pass=("record", "varget"))
 
-        def varget_stock(d):
-            struct.pack_into("<I", d, bp.START_VARGET_LIT, bp.START_VARGET_ORIG)
-        case("11 the order loops' literal back to plain VarGet (row shown with CM off)",
-             varget_stock, "varget", also_pass=("case6", "record"))
+        def varget_wrapped(d):
+            struct.pack_into("<I", d, 0xA0C1F4, sym["CM_StartMenuRosterCallback"] | 1)
+        case("11 the order loops' literal no longer the stock VarGet (row gated again)",
+             varget_wrapped, "varget", also_pass=("case6", "record"))
 
-        def wrong_row(d):
-            w = (sym["CM_StartMenuVarGet"] & ~1) - 0x08000000
-            for i in range(w & ~3, (w & ~3) + 0x80, 4):
-                if struct.unpack_from("<I", d, i)[0] == 0x5040:
-                    struct.pack_into("<I", d, i, 0x503F)             # gates Mission Log instead
-        case("12 the wrapper gates the WRONG row (0x503F)", wrong_row, "wrapper",
+        def no_exprate(d):
+            c = (sym["CM_StartMenuRosterCallback"] & ~1) - 0x08000000
+            for i in range(c & ~3, (c & ~3) + 0x200, 4):
+                if struct.unpack_from("<I", d, i)[0] == sym["CM_ExpRateOpen"] | 1:
+                    struct.pack_into("<I", d, i, sym["CM_StartMenuRosterCallback"] | 1)
+        case("12 the callback no longer opens the EXP rate chooser", no_exprate, "exprate",
              also_pass=("varget", "record"))
 
         def no_fade_reset(d):
@@ -191,7 +191,7 @@ def main():
                 if struct.unpack_from("<I", d, i)[0] == 0x08070A85:
                     struct.pack_into("<I", d, i, 0x08070589)         # BeginNormalPaletteFade: a no-op here
         case("13 the callback no longer stops the fade (the black-screen bug)", no_fade_reset,
-             "callback", also_pass=("record", "wrapper"))
+             "callback", also_pass=("record", "exprate"))
 
         def stock_sheet(d):
             struct.pack_into("<IH", d, bp.START_ICON_SHEET_OFF,

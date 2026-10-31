@@ -548,6 +548,11 @@ input can dismiss. CB2 moves only if a submenu is entered.
 
 ## Roster display: a START menu row (2026-09-27): ✅ SHIPPED, LIVE
 
+> **2026-10-30:** record 6 is now **"Extras"** and shown in every save (EXP rate, user: "share the Roster slot").
+> The `VarGet` literal patch at `0x08A0C1F4` and `CM_StartMenuVarGet` are gone (the stock order var `0x5040` reads 0
+> on a fresh game, which the loops treat as the default position). With CM on and a roster, the callback opens a
+> two-row list (Roster / Exp. Rate); otherwise the EXP rate chooser. See "EXP rate" below.
+
 The user chose a START menu option, asking for the "cheapest and least
 intrusive" way. Unbound's START menu is **its own graphical icon bar**, not
 CFRU's `start_menu.c` and not vanilla. FireRed's vanilla action table
@@ -748,3 +753,18 @@ Evidence: verify [X] (2), `verify_artifacts_negative_test.py` +2 cases, live `to
 Evidence: verify [M] (2; rebuilds every list from the base ROM), negative +2 (26/26), live
 `tools/test_harness/run_mart_test.sh` 4/4 (Red at the first Mart lacking his items: stock + Fire/Thunder/Water/Leaf/Oval/Ice
 Stone, photographed in the Buy menu; CM off: stock; BL restored: stock, and it fails "merged").
+
+## EXP rate (2026-10-30): ✅ SHIPPED, LIVE
+
+User 2026-10-29 (`../game_plans/EXP_RATE_PLAN.md`): x0.5 / x1 / x1.5 / x2 / x3, every save. `src/exp_rate.c`.
+
+| what | addr | notes |
+|---|---|---|
+| multiply site | BL `0x089E2006` in CFRU `atk23_getexp` | was `MathMin 0x08A13BF0` (r0 = cap `0x190640` from pool `0x089E2184`, r1 = award); byte-identical to RR's `0x09094A82`. The level-cap path (award 1) jumps to `0x089E200C`, past it |
+| storage | expanded var **`0x51FD`** (EWRAM `0x0203B76E`) | 0 = x1, 1 = x1.5, 2 = x2, 3 = x3, 4 = x0.5. No setvar/addvar/subvar/copyvar/compare/literal hit in the base ROM. NOT `0x51FA`: the "audited-clean" note above predates the opt-in using it as a breadcrumb |
+| control | START record 6 "Extras" | CM on + roster: Roster / Exp. Rate list; else the chooser. Chooser preselects the current rate; A stores, B keeps |
+
+`CM_ExpRateMin` returns `min(cap, min(award, cap) * N / 2)`, never 0. `CM_NO_EXPRATE=1` builds the control (rate
+ignored; its fingerprint's last word is 0). Live: `tools/test_harness/run_exprate_test.sh` 14 cases (Pikachu L5
+active + Caterpie L5 benched vs Magikarp: x1 7/4, x2 14/8, x0.5 3/2, x3 21/12, x1.5 10/6; control + negative;
+7 menu cases incl. a no-row negative). ⚠️ A L50 lead earns only 1 EXP for this KO, too small to tell rates apart.
