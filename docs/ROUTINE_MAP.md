@@ -561,7 +561,7 @@ CFRU's `start_menu.c` and not vanilla. FireRed's vanilla action table
 | what | addr | notes |
 |---|---|---|
 | row record table | `0x08A6D160` | 12 × 16 B `{u32 cb, u32 text, u16 gfxTag, u8 frame, u8, u16 orderVar, u8 inNormal, u8 inAlt}`; refs `0x8A0B510` / `0x8A0B760` / `0x8A0BC30` / `0x8A0BE70` / `0x8A0C1EC` |
-| rows | 0 Pokédex · 1 DexNav · 2 Pokémon List · 3 Cube V3 · 4 Save Game · 5 Mission Log · **6 Costume Box** · 7 Player · 8 Player (link) · 9 Game Settings · 10 Retire · 11 Exit | order vars `0x503A`–`0x5043` (the player can reorder with SELECT) |
+| rows | 0 Pokédex · 1 DexNav · 2 Pokémon List · 3 Cube V3 · 4 Save Game · 5 Mission Log · **6 Costume Box (now Extras)** · 7 Player · 8 Player (link) · 9 Game Settings · 10 Retire · 11 Exit | order vars `0x503A`–`0x5043` (the player can reorder with SELECT) |
 | builder | `0x08A0BA40` | picks the lowest non-`0xFF` order slot each round; jump table at `0x08A0BA80` (9 bytes, cases 0–8) runs a flag condition then `AppendToStartMenuItems`; rows > 8 are appended unconditionally; **case 6 → skip, so Costume Box is DEAD** |
 | order loops | `0x08A0BF5C` / `0x08A0BFFE` | `array[i] = VarGet(rec.orderVar)` if the var is nonzero and the in-normal/in-alt byte is set; both loops read `VarGet` from literal **`0x08A0C1F4`** (its only two users) |
 | close (Exit's) | `0x08A0BD34` | `PlaySE(5)`; count = 0; tear down the bar (`0x08A0B90C`); `ClearPlayerHeldMovementAndUnfreezeEventObjects`; `ScriptContext2_Disable`; `ShowBg(0)`; flash fix-up |
@@ -570,7 +570,7 @@ CFRU's `start_menu.c` and not vanilla. FireRed's vanilla action table
 
 **Patches (verify-then-write in `build_patch.py`):**
 - **record 6, in place:** callback → `CM_StartMenuRosterCallback`, text →
-  `gCMRosterMenuText` ("Roster"), icon → **its own clipboard icon** (`0x27F0`,
+  `gCMRosterMenuText` ("Roster" until 2026-10-30, now "Extras"), icon → **its own clipboard icon** (`0x27F0`,
   frame 10; until 2026-10-03 it borrowed the Pokémon List icon, frame 2). The order var `0x5040` and the flags are untouched.
 - **icon sheet** (2026-10-03): the bar's sprite sheets are `{u32 lz, u16 size,
   u16 tag}` structs read as base `0x08A6D0AC` + `0x6C` (no pointer to the
@@ -585,10 +585,10 @@ CFRU's `start_menu.c` and not vanilla. FireRed's vanilla action table
   the selected icon rises and a taller one covers "SELECT Move".
 - **case-6 byte** `0xA0BA86`: `0x11` (→ `0x08A0BAA2`, skip) → `0x1D` (→
   `0x08A0BABA`, the append path rows 9–11 use).
-- **VarGet literal** `0xA0C1F4` → `CM_StartMenuVarGet`: the real `VarGet`
-  for every var except `0x5040`, which returns `0xFF` (not in the menu) unless
-  CM is on and the character has rows. **With CM off the menu is unchanged**
-  (live: actions 3,4,7,9 either way).
+- ~~**VarGet literal** `0xA0C1F4` → `CM_StartMenuVarGet`~~ **removed 2026-10-30**:
+  it hid record 6 unless CM was on and the character had rows. Extras is now
+  in every save, so the literal stays the stock `VarGet` (verify [R] pins it);
+  the "has a roster" test moved into the callback (`RosterAvailable`).
 
 **Traps (each bit once):**
 - ⭐ **The handler fades to black before calling any row it doesn't know stays
