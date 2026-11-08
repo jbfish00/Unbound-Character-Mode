@@ -399,3 +399,6 @@ non-profit patch.
 
 ## Starter kit (2026-11-07)
 Every new game (Character Mode on or off) starts with the Running Shoes, the Shiny Charm and the Oval Charm. The Motorcycle is not given early: Unbound hands it out in a story scene that would otherwise be skipped. Build 2026-11-07: `build/unbound-cm.gba` sha1 `1aed96eecc49703ff96e5f84fafd20e148d91eb4`, `build/unbound-cm.bps` sha1 `ff1bdf35b10911b8cbb040189047894db2556721` (round trip checked). The kit comes with a new game only; an existing save keeps what it has. On My Boy!, keep the old ROM and save, and load the new ROM under the same file name so the `.sav` carries over.
+
+## Wild-intro roster hint (2026-11-08)
+With Character Mode on, a wild Pokémon off your character's roster says so in its intro ("A wild X appeared! / It is not on your roster."), so you know before you throw a ball that it can't be caught. On-roster Pokémon still say "destined for <NAME>!". Build 2026-11-08: `build/unbound-cm.gba` sha1 `a518cfeac72475d94005abaea22998e5ba81c404`, `build/unbound-cm.bps` sha1 `1fbe4f2494cbaca6b83dafc8b4f95d675fed2408` (round trip checked). Save-compatible: on My Boy!, keep the old ROM and save, and load the new ROM under the same file name so the `.sav` carries over.

@@ -768,3 +768,15 @@ User 2026-10-29 (`../game_plans/EXP_RATE_PLAN.md`): x0.5 / x1 / x1.5 / x2 / x3, 
 ignored; its fingerprint's last word is 0). Live: `tools/test_harness/run_exprate_test.sh` 14 cases (Pikachu L5
 active + Caterpie L5 benched vs Magikarp: x1 7/4, x2 14/8, x0.5 3/2, x3 21/12, x1.5 10/6; control + negative;
 7 menu cases incl. a no-row negative). ⚠️ A L50 lead earns only 1 EXP for this KO, too small to tell rates apart.
+
+## Wild-intro roster hint (2026-11-08, QoL B9): ✅ LIVE
+
+`CharacterMode_MarkedIntro` (behind the marker pool word `0x089BDDC8`): with CM on and a valid wild
+species that is NOT on the character's roster, the intro becomes the shared record
+`MARKER_ADDR + gCharacterCount*64` = `0x09633400`: "A wild X appeared! / It is not on your roster."
+(Same `IsSpeciesAllowedForCharacter` test the catch gate uses.) `CM_NO_OFFROSTER=1` builds the control.
+The marker region grows by 64 B, so the overworld-sprite planner (which reserves it) shifts its
+placements past `0x01633440`; verify replays the planner. Evidence: verify **124**, verify negative
+28/28, in-ROM self-test 78/78 (M3 now expects the record), live `tools/test_harness/run_intro_hint_test.sh`
+**5/5** (Red marker, Leaf off-roster line, CM off, control, negative control; decodes the displayed string).
+Unlike RR, Unbound's marker already reached real battles (seen: "A wild Snorlax appeared, / destined for RED!").

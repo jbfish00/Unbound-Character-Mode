@@ -366,8 +366,19 @@ const u8 *CharacterMode_MarkedIntro(const u8 *src)
     if (id < 1 || id > gCharacterCount)
         return src;
     species = (u16) GetMonData(&gEnemyParty[0], MON_DATA_SPECIES, 0);
-    if (species == SPECIES_NONE || !IsSpeciesAllowedForCharacter(species))
+    if (species == SPECIES_NONE)
         return src;
+    if (!IsSpeciesAllowedForCharacter(species))
+    {
+#ifndef CM_NO_OFFROSTER
+        /* QoL B9 (2026-11-08): say so before the throw. One shared record,
+           appended after the per-character ones; the same test the catch
+           gate uses, so the hint and the refusal agree. */
+        return (const u8 *) (MARKER_ADDR + (u32) gCharacterCount * MARKER_STRIDE);
+#else
+        return src;
+#endif
+    }
     return (const u8 *) (MARKER_ADDR + (u32) (id - 1) * MARKER_STRIDE);
 }
 
@@ -1510,10 +1521,12 @@ void CharacterMode_RunSelfTest(void)
         }
         *(u16 *)(e->raw + 0x20) = 25;
 
-        /* off-roster mon -> untouched */
+        /* off-roster mon -> the shared off-roster line (QoL B9, 2026-11-08;
+           was "untouched"). A CM_NO_OFFROSTER build fails this on purpose. */
         VarSet(VAR_CHARACTER_ID, 1);
         *(u16 *)(e->raw + 0x20) = OFF_ROSTER_SPECIES;
-        r[n++] = CharacterMode_MarkedIntro(plain) == plain;      /* M3 want 1 */
+        r[n++] = CharacterMode_MarkedIntro(plain)
+                 == (const u8 *) (MARKER_ADDR + (u32) gCharacterCount * MARKER_STRIDE); /* M3 want 1 */
 
         /* mode off -> untouched */
         *(u16 *)(e->raw + 0x20) = 25;

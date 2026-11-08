@@ -53,7 +53,7 @@ BUILT = os.environ.get("CM_BUILT_ROM",
 
 # How many checks this layer must run. A deliberate LITERAL -- see
 # tools/tests/cm_tally.py for why this must never be a derived expression.
-EXPECT_CHECKS = 123   # +1: [K] starter kit (QoL C11/C16, 2026-11-07); +4: [E] EXP rate, +1/-1: [R] Extras row (2026-10-30); +1: [A] instant HP bar (QoL A3, 2026-10-28); +1: [A] battle animations off on new games (QoL A3, 2026-10-28); +2: [M] Mart evolution items (2026-10-24); +2: [X] native new-game Exp. Share pinned (2026-10-24); +3: [Q] free move tutors (2026-10-17); +4: [S] 100% roster catch (2026-10-09); +3: [H] lava Surf (2026-10-05); +5: [H] field moves (2026-10-04); +7: [O] the overworld sprite (2026-10-03); +1: [R] Roster's own START icon (2026-10-03); +1: [R] roots-only hint (2026-10-02); +6: [L] the link-trade sweep (2026-09-30); +8: [G] the PC second guard (2026-09-29); +6: [F] the build fingerprints (2026-09-29); +17: [R] the roster display START row (2026-09-27)
+EXPECT_CHECKS = 124   # +1: [B9] off-roster intro record (2026-11-08); +1: [K] starter kit (QoL C11/C16, 2026-11-07); +4: [E] EXP rate, +1/-1: [R] Extras row (2026-10-30); +1: [A] instant HP bar (QoL A3, 2026-10-28); +1: [A] battle animations off on new games (QoL A3, 2026-10-28); +2: [M] Mart evolution items (2026-10-24); +2: [X] native new-game Exp. Share pinned (2026-10-24); +3: [Q] free move tutors (2026-10-17); +4: [S] 100% roster catch (2026-10-09); +3: [H] lava Surf (2026-10-05); +5: [H] field moves (2026-10-04); +7: [O] the overworld sprite (2026-10-03); +1: [R] Roster's own START icon (2026-10-03); +1: [R] roots-only hint (2026-10-02); +6: [L] the link-trade sweep (2026-09-30); +8: [G] the PC second guard (2026-09-29); +6: [F] the build fingerprints (2026-09-29); +17: [R] the roster display START row (2026-09-27)
                      # +21: the PC-exit sweep, 5 checks x 4 sites + the tail census (2026-09-10)
 
 failures = []
@@ -156,7 +156,7 @@ def main():
     win("givemon veneer", bp.GIVEMON_VENEER_FILE_OFF, 8)
     win("gSpecials[0x1B6]", bp.SPECIAL_1B6_FILE_OFF, 4)
     win("marker pool word", bp.CM_MARKER_POOL_FILE_OFF, 4)
-    win("marker strings", bp.CM_MARKER_FILE_OFF, n_chars * bp.CM_MARKER_STRIDE)
+    win("marker strings", bp.CM_MARKER_FILE_OFF, (n_chars + 1) * bp.CM_MARKER_STRIDE)
     win("trade special sweep", trade_hook.SPECIAL_SWEEP_FILE_OFF, 4)
     win("trade inline site", trade_hook.INLINE_SITE_OFF,
         len(trade_hook.INLINE_ORIG))
@@ -303,7 +303,7 @@ def main():
     for label, off, ln in (("sprite pointer table", bp.CM_SPRITE_PTRS_FILE_OFF, spr_ptr_len),
                            ("sprite blobs", bp.CM_SPRITE_BLOBS_FILE_OFF, spr_len),
                            ("marker strings", bp.CM_MARKER_FILE_OFF,
-                            n_chars * bp.CM_MARKER_STRIDE)):
+                            (n_chars + 1) * bp.CM_MARKER_STRIDE)):
         seg = orig[off:off + ln]
         check("the %s region was 0xFF in the base ROM" % label,
               all(b == 0xFF for b in seg),
@@ -373,8 +373,16 @@ def main():
 
     # ---- 5. marker strings: one terminated slot per character -----------
     mk = rom[bp.CM_MARKER_FILE_OFF:
-             bp.CM_MARKER_FILE_OFF + n_chars * bp.CM_MARKER_STRIDE]
-    unterminated = [i for i in range(n_chars)
+             bp.CM_MARKER_FILE_OFF + (n_chars + 1) * bp.CM_MARKER_STRIDE]
+    # QoL B9 (2026-11-08): record n_chars is the shared off-roster line,
+    # "A wild {FD06} appeared!\nIt is not on your roster.{FB}" (literal bytes).
+    _off_want = bytes.fromhex("bb00ebdde0d800fd0600d5e4e4d9d5e6d9d8abfe"
+                              "c3e800dde700e2e3e800e3e200ede3e9e600e6e3e7e8d9e6adfbff")
+    check("the off-roster record (after the last character) reads "
+          "'A wild X appeared! / It is not on your roster.'",
+          mk[n_chars * bp.CM_MARKER_STRIDE:
+             n_chars * bp.CM_MARKER_STRIDE + len(_off_want)] == _off_want)
+    unterminated = [i for i in range(n_chars + 1)
                     if 0xFF not in mk[i * bp.CM_MARKER_STRIDE:
                                       (i + 1) * bp.CM_MARKER_STRIDE]]
     check("every marker slot is 0xFF-terminated",
@@ -664,7 +672,7 @@ def main():
         _fp_wm = open(os.path.join(CM, "wild_species_meta.bin"), "rb").read()
         check(f"[F] compiled MARKER_STRIDE={_fp_mstride} == the injector's "
               f"{bp.CM_MARKER_STRIDE}, and x{n_chars} == marker_strings.bin ({len(_fp_mk)} B)",
-              _fp_mstride == bp.CM_MARKER_STRIDE and _fp_mstride * n_chars == len(_fp_mk))
+              _fp_mstride == bp.CM_MARKER_STRIDE and _fp_mstride * (n_chars + 1) == len(_fp_mk))
         check(f"[F] compiled WILD_META_COUNT={_fp_wcount} x compiled "
               f"sizeof(WildSpeciesMetaBin)={_fp_wsize} == wild_species_meta.bin "
               f"({len(_fp_wm)} B) -- a stale count reads past the table or refuses real species",

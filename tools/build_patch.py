@@ -93,7 +93,7 @@ CM_SPRITE_BLOBS_FILE_OFF = 0x015FC800
 
 # Encounter marker (../game_plans/rowe_parity.md §3). Also inside the 344 KB
 # 0xFF run above, past the sprite blobs (which end ~file 0x0161FBC8).
-# 208*64 = 13,312 B.
+# (208+1)*64 = 13,376 B (the last record is the QoL B9 off-roster line).
 CM_MARKER_FILE_OFF = 0x01630000
 CM_MARKER_STRIDE   = 64
 # Unbound's battle-message code was relocated to high ROM, and the relocated
@@ -315,7 +315,7 @@ def ow_reserved_ranges(n_chars):
     return [
         (INJECT_FILE_OFF, INJECT_FILE_OFF + INJECT_BLOCK_LEN),
         (CM_SPRITE_PTRS_FILE_OFF, CM_SPRITE_BLOBS_FILE_OFF + sblobs_len),
-        (CM_MARKER_FILE_OFF, CM_MARKER_FILE_OFF + n_chars * CM_MARKER_STRIDE),
+        (CM_MARKER_FILE_OFF, CM_MARKER_FILE_OFF + (n_chars + 1) * CM_MARKER_STRIDE),  # + B9 off-roster
         (START_ICON_FILE_OFF, START_ICON_FILE_END),
         (GIVEMON_VENEER_FILE_OFF, GIVEMON_VENEER_FILE_OFF + 8),
     ]
@@ -589,6 +589,7 @@ def main():
     run(["arm-none-eabi-gcc", "-c", "-g", "-mthumb", "-mcpu=arm7tdmi", "-mtune=arm7tdmi",
          "-O2", "-ffreestanding", "-fno-builtin", "-mlong-calls", "-Wall", "-Wextra",
          f"-DMARKER_ADDR={ROM_BASE + CM_MARKER_FILE_OFF:#x}",
+         *(["-DCM_NO_OFFROSTER"] if os.environ.get("CM_NO_OFFROSTER") == "1" else []),
          f"-DMAX_WILD_FAMILY_ROOTS={max_wild_roots}",
          f"-DTEST_HIDDEN_ID={test_hidden_id}", f"-DTEST_SHOWN_ID={test_shown_id}",
          f"-DTEST_LEGEND_CHAR_ID={test_legend_id}",
@@ -881,9 +882,10 @@ def main():
     # --- encounter marker: strings + the pool-word hook ---
     with open(os.path.join(CM_DIR, "marker_strings.bin"), "rb") as _f:
         marker_blob = _f.read()
-    assert len(marker_blob) == n_chars * CM_MARKER_STRIDE, (
+    # + 1: the shared off-roster line (QoL B9, 2026-11-08) is record n_chars.
+    assert len(marker_blob) == (n_chars + 1) * CM_MARKER_STRIDE, (
         f"marker_strings.bin is {len(marker_blob)} B, expected "
-        f"{n_chars * CM_MARKER_STRIDE} for {n_chars} characters "
+        f"{(n_chars + 1) * CM_MARKER_STRIDE} for {n_chars} characters + 1 "
         f"-- re-run emit_marker_strings.py")
     assert all(b == 0xFF for b in
                rom[CM_MARKER_FILE_OFF:CM_MARKER_FILE_OFF + len(marker_blob)]), \
