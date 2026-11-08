@@ -110,6 +110,7 @@ PartyHasMonWithFieldMovePotential = 0x08A00A64 | 1;
 SetPartyMonFieldSelectionActions  = 0x08A032F4 | 1;
 CheckBagHasItem = 0x08099F40 | 1;
 AddBagItem      = 0x0809A084 | 1;
+ResetTrainerTowerResults = 0x0815EE0C | 1;   /* QoL C11/C16: NewGameInitData's last call (vanilla FireRed) */
 RemoveBagItem   = 0x0809A1D8 | 1;
 sPartyMenuInternal = 0x0203B09C;
 gMapHeader         = 0x02036DFC;

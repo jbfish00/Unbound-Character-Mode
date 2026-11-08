@@ -53,7 +53,7 @@ BUILT = os.environ.get("CM_BUILT_ROM",
 
 # How many checks this layer must run. A deliberate LITERAL -- see
 # tools/tests/cm_tally.py for why this must never be a derived expression.
-EXPECT_CHECKS = 122   # +4: [E] EXP rate, +1/-1: [R] Extras row (2026-10-30); +1: [A] instant HP bar (QoL A3, 2026-10-28); +1: [A] battle animations off on new games (QoL A3, 2026-10-28); +2: [M] Mart evolution items (2026-10-24); +2: [X] native new-game Exp. Share pinned (2026-10-24); +3: [Q] free move tutors (2026-10-17); +4: [S] 100% roster catch (2026-10-09); +3: [H] lava Surf (2026-10-05); +5: [H] field moves (2026-10-04); +7: [O] the overworld sprite (2026-10-03); +1: [R] Roster's own START icon (2026-10-03); +1: [R] roots-only hint (2026-10-02); +6: [L] the link-trade sweep (2026-09-30); +8: [G] the PC second guard (2026-09-29); +6: [F] the build fingerprints (2026-09-29); +17: [R] the roster display START row (2026-09-27)
+EXPECT_CHECKS = 123   # +1: [K] starter kit (QoL C11/C16, 2026-11-07); +4: [E] EXP rate, +1/-1: [R] Extras row (2026-10-30); +1: [A] instant HP bar (QoL A3, 2026-10-28); +1: [A] battle animations off on new games (QoL A3, 2026-10-28); +2: [M] Mart evolution items (2026-10-24); +2: [X] native new-game Exp. Share pinned (2026-10-24); +3: [Q] free move tutors (2026-10-17); +4: [S] 100% roster catch (2026-10-09); +3: [H] lava Surf (2026-10-05); +5: [H] field moves (2026-10-04); +7: [O] the overworld sprite (2026-10-03); +1: [R] Roster's own START icon (2026-10-03); +1: [R] roots-only hint (2026-10-02); +6: [L] the link-trade sweep (2026-09-30); +8: [G] the PC second guard (2026-09-29); +6: [F] the build fingerprints (2026-09-29); +17: [R] the roster display START row (2026-09-27)
                      # +21: the PC-exit sweep, 5 checks x 4 sites + the tail census (2026-09-10)
 
 failures = []
@@ -222,6 +222,8 @@ def main():
     # QoL A1 Mart evolution items (2026-10-24): the pokemart BL and its CheckHeap+16 trampoline ([M] below)
     win("pokemart BL", bp.MART_SITE_FILE_OFF, 4)
     win("mart trampoline (CheckHeap+16)", bp.MART_TRAMPOLINE_FILE_OFF, 8)
+    win("NewGameInitData BL (starter kit)", bp.KIT_SITE_FILE_OFF, 4)
+    win("starter kit trampoline (CheckHeap+24)", bp.KIT_TRAMPOLINE_FILE_OFF, 8)
     win("SetDefaultOptions' +0x15 value (QoL A3)", 0x5499C, 1)
     win("HP bar scale (QoL A3)", bp.HPBAR_SCALE_SITE[0] - _B, 2)
     win("HP bar toAdd (QoL A3)", bp.HPBAR_TOADD_SITE[0] - _B, 6)
@@ -999,6 +1001,14 @@ def main():
           and rom[_mt:_mt + 8] == struct.pack("<HHI", 0x4B00, 0x4718, _msym["CharacterMode_CreatePokemartMenu"] | 1)
           and orig[bp.MART_SITE_FILE_OFF:bp.MART_SITE_FILE_OFF + 4] == bp.thumb_bl(bp.ROM_BASE + bp.MART_SITE_FILE_OFF, bp.CREATE_POKEMART_MENU)
           and orig[_mt:_mt + 8] == bp.MART_TRAMPOLINE_ORIG)
+
+    _kt = bp.KIT_TRAMPOLINE_FILE_OFF
+    check("[K] starter kit (QoL C11/C16 2026-11-07): NewGameInitData's last BL -> CheckHeap+24 trampoline -> "
+          "CharacterMode_NewGameKit (base: BL ResetTrainerTowerResults; CheckHeap's dead bytes)",
+          rom[bp.KIT_SITE_FILE_OFF:bp.KIT_SITE_FILE_OFF + 4] == bp.thumb_bl(bp.ROM_BASE + bp.KIT_SITE_FILE_OFF, bp.ROM_BASE + _kt)
+          and rom[_kt:_kt + 8] == struct.pack("<HHI", 0x4B00, 0x4718, _syms["CharacterMode_NewGameKit"] | 1)
+          and orig[bp.KIT_SITE_FILE_OFF:bp.KIT_SITE_FILE_OFF + 4] == bp.thumb_bl(bp.ROM_BASE + bp.KIT_SITE_FILE_OFF, bp.RESET_TRAINER_TOWER)
+          and orig[_kt:_kt + 8] == bp.KIT_TRAMPOLINE_ORIG)
 
     # ---- X. party-wide Exp. Share with CM off: native, pinned (2026-10-24) ----------------------------------------
     # Unbound's new-game init script (traced live: ScrCmd_setflag, script 0x09E70DB0) runs a straight line of setflags

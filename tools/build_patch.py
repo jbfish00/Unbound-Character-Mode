@@ -225,6 +225,13 @@ MART_SITE_FILE_OFF = 0x06C3B2
 CREATE_POKEMART_MENU = 0x0809C164
 MART_TRAMPOLINE_FILE_OFF = 0x002BFC
 MART_TRAMPOLINE_ORIG = bytes.fromhex("95ff0028" "08d0e468")
+# QoL C11/C16 starter kit (2026-11-07, src/character_mode.c CharacterMode_NewGameKit): NewGameInitData's last BL
+# (ResetTrainerTowerResults, vanilla FireRed 0x08054B3E) -> CheckHeap+24 (the routine's last 8 dead bytes, after +0/+8/+16;
+# RR's new-game hook uses the same slot) -> the shim. CM_NO_STARTKIT=1 builds the control (BL and bytes untouched).
+KIT_SITE_FILE_OFF = 0x054B3E
+RESET_TRAINER_TOWER = 0x0815EE0C
+KIT_TRAMPOLINE_FILE_OFF = 0x002C04
+KIT_TRAMPOLINE_ORIG = bytes.fromhex("28688442f4d10120")
 EVO_TABLE_FILE_OFF = 0x19F3A7A          # gEvolutionTable (6 code literals point here), 16 x 8 B per species
 EVO_STRIDE = 128
 # CFRU methods whose param is an item: ITEM 7, HOLD_ITEM_NIGHT 24, HOLD_ITEM_DAY 25,
@@ -973,6 +980,18 @@ def main():
         rom[_ms:_ms + 4] = thumb_bl(ROM_BASE + _ms, ROM_BASE + _mt)
         print(f"mart evolution items: ScrCmd_pokemart BL -> {ROM_BASE + _mt:#x} (CheckHeap+16) -> "
               f"{syms['CharacterMode_CreatePokemartMenu'] | 1:#010x}")
+
+    # 6a-kit. QoL C11/C16 starter kit: NewGameInitData's last BL -> CheckHeap+24 -> CharacterMode_NewGameKit
+    _ks, _kt = KIT_SITE_FILE_OFF, KIT_TRAMPOLINE_FILE_OFF
+    assert bytes(rom[_ks:_ks + 4]) == thumb_bl(ROM_BASE + _ks, RESET_TRAINER_TOWER), \
+        "NewGameInitData's BL ResetTrainerTowerResults is not at %#x -- re-derive" % (ROM_BASE + _ks)
+    assert bytes(rom[_kt:_kt + 8]) == KIT_TRAMPOLINE_ORIG and _kt % 4 == 0, \
+        "CheckHeap+24 is not the dead routine's bytes -- re-derive"
+    if os.environ.get("CM_NO_STARTKIT") != "1":
+        rom[_kt:_kt + 8] = struct.pack("<HHI", 0x4B00, 0x4718, syms["CharacterMode_NewGameKit"] | 1)
+        rom[_ks:_ks + 4] = thumb_bl(ROM_BASE + _ks, ROM_BASE + _kt)
+        print(f"starter kit: NewGameInitData BL -> {ROM_BASE + _kt:#x} (CheckHeap+24) -> "
+              f"{syms['CharacterMode_NewGameKit'] | 1:#010x}")
 
     # 6b. entry trampoline: ldr r1,[pc,#0]; bx r1; .word hook|1
     tramp = struct.pack("<HHI", 0x4900, 0x4708, gmtp_hook | 1)

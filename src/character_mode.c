@@ -2061,3 +2061,27 @@ void CharacterMode_CreatePokemartMenu(const u16 *items)
     }
     CreatePokemartMenu(items);
 }
+
+
+/* ------------------------------------------------------------ starter kit (QoL C11 + C16, 2026-11-07)
+ * Every new game, Character Mode on or off. NewGameInitData's last call (bl ResetTrainerTowerResults at 0x08054B3E,
+ * vanilla FireRed, after ClearBag and the map-flag reset) goes through the CheckHeap+24 trampoline to here (RR does
+ * the same for its new-game Exp. Share). It makes that call, then gives:
+ *   - Running Shoes: FLAG_SYS_B_DASH 0x82F (the id Unbound's own scripts set, 11 sites);
+ *   - the Shiny (633) and Oval (632) Charms: Unbound's CFRU code asks the bag for both (CheckBagHasItem(633) at
+ *     0x089C4122; (632) at 0x089D464E and 0x09EC5D2E).
+ * NOT the bike: Unbound's is the story Motorcycle (360), handed out in a scene that branches on `checkitem 360`
+ * (0x09EA680A) and would skip the rest of that scene. Control: CM_NO_STARTKIT=1 leaves the BL alone. */
+u8 CheckBagHasItem(u16 itemId, u16 count);
+u8 AddBagItem(u16 itemId, u16 count);
+void ResetTrainerTowerResults(void);
+
+void CharacterMode_NewGameKit(void)
+{
+    ResetTrainerTowerResults();
+    FlagSet(0x82F);
+    if (!CheckBagHasItem(633, 1))
+        AddBagItem(633, 1);
+    if (!CheckBagHasItem(632, 1))
+        AddBagItem(632, 1);
+}
