@@ -396,3 +396,6 @@ nothing is renumbered.
 Pokémon Unbound by Skeli789 and team. Complete FireRed Upgrade (CFRU) engine by
 Skeli789 et al. Character rosters compiled from Bulbapedia. This is a fan-made,
 non-profit patch.
+
+## Starter kit (2026-11-07)
+Every new game (Character Mode on or off) starts with the Running Shoes, the Shiny Charm and the Oval Charm. The Motorcycle is not given early: Unbound hands it out in a story scene that would otherwise be skipped. Build 2026-11-07: `build/unbound-cm.gba` sha1 `1aed96eecc49703ff96e5f84fafd20e148d91eb4`, `build/unbound-cm.bps` sha1 `ff1bdf35b10911b8cbb040189047894db2556721` (round trip checked). The kit comes with a new game only; an existing save keeps what it has. On My Boy!, keep the old ROM and save, and load the new ROM under the same file name so the `.sav` carries over.
