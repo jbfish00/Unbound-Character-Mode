@@ -63,14 +63,14 @@ if battle neg $CTL 2 $(want $G0 4) $(want $G1 4); then bad "NEGATIVE CONTROL: CM
 else ok "negative control: CM_NO_EXPRATE fails the x2 amounts (want FAIL)"; fi
 
 export EXTRAS_INPUT=$(sym Extras_HandleInput) RATE_INPUT=$(sym ExpRate_HandleInput) ROSTER_INPUT=$(sym RosterMenu_HandleInput)
-export MGBA_HEADLESS_DEBUGGER=1 CM_CHAR=10
+export MGBA_HEADLESS_DEBUGGER=1 CM_CHAR=10 WANT_EXTRAS=0 NO_HURT_CHECK=1    # no Pokemon in the checkpoint: no Heal / PC rows (run_extras_test.sh covers them)
 menu() {  # label rom mode start_rate extras_keys list_keys want_next want_rate checks
     log=/tmp/ub_er_ui_$1.log
     MODE=$3 START_RATE=$4 EXTRAS_KEYS=$5 LIST_KEYS=$6 WANT_NEXT=$7 WANT_RATE=$8 CM_EXPECT_CHECKS=$9 SHOTS=build/exprate_$1 \
         timeout 240 "$MGBA" --script tools/mgba_scripts/cm_exprate_menu_test.lua "$2" > "$log" 2>&1
     grep -aq "HARNESS RESULT: PASS" "$log"
 }
-if menu off_down2 $ROM off 0 "" "DOWN,DOWN,A" rate 2 5; then ok "CM off: Extras opens the chooser, x1 DOWN DOWN A -> x2"
+if menu off_down2 $ROM off 0 "" "DOWN,DOWN,A" rate 2 5; then ok "CM off, no Pokemon yet: Extras opens the chooser, x1 DOWN DOWN A -> x2"
 else bad "CM off chooser (/tmp/ub_er_ui_off_down2.log)"; fi
 if menu on_up $ROM on 0 "DOWN,A" "UP,A" rate 4 6; then ok "CM on: Extras > Exp. Rate, x1 UP A -> x0.5"
 else bad "CM on chooser (/tmp/ub_er_ui_on_up.log)"; fi

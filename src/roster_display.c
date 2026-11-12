@@ -370,16 +370,46 @@ static u8 RosterAvailable(void)
     return id >= 1 && id <= NUM_CHARACTERS && gRosterRoots[(u32) (id - 1) * 2 + 1] != 0;
 }
 
-/* The Extras list (Character Mode on): Roster / Exp. Rate. A opens the row's
- * screen, B gives the field back. */
+/* The Extras list. Rows: Roster (Character Mode on with a roster), Exp. Rate, and since 2026-11-11 (QoL round 2
+ * item 3, user: heal + PC anywhere as a START row, every save, no limit) Heal party and PC once the player has a
+ * Pokemon. A opens the row, B gives the field back. Heal and PC hand the (already frozen) field to a small script
+ * that runs the game's own specials: 0 = HealPlayerParty, 0x3C = the storage system (what the PC script runs).
+ * CM_NO_EXTRAS (control, test ROMs): no Heal / PC rows. */
 #define EXTRAS_ROSTER  0
 #define EXTRAS_EXPRATE 1
+#define EXTRAS_HEAL    2
+#define EXTRAS_PC      3
 #define tExtrasList data[0]
 #define tExtrasWin  data[1]
-static const struct WindowTemplate sExtrasWindow TEXT = { 0, 1, 1, 9, 4, 15, 1 };
-static const struct ListMenuItem sExtrasItems[2] TEXT = {
-    { sText_Roster, EXTRAS_ROSTER }, { gCMExpRateText, EXTRAS_EXPRATE },
+#define ScriptContext1_SetupScript ((void (*)(const u8 *)) 0x08069AE5)
+#define gPlayerPartyCount (*(volatile u8 *) 0x02024029)
+static const u8 sText_Heal[] TEXT = { 0xC2, 0xD9, 0xD5, 0xE0, 0x00, 0xE4, 0xD5, 0xE6, 0xE8, 0xED, EOS };    /* "Heal party" */
+static const u8 sText_PC[] TEXT = { 0xCA, 0xBD, EOS };                                                  /* "PC" */
+static const u8 sText_Healed[] TEXT = { 0xD3, 0xE3, 0xE9, 0xE6, 0x00, 0xE4, 0xD5, 0xE6, 0xE8, 0xED, 0x00, 0xEB, 0xD5, 0xE7,
+                                        0x00, 0xDC, 0xD9, 0xD5, 0xE0, 0xD9, 0xD8, 0xAD, EOS };      /* "Your party was healed." */
+/* special HealPlayerParty; message; waitmessage; waitbuttonpress; closemessage; releaseall; end */
+const struct __attribute__((packed)) { u8 a[4]; const u8 *text; u8 b[5]; } gCMHealScript TEXT =
+    { { 0x25, 0x00, 0x00, 0x67 }, sText_Healed, { 0x66, 0x6D, 0x68, 0x6B, 0x02 } };
+/* special 0x3C (storage system); nop; waitstate; special 0x1AF (CharacterMode_SweepPartyToPC: the same undo-on-exit
+ * sweep the four vanilla PC scripts got); releaseall; end. The nop keeps this script from matching the 4-byte head
+ * (`special 0x3C; waitstate`) verify_artifacts uses to locate those four PC-exit tails by content. */
+const u8 gCMPcScript[] TEXT = { 0x25, 0x3C, 0x00, 0x00, 0x27, 0x25, 0xAF, 0x01, 0x6B, 0x02 };
+static const struct WindowTemplate sExtrasWindow TEXT = { 0, 1, 1, 11, 8, 15, 1 };
+static const struct ListMenuItem sExtrasAll[4] TEXT = {
+    { sText_Roster, EXTRAS_ROSTER }, { gCMExpRateText, EXTRAS_EXPRATE }, { sText_Heal, EXTRAS_HEAL }, { sText_PC, EXTRAS_PC },
 };
+static const struct ListMenuItem sExtrasNoRoster[3] TEXT = {
+    { gCMExpRateText, EXTRAS_EXPRATE }, { sText_Heal, EXTRAS_HEAL }, { sText_PC, EXTRAS_PC },
+};
+
+static u32 ExtrasHasParty(void)
+{
+#ifdef CM_NO_EXTRAS
+    return 0;
+#else
+    return gPlayerPartyCount != 0;
+#endif
+}
 
 static void Extras_HandleInput(u8 taskId)
 {
@@ -395,6 +425,10 @@ static void Extras_HandleInput(u8 taskId)
         CM_RosterOpen();
     else if (r == EXTRAS_EXPRATE)
         CM_ExpRateOpen();
+    else if (r == EXTRAS_HEAL)
+        ScriptContext1_SetupScript((const u8 *) &gCMHealScript);    /* its releaseall gives the field back */
+    else if (r == EXTRAS_PC)
+        ScriptContext1_SetupScript(gCMPcScript);
     else
         ReleaseField();                 /* B */
 }
@@ -403,6 +437,7 @@ static void CM_ExtrasOpen(void)
 {
     struct ListMenuTemplate t;
     u8 taskId, win;
+    u32 roster = RosterAvailable(), party = ExtrasHasParty();
 
     LoadStdWindowFrameGfx();
     win = AddWindow(&sExtrasWindow);
@@ -410,11 +445,11 @@ static void CM_ExtrasOpen(void)
     taskId = CreateTask(Extras_HandleInput, 3);
     gTasks[taskId].tExtrasWin = win;
 
-    t.items = sExtrasItems;
+    t.items = roster ? sExtrasAll : sExtrasNoRoster;
     t.moveCursorFunc = ListMenuDefaultCursorMoveFunc;
     t.itemPrintFunc = 0;
-    t.totalItems = 2;
-    t.maxShowed = 2;
+    t.totalItems = (roster ? 2 : 1) + (party ? 2 : 0);
+    t.maxShowed = t.totalItems;
     t.windowId = win;
     t.header_X = 0;
     t.item_X = 8;
@@ -449,10 +484,10 @@ u8 CM_StartMenuRosterCallback(void)
     UnboundStartMenuClose();
     ScriptContext2_Enable();
     FreezeEventObjects();
-    if (RosterAvailable())
+    if (RosterAvailable() || ExtrasHasParty())
         CM_ExtrasOpen();
     else
-        CM_ExpRateOpen();
+        CM_ExpRateOpen();               /* the rate chooser alone: open it at once */
     return 1;
 }
 

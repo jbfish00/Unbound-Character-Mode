@@ -611,6 +611,7 @@ def main():
          "-O2", "-ffreestanding", "-fno-builtin", "-mlong-calls", "-Wall", "-Wextra",
          f"-DNUM_CHARACTERS={roots_manifest['characters']}",
          f"-DROSTER_ROOTS_OFF={roots_manifest['roots_offset_bytes']}",
+         *(["-DCM_NO_EXTRAS"] if os.environ.get("CM_NO_EXTRAS") == "1" else []),    # control (heal + PC anywhere, 2026-11-11)
          "-Werror", "-o", roster_obj, os.path.join(ROOT, "src", "roster_display.c")])
 
     # 3. layout: [characters.bin][rosters.bin][names.bin][u16 count][pad]

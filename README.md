@@ -104,12 +104,12 @@ While Character Mode is on:
 ## Seeing your roster in-game
 
 The **START menu** has an **Extras** icon (a clipboard of Poké Balls) in every save.
-With Character Mode on, Extras asks **Roster** or **Exp. Rate**. Roster shows a screen headed with
+Extras lists **Roster** (Character Mode on), **Exp. Rate**, and, once you have a Pokémon, **Heal party** (a free full heal, any time outside battle) and **PC** (the Pokémon storage system, anywhere; 2026-11-11). Roster shows a screen headed with
 your character's name, listing their Pokémon one row per evolution family (the
 first stage is shown, and the whole family counts), with the highlighted
 Pokémon's icon in a box beside the list. Scroll with Up/Down; A or B closes it.
 
-With Character Mode off, Extras opens the EXP rate list (the only other change to
+With Character Mode off and no Pokémon yet, Extras opens the EXP rate list at once (the only other change to
 the START menu; the icon was the unused "Costume Box" slot).
 
 ## Installing

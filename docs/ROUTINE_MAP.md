@@ -754,6 +754,21 @@ Evidence: verify [M] (2; rebuilds every list from the base ROM), negative +2 (26
 `tools/test_harness/run_mart_test.sh` 4/4 (Red at the first Mart lacking his items: stock + Fire/Thunder/Water/Leaf/Oval/Ice
 Stone, photographed in the Buy menu; CM off: stock; BL restored: stock, and it fails "merged").
 
+## Extras: heal + PC anywhere (QoL round 2 item 3, 2026-11-11): ✅ LIVE
+
+User ruling: a START row, not a key item; every save, CM on or off; no heal limit. The Extras list
+(`src/roster_display.c`) is now Roster (CM on with a roster) / Exp. Rate / Heal party / PC (the last two once
+`gPlayerPartyCount != 0`); the rate chooser alone still opens at once. Heal and PC hand the already frozen field to
+`ScriptContext1_SetupScript` (`0x08069AE5`): `gCMHealScript` = `special 0; message; waitmessage; waitbuttonpress;
+closemessage; releaseall; end`, `gCMPcScript` = `special 0x3C; nop; waitstate; special 0x1AF; releaseall; end`.
+`special 0x1AF` is the same undo-on-exit party sweep the four vanilla PC scripts got. The `nop` is deliberate: it keeps
+the script from matching the 4-byte head `verify_artifacts._find_pc_tails` uses to locate those four tails by content.
+`RosterAvailable` is no longer inlined into the START callback (the verifier reads the CM flag literal from it).
+`CM_NO_EXTRAS=1` builds the control. Unbound's own Porta-PC item (368) is untouched.
+Evidence: verify 125, verify negative 28/28, roster negative 16/16, pc_hook negative 8/8, live
+`tools/test_harness/run_extras_test.sh` 6/6 (heal and PC with CM on and off, control, negative; the Lua gives a
+Pikachu first because the free-roam checkpoint has no Pokemon) and `run_exprate_test.sh` 14/14.
+
 ## EXP rate (2026-10-30): ✅ SHIPPED, LIVE
 
 User 2026-10-29 (`../game_plans/EXP_RATE_PLAN.md`): x0.5 / x1 / x1.5 / x2 / x3, every save. `src/exp_rate.c`.

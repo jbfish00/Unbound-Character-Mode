@@ -53,7 +53,7 @@ BUILT = os.environ.get("CM_BUILT_ROM",
 
 # How many checks this layer must run. A deliberate LITERAL -- see
 # tools/tests/cm_tally.py for why this must never be a derived expression.
-EXPECT_CHECKS = 124   # +1: [B9] off-roster intro record (2026-11-08); +1: [K] starter kit (QoL C11/C16, 2026-11-07); +4: [E] EXP rate, +1/-1: [R] Extras row (2026-10-30); +1: [A] instant HP bar (QoL A3, 2026-10-28); +1: [A] battle animations off on new games (QoL A3, 2026-10-28); +2: [M] Mart evolution items (2026-10-24); +2: [X] native new-game Exp. Share pinned (2026-10-24); +3: [Q] free move tutors (2026-10-17); +4: [S] 100% roster catch (2026-10-09); +3: [H] lava Surf (2026-10-05); +5: [H] field moves (2026-10-04); +7: [O] the overworld sprite (2026-10-03); +1: [R] Roster's own START icon (2026-10-03); +1: [R] roots-only hint (2026-10-02); +6: [L] the link-trade sweep (2026-09-30); +8: [G] the PC second guard (2026-09-29); +6: [F] the build fingerprints (2026-09-29); +17: [R] the roster display START row (2026-09-27)
+EXPECT_CHECKS = 125   # +1: [R] Extras heal + PC scripts (2026-11-11); +1: [B9] off-roster intro record (2026-11-08); +1: [K] starter kit (QoL C11/C16, 2026-11-07); +4: [E] EXP rate, +1/-1: [R] Extras row (2026-10-30); +1: [A] instant HP bar (QoL A3, 2026-10-28); +1: [A] battle animations off on new games (QoL A3, 2026-10-28); +2: [M] Mart evolution items (2026-10-24); +2: [X] native new-game Exp. Share pinned (2026-10-24); +3: [Q] free move tutors (2026-10-17); +4: [S] 100% roster catch (2026-10-09); +3: [H] lava Surf (2026-10-05); +5: [H] field moves (2026-10-04); +7: [O] the overworld sprite (2026-10-03); +1: [R] Roster's own START icon (2026-10-03); +1: [R] roots-only hint (2026-10-02); +6: [L] the link-trade sweep (2026-09-30); +8: [G] the PC second guard (2026-09-29); +6: [F] the build fingerprints (2026-09-29); +17: [R] the roster display START row (2026-09-27)
                      # +21: the PC-exit sweep, 5 checks x 4 sites + the tail census (2026-09-10)
 
 failures = []
@@ -614,9 +614,17 @@ def main():
     _cl = {struct.unpack_from("<I", rom, i)[0] for i in range(_co & ~3, _next & ~3, 4)}
     check("[R] compiled callback stops the handler's fade and closes via Unbound's own routine",
           {0x08070A85, 0x08A0BD35} <= _cl, str(sorted(hex(x) for x in _cl if x > 0x08000000)[:8]))
-    check("[R] compiled callback opens the EXP rate chooser (no roster to show) and reads the CM flag",
-          (_sym.get("CM_ExpRateOpen", -2) | 1) in _cl and 0x18F8 in _cl,
+    # 2026-11-11: RosterAvailable (the CM flag read) is its own function now that Extras also has Heal party / PC
+    _ro = (_sym["RosterAvailable"] & ~1) - 0x08000000
+    _rl = {struct.unpack_from("<I", rom, i)[0] for i in range(_ro & ~3, _co & ~3, 4)}
+    check("[R] compiled callback opens the EXP rate chooser (no roster to show); RosterAvailable reads the CM flag",
+          (_sym.get("CM_ExpRateOpen", -2) | 1) in _cl and 0x18F8 in _rl and _ro < _co,
           str(sorted(hex(x) for x in _cl)[:12]))
+    _hs, _ps = (_sym["gCMHealScript"] & ~1) - 0x08000000, (_sym["gCMPcScript"] & ~1) - 0x08000000
+    check("[R] Extras scripts: heal = special 0; message; waitmessage; waitbuttonpress; closemessage; releaseall; end. "
+          "PC = special 0x3C; nop; waitstate; special 0x1AF (the party sweep); releaseall; end",
+          bytes(rom[_hs:_hs + 4]) == bytes.fromhex("25000067") and bytes(rom[_hs + 8:_hs + 13]) == bytes.fromhex("666d686b02")
+          and bytes(rom[_ps:_ps + 10]) == bytes.fromhex("253c00002725af016b02"))
 
     # ---- [E] EXP rate (2026-10-30, src/exp_rate.c) -----------------------
     _eb = bp.EXPRATE_BL_OFF

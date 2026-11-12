@@ -24,6 +24,13 @@ local function keylist(s)
     return t
 end
 local EXTRAS_KEYS, LIST_KEYS = keylist(os.getenv("EXTRAS_KEYS")), keylist(os.getenv("LIST_KEYS"))
+-- 2026-11-11 (heal + PC anywhere): the checkpoint has a party, so Extras lists Heal party / PC in every save and the
+-- list opens with CM off too (WANT_EXTRAS=0: the CM_NO_EXTRAS control, where CM off still opens the chooser at once).
+-- WANT_NEXT = heal: the lead (set to 1 HP + poison first) is at full HP with no status; pc: the storage special ran.
+local WANT_EXTRAS = (os.getenv("WANT_EXTRAS") or "1") == "1"
+local PARTY = 0x02024284
+local pcHits = 0
+emu:setBreakpoint(function() pcHits = pcHits + 1 end, 0x0808C6A8)      -- ShowPokemonStorageSystemPC (special 0x3C)
 
 local FLAG_BYTE, VAR_CHAR, VAR_RATE = 0x0203B373, 0x0203B76C, 0x0203B76E
 local NUM_ITEMS, ACTIONS, CURSOR = 0x020370F5, 0x020370F6, 0x020370F4
@@ -66,11 +73,19 @@ callbacks:add("frame", function()
     if holdKey and f >= holdUntil then emu:clearKey(holdKey); holdKey = nil end
     if step == "load" and f == 3 then
         emu:loadStateFile(STATE); step, at = "preset", f
+    elseif step == "preset" and f - at == 30 and os.getenv("GIVE_MON") == "1" and not t.gave then
+        -- the checkpoint has no Pokemon: queue `givemon Pikachu L20; end` through the shipped debug CB1, then go on
+        local sc = string.char(0x79, 25, 0, 20, 0, 0) .. string.rep("\0", 9) .. string.char(0x02)
+        for i = 1, #sc do emu:write8(0x0203FD00 + i - 1, sc:byte(i)) end
+        emu:write32(0x0203B764, 0x0203FD00); emu:write32(0x030030F0, tonumber(os.getenv("QUEUE_CB1")))
+        t.gave = true; at = f + 60            -- re-enter this step 90 frames from now
     elseif step == "preset" and f - at == 30 then
         local b = emu:read8(FLAG_BYTE)
         if MODE == "off" then emu:write8(FLAG_BYTE, b & ~1)
         else emu:write8(FLAG_BYTE, b | 1); emu:write16(VAR_CHAR, CM_CHAR) end
         emu:write16(VAR_RATE, START_RATE)
+        emu:write16(PARTY + 0x56, 1); emu:write32(PARTY + 0x50, 8)      -- the lead: 1 HP, poisoned
+        t.hurt = emu:read16(PARTY + 0x56) == 1 and emu:read16(PARTY + 0x58) > 1
         hold(K.START, 15); step, at = "menu", f
     elseif step == "menu" and f - at == 90 then
         t.row = has6(); shot("start")
@@ -84,7 +99,7 @@ callbacks:add("frame", function()
     elseif step == "opened" and f - at == 60 then
         t.extras = task(EXTRAS) ~= nil; t.rate = task(RATE) ~= nil
         shot("opened"); ki = 1
-        if MODE == "on" and t.extras then step, at = "extras", f
+        if t.extras then step, at = "extras", f
         elseif t.rate then step, at = "list", f; ki = 1
         else step = "done" end
     elseif step == "extras" and (f - at) % 30 == 0 then
@@ -93,10 +108,19 @@ callbacks:add("frame", function()
             t.extrasGone = task(EXTRAS) == nil
             t.next = task(RATE) and "rate" or task(ROSTER) and "roster" or "field"
             shot("after_extras")
-            if t.next == "rate" then step, at, ki = "list", f, 1
+            if WANT_NEXT == "heal" or WANT_NEXT == "pc" then step, at = "script", f
+            elseif t.next == "rate" then step, at, ki = "list", f, 1
             elseif t.next == "roster" then step, at = "close_roster", f
             else step, at = "walk", f end
         end
+    elseif step == "script" then          -- the heal message / the PC menu is up: read the outcome, then close it
+        if f - at == 150 then
+            local healed = emu:read16(PARTY + 0x56) == emu:read16(PARTY + 0x58) and emu:read32(PARTY + 0x50) == 0
+            t.next = (WANT_NEXT == "heal" and healed and pcHits == 0) and "heal" or (WANT_NEXT == "pc" and pcHits == 1 and not healed) and "pc" or "field"
+            shot("script")
+            hold(WANT_NEXT == "heal" and K.A or K.B, 8)
+        elseif f - at == 210 then hold(K.B, 8)
+        elseif f - at == 270 then step, at = "walk", f end
     elseif step == "close_roster" then
         if task(ROSTER) == nil then step, at = "walk", f
         elseif f - at > 600 then step = "done"
@@ -125,11 +149,14 @@ callbacks:add("frame", function()
         local rate = emu:read16(VAR_RATE)
         console:log(("mode=%s start=%d rate=%d next=%s"):format(MODE, START_RATE, rate, tostring(t.next)))
         check("START contains the Extras row (action 6)", t.row == true)
-        if MODE == "on" then
+        if MODE == "on" or WANT_EXTRAS then
             check("A on it opened the Extras list (not the chooser)", t.extras == true and t.rate == false)
             check("after EXTRAS_KEYS the list is gone and " .. WANT_NEXT .. " opened", t.extrasGone == true and t.next == WANT_NEXT, t.next)
         else
-            check("CM off: A on it opened the rate chooser straight away", t.rate == true and t.extras == false)
+            check("CM off, no Heal / PC rows: A on it opened the rate chooser straight away", t.rate == true and t.extras == false)
+        end
+        if WANT_NEXT ~= "heal" and os.getenv("NO_HURT_CHECK") ~= "1" then
+            check("nothing healed the lead (1 HP, poisoned)", t.hurt == true and emu:read16(PARTY + 0x56) == 1 and emu:read32(PARTY + 0x50) == 8)
         end
         if WANT_NEXT == "rate" then
             check("the chooser closed", t.rateGone == true)
