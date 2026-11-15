@@ -42,6 +42,25 @@ if HPBAR then
     end, 0x08049FD8)
 end
 
+-- WANT_FULL=1|0 (2026-11-14, user: bars low and red at battle start): right after MoveBattleBarGraphically's
+-- CalcBarFilledPixels (0x0804A116, Unbound's own hook entry: r0 = filled pixels, r6 = battler) every HEALTH_BAR draw at
+-- full HP (old == max, received 0) must be 48/48, and the run must include a max HP < 48 mon (the L2 Magikarp).
+local FULL = os.getenv("WANT_FULL"); if FULL == "" then FULL = nil end
+local fullDraws, fullBad, fullSmall = 0, 0, 0
+if FULL then
+    emu:setBreakpoint(function()
+        local b = emu:read32(emu:read32(0x02024018) + 12) + (emu:readRegister("r6") & 0xFF) * 20
+        local mx, old, rcv = emu:read32(b + 4), emu:read32(b + 8), emu:read32(b + 12)
+        if old ~= mx or rcv ~= 0 or mx == 0 then return end
+        fullDraws = fullDraws + 1
+        if mx < 48 then fullSmall = fullSmall + 1 end
+        if emu:readRegister("r0") & 0xFF ~= 48 then
+            fullBad = fullBad + 1
+            console:log(string.format("EXPSHARE full-HP bar drawn with %d/48 px (max HP %d)", emu:readRegister("r0") & 0xFF, mx))
+        end
+    end, 0x0804A116)
+end
+
 -- party EXP. ⚠️ Unbound's party mons are NOT encrypted and the substructure
 -- order is fixed: Growth sits at +32 in plain text (species u16, item u16, exp
 -- u32). Measured 2026-10-24 by dumping a fresh givemon Pikachu L50: +32 = 25,
@@ -115,6 +134,12 @@ callbacks:add("frame", function()
             console:log(string.format("EXPSHARE HP bar: %d frames of MoveBattleBar calls over %d updates", hpFrames, hpUpdates))
             if HPBAR == "1" then check("instant HP bar: at most 4 frames per update", hpUpdates > 0 and hpFrames <= 4 * hpUpdates)
             else check("animated HP bar: more than 4 frames per update", hpUpdates > 0 and hpFrames > 4 * hpUpdates) end
+        end
+        if FULL then
+            console:log(string.format("EXPSHARE HP bar full draws: %d (%d with max HP < 48), %d not full", fullDraws, fullSmall, fullBad))
+            check("a full-HP bar with max HP < 48 was drawn", fullSmall > 0)
+            if FULL == "1" then check("full-HP bars drawn full", fullBad == 0)
+            else check("full-HP bars drawn short (old patch)", fullBad > 0) end
         end
         local want = tonumber(os.getenv("CM_EXPECT_CHECKS") or "3")
         local ran = passes + #fails

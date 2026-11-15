@@ -225,7 +225,7 @@ def main():
     win("NewGameInitData BL (starter kit)", bp.KIT_SITE_FILE_OFF, 4)
     win("starter kit trampoline (CheckHeap+24)", bp.KIT_TRAMPOLINE_FILE_OFF, 8)
     win("SetDefaultOptions' +0x15 value (QoL A3)", 0x5499C, 1)
-    win("HP bar scale (QoL A3)", bp.HPBAR_SCALE_SITE[0] - _B, 2)
+    win("HP bar fixed-point step (2026-11-14)", bp.HPBAR_QSTEP_SITE[0] - _B, 4)
     win("HP bar toAdd (QoL A3)", bp.HPBAR_TOADD_SITE[0] - _B, 6)
     check("no two declared windows overlap",
           all(not (a[1] < b[1] + b[2] and b[1] < a[1] + a[2])
@@ -963,10 +963,11 @@ def main():
     # ---- A. new games start with battle animations off (QoL A3, 2026-10-28) ----------------------------------------
     check("[A] SetDefaultOptions stores +0x15 = 0xFD (Unbound's own bits + battle scene off; base: movs r0,#0xF9)",
           bytes(orig[0x5499A:0x549A0]) == bytes.fromhex("4042f9205075") and bytes(rom[0x5499A:0x549A0]) == bytes.fromhex("4042fd205075"))
-    check("[A] instant HP bar: CFRU's MoveBattleBar tail passes CalcNewBarValue scale 0 and toAdd 255 "
-          "(base: movs r4,#6 and the max-HP/48 call)",
+    check("[A] instant HP bar (fixed 2026-11-14): CFRU's MoveBattleBar tail keeps scale 6 and passes toAdd 255; "
+          "CalcNewBarValue's fixed-point step (max HP < 48) is a whole bar (base: the max-HP/48 call, bl __divsi3)",
           all(bytes(orig[a - bp.ROM_BASE:a - bp.ROM_BASE + len(o)]) == o and bytes(rom[a - bp.ROM_BASE:a - bp.ROM_BASE + len(n)]) == n
-              for a, o, n in (bp.HPBAR_SCALE_SITE, bp.HPBAR_TOADD_SITE)))
+              for a, o, n in bp.HPBAR_SITES)
+          and bytes(rom[0x9A35C4:0x9A35C6]) == bytes.fromhex("0624"))
 
     # ---- Q. free move tutors (QoL 2026-10-17) --------------------------------------------------------------------
     _B = bp.ROM_BASE

@@ -90,7 +90,7 @@ While Character Mode is on:
   Proven live on a fresh new game with Character Mode declined (`tools/test_harness/run_expshare_test.sh`).
 - **Battle animations off by default** (Character Mode on or off, 2026-10-28): a game with no save starts with battle
   animations off. Options turns them back on; an existing save keeps its own setting.
-- **Instant HP bar** (every save, 2026-10-28): the HP bar jumps straight to its new value in battle.
+- **Instant HP bar** (every save, 2026-10-28; fixed 2026-11-14): the HP bar jumps straight to its new value in battle; a Pokémon with under 48 max HP no longer starts a battle with a nearly empty red bar.
 - **EXP rate** (every save, Character Mode on or off, 2026-10-30): START, then **Extras** (the clipboard icon), then
   **Exp. Rate** picks how much EXP battles give: x0.5, x1, x1.5, x2 or x3. The cursor starts on the current rate; B
   keeps it. An older save starts at x1. With Character Mode off, Extras opens the rate list straight away.
@@ -402,3 +402,6 @@ Every new game (Character Mode on or off) starts with the Running Shoes, the Shi
 
 ## Wild-intro roster hint (2026-11-08)
 With Character Mode on, a wild Pokémon off your character's roster says so in its intro ("A wild X appeared! / It is not on your roster."), so you know before you throw a ball that it can't be caught. On-roster Pokémon still say "destined for <NAME>!". Build 2026-11-08: `build/unbound-cm.gba` sha1 `a518cfeac72475d94005abaea22998e5ba81c404`, `build/unbound-cm.bps` sha1 `1fbe4f2494cbaca6b83dafc8b4f95d675fed2408` (round trip checked). Save-compatible: on My Boy!, keep the old ROM and save, and load the new ROM under the same file name so the `.sav` carries over.
+
+### Fix: instant HP bar drew low-max-HP bars red (2026-11-14)
+The 2026-10-28 instant HP bar drew any Pokémon with under 48 max HP (most early-game Pokémon) as a nearly empty red bar at the start of a battle, and after every hit. The bar is now drawn at its real value and is still instant. Build 2026-11-14: `build/unbound-cm.gba` sha1 `14397f042d793820881ad585c5e2e50b5f902133`, `build/unbound-cm.bps` sha1 `ca03b08318276b83dc01fdca8b4fcbc8bf10190d` (round trip checked; differs from the old patch in 5 bytes). Save-compatible: on My Boy!, keep the old ROM and save, and load the new ROM under the same file name so the `.sav` carries over.

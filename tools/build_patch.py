@@ -433,13 +433,18 @@ def anim_default(rom):
     return {"battle_anims_off_default": 1}
 
 
-# QoL A3 instant HP bar (2026-10-28): Unbound has no HP-bar option (its battle options: Effects, Difficulty, Exp. Gain,
-# Item Restrictions, Fast Messages, Type Icons). FireRed's MoveBattleBar (0x08049FD8) jumps at 0x0804A00C into CFRU's
-# 0x089A35C4, which passes CalcNewBarValue scale 6 (`movs r4,#6`) and a toAdd from 0x089B315C (max HP / 48, rounded up).
-# Scale 0 keeps every bar on the integer path (no 1/48-of-a-bar steps below 48 max HP) and toAdd 255 replaces the call
-# (`movs r4,#255; nop; nop`; the push/pop around it stay): the bar settles in 1-3 frames. CM_NO_INSTANTHP=1: the control.
-HPBAR_SCALE_SITE = (0x089A35C4, bytes.fromhex("0624"), bytes.fromhex("0024"))
+# QoL A3 instant HP bar (2026-10-28, fixed 2026-11-14): Unbound has no HP-bar option (its battle options: Effects,
+# Difficulty, Exp. Gain, Item Restrictions, Fast Messages, Type Icons). FireRed's MoveBattleBar (0x08049FD8) jumps at
+# 0x0804A00C into CFRU's 0x089A35C4, which passes CalcNewBarValue scale 6 (`movs r4,#6`) and a toAdd from 0x089B315C
+# (max HP / 48, rounded up), then returns to FireRed's own CalcNewBarValue. toAdd 255 replaces the call (`movs r4,#255;
+# nop; nop`; the push/pop around it stay). The scale STAYS 6: FireRed's MoveBattleBarGraphically/CalcBarFilledPixels
+# reads currValue as Q24.8 when max HP < 48, so the 10-28 "scale 0" drew every max-HP<48 bar as one red pixel at battle
+# start (user report 2026-11-14). Instead CalcNewBarValue's fixed-point step Q(max)/48 is a whole bar (`bl __divsi3` ->
+# two `movs r0,r0`). CM_NO_INSTANTHP=1: the control; CM_OLD_HPBAR=1: the 10-28 patch (the red-bar control).
+HPBAR_SCALE_SITE = (0x089A35C4, bytes.fromhex("0624"), bytes.fromhex("0024"))     # CM_OLD_HPBAR control only
 HPBAR_TOADD_SITE = (0x089A35CC, bytes.fromhex("0ff0c6fd041c"), bytes.fromhex("ff24c046c046"))
+HPBAR_QSTEP_SITE = (0x0804A364, bytes.fromhex("99f158fe"), bytes.fromhex("00000000"))
+HPBAR_SITES = (HPBAR_TOADD_SITE, HPBAR_QSTEP_SITE)                                 # what the shipping build writes
 
 
 # EXP rate (user 2026-10-29, ../game_plans/EXP_RATE_PLAN.md; src/exp_rate.c): CFRU's atk23_getexp clamps the award
@@ -453,7 +458,8 @@ VAR_EXP_RATE = 0x51FD
 def instant_hp(rom):
     if os.environ.get("CM_NO_INSTANTHP") == "1":
         return {}
-    for a, old, new in (HPBAR_SCALE_SITE, HPBAR_TOADD_SITE):
+    sites = (HPBAR_SCALE_SITE, HPBAR_TOADD_SITE) if os.environ.get("CM_OLD_HPBAR") == "1" else HPBAR_SITES
+    for a, old, new in sites:
         o = a - ROM_BASE
         assert bytes(rom[o:o + len(old)]) == old, "%08X holds %s, want %s" % (a, bytes(rom[o:o + len(old)]).hex(), old.hex())
         rom[o:o + len(new)] = new
