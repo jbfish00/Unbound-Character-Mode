@@ -9,7 +9,6 @@ ROM=${ROM:-build/unbound-cm.gba}; SITE=${SITE:-0x5499C}; BASE=${BASE:-0xF9}
 [ -f "$ROM" ] || { echo "build first: python3 tools/build_patch.py"; exit 1; }
 CTL=/tmp/cm_anim_ctl_$$.gba
 python3 -c "import sys; d=bytearray(open(sys.argv[1],'rb').read()); d[int(sys.argv[3],0)]=int(sys.argv[4],0); open(sys.argv[2],'wb').write(d)" "$ROM" "$CTL" "$SITE" "$BASE"
-[ -f tools/mgba_scripts/harness.lua ] || export CM_HARNESS="${CM_HARNESS:-../RadicalRed-Character-Mode/tools/mgba_scripts/harness.lua}"
 EXPECT_CASES=3; pass=0; fail=0
 for c in "$ROM 1 PASS" "$CTL 0 PASS" "$CTL 1 FAIL"; do
     set -- $c
