@@ -23,7 +23,7 @@ Within a family, the stage whose level band best fits the area's rolled level is
 ### Coverage
 
 - **193 selectable characters** documented (15 more are hidden from the character-select screen and are not listed).
-- **93 of 193 have at least one legendary** in their pool.
+- **92 of 193 have at least one legendary** in their pool.
 - **2 have a legendaries-only roster**, so their legendaries repeat: Cogita, Tobias.
 - **No character has an empty pool** — every selectable character can find something of their own in the wild.
 
@@ -46,16 +46,12 @@ Roster encounters **~10%** · legendary **~0%**
 
 | Roster family (~10%) |
 |---|
-| Bulbasaur (L1-15) → Ivysaur (L16-31) → Venusaur (L32-100) |
 | Ekans (L1-21) → Arbok (L22-100) |
 | Zubat (L1-21) → Crobat (L1-100) → Golbat (L22-100) |
 | Abra (L1-15) → Alakazam (L1-100) → Kadabra (L16-100) |
-| Grimer (L1-37) → Muk (L38-100) |
 | Gastly (L1-24) → Gengar (L1-100) → Haunter (L25-100) |
 | Cubone (L1-27) → Marowak (L28-100) → Marowak (L28-100) |
 | Koffing (L1-34) → Weezing (L35-100) |
-| Smoochum (L1-29) → Jynx (L30-100) |
-| Magikarp (L1-19) → Gyarados (L20-100) |
 | Misdreavus (L1-100) → Mismagius (L1-100) |
 
 ### Ash — Anime
@@ -133,8 +129,6 @@ Roster encounters **~10%** · legendary **~1%**
 | Charmander (L1-15) → Charmeleon (L16-35) → Charizard (L36-100) |
 | Clefairy (L1-100) → Clefable (L1-100) → Cleffa (L1-100) |
 | Vulpix (L1-100) → Ninetales (L1-100) |
-| Oddish (L1-20) → Vileplume (L1-100) → Bellossom (L1-100) → Gloom (L21-100) |
-| Paras (L1-23) → Parasect (L24-100) |
 | Meowth (L1-27) → Persian (L28-100) |
 | Mankey (L1-27) → Primeape (L28-100) |
 | Growlithe (L1-100) → Arcanine (L1-100) |
@@ -142,14 +136,9 @@ Roster encounters **~10%** · legendary **~1%**
 | Ponyta (L1-39) → Rapidash (L40-100) |
 | Voltorb (L1-29) → Electrode (L30-100) |
 | Rhyhorn (L1-41) → Rhyperior (L1-100) → Rhydon (L42-100) |
-| Chansey (L1-100) → Blissey (L1-100) → Happiny (L1-100) |
-| Tangela (L1-100) → Tangrowth (L1-100) |
-| Kangaskhan (L1-100) |
-| Mr。　Mime (L1-100) → Mime　Jr。 (L1-100) |
 | Magby (L1-29) → Magmortar (L1-100) → Magmar (L30-100) |
 | Eevee (L1-100) → Vaporeon (L1-100) → Jolteon (L1-100) → Flareon (L1-100) → Espeon (L1-100) → Umbreon (L1-100) → Leafeon (L1-100) → Glaceon (L1-100) → Sylveon (L1-100) |
 | Slugma (L1-29) → Magcargo (L30-100) |
-| Remoraid (L1-24) → Octillery (L25-100) |
 | Houndour (L1-23) → Houndoom (L24-100) |
 | Torkoal (L1-100) |
 | Numel (L1-32) → Camerupt (L33-100) |
@@ -158,7 +147,6 @@ Roster encounters **~10%** · legendary **~1%**
 | Legendary family (~1%, once each) |
 |---|
 | Articuno (L1-100) |
-| Moltres (L1-100) |
 
 ### Blue — Champion
 
@@ -171,29 +159,20 @@ Roster encounters **~10%** · legendary **~1%**
 | Squirtle (L1-15) → Wartortle (L16-35) → Blastoise (L36-100) |
 | Pidgey (L1-17) → Pidgeotto (L18-35) → Pidgeot (L36-100) |
 | Sandshrew (L1-21) → Sandslash (L22-100) |
-| Clefairy (L1-100) → Clefable (L1-100) → Cleffa (L1-100) |
 | Vulpix (L1-100) → Ninetales (L1-100) |
 | Growlithe (L1-100) → Arcanine (L1-100) |
 | Abra (L1-15) → Alakazam (L1-100) → Kadabra (L16-100) |
 | Machop (L1-27) → Machamp (L1-100) → Machoke (L28-100) |
-| Slowpoke (L1-36) → Slowking (L1-100) → Slowbro (L37-100) |
 | Magnemite (L1-29) → Magnezone (L1-100) → Magneton (L30-100) |
 | Shellder (L1-100) → Cloyster (L1-100) |
 | Gastly (L1-24) → Gengar (L1-100) → Haunter (L25-100) |
 | Exeggcute (L1-100) → Exeggutor (L1-100) |
 | Rhyhorn (L1-41) → Rhyperior (L1-100) → Rhydon (L42-100) |
-| Horsea (L1-31) → Kingdra (L1-100) → Seadra (L32-100) |
-| Scyther (L1-100) → Scizor (L1-100) → Kleavor (L1-100) |
-| Elekid (L1-29) → Electivire (L1-100) → Electabuzz (L30-100) |
-| Pinsir (L1-100) |
 | Tauros (L1-100) |
 | Magikarp (L1-19) → Gyarados (L20-100) |
 | Eevee (L1-100) → Vaporeon (L1-100) → Jolteon (L1-100) → Flareon (L1-100) → Espeon (L1-100) → Umbreon (L1-100) → Leafeon (L1-100) → Glaceon (L1-100) → Sylveon (L1-100) |
 | Aerodactyl (L1-100) |
 | Heracross (L1-100) |
-| Swinub (L1-32) → Mamoswine (L1-100) → Piloswine (L33-100) |
-| Houndour (L1-23) → Houndoom (L24-100) |
-| Miltank (L1-100) |
 | Larvitar (L1-29) → Pupitar (L30-47) → Tyranitar (L48-100) |
 
 | Legendary family (~1%, once each) |
@@ -210,22 +189,14 @@ Roster encounters **~10%** · legendary **~0%**
 | Vulpix (L1-100) → Ninetales (L1-100) |
 | Zubat (L1-21) → Crobat (L1-100) → Golbat (L22-100) |
 | Oddish (L1-20) → Vileplume (L1-100) → Bellossom (L1-100) → Gloom (L21-100) |
-| Diglett (L1-25) → Dugtrio (L26-100) |
 | Geodude (L1-24) → Golem (L1-100) → Graveler (L25-100) |
-| Slowpoke (L1-36) → Slowking (L1-100) → Slowbro (L37-100) |
 | Onix (L1-100) → Steelix (L1-100) |
-| Cubone (L1-27) → Marowak (L28-100) → Marowak (L28-100) |
 | Rhyhorn (L1-41) → Rhyperior (L1-100) → Rhydon (L42-100) |
 | Chansey (L1-100) → Blissey (L1-100) → Happiny (L1-100) |
-| Pinsir (L1-100) |
 | Omanyte (L1-39) → Omastar (L40-100) |
 | Kabuto (L1-39) → Kabutops (L40-100) |
 | Aerodactyl (L1-100) |
 | Sudowoodo (L1-100) → Bonsly (L1-100) |
-| Pineco (L1-30) → Forretress (L31-100) |
-| Shuckle (L1-100) |
-| Heracross (L1-100) |
-| Teddiursa (L1-29) → Ursaluna (L1-100) → Ursaring (L30-100) |
 | Larvitar (L1-29) → Pupitar (L30-47) → Tyranitar (L48-100) |
 | Mudkip (L1-15) → Marshtomp (L16-35) → Swampert (L36-100) |
 | Lotad (L1-13) → Ludicolo (L1-100) → Lombre (L14-100) |
@@ -240,23 +211,14 @@ Roster encounters **~10%** · legendary **~0%**
 
 | Roster family (~10%) |
 |---|
-| Squirtle (L1-15) → Wartortle (L16-35) → Blastoise (L36-100) |
 | Clefairy (L1-100) → Clefable (L1-100) → Cleffa (L1-100) |
-| Mankey (L1-27) → Primeape (L28-100) |
 | Poliwag (L1-24) → Poliwrath (L1-100) → Politoed (L1-100) → Poliwhirl (L25-100) |
 | Machop (L1-27) → Machamp (L1-100) → Machoke (L28-100) |
 | Geodude (L1-24) → Golem (L1-100) → Graveler (L25-100) |
-| Slowpoke (L1-36) → Slowking (L1-100) → Slowbro (L37-100) |
-| Grimer (L1-37) → Muk (L38-100) |
 | Shellder (L1-100) → Cloyster (L1-100) |
 | Onix (L1-100) → Steelix (L1-100) |
 | Exeggcute (L1-100) → Exeggutor (L1-100) |
 | Tyrogue (L1-19) → Hitmonlee (L20-100) → Hitmonchan (L20-100) → Hitmontop (L20-100) |
-| Rhyhorn (L1-41) → Rhyperior (L1-100) → Rhydon (L42-100) |
-| Kangaskhan (L1-100) |
-| Snubbull (L1-22) → Granbull (L23-100) |
-| Heracross (L1-100) |
-| Teddiursa (L1-29) → Ursaluna (L1-100) → Ursaring (L30-100) |
 | Makuhita (L1-23) → Hariyama (L24-100) |
 | Riolu (L1-100) → Lucario (L1-100) |
 
@@ -268,18 +230,14 @@ Roster encounters **~10%** · legendary **~0%**
 |---|
 | Bulbasaur (L1-15) → Ivysaur (L16-31) → Venusaur (L32-100) |
 | Clefairy (L1-100) → Clefable (L1-100) → Cleffa (L1-100) |
-| Vulpix (L1-100) → Ninetales (L1-100) |
 | Oddish (L1-20) → Vileplume (L1-100) → Bellossom (L1-100) → Gloom (L21-100) |
 | Paras (L1-23) → Parasect (L24-100) |
 | Bellsprout (L1-20) → Victreebel (L1-100) → Weepinbell (L21-100) |
-| Seel (L1-33) → Dewgong (L34-100) |
 | Exeggcute (L1-100) → Exeggutor (L1-100) |
 | Cubone (L1-27) → Marowak (L28-100) → Marowak (L28-100) |
-| Chansey (L1-100) → Blissey (L1-100) → Happiny (L1-100) |
 | Tangela (L1-100) → Tangrowth (L1-100) |
 | Eevee (L1-100) → Vaporeon (L1-100) → Jolteon (L1-100) → Flareon (L1-100) → Espeon (L1-100) → Umbreon (L1-100) → Leafeon (L1-100) → Glaceon (L1-100) → Sylveon (L1-100) |
 | Hoppip (L1-17) → Skiploom (L18-26) → Jumpluff (L27-100) |
-| Mantine (L1-100) → Mantyke (L1-100) |
 | Seedot (L1-13) → Shiftry (L1-100) → Nuzleaf (L14-100) |
 | Roselia (L1-100) → Budew (L1-100) → Roserade (L1-100) |
 | Lileep (L1-39) → Cradily (L40-100) |
@@ -343,7 +301,6 @@ Roster encounters **~10%** · legendary **~1%**
 | Machop (L1-27) → Machamp (L1-100) → Machoke (L28-100) |
 | Geodude (L1-24) → Golem (L1-100) → Graveler (L25-100) |
 | Shellder (L1-100) → Cloyster (L1-100) |
-| Gastly (L1-24) → Gengar (L1-100) → Haunter (L25-100) |
 | Onix (L1-100) → Steelix (L1-100) |
 | Krabby (L1-27) → Kingler (L28-100) |
 | Exeggcute (L1-100) → Exeggutor (L1-100) |
@@ -351,7 +308,6 @@ Roster encounters **~10%** · legendary **~1%**
 | Koffing (L1-34) → Weezing (L35-100) |
 | Rhyhorn (L1-41) → Rhyperior (L1-100) → Rhydon (L42-100) |
 | Kangaskhan (L1-100) |
-| Tauros (L1-100) |
 | Magikarp (L1-19) → Gyarados (L20-100) |
 | Murkrow (L1-100) → Honchkrow (L1-100) |
 | Gligar (L1-100) → Gliscor (L1-100) |
@@ -365,7 +321,6 @@ Roster encounters **~10%** · legendary **~1%**
 
 | Legendary family (~1%, once each) |
 |---|
-| Moltres (L1-100) |
 | Mewtwo (L1-100) |
 | Guzzlord (L1-100) |
 
@@ -419,28 +374,18 @@ Roster encounters **~10%** · legendary **~1%**
 | Roster family (~10%) |
 |---|
 | Ekans (L1-21) → Arbok (L22-100) |
-| Nidoran♀ (L1-15) → Nidoqueen (L1-100) → Nidorina (L16-100) |
-| Nidoran♂ (L1-15) → Nidoking (L1-100) → Nidorino (L16-100) |
 | Vulpix (L1-100) → Ninetales (L1-100) |
 | Zubat (L1-21) → Crobat (L1-100) → Golbat (L22-100) |
-| Paras (L1-23) → Parasect (L24-100) |
 | Venonat (L1-30) → Venomoth (L31-100) |
 | Tentacool (L1-29) → Tentacruel (L30-100) |
 | Grimer (L1-37) → Muk (L38-100) |
 | Gastly (L1-24) → Gengar (L1-100) → Haunter (L25-100) |
-| Drowzee (L1-25) → Hypno (L26-100) |
 | Voltorb (L1-29) → Electrode (L30-100) |
 | Koffing (L1-34) → Weezing (L35-100) |
 | Rhyhorn (L1-41) → Rhyperior (L1-100) → Rhydon (L42-100) |
-| Tangela (L1-100) → Tangrowth (L1-100) |
 | Scyther (L1-100) → Scizor (L1-100) → Kleavor (L1-100) |
-| Magby (L1-29) → Magmortar (L1-100) → Magmar (L30-100) |
-| Lapras (L1-100) |
 | Spinarak (L1-21) → Ariados (L22-100) |
-| Chinchou (L1-26) → Lanturn (L27-100) |
 | Pineco (L1-30) → Forretress (L31-100) |
-| Gligar (L1-100) → Gliscor (L1-100) |
-| Stantler (L1-100) |
 | Gulpin (L1-25) → Swalot (L26-100) |
 | Stunky (L1-33) → Skuntank (L34-100) |
 | Croagunk (L1-36) → Toxicroak (L37-100) |
@@ -456,18 +401,12 @@ Roster encounters **~10%** · legendary **~1%**
 | Roster family (~10%) |
 |---|
 | Charmander (L1-15) → Charmeleon (L16-35) → Charizard (L36-100) |
-| Growlithe (L1-100) → Arcanine (L1-100) |
-| Onix (L1-100) → Steelix (L1-100) |
 | Exeggcute (L1-100) → Exeggutor (L1-100) |
-| Kangaskhan (L1-100) |
 | Horsea (L1-31) → Kingdra (L1-100) → Seadra (L32-100) |
-| Elekid (L1-29) → Electivire (L1-100) → Electabuzz (L30-100) |
 | Magikarp (L1-19) → Gyarados (L20-100) |
 | Lapras (L1-100) |
 | Aerodactyl (L1-100) |
-| Snorlax (L1-100) → Munchlax (L1-100) |
 | Dratini (L1-29) → Dragonair (L30-54) → Dragonite (L55-100) |
-| Totodile (L1-17) → Croconaw (L18-29) → Feraligatr (L30-100) |
 | Larvitar (L1-29) → Pupitar (L30-47) → Tyranitar (L48-100) |
 | Trapinch (L1-34) → Vibrava (L35-44) → Flygon (L45-100) |
 | Swablu (L1-34) → Altaria (L35-100) |
@@ -497,25 +436,17 @@ Roster encounters **~10%** · legendary **~1%**
 
 ### Lorelei — Elite Four
 
-Roster encounters **~10%** · legendary **~1%**
+Roster encounters **~10%** · legendary **~0%**
 
 | Roster family (~10%) |
 |---|
 | Sandshrew (L1-21) → Sandslash (L22-100) |
-| Jigglypuff (L1-100) → Wigglytuff (L1-100) → Igglybuff (L1-100) |
 | Slowpoke (L1-36) → Slowking (L1-100) → Slowbro (L37-100) |
 | Seel (L1-33) → Dewgong (L34-100) |
 | Shellder (L1-100) → Cloyster (L1-100) |
-| Exeggcute (L1-100) → Exeggutor (L1-100) |
-| Staryu (L1-100) → Starmie (L1-100) |
 | Smoochum (L1-29) → Jynx (L30-100) |
 | Lapras (L1-100) |
-| Omanyte (L1-39) → Omastar (L40-100) |
 | Swinub (L1-32) → Mamoswine (L1-100) → Piloswine (L33-100) |
-
-| Legendary family (~1%, once each) |
-|---|
-| Articuno (L1-100) |
 
 ### Lt. Surge — Gym Leader
 
@@ -525,21 +456,15 @@ Roster encounters **~10%** · legendary **~1%**
 |---|
 | Pikachu (L1-100) → Raichu (L1-100) → Pichu (L1-100) → Raichu (L1-100) |
 | Poliwag (L1-24) → Poliwrath (L1-100) → Politoed (L1-100) → Poliwhirl (L25-100) |
-| Bellsprout (L1-20) → Victreebel (L1-100) → Weepinbell (L21-100) |
 | Magnemite (L1-29) → Magnezone (L1-100) → Magneton (L30-100) |
-| Doduo (L1-30) → Dodrio (L31-100) |
 | Seel (L1-33) → Dewgong (L34-100) |
 | Krabby (L1-27) → Kingler (L28-100) |
 | Voltorb (L1-29) → Electrode (L30-100) |
-| Lickitung (L1-100) → Lickilicky (L1-100) |
-| Tangela (L1-100) → Tangrowth (L1-100) |
 | Horsea (L1-31) → Kingdra (L1-100) → Seadra (L32-100) |
 | Elekid (L1-29) → Electivire (L1-100) → Electabuzz (L30-100) |
 | Eevee (L1-100) → Vaporeon (L1-100) → Jolteon (L1-100) → Flareon (L1-100) → Espeon (L1-100) → Umbreon (L1-100) → Leafeon (L1-100) → Glaceon (L1-100) → Sylveon (L1-100) |
-| Porygon (L1-100) → Porygon2 (L1-100) → PorygonーZ (L1-100) → Wyrdeer (L1-100) |
 | Chinchou (L1-26) → Lanturn (L27-100) |
 | Mareep (L1-14) → Flaaffy (L15-29) → Ampharos (L30-100) |
-| Wooper (L1-19) → Quagsire (L20-100) |
 | Electrike (L1-25) → Manectric (L26-100) |
 | Pachirisu (L1-100) |
 
@@ -555,16 +480,13 @@ Roster encounters **~10%** · legendary **~1%**
 | Roster family (~10%) |
 |---|
 | Squirtle (L1-15) → Wartortle (L16-35) → Blastoise (L36-100) |
-| Nidoran♀ (L1-15) → Nidoqueen (L1-100) → Nidorina (L16-100) |
 | Jigglypuff (L1-100) → Wigglytuff (L1-100) → Igglybuff (L1-100) |
-| Diglett (L1-25) → Dugtrio (L26-100) |
 | Psyduck (L1-32) → Golduck (L33-100) |
 | Poliwag (L1-24) → Poliwrath (L1-100) → Politoed (L1-100) → Poliwhirl (L25-100) |
 | Tentacool (L1-29) → Tentacruel (L30-100) |
 | Slowpoke (L1-36) → Slowking (L1-100) → Slowbro (L37-100) |
 | Seel (L1-33) → Dewgong (L34-100) |
 | Shellder (L1-100) → Cloyster (L1-100) |
-| Exeggcute (L1-100) → Exeggutor (L1-100) |
 | Horsea (L1-31) → Kingdra (L1-100) → Seadra (L32-100) |
 | Goldeen (L1-32) → Seaking (L33-100) |
 | Staryu (L1-100) → Starmie (L1-100) |
@@ -575,9 +497,7 @@ Roster encounters **~10%** · legendary **~1%**
 | Dratini (L1-29) → Dragonair (L30-54) → Dragonite (L55-100) |
 | Chinchou (L1-26) → Lanturn (L27-100) |
 | Togepi (L1-100) → Togetic (L1-100) → Togekiss (L1-100) |
-| Mareep (L1-14) → Flaaffy (L15-29) → Ampharos (L30-100) |
 | Marill (L1-17) → Azurill (L1-100) → Azumarill (L18-100) |
-| Sunkern (L1-100) → Sunflora (L1-100) |
 | Wooper (L1-19) → Quagsire (L20-100) |
 | Corsola (L1-100) |
 | Luvdisc (L1-100) |
@@ -679,17 +599,11 @@ Roster encounters **~10%** · legendary **~1%**
 | Gastly (L1-24) → Gengar (L1-100) → Haunter (L25-100) |
 | Tyrogue (L1-19) → Hitmonlee (L20-100) → Hitmonchan (L20-100) → Hitmontop (L20-100) |
 | Chansey (L1-100) → Blissey (L1-100) → Happiny (L1-100) |
-| Scyther (L1-100) → Scizor (L1-100) → Kleavor (L1-100) |
-| Tauros (L1-100) |
 | Magikarp (L1-19) → Gyarados (L20-100) |
 | Lapras (L1-100) |
 | Eevee (L1-100) → Vaporeon (L1-100) → Jolteon (L1-100) → Flareon (L1-100) → Espeon (L1-100) → Umbreon (L1-100) → Leafeon (L1-100) → Glaceon (L1-100) → Sylveon (L1-100) |
 | Kabuto (L1-39) → Kabutops (L40-100) |
 | Snorlax (L1-100) → Munchlax (L1-100) |
-| Dratini (L1-29) → Dragonair (L30-54) → Dragonite (L55-100) |
-| Chikorita (L1-15) → Bayleef (L16-31) → Meganium (L32-100) |
-| Cyndaquil (L1-13) → Quilava (L14-35) → Typhlosion (L36-100) → Typhlosion (L36-100) |
-| Totodile (L1-17) → Croconaw (L18-29) → Feraligatr (L30-100) |
 
 | Legendary family (~1%, once each) |
 |---|
@@ -697,9 +611,6 @@ Roster encounters **~10%** · legendary **~1%**
 | Zapdos (L1-100) |
 | Moltres (L1-100) |
 | Mewtwo (L1-100) |
-| Raikou (L1-100) |
-| Entei (L1-100) |
-| Suicune (L1-100) |
 
 ### Ritchie — Anime
 
@@ -720,22 +631,16 @@ Roster encounters **~10%** · legendary **~1%**
 
 | Roster family (~10%) |
 |---|
-| Sandshrew (L1-21) → Sandslash (L22-100) |
-| Jigglypuff (L1-100) → Wigglytuff (L1-100) → Igglybuff (L1-100) |
 | Venonat (L1-30) → Venomoth (L31-100) |
 | Abra (L1-15) → Alakazam (L1-100) → Kadabra (L16-100) |
 | Slowpoke (L1-36) → Slowking (L1-100) → Slowbro (L37-100) |
 | Gastly (L1-24) → Gengar (L1-100) → Haunter (L25-100) |
 | Drowzee (L1-25) → Hypno (L26-100) |
 | Exeggcute (L1-100) → Exeggutor (L1-100) |
-| Tyrogue (L1-19) → Hitmonlee (L20-100) → Hitmonchan (L20-100) → Hitmontop (L20-100) |
 | Mr。　Mime (L1-100) → Mime　Jr。 (L1-100) |
 | Scyther (L1-100) → Scizor (L1-100) → Kleavor (L1-100) |
 | Smoochum (L1-29) → Jynx (L30-100) |
 | Eevee (L1-100) → Vaporeon (L1-100) → Jolteon (L1-100) → Flareon (L1-100) → Espeon (L1-100) → Umbreon (L1-100) → Leafeon (L1-100) → Glaceon (L1-100) → Sylveon (L1-100) |
-| Snorlax (L1-100) → Munchlax (L1-100) |
-| Cyndaquil (L1-13) → Quilava (L14-35) → Typhlosion (L36-100) → Typhlosion (L36-100) |
-| Sentret (L1-14) → Furret (L15-100) |
 | Wynaut (L1-14) → Wobbuffet (L15-100) |
 | Ralts (L1-19) → Gallade (L1-100) → Kirlia (L20-29) → Gardevoir (L30-100) |
 | Beldum (L1-19) → Metang (L20-44) → Metagross (L45-100) |
@@ -758,19 +663,11 @@ Roster encounters **~10%** · legendary **~0%**
 |---|
 | Rattata (L1-19) → Raticate (L20-100) |
 | Zubat (L1-21) → Crobat (L1-100) → Golbat (L22-100) |
-| Paras (L1-23) → Parasect (L24-100) |
-| Meowth (L1-27) → Persian (L28-100) |
-| Bellsprout (L1-20) → Victreebel (L1-100) → Weepinbell (L21-100) |
 | Grimer (L1-37) → Muk (L38-100) |
-| Drowzee (L1-25) → Hypno (L26-100) |
 | Voltorb (L1-29) → Electrode (L30-100) |
 | Koffing (L1-34) → Weezing (L35-100) |
 | Magby (L1-29) → Magmortar (L1-100) → Magmar (L30-100) |
-| Misdreavus (L1-100) → Mismagius (L1-100) |
-| Wynaut (L1-14) → Wobbuffet (L15-100) |
-| Remoraid (L1-24) → Octillery (L25-100) |
 | Houndour (L1-23) → Houndoom (L24-100) |
-| Larvitar (L1-29) → Pupitar (L30-47) → Tyranitar (L48-100) |
 
 ### Ariana — Villain
 
@@ -778,18 +675,11 @@ Roster encounters **~10%** · legendary **~0%**
 
 | Roster family (~10%) |
 |---|
-| Rattata (L1-19) → Raticate (L20-100) |
 | Ekans (L1-21) → Arbok (L22-100) |
-| Zubat (L1-21) → Crobat (L1-100) → Golbat (L22-100) |
 | Oddish (L1-20) → Vileplume (L1-100) → Bellossom (L1-100) → Gloom (L21-100) |
-| Bellsprout (L1-20) → Victreebel (L1-100) → Weepinbell (L21-100) |
 | Grimer (L1-37) → Muk (L38-100) |
 | Drowzee (L1-25) → Hypno (L26-100) |
-| Lickitung (L1-100) → Lickilicky (L1-100) |
-| Kabuto (L1-39) → Kabutops (L40-100) |
 | Murkrow (L1-100) → Honchkrow (L1-100) |
-| Sneasel (L1-100) → Weavile (L1-100) |
-| Slugma (L1-29) → Magcargo (L30-100) |
 
 ### Bugsy — Gym Leader
 
@@ -799,19 +689,14 @@ Roster encounters **~10%** · legendary **~0%**
 |---|
 | Caterpie (L1-6) → Metapod (L7-9) → Butterfree (L10-100) |
 | Weedle (L1-6) → Kakuna (L7-9) → Beedrill (L10-100) |
-| Rattata (L1-19) → Raticate (L20-100) |
-| Bellsprout (L1-20) → Victreebel (L1-100) → Weepinbell (L21-100) |
 | Scyther (L1-100) → Scizor (L1-100) → Kleavor (L1-100) |
 | Pinsir (L1-100) |
 | Spinarak (L1-21) → Ariados (L22-100) |
-| Sudowoodo (L1-100) → Bonsly (L1-100) |
 | Yanma (L1-100) → Yanmega (L1-100) |
-| Wooper (L1-19) → Quagsire (L20-100) |
 | Unown (L1-100) |
 | Pineco (L1-30) → Forretress (L31-100) |
 | Shuckle (L1-100) |
 | Heracross (L1-100) |
-| Larvitar (L1-29) → Pupitar (L30-47) → Tyranitar (L48-100) |
 | Nincada (L1-19) → Ninjask (L20-100) → Shedinja (L20-100) |
 | Anorith (L1-39) → Armaldo (L40-100) |
 | Kricketot (L1-9) → Kricketune (L10-100) |
@@ -823,15 +708,10 @@ Roster encounters **~10%** · legendary **~0%**
 
 | Roster family (~10%) |
 |---|
-| Sandshrew (L1-21) → Sandslash (L22-100) |
 | Mankey (L1-27) → Primeape (L28-100) |
 | Poliwag (L1-24) → Poliwrath (L1-100) → Politoed (L1-100) → Poliwhirl (L25-100) |
 | Machop (L1-27) → Machamp (L1-100) → Machoke (L28-100) |
-| Drowzee (L1-25) → Hypno (L26-100) |
 | Tyrogue (L1-19) → Hitmonlee (L20-100) → Hitmonchan (L20-100) → Hitmontop (L20-100) |
-| Mareep (L1-14) → Flaaffy (L15-29) → Ampharos (L30-100) |
-| Snubbull (L1-22) → Granbull (L23-100) |
-| Teddiursa (L1-29) → Ursaluna (L1-100) → Ursaring (L30-100) |
 | Shroomish (L1-22) → Breloom (L23-100) |
 | Meditite (L1-36) → Medicham (L37-100) |
 | Timburr (L1-24) → Conkeldurr (L1-100) → Gurdurr (L25-100) |
@@ -843,15 +723,10 @@ Roster encounters **~10%** · legendary **~0%**
 | Roster family (~10%) |
 |---|
 | Charmander (L1-15) → Charmeleon (L16-35) → Charizard (L36-100) |
-| Nidoran♂ (L1-15) → Nidoking (L1-100) → Nidorino (L16-100) |
-| Growlithe (L1-100) → Arcanine (L1-100) |
-| Rhyhorn (L1-41) → Rhyperior (L1-100) → Rhydon (L42-100) |
 | Horsea (L1-31) → Kingdra (L1-100) → Seadra (L32-100) |
 | Magikarp (L1-19) → Gyarados (L20-100) |
-| Lapras (L1-100) |
 | Aerodactyl (L1-100) |
 | Dratini (L1-29) → Dragonair (L30-54) → Dragonite (L55-100) |
-| Mareep (L1-14) → Flaaffy (L15-29) → Ampharos (L30-100) |
 | Swablu (L1-34) → Altaria (L35-100) |
 | Bagon (L1-29) → Shelgon (L30-49) → Salamence (L50-100) |
 | Gible (L1-23) → Gabite (L24-47) → Garchomp (L48-100) |
@@ -913,7 +788,6 @@ Roster encounters **~10%** · legendary **~1%**
 | Togepi (L1-100) → Togetic (L1-100) → Togekiss (L1-100) |
 | Natu (L1-24) → Xatu (L25-100) |
 | Murkrow (L1-100) → Honchkrow (L1-100) |
-| Gligar (L1-100) → Gliscor (L1-100) |
 | Delibird (L1-100) |
 | Skarmory (L1-100) |
 | Taillow (L1-21) → Swellow (L22-100) |
@@ -923,7 +797,6 @@ Roster encounters **~10%** · legendary **~1%**
 | Legendary family (~1%, once each) |
 |---|
 | Articuno (L1-100) |
-| Zapdos (L1-100) |
 | Lugia (L1-100) |
 
 ### Janine — Gym Leader
@@ -939,13 +812,8 @@ Roster encounters **~10%** · legendary **~0%**
 | Tentacool (L1-29) → Tentacruel (L30-100) |
 | Grimer (L1-37) → Muk (L38-100) |
 | Koffing (L1-34) → Weezing (L35-100) |
-| Eevee (L1-100) → Vaporeon (L1-100) → Jolteon (L1-100) → Flareon (L1-100) → Espeon (L1-100) → Umbreon (L1-100) → Leafeon (L1-100) → Glaceon (L1-100) → Sylveon (L1-100) |
-| Chikorita (L1-15) → Bayleef (L16-31) → Meganium (L32-100) |
 | Spinarak (L1-21) → Ariados (L22-100) |
-| Girafarig (L1-100) |
 | Pineco (L1-30) → Forretress (L31-100) |
-| Gligar (L1-100) → Gliscor (L1-100) |
-| Stantler (L1-100) |
 | Roselia (L1-100) → Budew (L1-100) → Roserade (L1-100) |
 | Skorupi (L1-39) → Drapion (L40-100) |
 | Croagunk (L1-36) → Toxicroak (L37-100) |
@@ -957,18 +825,12 @@ Roster encounters **~10%** · legendary **~1%**
 | Roster family (~10%) |
 |---|
 | Squirtle (L1-15) → Wartortle (L16-35) → Blastoise (L36-100) |
-| Ponyta (L1-39) → Rapidash (L40-100) |
-| Slowpoke (L1-36) → Slowking (L1-100) → Slowbro (L37-100) |
 | Magnemite (L1-29) → Magnezone (L1-100) → Magneton (L30-100) |
 | Onix (L1-100) → Steelix (L1-100) |
-| Scyther (L1-100) → Scizor (L1-100) → Kleavor (L1-100) |
 | Togepi (L1-100) → Togetic (L1-100) → Togekiss (L1-100) |
 | Mareep (L1-14) → Flaaffy (L15-29) → Ampharos (L30-100) |
 | Pineco (L1-30) → Forretress (L31-100) |
-| Corsola (L1-100) |
-| Mantine (L1-100) → Mantyke (L1-100) |
 | Skarmory (L1-100) |
-| Stantler (L1-100) |
 | Mawile (L1-100) |
 | Beldum (L1-19) → Metang (L20-44) → Metagross (L45-100) |
 | Piplup (L1-15) → Prinplup (L16-35) → Empoleon (L36-100) |
@@ -989,15 +851,9 @@ Roster encounters **~10%** · legendary **~0%**
 | Roster family (~10%) |
 |---|
 | Oddish (L1-20) → Vileplume (L1-100) → Bellossom (L1-100) → Gloom (L21-100) |
-| Meowth (L1-27) → Persian (L28-100) |
-| Bellsprout (L1-20) → Victreebel (L1-100) → Weepinbell (L21-100) |
-| Slowpoke (L1-36) → Slowking (L1-100) → Slowbro (L37-100) |
 | Gastly (L1-24) → Gengar (L1-100) → Haunter (L25-100) |
-| Voltorb (L1-29) → Electrode (L30-100) |
-| Magby (L1-29) → Magmortar (L1-100) → Magmar (L30-100) |
 | Eevee (L1-100) → Vaporeon (L1-100) → Jolteon (L1-100) → Flareon (L1-100) → Espeon (L1-100) → Umbreon (L1-100) → Leafeon (L1-100) → Glaceon (L1-100) → Sylveon (L1-100) |
 | Murkrow (L1-100) → Honchkrow (L1-100) |
-| Misdreavus (L1-100) → Mismagius (L1-100) |
 | Sneasel (L1-100) → Weavile (L1-100) |
 | Houndour (L1-23) → Houndoom (L24-100) |
 | Absol (L1-100) |
@@ -1051,17 +907,9 @@ Roster encounters **~10%** · legendary **~1%**
 | Roster family (~10%) |
 |---|
 | Gastly (L1-24) → Gengar (L1-100) → Haunter (L25-100) |
-| Exeggcute (L1-100) → Exeggutor (L1-100) |
-| Cubone (L1-27) → Marowak (L28-100) → Marowak (L28-100) |
-| Lapras (L1-100) |
 | Cyndaquil (L1-13) → Quilava (L14-35) → Typhlosion (L36-100) → Typhlosion (L36-100) |
-| Hoothoot (L1-19) → Noctowl (L20-100) |
-| Spinarak (L1-21) → Ariados (L22-100) |
-| Sudowoodo (L1-100) → Bonsly (L1-100) |
 | Misdreavus (L1-100) → Mismagius (L1-100) |
 | Girafarig (L1-100) |
-| Snubbull (L1-22) → Granbull (L23-100) |
-| Mantine (L1-100) → Mantyke (L1-100) |
 | Sableye (L1-100) |
 | Snorunt (L1-29) → Froslass (L1-100) → Glalie (L30-100) |
 | Duskull (L1-36) → Dusknoir (L1-100) → Dusclops (L37-100) |
@@ -1081,26 +929,19 @@ Roster encounters **~10%** · legendary **~1%**
 
 | Roster family (~10%) |
 |---|
-| Tentacool (L1-29) → Tentacruel (L30-100) |
 | Seel (L1-33) → Dewgong (L34-100) |
 | Shellder (L1-100) → Cloyster (L1-100) |
-| Tyrogue (L1-19) → Hitmonlee (L20-100) → Hitmonchan (L20-100) → Hitmontop (L20-100) |
 | Smoochum (L1-29) → Jynx (L30-100) |
 | Lapras (L1-100) |
-| Wooper (L1-19) → Quagsire (L20-100) |
-| Girafarig (L1-100) |
 | Sneasel (L1-100) → Weavile (L1-100) |
-| Teddiursa (L1-29) → Ursaluna (L1-100) → Ursaring (L30-100) |
 | Swinub (L1-32) → Mamoswine (L1-100) → Piloswine (L33-100) |
 | Delibird (L1-100) |
-| Phanpy (L1-24) → Donphan (L25-100) |
 | Spheal (L1-31) → Sealeo (L32-43) → Walrein (L44-100) |
 | Snorunt (L1-29) → Froslass (L1-100) → Glalie (L30-100) |
 | Snover (L1-39) → Abomasnow (L40-100) |
 
 | Legendary family (~1%, once each) |
 |---|
-| Articuno (L1-100) |
 | Celebi (L1-100) |
 
 ### Silver — Rival
@@ -1122,8 +963,6 @@ Roster encounters **~10%** · legendary **~1%**
 
 | Legendary family (~1%, once each) |
 |---|
-| Mewtwo (L1-100) |
-| Lugia (L1-100) |
 | HoーOh (L1-100) |
 
 ### Whitney — Gym Leader
@@ -1135,21 +974,15 @@ Roster encounters **~10%** · legendary **~0%**
 | Nidoran♀ (L1-15) → Nidoqueen (L1-100) → Nidorina (L16-100) |
 | Clefairy (L1-100) → Clefable (L1-100) → Cleffa (L1-100) |
 | Jigglypuff (L1-100) → Wigglytuff (L1-100) → Igglybuff (L1-100) |
-| Oddish (L1-20) → Vileplume (L1-100) → Bellossom (L1-100) → Gloom (L21-100) |
-| Meowth (L1-27) → Persian (L28-100) |
 | Psyduck (L1-32) → Golduck (L33-100) |
-| Doduo (L1-30) → Dodrio (L31-100) |
 | Lickitung (L1-100) → Lickilicky (L1-100) |
 | Chansey (L1-100) → Blissey (L1-100) → Happiny (L1-100) |
-| Mr。　Mime (L1-100) → Mime　Jr。 (L1-100) |
 | Magby (L1-29) → Magmortar (L1-100) → Magmar (L30-100) |
 | Tauros (L1-100) |
 | Ditto (L1-100) |
 | Aipom (L1-100) → Ambipom (L1-100) |
 | Girafarig (L1-100) |
 | Teddiursa (L1-29) → Ursaluna (L1-100) → Ursaring (L30-100) |
-| Phanpy (L1-24) → Donphan (L25-100) |
-| Stantler (L1-100) |
 | Smeargle (L1-100) |
 | Miltank (L1-100) |
 | Skitty (L1-100) → Delcatty (L1-100) |
@@ -1166,17 +999,10 @@ Roster encounters **~10%** · legendary **~0%**
 | Roster family (~10%) |
 |---|
 | Clefairy (L1-100) → Clefable (L1-100) → Cleffa (L1-100) |
-| Abra (L1-15) → Alakazam (L1-100) → Kadabra (L16-100) |
 | Slowpoke (L1-36) → Slowking (L1-100) → Slowbro (L37-100) |
-| Drowzee (L1-25) → Hypno (L26-100) |
 | Exeggcute (L1-100) → Exeggutor (L1-100) |
-| Chansey (L1-100) → Blissey (L1-100) → Happiny (L1-100) |
 | Smoochum (L1-29) → Jynx (L30-100) |
-| Elekid (L1-29) → Electivire (L1-100) → Electabuzz (L30-100) |
-| Eevee (L1-100) → Vaporeon (L1-100) → Jolteon (L1-100) → Flareon (L1-100) → Espeon (L1-100) → Umbreon (L1-100) → Leafeon (L1-100) → Glaceon (L1-100) → Sylveon (L1-100) |
 | Natu (L1-24) → Xatu (L25-100) |
-| Girafarig (L1-100) |
-| Mantine (L1-100) → Mantyke (L1-100) |
 | Spoink (L1-31) → Grumpig (L32-100) |
 | Ralts (L1-19) → Gallade (L1-100) → Kirlia (L20-29) → Gardevoir (L30-100) |
 | Bronzor (L1-32) → Bronzong (L33-100) |

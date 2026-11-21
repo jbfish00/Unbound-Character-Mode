@@ -17,21 +17,21 @@ are the ones the game accepts — enter them exactly as shown.
 
 | # | Character | Category | Starter | Roster size |
 |---|-----------|----------|---------|-------------|
-| 1 | Red | Protagonist | Pikachu | 93 |
+| 1 | Red | Protagonist | Pikachu | 73 |
 | 2 | Leaf | Protagonist | Eevee | 19 |
-| 3 | Blue | Champion | Pidgey | 77 |
-| 4 | Lance | Champion | Dratini | 49 |
-| 5 | Lorelei | Elite Four | Lapras | 25 |
-| 6 | Bruno | Elite Four | Machop | 47 |
-| 7 | Agatha | Elite Four | Gastly | 27 |
-| 8 | Koga | Elite Four | Koffing | 58 |
-| 9 | Brock | Gym Leader | Onix | 62 |
-| 10 | Misty | Gym Leader | Staryu | 82 |
-| 11 | Lt. Surge | Gym Leader | Pikachu | 57 |
-| 12 | Erika | Gym Leader | Oddish | 61 |
-| 13 | Sabrina | Gym Leader | Abra | 64 |
-| 14 | Blaine | Gym Leader | Growlithe | 62 |
-| 15 | Giovanni | Villain | Rhyhorn | 69 |
+| 3 | Blue | Champion | Pidgey | 55 |
+| 4 | Lance | Champion | Dratini | 36 |
+| 5 | Lorelei | Elite Four | Lapras | 15 |
+| 6 | Bruno | Elite Four | Machop | 27 |
+| 7 | Agatha | Elite Four | Gastly | 18 |
+| 8 | Koga | Elite Four | Koffing | 37 |
+| 9 | Brock | Gym Leader | Onix | 46 |
+| 10 | Misty | Gym Leader | Staryu | 70 |
+| 11 | Lt. Surge | Gym Leader | Pikachu | 42 |
+| 12 | Erika | Gym Leader | Oddish | 52 |
+| 13 | Sabrina | Gym Leader | Abra | 47 |
+| 14 | Blaine | Gym Leader | Growlithe | 45 |
+| 15 | Giovanni | Villain | Rhyhorn | 64 |
 | 16 | Ash | Anime | Pikachu | 145 |
 | 17 | Gary | Anime | Squirtle | 77 |
 | 18 | Ritchie | Anime | Pikachu | 24 |
@@ -45,20 +45,20 @@ are the ones the game accepts — enter them exactly as shown.
 | 22 | Ethan | Protagonist | Cyndaquil | 30 |
 | 23 | Kris | Protagonist | Totodile | 23 |
 | 24 | Lyra | Protagonist | Chikorita | 41 |
-| 25 | Will | Elite Four | Natu | 43 |
-| 26 | Karen | Elite Four | Eevee | 39 |
-| 27 | Janine | Gym Leader | Spinarak | 43 |
-| 28 | Falkner | Gym Leader | Hoothoot | 38 |
-| 29 | Bugsy | Gym Leader | Scyther | 40 |
-| 30 | Whitney | Gym Leader | Miltank | 54 |
-| 31 | Morty | Gym Leader | Gastly | 45 |
-| 32 | Chuck | Gym Leader | Poliwag | 32 |
-| 33 | Jasmine | Gym Leader | Onix | 48 |
-| 34 | Pryce | Gym Leader | Swinub | 37 |
-| 35 | Clair | Gym Leader | Horsea | 34 |
-| 36 | Silver | Rival | Totodile | 33 |
-| 37 | Archer | Villain | Houndour | 34 |
-| 38 | Ariana | Villain | Ekans | 28 |
+| 25 | Will | Elite Four | Natu | 20 |
+| 26 | Karen | Elite Four | Eevee | 24 |
+| 27 | Janine | Gym Leader | Spinarak | 27 |
+| 28 | Falkner | Gym Leader | Hoothoot | 35 |
+| 29 | Bugsy | Gym Leader | Scyther | 28 |
+| 30 | Whitney | Gym Leader | Miltank | 41 |
+| 31 | Morty | Gym Leader | Gastly | 29 |
+| 32 | Chuck | Gym Leader | Poliwag | 20 |
+| 33 | Jasmine | Gym Leader | Onix | 36 |
+| 34 | Pryce | Gym Leader | Swinub | 22 |
+| 35 | Clair | Gym Leader | Horsea | 22 |
+| 36 | Silver | Rival | Totodile | 31 |
+| 37 | Archer | Villain | Houndour | 16 |
+| 38 | Ariana | Villain | Ekans | 12 |
 
 ## Generation 3
 
