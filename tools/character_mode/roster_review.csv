@@ -18,17 +18,13 @@ Acerola,elite4,SPECIES_MIMIKYU,995,Y
 Acerola,elite4,SPECIES_DHELMISE,998,Y
 Acerola,elite4,SPECIES_TAPU_BULU,1004,Y
 Adaman,rival,SPECIES_EEVEE,133,Y
-Agatha,elite4,SPECIES_BULBASAUR,1,Y
 Agatha,elite4,SPECIES_EKANS,23,Y
 Agatha,elite4,SPECIES_ZUBAT,41,Y
 Agatha,elite4,SPECIES_ABRA,63,Y
-Agatha,elite4,SPECIES_GRIMER,88,Y
 Agatha,elite4,SPECIES_GASTLY,92,Y
 Agatha,elite4,SPECIES_CUBONE,104,Y
 Agatha,elite4,SPECIES_KOFFING,109,Y
-Agatha,elite4,SPECIES_MAGIKARP,129,Y
 Agatha,elite4,SPECIES_MISDREAVUS,200,Y
-Agatha,elite4,SPECIES_SMOOCHUM,238,Y
 Akari,protagonist,SPECIES_PICHU,172,Y
 Akari,protagonist,SPECIES_CLEFFA,173,Y
 Akari,protagonist,SPECIES_TURTWIG,440,Y
@@ -78,19 +74,11 @@ Anabel,frontier,SPECIES_MUNCHLAX,499,Y
 Anabel,frontier,SPECIES_RIOLU,500,Y
 Archer,villain,SPECIES_RATTATA,19,Y
 Archer,villain,SPECIES_ZUBAT,41,Y
-Archer,villain,SPECIES_PARAS,46,Y
-Archer,villain,SPECIES_MEOWTH,52,Y
-Archer,villain,SPECIES_BELLSPROUT,69,Y
 Archer,villain,SPECIES_GRIMER,88,Y
-Archer,villain,SPECIES_DROWZEE,96,Y
 Archer,villain,SPECIES_VOLTORB,100,Y
 Archer,villain,SPECIES_KOFFING,109,Y
-Archer,villain,SPECIES_MISDREAVUS,200,Y
-Archer,villain,SPECIES_REMORAID,223,Y
 Archer,villain,SPECIES_HOUNDOUR,228,Y
 Archer,villain,SPECIES_MAGBY,240,Y
-Archer,villain,SPECIES_LARVITAR,246,Y
-Archer,villain,SPECIES_WYNAUT,360,Y
 Archie,villain,SPECIES_ZUBAT,41,Y
 Archie,villain,SPECIES_TENTACOOL,72,Y
 Archie,villain,SPECIES_GRIMER,88,Y
@@ -98,18 +86,11 @@ Archie,villain,SPECIES_POOCHYENA,286,Y
 Archie,villain,SPECIES_CARVANHA,330,Y
 Archie,villain,SPECIES_SPHEAL,341,Y
 Archie,villain,SPECIES_KYOGRE,404,Y
-Ariana,villain,SPECIES_RATTATA,19,Y
 Ariana,villain,SPECIES_EKANS,23,Y
-Ariana,villain,SPECIES_ZUBAT,41,Y
 Ariana,villain,SPECIES_ODDISH,43,Y
-Ariana,villain,SPECIES_BELLSPROUT,69,Y
 Ariana,villain,SPECIES_GRIMER,88,Y
 Ariana,villain,SPECIES_DROWZEE,96,Y
-Ariana,villain,SPECIES_LICKITUNG,108,Y
-Ariana,villain,SPECIES_KABUTO,140,Y
 Ariana,villain,SPECIES_MURKROW,198,Y
-Ariana,villain,SPECIES_SNEASEL,215,Y
-Ariana,villain,SPECIES_SLUGMA,218,Y
 Ash,anime,SPECIES_BULBASAUR,1,Y
 Ash,anime,SPECIES_CHARMANDER,4,Y
 Ash,anime,SPECIES_SQUIRTLE,7,Y
@@ -256,8 +237,6 @@ Birch,professor,SPECIES_TEPIG,551,Y
 Birch,professor,SPECIES_OSHAWOTT,554,Y
 Blaine,gymleader,SPECIES_CHARMANDER,4,Y
 Blaine,gymleader,SPECIES_VULPIX,37,Y
-Blaine,gymleader,SPECIES_ODDISH,43,Y
-Blaine,gymleader,SPECIES_PARAS,46,Y
 Blaine,gymleader,SPECIES_MEOWTH,52,Y
 Blaine,gymleader,SPECIES_MANKEY,56,Y
 Blaine,gymleader,SPECIES_GROWLITHE,58,Y
@@ -265,20 +244,14 @@ Blaine,gymleader,SPECIES_GEODUDE,74,Y
 Blaine,gymleader,SPECIES_PONYTA,77,Y
 Blaine,gymleader,SPECIES_VOLTORB,100,Y
 Blaine,gymleader,SPECIES_RHYHORN,111,Y
-Blaine,gymleader,SPECIES_TANGELA,114,Y
-Blaine,gymleader,SPECIES_KANGASKHAN,115,Y
 Blaine,gymleader,SPECIES_EEVEE,133,Y
 Blaine,gymleader,SPECIES_ARTICUNO,144,Y
-Blaine,gymleader,SPECIES_MOLTRES,146,Y
 Blaine,gymleader,SPECIES_CLEFFA,173,Y
 Blaine,gymleader,SPECIES_SLUGMA,218,Y
-Blaine,gymleader,SPECIES_REMORAID,223,Y
 Blaine,gymleader,SPECIES_HOUNDOUR,228,Y
 Blaine,gymleader,SPECIES_MAGBY,240,Y
 Blaine,gymleader,SPECIES_TORKOAL,321,Y
 Blaine,gymleader,SPECIES_NUMEL,339,Y
-Blaine,gymleader,SPECIES_MIME_JR,492,Y
-Blaine,gymleader,SPECIES_HAPPINY,493,Y
 Blaine,gymleader,SPECIES_ROTOM,532,Y
 Blue,champion,SPECIES_BULBASAUR,1,Y
 Blue,champion,SPECIES_CHARMANDER,4,Y
@@ -289,26 +262,17 @@ Blue,champion,SPECIES_VULPIX,37,Y
 Blue,champion,SPECIES_GROWLITHE,58,Y
 Blue,champion,SPECIES_ABRA,63,Y
 Blue,champion,SPECIES_MACHOP,66,Y
-Blue,champion,SPECIES_SLOWPOKE,79,Y
 Blue,champion,SPECIES_MAGNEMITE,81,Y
 Blue,champion,SPECIES_SHELLDER,90,Y
 Blue,champion,SPECIES_GASTLY,92,Y
 Blue,champion,SPECIES_EXEGGCUTE,102,Y
 Blue,champion,SPECIES_RHYHORN,111,Y
-Blue,champion,SPECIES_HORSEA,116,Y
-Blue,champion,SPECIES_SCYTHER,123,Y
-Blue,champion,SPECIES_PINSIR,127,Y
 Blue,champion,SPECIES_TAUROS,128,Y
 Blue,champion,SPECIES_MAGIKARP,129,Y
 Blue,champion,SPECIES_EEVEE,133,Y
 Blue,champion,SPECIES_AERODACTYL,142,Y
 Blue,champion,SPECIES_ZAPDOS,145,Y
-Blue,champion,SPECIES_CLEFFA,173,Y
 Blue,champion,SPECIES_HERACROSS,214,Y
-Blue,champion,SPECIES_SWINUB,220,Y
-Blue,champion,SPECIES_HOUNDOUR,228,Y
-Blue,champion,SPECIES_ELEKID,239,Y
-Blue,champion,SPECIES_MILTANK,241,Y
 Blue,champion,SPECIES_LARVITAR,246,Y
 Brandon,frontier,SPECIES_ARTICUNO,144,Y
 Brandon,frontier,SPECIES_ZAPDOS,145,Y
@@ -357,21 +321,13 @@ Brendan,protagonist,SPECIES_LATIOS,408,Y
 Brock,gymleader,SPECIES_VULPIX,37,Y
 Brock,gymleader,SPECIES_ZUBAT,41,Y
 Brock,gymleader,SPECIES_ODDISH,43,Y
-Brock,gymleader,SPECIES_DIGLETT,50,Y
 Brock,gymleader,SPECIES_GEODUDE,74,Y
-Brock,gymleader,SPECIES_SLOWPOKE,79,Y
 Brock,gymleader,SPECIES_ONIX,95,Y
-Brock,gymleader,SPECIES_CUBONE,104,Y
 Brock,gymleader,SPECIES_RHYHORN,111,Y
-Brock,gymleader,SPECIES_PINSIR,127,Y
 Brock,gymleader,SPECIES_OMANYTE,138,Y
 Brock,gymleader,SPECIES_KABUTO,140,Y
 Brock,gymleader,SPECIES_AERODACTYL,142,Y
 Brock,gymleader,SPECIES_PICHU,172,Y
-Brock,gymleader,SPECIES_PINECO,204,Y
-Brock,gymleader,SPECIES_SHUCKLE,213,Y
-Brock,gymleader,SPECIES_HERACROSS,214,Y
-Brock,gymleader,SPECIES_TEDDIURSA,216,Y
 Brock,gymleader,SPECIES_LARVITAR,246,Y
 Brock,gymleader,SPECIES_MUDKIP,283,Y
 Brock,gymleader,SPECIES_LOTAD,295,Y
@@ -381,22 +337,13 @@ Brock,gymleader,SPECIES_BONSLY,491,Y
 Brock,gymleader,SPECIES_HAPPINY,493,Y
 Brock,gymleader,SPECIES_CROAGUNK,506,Y
 Brock,gymleader,SPECIES_COMFEY,981,Y
-Bruno,elite4,SPECIES_SQUIRTLE,7,Y
-Bruno,elite4,SPECIES_MANKEY,56,Y
 Bruno,elite4,SPECIES_POLIWAG,60,Y
 Bruno,elite4,SPECIES_MACHOP,66,Y
 Bruno,elite4,SPECIES_GEODUDE,74,Y
-Bruno,elite4,SPECIES_SLOWPOKE,79,Y
-Bruno,elite4,SPECIES_GRIMER,88,Y
 Bruno,elite4,SPECIES_SHELLDER,90,Y
 Bruno,elite4,SPECIES_ONIX,95,Y
 Bruno,elite4,SPECIES_EXEGGCUTE,102,Y
-Bruno,elite4,SPECIES_RHYHORN,111,Y
-Bruno,elite4,SPECIES_KANGASKHAN,115,Y
 Bruno,elite4,SPECIES_CLEFFA,173,Y
-Bruno,elite4,SPECIES_SNUBBULL,209,Y
-Bruno,elite4,SPECIES_HERACROSS,214,Y
-Bruno,elite4,SPECIES_TEDDIURSA,216,Y
 Bruno,elite4,SPECIES_TYROGUE,236,Y
 Bruno,elite4,SPECIES_MAKUHITA,335,Y
 Bruno,elite4,SPECIES_RIOLU,500,Y
@@ -409,23 +356,18 @@ Brycen,gymleader,SPECIES_CUBCHOO,666,Y
 Brycen,gymleader,SPECIES_CRYOGONAL,668,Y
 Bugsy,gymleader,SPECIES_CATERPIE,10,Y
 Bugsy,gymleader,SPECIES_WEEDLE,13,Y
-Bugsy,gymleader,SPECIES_RATTATA,19,Y
-Bugsy,gymleader,SPECIES_BELLSPROUT,69,Y
 Bugsy,gymleader,SPECIES_SCYTHER,123,Y
 Bugsy,gymleader,SPECIES_PINSIR,127,Y
 Bugsy,gymleader,SPECIES_SPINARAK,167,Y
 Bugsy,gymleader,SPECIES_YANMA,193,Y
-Bugsy,gymleader,SPECIES_WOOPER,194,Y
 Bugsy,gymleader,SPECIES_UNOWN,201,Y
 Bugsy,gymleader,SPECIES_PINECO,204,Y
 Bugsy,gymleader,SPECIES_SHUCKLE,213,Y
 Bugsy,gymleader,SPECIES_HERACROSS,214,Y
-Bugsy,gymleader,SPECIES_LARVITAR,246,Y
 Bugsy,gymleader,SPECIES_NINCADA,301,Y
 Bugsy,gymleader,SPECIES_ANORITH,390,Y
 Bugsy,gymleader,SPECIES_KRICKETOT,454,Y
 Bugsy,gymleader,SPECIES_COMBEE,468,Y
-Bugsy,gymleader,SPECIES_BONSLY,491,Y
 Burgh,gymleader,SPECIES_TOGEPI,175,Y
 Burgh,gymleader,SPECIES_HERACROSS,214,Y
 Burgh,gymleader,SPECIES_COMBEE,468,Y
@@ -531,14 +473,9 @@ Chloe,anime,SPECIES_EEVEE,133,Y
 Chloe,anime,SPECIES_ROTOM,532,Y
 Chloe,anime,SPECIES_PIDOVE,572,Y
 Chloe,anime,SPECIES_YAMPER,1127,Y
-Chuck,gymleader,SPECIES_SANDSHREW,27,Y
 Chuck,gymleader,SPECIES_MANKEY,56,Y
 Chuck,gymleader,SPECIES_POLIWAG,60,Y
 Chuck,gymleader,SPECIES_MACHOP,66,Y
-Chuck,gymleader,SPECIES_DROWZEE,96,Y
-Chuck,gymleader,SPECIES_MAREEP,179,Y
-Chuck,gymleader,SPECIES_SNUBBULL,209,Y
-Chuck,gymleader,SPECIES_TEDDIURSA,216,Y
 Chuck,gymleader,SPECIES_TYROGUE,236,Y
 Chuck,gymleader,SPECIES_SHROOMISH,306,Y
 Chuck,gymleader,SPECIES_MEDITITE,356,Y
@@ -555,15 +492,10 @@ Cilan,gymleader,SPECIES_DWEBBLE,610,Y
 Cilan,gymleader,SPECIES_FERROSEED,650,Y
 Cilan,gymleader,SPECIES_STUNFISK,671,Y
 Clair,gymleader,SPECIES_CHARMANDER,4,Y
-Clair,gymleader,SPECIES_NIDORAN_M,32,Y
-Clair,gymleader,SPECIES_GROWLITHE,58,Y
-Clair,gymleader,SPECIES_RHYHORN,111,Y
 Clair,gymleader,SPECIES_HORSEA,116,Y
 Clair,gymleader,SPECIES_MAGIKARP,129,Y
-Clair,gymleader,SPECIES_LAPRAS,131,Y
 Clair,gymleader,SPECIES_AERODACTYL,142,Y
 Clair,gymleader,SPECIES_DRATINI,147,Y
-Clair,gymleader,SPECIES_MAREEP,179,Y
 Clair,gymleader,SPECIES_SWABLU,358,Y
 Clair,gymleader,SPECIES_BAGON,395,Y
 Clair,gymleader,SPECIES_GIBLE,496,Y
@@ -759,11 +691,9 @@ Elm,professor,SPECIES_CORSOLA,222,Y
 Elm,professor,SPECIES_LARVITAR,246,Y
 Elm,professor,SPECIES_BONSLY,491,Y
 Erika,gymleader,SPECIES_BULBASAUR,1,Y
-Erika,gymleader,SPECIES_VULPIX,37,Y
 Erika,gymleader,SPECIES_ODDISH,43,Y
 Erika,gymleader,SPECIES_PARAS,46,Y
 Erika,gymleader,SPECIES_BELLSPROUT,69,Y
-Erika,gymleader,SPECIES_SEEL,86,Y
 Erika,gymleader,SPECIES_EXEGGCUTE,102,Y
 Erika,gymleader,SPECIES_CUBONE,104,Y
 Erika,gymleader,SPECIES_TANGELA,114,Y
@@ -773,8 +703,6 @@ Erika,gymleader,SPECIES_HOPPIP,187,Y
 Erika,gymleader,SPECIES_SEEDOT,298,Y
 Erika,gymleader,SPECIES_LILEEP,388,Y
 Erika,gymleader,SPECIES_BUDEW,459,Y
-Erika,gymleader,SPECIES_HAPPINY,493,Y
-Erika,gymleader,SPECIES_MANTYKE,511,Y
 Erika,gymleader,SPECIES_SNOVER,512,Y
 Erika,gymleader,SPECIES_COTTONEE,599,Y
 Erika,gymleader,SPECIES_PETILIL,601,Y
@@ -801,12 +729,10 @@ Falkner,gymleader,SPECIES_FARFETCHD,83,Y
 Falkner,gymleader,SPECIES_DODUO,84,Y
 Falkner,gymleader,SPECIES_AERODACTYL,142,Y
 Falkner,gymleader,SPECIES_ARTICUNO,144,Y
-Falkner,gymleader,SPECIES_ZAPDOS,145,Y
 Falkner,gymleader,SPECIES_HOOTHOOT,163,Y
 Falkner,gymleader,SPECIES_TOGEPI,175,Y
 Falkner,gymleader,SPECIES_NATU,177,Y
 Falkner,gymleader,SPECIES_MURKROW,198,Y
-Falkner,gymleader,SPECIES_GLIGAR,207,Y
 Falkner,gymleader,SPECIES_DELIBIRD,225,Y
 Falkner,gymleader,SPECIES_SKARMORY,227,Y
 Falkner,gymleader,SPECIES_LUGIA,249,Y
@@ -921,7 +847,6 @@ Giovanni,villain,SPECIES_GROWLITHE,58,Y
 Giovanni,villain,SPECIES_MACHOP,66,Y
 Giovanni,villain,SPECIES_GEODUDE,74,Y
 Giovanni,villain,SPECIES_SHELLDER,90,Y
-Giovanni,villain,SPECIES_GASTLY,92,Y
 Giovanni,villain,SPECIES_ONIX,95,Y
 Giovanni,villain,SPECIES_KRABBY,98,Y
 Giovanni,villain,SPECIES_EXEGGCUTE,102,Y
@@ -929,9 +854,7 @@ Giovanni,villain,SPECIES_CUBONE,104,Y
 Giovanni,villain,SPECIES_KOFFING,109,Y
 Giovanni,villain,SPECIES_RHYHORN,111,Y
 Giovanni,villain,SPECIES_KANGASKHAN,115,Y
-Giovanni,villain,SPECIES_TAUROS,128,Y
 Giovanni,villain,SPECIES_MAGIKARP,129,Y
-Giovanni,villain,SPECIES_MOLTRES,146,Y
 Giovanni,villain,SPECIES_MEWTWO,150,Y
 Giovanni,villain,SPECIES_MURKROW,198,Y
 Giovanni,villain,SPECIES_GLIGAR,207,Y
@@ -1301,34 +1224,23 @@ Janine,gymleader,SPECIES_VENONAT,48,Y
 Janine,gymleader,SPECIES_TENTACOOL,72,Y
 Janine,gymleader,SPECIES_GRIMER,88,Y
 Janine,gymleader,SPECIES_KOFFING,109,Y
-Janine,gymleader,SPECIES_EEVEE,133,Y
-Janine,gymleader,SPECIES_CHIKORITA,152,Y
 Janine,gymleader,SPECIES_SPINARAK,167,Y
-Janine,gymleader,SPECIES_GIRAFARIG,203,Y
 Janine,gymleader,SPECIES_PINECO,204,Y
-Janine,gymleader,SPECIES_GLIGAR,207,Y
-Janine,gymleader,SPECIES_STANTLER,234,Y
 Janine,gymleader,SPECIES_BUDEW,459,Y
 Janine,gymleader,SPECIES_SKORUPI,504,Y
 Janine,gymleader,SPECIES_CROAGUNK,506,Y
 Jasmine,gymleader,SPECIES_SQUIRTLE,7,Y
-Jasmine,gymleader,SPECIES_PONYTA,77,Y
-Jasmine,gymleader,SPECIES_SLOWPOKE,79,Y
 Jasmine,gymleader,SPECIES_MAGNEMITE,81,Y
 Jasmine,gymleader,SPECIES_ONIX,95,Y
-Jasmine,gymleader,SPECIES_SCYTHER,123,Y
 Jasmine,gymleader,SPECIES_TOGEPI,175,Y
 Jasmine,gymleader,SPECIES_MAREEP,179,Y
 Jasmine,gymleader,SPECIES_PINECO,204,Y
-Jasmine,gymleader,SPECIES_CORSOLA,222,Y
 Jasmine,gymleader,SPECIES_SKARMORY,227,Y
-Jasmine,gymleader,SPECIES_STANTLER,234,Y
 Jasmine,gymleader,SPECIES_MAWILE,355,Y
 Jasmine,gymleader,SPECIES_BELDUM,398,Y
 Jasmine,gymleader,SPECIES_PIPLUP,446,Y
 Jasmine,gymleader,SPECIES_BRONZOR,489,Y
 Jasmine,gymleader,SPECIES_RIOLU,500,Y
-Jasmine,gymleader,SPECIES_MANTYKE,511,Y
 Jasmine,gymleader,SPECIES_DRILBUR,582,Y
 Jasmine,gymleader,SPECIES_FERROSEED,650,Y
 Jasmine,gymleader,SPECIES_KLINK,652,Y
@@ -1405,17 +1317,11 @@ Kamado,villain,SPECIES_NOSEPASS,320,Y
 Kamado,villain,SPECIES_MUNCHLAX,499,Y
 Kamado,villain,SPECIES_RUFFLET,680,Y
 Karen,elite4,SPECIES_ODDISH,43,Y
-Karen,elite4,SPECIES_MEOWTH,52,Y
-Karen,elite4,SPECIES_BELLSPROUT,69,Y
-Karen,elite4,SPECIES_SLOWPOKE,79,Y
 Karen,elite4,SPECIES_GASTLY,92,Y
-Karen,elite4,SPECIES_VOLTORB,100,Y
 Karen,elite4,SPECIES_EEVEE,133,Y
 Karen,elite4,SPECIES_MURKROW,198,Y
-Karen,elite4,SPECIES_MISDREAVUS,200,Y
 Karen,elite4,SPECIES_SNEASEL,215,Y
 Karen,elite4,SPECIES_HOUNDOUR,228,Y
-Karen,elite4,SPECIES_MAGBY,240,Y
 Karen,elite4,SPECIES_ABSOL,376,Y
 Karen,elite4,SPECIES_SPIRITOMB,495,Y
 Kiawe (anime),anime,SPECIES_CHARMANDER,4,Y
@@ -1427,29 +1333,19 @@ Kiawe (anime),anime,SPECIES_FLETCHLING,769,Y
 Kiawe (anime),anime,SPECIES_SALANDIT,974,Y
 Kiawe (anime),anime,SPECIES_TURTONATOR,993,Y
 Koga,elite4,SPECIES_EKANS,23,Y
-Koga,elite4,SPECIES_NIDORAN_F,29,Y
-Koga,elite4,SPECIES_NIDORAN_M,32,Y
 Koga,elite4,SPECIES_VULPIX,37,Y
 Koga,elite4,SPECIES_ZUBAT,41,Y
-Koga,elite4,SPECIES_PARAS,46,Y
 Koga,elite4,SPECIES_VENONAT,48,Y
 Koga,elite4,SPECIES_TENTACOOL,72,Y
 Koga,elite4,SPECIES_GRIMER,88,Y
 Koga,elite4,SPECIES_GASTLY,92,Y
-Koga,elite4,SPECIES_DROWZEE,96,Y
 Koga,elite4,SPECIES_VOLTORB,100,Y
 Koga,elite4,SPECIES_KOFFING,109,Y
 Koga,elite4,SPECIES_RHYHORN,111,Y
-Koga,elite4,SPECIES_TANGELA,114,Y
 Koga,elite4,SPECIES_SCYTHER,123,Y
-Koga,elite4,SPECIES_LAPRAS,131,Y
 Koga,elite4,SPECIES_ARTICUNO,144,Y
 Koga,elite4,SPECIES_SPINARAK,167,Y
-Koga,elite4,SPECIES_CHINCHOU,170,Y
 Koga,elite4,SPECIES_PINECO,204,Y
-Koga,elite4,SPECIES_GLIGAR,207,Y
-Koga,elite4,SPECIES_STANTLER,234,Y
-Koga,elite4,SPECIES_MAGBY,240,Y
 Koga,elite4,SPECIES_GULPIN,367,Y
 Koga,elite4,SPECIES_STUNKY,487,Y
 Koga,elite4,SPECIES_CROAGUNK,506,Y
@@ -1501,24 +1397,18 @@ Lana (anime),anime,SPECIES_POPPLIO,945,Y
 Lana (anime),anime,SPECIES_DEWPIDER,968,Y
 Lana (anime),anime,SPECIES_XURKITREE,1013,Y
 Lance,champion,SPECIES_CHARMANDER,4,Y
-Lance,champion,SPECIES_GROWLITHE,58,Y
-Lance,champion,SPECIES_ONIX,95,Y
 Lance,champion,SPECIES_EXEGGCUTE,102,Y
-Lance,champion,SPECIES_KANGASKHAN,115,Y
 Lance,champion,SPECIES_HORSEA,116,Y
 Lance,champion,SPECIES_MAGIKARP,129,Y
 Lance,champion,SPECIES_LAPRAS,131,Y
 Lance,champion,SPECIES_AERODACTYL,142,Y
 Lance,champion,SPECIES_DRATINI,147,Y
-Lance,champion,SPECIES_TOTODILE,158,Y
-Lance,champion,SPECIES_ELEKID,239,Y
 Lance,champion,SPECIES_LARVITAR,246,Y
 Lance,champion,SPECIES_LUGIA,249,Y
 Lance,champion,SPECIES_TRAPINCH,332,Y
 Lance,champion,SPECIES_SWABLU,358,Y
 Lance,champion,SPECIES_BAGON,395,Y
 Lance,champion,SPECIES_GIBLE,496,Y
-Lance,champion,SPECIES_MUNCHLAX,499,Y
 Lance,champion,SPECIES_AXEW,663,Y
 Lance,champion,SPECIES_DEINO,686,Y
 Larry,anime,SPECIES_TAUROS,128,Y
@@ -1583,31 +1473,20 @@ Lorelei,elite4,SPECIES_SANDSHREW,27,Y
 Lorelei,elite4,SPECIES_SLOWPOKE,79,Y
 Lorelei,elite4,SPECIES_SEEL,86,Y
 Lorelei,elite4,SPECIES_SHELLDER,90,Y
-Lorelei,elite4,SPECIES_EXEGGCUTE,102,Y
-Lorelei,elite4,SPECIES_STARYU,120,Y
 Lorelei,elite4,SPECIES_LAPRAS,131,Y
-Lorelei,elite4,SPECIES_OMANYTE,138,Y
-Lorelei,elite4,SPECIES_ARTICUNO,144,Y
-Lorelei,elite4,SPECIES_IGGLYBUFF,174,Y
 Lorelei,elite4,SPECIES_SWINUB,220,Y
 Lorelei,elite4,SPECIES_SMOOCHUM,238,Y
 Lt. Surge,gymleader,SPECIES_POLIWAG,60,Y
-Lt. Surge,gymleader,SPECIES_BELLSPROUT,69,Y
 Lt. Surge,gymleader,SPECIES_MAGNEMITE,81,Y
-Lt. Surge,gymleader,SPECIES_DODUO,84,Y
 Lt. Surge,gymleader,SPECIES_SEEL,86,Y
 Lt. Surge,gymleader,SPECIES_KRABBY,98,Y
 Lt. Surge,gymleader,SPECIES_VOLTORB,100,Y
-Lt. Surge,gymleader,SPECIES_LICKITUNG,108,Y
-Lt. Surge,gymleader,SPECIES_TANGELA,114,Y
 Lt. Surge,gymleader,SPECIES_HORSEA,116,Y
 Lt. Surge,gymleader,SPECIES_EEVEE,133,Y
-Lt. Surge,gymleader,SPECIES_PORYGON,137,Y
 Lt. Surge,gymleader,SPECIES_ZAPDOS,145,Y
 Lt. Surge,gymleader,SPECIES_CHINCHOU,170,Y
 Lt. Surge,gymleader,SPECIES_PICHU,172,Y
 Lt. Surge,gymleader,SPECIES_MAREEP,179,Y
-Lt. Surge,gymleader,SPECIES_WOOPER,194,Y
 Lt. Surge,gymleader,SPECIES_ELEKID,239,Y
 Lt. Surge,gymleader,SPECIES_RAIKOU,243,Y
 Lt. Surge,gymleader,SPECIES_ELECTRIKE,337,Y
@@ -1834,15 +1713,12 @@ Milo,gymleader,SPECIES_GOSSIFLEUR,1121,Y
 Milo,gymleader,SPECIES_WOOLOO,1123,Y
 Milo,gymleader,SPECIES_APPLIN,1132,Y
 Misty,gymleader,SPECIES_SQUIRTLE,7,Y
-Misty,gymleader,SPECIES_NIDORAN_F,29,Y
-Misty,gymleader,SPECIES_DIGLETT,50,Y
 Misty,gymleader,SPECIES_PSYDUCK,54,Y
 Misty,gymleader,SPECIES_POLIWAG,60,Y
 Misty,gymleader,SPECIES_TENTACOOL,72,Y
 Misty,gymleader,SPECIES_SLOWPOKE,79,Y
 Misty,gymleader,SPECIES_SEEL,86,Y
 Misty,gymleader,SPECIES_SHELLDER,90,Y
-Misty,gymleader,SPECIES_EXEGGCUTE,102,Y
 Misty,gymleader,SPECIES_HORSEA,116,Y
 Misty,gymleader,SPECIES_GOLDEEN,118,Y
 Misty,gymleader,SPECIES_STARYU,120,Y
@@ -1854,8 +1730,6 @@ Misty,gymleader,SPECIES_DRATINI,147,Y
 Misty,gymleader,SPECIES_CHINCHOU,170,Y
 Misty,gymleader,SPECIES_IGGLYBUFF,174,Y
 Misty,gymleader,SPECIES_TOGEPI,175,Y
-Misty,gymleader,SPECIES_MAREEP,179,Y
-Misty,gymleader,SPECIES_SUNKERN,191,Y
 Misty,gymleader,SPECIES_WOOPER,194,Y
 Misty,gymleader,SPECIES_CORSOLA,222,Y
 Misty,gymleader,SPECIES_SUICUNE,245,Y
@@ -1876,23 +1750,15 @@ Molayne,elite4,SPECIES_BELDUM,398,Y
 Molayne,elite4,SPECIES_PAWNIARD,677,Y
 Molayne,elite4,SPECIES_KLEFKI,815,Y
 Morty,gymleader,SPECIES_GASTLY,92,Y
-Morty,gymleader,SPECIES_EXEGGCUTE,102,Y
-Morty,gymleader,SPECIES_CUBONE,104,Y
-Morty,gymleader,SPECIES_LAPRAS,131,Y
 Morty,gymleader,SPECIES_CYNDAQUIL,155,Y
-Morty,gymleader,SPECIES_HOOTHOOT,163,Y
-Morty,gymleader,SPECIES_SPINARAK,167,Y
 Morty,gymleader,SPECIES_MISDREAVUS,200,Y
 Morty,gymleader,SPECIES_GIRAFARIG,203,Y
-Morty,gymleader,SPECIES_SNUBBULL,209,Y
 Morty,gymleader,SPECIES_HO_OH,250,Y
 Morty,gymleader,SPECIES_SABLEYE,322,Y
 Morty,gymleader,SPECIES_SNORUNT,346,Y
 Morty,gymleader,SPECIES_DUSKULL,361,Y
 Morty,gymleader,SPECIES_SHUPPET,377,Y
 Morty,gymleader,SPECIES_DRIFLOON,478,Y
-Morty,gymleader,SPECIES_BONSLY,491,Y
-Morty,gymleader,SPECIES_MANTYKE,511,Y
 Morty,gymleader,SPECIES_YAMASK,615,Y
 Morty,gymleader,SPECIES_FRILLISH,645,Y
 Morty,gymleader,SPECIES_LITWICK,660,Y
@@ -2156,19 +2022,12 @@ Plumeria,villain,SPECIES_MAREANIE,964,Y
 Plumeria,villain,SPECIES_FOMANTIS,970,Y
 Plumeria,villain,SPECIES_SALANDIT,974,Y
 Plumeria,villain,SPECIES_COSMOG,1006,Y
-Pryce,gymleader,SPECIES_TENTACOOL,72,Y
 Pryce,gymleader,SPECIES_SEEL,86,Y
 Pryce,gymleader,SPECIES_SHELLDER,90,Y
 Pryce,gymleader,SPECIES_LAPRAS,131,Y
-Pryce,gymleader,SPECIES_ARTICUNO,144,Y
-Pryce,gymleader,SPECIES_WOOPER,194,Y
-Pryce,gymleader,SPECIES_GIRAFARIG,203,Y
 Pryce,gymleader,SPECIES_SNEASEL,215,Y
-Pryce,gymleader,SPECIES_TEDDIURSA,216,Y
 Pryce,gymleader,SPECIES_SWINUB,220,Y
 Pryce,gymleader,SPECIES_DELIBIRD,225,Y
-Pryce,gymleader,SPECIES_PHANPY,231,Y
-Pryce,gymleader,SPECIES_TYROGUE,236,Y
 Pryce,gymleader,SPECIES_SMOOCHUM,238,Y
 Pryce,gymleader,SPECIES_CELEBI,251,Y
 Pryce,gymleader,SPECIES_SPHEAL,341,Y
@@ -2204,8 +2063,6 @@ Red,protagonist,SPECIES_TENTACOOL,72,Y
 Red,protagonist,SPECIES_PONYTA,77,Y
 Red,protagonist,SPECIES_DODUO,84,Y
 Red,protagonist,SPECIES_GASTLY,92,Y
-Red,protagonist,SPECIES_SCYTHER,123,Y
-Red,protagonist,SPECIES_TAUROS,128,Y
 Red,protagonist,SPECIES_MAGIKARP,129,Y
 Red,protagonist,SPECIES_LAPRAS,131,Y
 Red,protagonist,SPECIES_EEVEE,133,Y
@@ -2213,16 +2070,9 @@ Red,protagonist,SPECIES_KABUTO,140,Y
 Red,protagonist,SPECIES_ARTICUNO,144,Y
 Red,protagonist,SPECIES_ZAPDOS,145,Y
 Red,protagonist,SPECIES_MOLTRES,146,Y
-Red,protagonist,SPECIES_DRATINI,147,Y
 Red,protagonist,SPECIES_MEWTWO,150,Y
-Red,protagonist,SPECIES_CHIKORITA,152,Y
-Red,protagonist,SPECIES_CYNDAQUIL,155,Y
-Red,protagonist,SPECIES_TOTODILE,158,Y
 Red,protagonist,SPECIES_PICHU,172,Y
 Red,protagonist,SPECIES_TYROGUE,236,Y
-Red,protagonist,SPECIES_RAIKOU,243,Y
-Red,protagonist,SPECIES_ENTEI,244,Y
-Red,protagonist,SPECIES_SUICUNE,245,Y
 Red,protagonist,SPECIES_HAPPINY,493,Y
 Red,protagonist,SPECIES_MUNCHLAX,499,Y
 Rei,protagonist,SPECIES_CYNDAQUIL,155,Y
@@ -2343,7 +2193,6 @@ Roxie,gymleader,SPECIES_VENIPEDE,596,Y
 Roxie,gymleader,SPECIES_TRUBBISH,621,Y
 Roxie,gymleader,SPECIES_FOONGUS,643,Y
 Roxie,gymleader,SPECIES_TOXEL,1140,Y
-Sabrina,gymleader,SPECIES_SANDSHREW,27,Y
 Sabrina,gymleader,SPECIES_VENONAT,48,Y
 Sabrina,gymleader,SPECIES_ABRA,63,Y
 Sabrina,gymleader,SPECIES_SLOWPOKE,79,Y
@@ -2354,17 +2203,12 @@ Sabrina,gymleader,SPECIES_SCYTHER,123,Y
 Sabrina,gymleader,SPECIES_EEVEE,133,Y
 Sabrina,gymleader,SPECIES_MOLTRES,146,Y
 Sabrina,gymleader,SPECIES_MEWTWO,150,Y
-Sabrina,gymleader,SPECIES_CYNDAQUIL,155,Y
-Sabrina,gymleader,SPECIES_SENTRET,161,Y
-Sabrina,gymleader,SPECIES_IGGLYBUFF,174,Y
-Sabrina,gymleader,SPECIES_TYROGUE,236,Y
 Sabrina,gymleader,SPECIES_SMOOCHUM,238,Y
 Sabrina,gymleader,SPECIES_WYNAUT,360,Y
 Sabrina,gymleader,SPECIES_RALTS,392,Y
 Sabrina,gymleader,SPECIES_BELDUM,398,Y
 Sabrina,gymleader,SPECIES_CHINGLING,486,Y
 Sabrina,gymleader,SPECIES_MIME_JR,492,Y
-Sabrina,gymleader,SPECIES_MUNCHLAX,499,Y
 Sabrina,gymleader,SPECIES_WOOBAT,580,Y
 Sabrina,gymleader,SPECIES_SIGILYPH,614,Y
 Samson Oak,professor,SPECIES_RATTATA,19,Y
@@ -2476,13 +2320,11 @@ Silver,rival,SPECIES_ZUBAT,41,Y
 Silver,rival,SPECIES_ABRA,63,Y
 Silver,rival,SPECIES_MAGNEMITE,81,Y
 Silver,rival,SPECIES_GASTLY,92,Y
-Silver,rival,SPECIES_MEWTWO,150,Y
 Silver,rival,SPECIES_CHIKORITA,152,Y
 Silver,rival,SPECIES_CYNDAQUIL,155,Y
 Silver,rival,SPECIES_TOTODILE,158,Y
 Silver,rival,SPECIES_SNEASEL,215,Y
 Silver,rival,SPECIES_LARVITAR,246,Y
-Silver,rival,SPECIES_LUGIA,249,Y
 Silver,rival,SPECIES_HO_OH,250,Y
 Skyla,gymleader,SPECIES_TOGEPI,175,Y
 Skyla,gymleader,SPECIES_HOPPIP,187,Y
@@ -2659,10 +2501,7 @@ Wattson,gymleader,SPECIES_PLUSLE,353,Y
 Wattson,gymleader,SPECIES_MINUN,354,Y
 Wattson,gymleader,SPECIES_ROTOM,532,Y
 Whitney,gymleader,SPECIES_NIDORAN_F,29,Y
-Whitney,gymleader,SPECIES_ODDISH,43,Y
-Whitney,gymleader,SPECIES_MEOWTH,52,Y
 Whitney,gymleader,SPECIES_PSYDUCK,54,Y
-Whitney,gymleader,SPECIES_DODUO,84,Y
 Whitney,gymleader,SPECIES_LICKITUNG,108,Y
 Whitney,gymleader,SPECIES_TAUROS,128,Y
 Whitney,gymleader,SPECIES_DITTO,132,Y
@@ -2671,15 +2510,12 @@ Whitney,gymleader,SPECIES_IGGLYBUFF,174,Y
 Whitney,gymleader,SPECIES_AIPOM,190,Y
 Whitney,gymleader,SPECIES_GIRAFARIG,203,Y
 Whitney,gymleader,SPECIES_TEDDIURSA,216,Y
-Whitney,gymleader,SPECIES_PHANPY,231,Y
-Whitney,gymleader,SPECIES_STANTLER,234,Y
 Whitney,gymleader,SPECIES_SMEARGLE,235,Y
 Whitney,gymleader,SPECIES_MAGBY,240,Y
 Whitney,gymleader,SPECIES_MILTANK,241,Y
 Whitney,gymleader,SPECIES_SKITTY,315,Y
 Whitney,gymleader,SPECIES_BIDOOF,452,Y
 Whitney,gymleader,SPECIES_BUNEARY,480,Y
-Whitney,gymleader,SPECIES_MIME_JR,492,Y
 Whitney,gymleader,SPECIES_HAPPINY,493,Y
 Whitney,gymleader,SPECIES_PATRAT,557,Y
 Whitney,gymleader,SPECIES_MINCCINO,625,Y
@@ -2691,21 +2527,14 @@ Wikstrom,elite4,SPECIES_LITWICK,660,Y
 Wikstrom,elite4,SPECIES_HONEDGE,787,Y
 Wikstrom,elite4,SPECIES_DEDENNE,810,Y
 Wikstrom,elite4,SPECIES_KLEFKI,815,Y
-Will,elite4,SPECIES_ABRA,63,Y
 Will,elite4,SPECIES_SLOWPOKE,79,Y
-Will,elite4,SPECIES_DROWZEE,96,Y
 Will,elite4,SPECIES_EXEGGCUTE,102,Y
-Will,elite4,SPECIES_EEVEE,133,Y
 Will,elite4,SPECIES_CLEFFA,173,Y
 Will,elite4,SPECIES_NATU,177,Y
-Will,elite4,SPECIES_GIRAFARIG,203,Y
 Will,elite4,SPECIES_SMOOCHUM,238,Y
-Will,elite4,SPECIES_ELEKID,239,Y
 Will,elite4,SPECIES_SPOINK,351,Y
 Will,elite4,SPECIES_RALTS,392,Y
 Will,elite4,SPECIES_BRONZOR,489,Y
-Will,elite4,SPECIES_HAPPINY,493,Y
-Will,elite4,SPECIES_MANTYKE,511,Y
 Winona,gymleader,SPECIES_MAGIKARP,129,Y
 Winona,gymleader,SPECIES_DRATINI,147,Y
 Winona,gymleader,SPECIES_HOOTHOOT,163,Y

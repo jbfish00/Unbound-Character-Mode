@@ -277,6 +277,23 @@ def rosters_from_blob(manifest):
     return out
 
 
+
+# Eevee's evolutions stay allowed in game but are one doc row (user 2026-11-20: "take them off the documentation
+# rosters, so as not to clog it up"). Rows are (name, national dex, source); the first Eeveelution's source is kept.
+EEVEELUTIONS = {134, 135, 136, 196, 197, 470, 471, 700}
+
+
+def fold_eevee(rows):
+    out, done = [], False
+    for name, num, src in rows:
+        if num in EEVEELUTIONS:
+            if not done:
+                out.append(("Eevee (any evolution)", 133, src))
+                done = True
+            continue
+        out.append((name, num, src))
+    return out
+
 def main():
     ms = load_map_species()
     donor = ms.DONOR
@@ -362,6 +379,7 @@ def main():
             # "Hisuian Arcanine" prints the source plainly instead of the
             # redundant "as Hisuian Arcanine — ..."
             rows.append((shown_name, dex[s], source_cell(info, shown_name)))
+        rows = fold_eevee(rows)
         chars.append({
             "name": rec["character"],
             "gen": rec["generation"],

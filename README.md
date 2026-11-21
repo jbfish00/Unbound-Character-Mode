@@ -64,8 +64,8 @@ switch Character Mode off afterwards — start a new game to change or disable i
 - **Legendary encounters** — an independent ~1% roll offers a legendary from
   your character's roster, level-matched the same way. Filtered by the Pokédex
   so each is offered until caught; a roster that is *entirely* legendary keeps
-  them repeatable, so those characters always have something to catch. 93 of
-  the 208 characters have at least one legendary. Full spec:
+  them repeatable, so those characters always have something to catch. 92 of
+  the 193 selectable characters have at least one legendary. Full spec:
   [`../game_plans/legendary_encounters.md`](../game_plans/legendary_encounters.md);
   per-character pools in [`ENCOUNTERS.md`](ENCOUNTERS.md).
 
@@ -405,3 +405,10 @@ With Character Mode on, a wild Pokémon off your character's roster says so in i
 
 ### Fix: instant HP bar drew low-max-HP bars red (2026-11-14)
 The 2026-10-28 instant HP bar drew any Pokémon with under 48 max HP (most early-game Pokémon) as a nearly empty red bar at the start of a battle, and after every hit. The bar is now drawn at its real value and is still instant. Build 2026-11-14: `build/unbound-cm.gba` sha1 `14397f042d793820881ad585c5e2e50b5f902133`, `build/unbound-cm.bps` sha1 `ca03b08318276b83dc01fdca8b4fcbc8bf10190d` (round trip checked; differs from the old patch in 5 bytes). Save-compatible: on My Boy!, keep the old ROM and save, and load the new ROM under the same file name so the `.sav` carries over.
+
+### Roster change: the Pokémon Stadium games no longer count (2026-11-21)
+A Pokémon that a character used only in *Pokémon Stadium* or *Pokémon Stadium 2* is no longer on that character's
+roster. Anything they also have in a main-series game, the anime or the manga stays, and a whole evolution family stays
+if any member does. 28 characters lose 171 families in all (Kanto and Johto gym leaders, the Elite Four, the rivals and
+Team Rocket's executives). No character drops below the six-fully-evolved threshold here. The roster docs now show Eevee's evolutions as one "Eevee (any evolution)" entry; all of
+them are still allowed in the game. Build 2026-11-21: `build/unbound-cm.gba` sha1 `4365099844744b9c1cae60b2e2684a3f50cab118`, `build/unbound-cm.bps` sha1 `1f938b4e0793f0ebd281765f59649893ab1068fb` (round trip checked; verify 125, verify_docs, every checker, negative test, guard and live layer pass).

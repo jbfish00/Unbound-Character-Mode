@@ -114,10 +114,6 @@
   },
   "species": [
    {
-    "const": "SPECIES_BULBASAUR",
-    "id": 1
-   },
-   {
     "const": "SPECIES_EKANS",
     "id": 23
    },
@@ -128,10 +124,6 @@
    {
     "const": "SPECIES_ABRA",
     "id": 63
-   },
-   {
-    "const": "SPECIES_GRIMER",
-    "id": 88
    },
    {
     "const": "SPECIES_GASTLY",
@@ -146,16 +138,8 @@
     "id": 109
    },
    {
-    "const": "SPECIES_MAGIKARP",
-    "id": 129
-   },
-   {
     "const": "SPECIES_MISDREAVUS",
     "id": 200
-   },
-   {
-    "const": "SPECIES_SMOOCHUM",
-    "id": 238
    }
   ]
  },
@@ -412,24 +396,8 @@
     "id": 41
    },
    {
-    "const": "SPECIES_PARAS",
-    "id": 46
-   },
-   {
-    "const": "SPECIES_MEOWTH",
-    "id": 52
-   },
-   {
-    "const": "SPECIES_BELLSPROUT",
-    "id": 69
-   },
-   {
     "const": "SPECIES_GRIMER",
     "id": 88
-   },
-   {
-    "const": "SPECIES_DROWZEE",
-    "id": 96
    },
    {
     "const": "SPECIES_VOLTORB",
@@ -440,28 +408,12 @@
     "id": 109
    },
    {
-    "const": "SPECIES_MISDREAVUS",
-    "id": 200
-   },
-   {
-    "const": "SPECIES_REMORAID",
-    "id": 223
-   },
-   {
     "const": "SPECIES_HOUNDOUR",
     "id": 228
    },
    {
     "const": "SPECIES_MAGBY",
     "id": 240
-   },
-   {
-    "const": "SPECIES_LARVITAR",
-    "id": 246
-   },
-   {
-    "const": "SPECIES_WYNAUT",
-    "id": 360
    }
   ]
  },
@@ -514,24 +466,12 @@
   },
   "species": [
    {
-    "const": "SPECIES_RATTATA",
-    "id": 19
-   },
-   {
     "const": "SPECIES_EKANS",
     "id": 23
    },
    {
-    "const": "SPECIES_ZUBAT",
-    "id": 41
-   },
-   {
     "const": "SPECIES_ODDISH",
     "id": 43
-   },
-   {
-    "const": "SPECIES_BELLSPROUT",
-    "id": 69
    },
    {
     "const": "SPECIES_GRIMER",
@@ -542,24 +482,8 @@
     "id": 96
    },
    {
-    "const": "SPECIES_LICKITUNG",
-    "id": 108
-   },
-   {
-    "const": "SPECIES_KABUTO",
-    "id": 140
-   },
-   {
     "const": "SPECIES_MURKROW",
     "id": 198
-   },
-   {
-    "const": "SPECIES_SNEASEL",
-    "id": 215
-   },
-   {
-    "const": "SPECIES_SLUGMA",
-    "id": 218
    }
   ]
  },
@@ -1237,14 +1161,6 @@
     "id": 37
    },
    {
-    "const": "SPECIES_ODDISH",
-    "id": 43
-   },
-   {
-    "const": "SPECIES_PARAS",
-    "id": 46
-   },
-   {
     "const": "SPECIES_MEOWTH",
     "id": 52
    },
@@ -1273,14 +1189,6 @@
     "id": 111
    },
    {
-    "const": "SPECIES_TANGELA",
-    "id": 114
-   },
-   {
-    "const": "SPECIES_KANGASKHAN",
-    "id": 115
-   },
-   {
     "const": "SPECIES_EEVEE",
     "id": 133
    },
@@ -1289,20 +1197,12 @@
     "id": 144
    },
    {
-    "const": "SPECIES_MOLTRES",
-    "id": 146
-   },
-   {
     "const": "SPECIES_CLEFFA",
     "id": 173
    },
    {
     "const": "SPECIES_SLUGMA",
     "id": 218
-   },
-   {
-    "const": "SPECIES_REMORAID",
-    "id": 223
    },
    {
     "const": "SPECIES_HOUNDOUR",
@@ -1319,14 +1219,6 @@
    {
     "const": "SPECIES_NUMEL",
     "id": 339
-   },
-   {
-    "const": "SPECIES_MIME_JR",
-    "id": 492
-   },
-   {
-    "const": "SPECIES_HAPPINY",
-    "id": 493
    },
    {
     "const": "SPECIES_ROTOM",
@@ -1380,10 +1272,6 @@
     "id": 66
    },
    {
-    "const": "SPECIES_SLOWPOKE",
-    "id": 79
-   },
-   {
     "const": "SPECIES_MAGNEMITE",
     "id": 81
    },
@@ -1402,18 +1290,6 @@
    {
     "const": "SPECIES_RHYHORN",
     "id": 111
-   },
-   {
-    "const": "SPECIES_HORSEA",
-    "id": 116
-   },
-   {
-    "const": "SPECIES_SCYTHER",
-    "id": 123
-   },
-   {
-    "const": "SPECIES_PINSIR",
-    "id": 127
    },
    {
     "const": "SPECIES_TAUROS",
@@ -1436,28 +1312,8 @@
     "id": 145
    },
    {
-    "const": "SPECIES_CLEFFA",
-    "id": 173
-   },
-   {
     "const": "SPECIES_HERACROSS",
     "id": 214
-   },
-   {
-    "const": "SPECIES_SWINUB",
-    "id": 220
-   },
-   {
-    "const": "SPECIES_HOUNDOUR",
-    "id": 228
-   },
-   {
-    "const": "SPECIES_ELEKID",
-    "id": 239
-   },
-   {
-    "const": "SPECIES_MILTANK",
-    "id": 241
    },
    {
     "const": "SPECIES_LARVITAR",
@@ -1699,32 +1555,16 @@
     "id": 43
    },
    {
-    "const": "SPECIES_DIGLETT",
-    "id": 50
-   },
-   {
     "const": "SPECIES_GEODUDE",
     "id": 74
-   },
-   {
-    "const": "SPECIES_SLOWPOKE",
-    "id": 79
    },
    {
     "const": "SPECIES_ONIX",
     "id": 95
    },
    {
-    "const": "SPECIES_CUBONE",
-    "id": 104
-   },
-   {
     "const": "SPECIES_RHYHORN",
     "id": 111
-   },
-   {
-    "const": "SPECIES_PINSIR",
-    "id": 127
    },
    {
     "const": "SPECIES_OMANYTE",
@@ -1741,22 +1581,6 @@
    {
     "const": "SPECIES_PICHU",
     "id": 172
-   },
-   {
-    "const": "SPECIES_PINECO",
-    "id": 204
-   },
-   {
-    "const": "SPECIES_SHUCKLE",
-    "id": 213
-   },
-   {
-    "const": "SPECIES_HERACROSS",
-    "id": 214
-   },
-   {
-    "const": "SPECIES_TEDDIURSA",
-    "id": 216
    },
    {
     "const": "SPECIES_LARVITAR",
@@ -1806,14 +1630,6 @@
   },
   "species": [
    {
-    "const": "SPECIES_SQUIRTLE",
-    "id": 7
-   },
-   {
-    "const": "SPECIES_MANKEY",
-    "id": 56
-   },
-   {
     "const": "SPECIES_POLIWAG",
     "id": 60
    },
@@ -1824,14 +1640,6 @@
    {
     "const": "SPECIES_GEODUDE",
     "id": 74
-   },
-   {
-    "const": "SPECIES_SLOWPOKE",
-    "id": 79
-   },
-   {
-    "const": "SPECIES_GRIMER",
-    "id": 88
    },
    {
     "const": "SPECIES_SHELLDER",
@@ -1846,28 +1654,8 @@
     "id": 102
    },
    {
-    "const": "SPECIES_RHYHORN",
-    "id": 111
-   },
-   {
-    "const": "SPECIES_KANGASKHAN",
-    "id": 115
-   },
-   {
     "const": "SPECIES_CLEFFA",
     "id": 173
-   },
-   {
-    "const": "SPECIES_SNUBBULL",
-    "id": 209
-   },
-   {
-    "const": "SPECIES_HERACROSS",
-    "id": 214
-   },
-   {
-    "const": "SPECIES_TEDDIURSA",
-    "id": 216
    },
    {
     "const": "SPECIES_TYROGUE",
@@ -1940,14 +1728,6 @@
     "id": 13
    },
    {
-    "const": "SPECIES_RATTATA",
-    "id": 19
-   },
-   {
-    "const": "SPECIES_BELLSPROUT",
-    "id": 69
-   },
-   {
     "const": "SPECIES_SCYTHER",
     "id": 123
    },
@@ -1962,10 +1742,6 @@
    {
     "const": "SPECIES_YANMA",
     "id": 193
-   },
-   {
-    "const": "SPECIES_WOOPER",
-    "id": 194
    },
    {
     "const": "SPECIES_UNOWN",
@@ -1984,10 +1760,6 @@
     "id": 214
    },
    {
-    "const": "SPECIES_LARVITAR",
-    "id": 246
-   },
-   {
     "const": "SPECIES_NINCADA",
     "id": 301
    },
@@ -2002,10 +1774,6 @@
    {
     "const": "SPECIES_COMBEE",
     "id": 468
-   },
-   {
-    "const": "SPECIES_BONSLY",
-    "id": 491
    }
   ]
  },
@@ -2537,10 +2305,6 @@
   },
   "species": [
    {
-    "const": "SPECIES_SANDSHREW",
-    "id": 27
-   },
-   {
     "const": "SPECIES_MANKEY",
     "id": 56
    },
@@ -2551,22 +2315,6 @@
    {
     "const": "SPECIES_MACHOP",
     "id": 66
-   },
-   {
-    "const": "SPECIES_DROWZEE",
-    "id": 96
-   },
-   {
-    "const": "SPECIES_MAREEP",
-    "id": 179
-   },
-   {
-    "const": "SPECIES_SNUBBULL",
-    "id": 209
-   },
-   {
-    "const": "SPECIES_TEDDIURSA",
-    "id": 216
    },
    {
     "const": "SPECIES_TYROGUE",
@@ -2655,18 +2403,6 @@
     "id": 4
    },
    {
-    "const": "SPECIES_NIDORAN_M",
-    "id": 32
-   },
-   {
-    "const": "SPECIES_GROWLITHE",
-    "id": 58
-   },
-   {
-    "const": "SPECIES_RHYHORN",
-    "id": 111
-   },
-   {
     "const": "SPECIES_HORSEA",
     "id": 116
    },
@@ -2675,20 +2411,12 @@
     "id": 129
    },
    {
-    "const": "SPECIES_LAPRAS",
-    "id": 131
-   },
-   {
     "const": "SPECIES_AERODACTYL",
     "id": 142
    },
    {
     "const": "SPECIES_DRATINI",
     "id": 147
-   },
-   {
-    "const": "SPECIES_MAREEP",
-    "id": 179
    },
    {
     "const": "SPECIES_SWABLU",
@@ -3671,10 +3399,6 @@
     "id": 1
    },
    {
-    "const": "SPECIES_VULPIX",
-    "id": 37
-   },
-   {
     "const": "SPECIES_ODDISH",
     "id": 43
    },
@@ -3685,10 +3409,6 @@
    {
     "const": "SPECIES_BELLSPROUT",
     "id": 69
-   },
-   {
-    "const": "SPECIES_SEEL",
-    "id": 86
    },
    {
     "const": "SPECIES_EXEGGCUTE",
@@ -3725,14 +3445,6 @@
    {
     "const": "SPECIES_BUDEW",
     "id": 459
-   },
-   {
-    "const": "SPECIES_HAPPINY",
-    "id": 493
-   },
-   {
-    "const": "SPECIES_MANTYKE",
-    "id": 511
    },
    {
     "const": "SPECIES_SNOVER",
@@ -3861,10 +3573,6 @@
     "id": 144
    },
    {
-    "const": "SPECIES_ZAPDOS",
-    "id": 145
-   },
-   {
     "const": "SPECIES_HOOTHOOT",
     "id": 163
    },
@@ -3879,10 +3587,6 @@
    {
     "const": "SPECIES_MURKROW",
     "id": 198
-   },
-   {
-    "const": "SPECIES_GLIGAR",
-    "id": 207
    },
    {
     "const": "SPECIES_DELIBIRD",
@@ -4418,10 +4122,6 @@
     "id": 90
    },
    {
-    "const": "SPECIES_GASTLY",
-    "id": 92
-   },
-   {
     "const": "SPECIES_ONIX",
     "id": 95
    },
@@ -4450,16 +4150,8 @@
     "id": 115
    },
    {
-    "const": "SPECIES_TAUROS",
-    "id": 128
-   },
-   {
     "const": "SPECIES_MAGIKARP",
     "id": 129
-   },
-   {
-    "const": "SPECIES_MOLTRES",
-    "id": 146
    },
    {
     "const": "SPECIES_MEWTWO",
@@ -6140,32 +5832,12 @@
     "id": 109
    },
    {
-    "const": "SPECIES_EEVEE",
-    "id": 133
-   },
-   {
-    "const": "SPECIES_CHIKORITA",
-    "id": 152
-   },
-   {
     "const": "SPECIES_SPINARAK",
     "id": 167
    },
    {
-    "const": "SPECIES_GIRAFARIG",
-    "id": 203
-   },
-   {
     "const": "SPECIES_PINECO",
     "id": 204
-   },
-   {
-    "const": "SPECIES_GLIGAR",
-    "id": 207
-   },
-   {
-    "const": "SPECIES_STANTLER",
-    "id": 234
    },
    {
     "const": "SPECIES_BUDEW",
@@ -6195,24 +5867,12 @@
     "id": 7
    },
    {
-    "const": "SPECIES_PONYTA",
-    "id": 77
-   },
-   {
-    "const": "SPECIES_SLOWPOKE",
-    "id": 79
-   },
-   {
     "const": "SPECIES_MAGNEMITE",
     "id": 81
    },
    {
     "const": "SPECIES_ONIX",
     "id": 95
-   },
-   {
-    "const": "SPECIES_SCYTHER",
-    "id": 123
    },
    {
     "const": "SPECIES_TOGEPI",
@@ -6227,16 +5887,8 @@
     "id": 204
    },
    {
-    "const": "SPECIES_CORSOLA",
-    "id": 222
-   },
-   {
     "const": "SPECIES_SKARMORY",
     "id": 227
-   },
-   {
-    "const": "SPECIES_STANTLER",
-    "id": 234
    },
    {
     "const": "SPECIES_MAWILE",
@@ -6257,10 +5909,6 @@
    {
     "const": "SPECIES_RIOLU",
     "id": 500
-   },
-   {
-    "const": "SPECIES_MANTYKE",
-    "id": 511
    },
    {
     "const": "SPECIES_DRILBUR",
@@ -6647,24 +6295,8 @@
     "id": 43
    },
    {
-    "const": "SPECIES_MEOWTH",
-    "id": 52
-   },
-   {
-    "const": "SPECIES_BELLSPROUT",
-    "id": 69
-   },
-   {
-    "const": "SPECIES_SLOWPOKE",
-    "id": 79
-   },
-   {
     "const": "SPECIES_GASTLY",
     "id": 92
-   },
-   {
-    "const": "SPECIES_VOLTORB",
-    "id": 100
    },
    {
     "const": "SPECIES_EEVEE",
@@ -6675,20 +6307,12 @@
     "id": 198
    },
    {
-    "const": "SPECIES_MISDREAVUS",
-    "id": 200
-   },
-   {
     "const": "SPECIES_SNEASEL",
     "id": 215
    },
    {
     "const": "SPECIES_HOUNDOUR",
     "id": 228
-   },
-   {
-    "const": "SPECIES_MAGBY",
-    "id": 240
    },
    {
     "const": "SPECIES_ABSOL",
@@ -6757,24 +6381,12 @@
     "id": 23
    },
    {
-    "const": "SPECIES_NIDORAN_F",
-    "id": 29
-   },
-   {
-    "const": "SPECIES_NIDORAN_M",
-    "id": 32
-   },
-   {
     "const": "SPECIES_VULPIX",
     "id": 37
    },
    {
     "const": "SPECIES_ZUBAT",
     "id": 41
-   },
-   {
-    "const": "SPECIES_PARAS",
-    "id": 46
    },
    {
     "const": "SPECIES_VENONAT",
@@ -6793,10 +6405,6 @@
     "id": 92
    },
    {
-    "const": "SPECIES_DROWZEE",
-    "id": 96
-   },
-   {
     "const": "SPECIES_VOLTORB",
     "id": 100
    },
@@ -6809,16 +6417,8 @@
     "id": 111
    },
    {
-    "const": "SPECIES_TANGELA",
-    "id": 114
-   },
-   {
     "const": "SPECIES_SCYTHER",
     "id": 123
-   },
-   {
-    "const": "SPECIES_LAPRAS",
-    "id": 131
    },
    {
     "const": "SPECIES_ARTICUNO",
@@ -6829,24 +6429,8 @@
     "id": 167
    },
    {
-    "const": "SPECIES_CHINCHOU",
-    "id": 170
-   },
-   {
     "const": "SPECIES_PINECO",
     "id": 204
-   },
-   {
-    "const": "SPECIES_GLIGAR",
-    "id": 207
-   },
-   {
-    "const": "SPECIES_STANTLER",
-    "id": 234
-   },
-   {
-    "const": "SPECIES_MAGBY",
-    "id": 240
    },
    {
     "const": "SPECIES_GULPIN",
@@ -7108,20 +6692,8 @@
     "id": 4
    },
    {
-    "const": "SPECIES_GROWLITHE",
-    "id": 58
-   },
-   {
-    "const": "SPECIES_ONIX",
-    "id": 95
-   },
-   {
     "const": "SPECIES_EXEGGCUTE",
     "id": 102
-   },
-   {
-    "const": "SPECIES_KANGASKHAN",
-    "id": 115
    },
    {
     "const": "SPECIES_HORSEA",
@@ -7142,14 +6714,6 @@
    {
     "const": "SPECIES_DRATINI",
     "id": 147
-   },
-   {
-    "const": "SPECIES_TOTODILE",
-    "id": 158
-   },
-   {
-    "const": "SPECIES_ELEKID",
-    "id": 239
    },
    {
     "const": "SPECIES_LARVITAR",
@@ -7174,10 +6738,6 @@
    {
     "const": "SPECIES_GIBLE",
     "id": 496
-   },
-   {
-    "const": "SPECIES_MUNCHLAX",
-    "id": 499
    },
    {
     "const": "SPECIES_AXEW",
@@ -7516,28 +7076,8 @@
     "id": 90
    },
    {
-    "const": "SPECIES_EXEGGCUTE",
-    "id": 102
-   },
-   {
-    "const": "SPECIES_STARYU",
-    "id": 120
-   },
-   {
     "const": "SPECIES_LAPRAS",
     "id": 131
-   },
-   {
-    "const": "SPECIES_OMANYTE",
-    "id": 138
-   },
-   {
-    "const": "SPECIES_ARTICUNO",
-    "id": 144
-   },
-   {
-    "const": "SPECIES_IGGLYBUFF",
-    "id": 174
    },
    {
     "const": "SPECIES_SWINUB",
@@ -7563,16 +7103,8 @@
     "id": 60
    },
    {
-    "const": "SPECIES_BELLSPROUT",
-    "id": 69
-   },
-   {
     "const": "SPECIES_MAGNEMITE",
     "id": 81
-   },
-   {
-    "const": "SPECIES_DODUO",
-    "id": 84
    },
    {
     "const": "SPECIES_SEEL",
@@ -7587,24 +7119,12 @@
     "id": 100
    },
    {
-    "const": "SPECIES_LICKITUNG",
-    "id": 108
-   },
-   {
-    "const": "SPECIES_TANGELA",
-    "id": 114
-   },
-   {
     "const": "SPECIES_HORSEA",
     "id": 116
    },
    {
     "const": "SPECIES_EEVEE",
     "id": 133
-   },
-   {
-    "const": "SPECIES_PORYGON",
-    "id": 137
    },
    {
     "const": "SPECIES_ZAPDOS",
@@ -7621,10 +7141,6 @@
    {
     "const": "SPECIES_MAREEP",
     "id": 179
-   },
-   {
-    "const": "SPECIES_WOOPER",
-    "id": 194
    },
    {
     "const": "SPECIES_ELEKID",
@@ -8732,14 +8248,6 @@
     "id": 7
    },
    {
-    "const": "SPECIES_NIDORAN_F",
-    "id": 29
-   },
-   {
-    "const": "SPECIES_DIGLETT",
-    "id": 50
-   },
-   {
     "const": "SPECIES_PSYDUCK",
     "id": 54
    },
@@ -8762,10 +8270,6 @@
    {
     "const": "SPECIES_SHELLDER",
     "id": 90
-   },
-   {
-    "const": "SPECIES_EXEGGCUTE",
-    "id": 102
    },
    {
     "const": "SPECIES_HORSEA",
@@ -8810,14 +8314,6 @@
    {
     "const": "SPECIES_TOGEPI",
     "id": 175
-   },
-   {
-    "const": "SPECIES_MAREEP",
-    "id": 179
-   },
-   {
-    "const": "SPECIES_SUNKERN",
-    "id": 191
    },
    {
     "const": "SPECIES_WOOPER",
@@ -8922,28 +8418,8 @@
     "id": 92
    },
    {
-    "const": "SPECIES_EXEGGCUTE",
-    "id": 102
-   },
-   {
-    "const": "SPECIES_CUBONE",
-    "id": 104
-   },
-   {
-    "const": "SPECIES_LAPRAS",
-    "id": 131
-   },
-   {
     "const": "SPECIES_CYNDAQUIL",
     "id": 155
-   },
-   {
-    "const": "SPECIES_HOOTHOOT",
-    "id": 163
-   },
-   {
-    "const": "SPECIES_SPINARAK",
-    "id": 167
    },
    {
     "const": "SPECIES_MISDREAVUS",
@@ -8952,10 +8428,6 @@
    {
     "const": "SPECIES_GIRAFARIG",
     "id": 203
-   },
-   {
-    "const": "SPECIES_SNUBBULL",
-    "id": 209
    },
    {
     "const": "SPECIES_HO_OH",
@@ -8980,14 +8452,6 @@
    {
     "const": "SPECIES_DRIFLOON",
     "id": 478
-   },
-   {
-    "const": "SPECIES_BONSLY",
-    "id": 491
-   },
-   {
-    "const": "SPECIES_MANTYKE",
-    "id": 511
    },
    {
     "const": "SPECIES_YAMASK",
@@ -10216,10 +9680,6 @@
   },
   "species": [
    {
-    "const": "SPECIES_TENTACOOL",
-    "id": 72
-   },
-   {
     "const": "SPECIES_SEEL",
     "id": 86
    },
@@ -10232,24 +9692,8 @@
     "id": 131
    },
    {
-    "const": "SPECIES_ARTICUNO",
-    "id": 144
-   },
-   {
-    "const": "SPECIES_WOOPER",
-    "id": 194
-   },
-   {
-    "const": "SPECIES_GIRAFARIG",
-    "id": 203
-   },
-   {
     "const": "SPECIES_SNEASEL",
     "id": 215
-   },
-   {
-    "const": "SPECIES_TEDDIURSA",
-    "id": 216
    },
    {
     "const": "SPECIES_SWINUB",
@@ -10258,14 +9702,6 @@
    {
     "const": "SPECIES_DELIBIRD",
     "id": 225
-   },
-   {
-    "const": "SPECIES_PHANPY",
-    "id": 231
-   },
-   {
-    "const": "SPECIES_TYROGUE",
-    "id": 236
    },
    {
     "const": "SPECIES_SMOOCHUM",
@@ -10441,14 +9877,6 @@
     "id": 92
    },
    {
-    "const": "SPECIES_SCYTHER",
-    "id": 123
-   },
-   {
-    "const": "SPECIES_TAUROS",
-    "id": 128
-   },
-   {
     "const": "SPECIES_MAGIKARP",
     "id": 129
    },
@@ -10477,24 +9905,8 @@
     "id": 146
    },
    {
-    "const": "SPECIES_DRATINI",
-    "id": 147
-   },
-   {
     "const": "SPECIES_MEWTWO",
     "id": 150
-   },
-   {
-    "const": "SPECIES_CHIKORITA",
-    "id": 152
-   },
-   {
-    "const": "SPECIES_CYNDAQUIL",
-    "id": 155
-   },
-   {
-    "const": "SPECIES_TOTODILE",
-    "id": 158
    },
    {
     "const": "SPECIES_PICHU",
@@ -10503,18 +9915,6 @@
    {
     "const": "SPECIES_TYROGUE",
     "id": 236
-   },
-   {
-    "const": "SPECIES_RAIKOU",
-    "id": 243
-   },
-   {
-    "const": "SPECIES_ENTEI",
-    "id": 244
-   },
-   {
-    "const": "SPECIES_SUICUNE",
-    "id": 245
    },
    {
     "const": "SPECIES_HAPPINY",
@@ -11091,10 +10491,6 @@
   },
   "species": [
    {
-    "const": "SPECIES_SANDSHREW",
-    "id": 27
-   },
-   {
     "const": "SPECIES_VENONAT",
     "id": 48
    },
@@ -11135,22 +10531,6 @@
     "id": 150
    },
    {
-    "const": "SPECIES_CYNDAQUIL",
-    "id": 155
-   },
-   {
-    "const": "SPECIES_SENTRET",
-    "id": 161
-   },
-   {
-    "const": "SPECIES_IGGLYBUFF",
-    "id": 174
-   },
-   {
-    "const": "SPECIES_TYROGUE",
-    "id": 236
-   },
-   {
     "const": "SPECIES_SMOOCHUM",
     "id": 238
    },
@@ -11173,10 +10553,6 @@
    {
     "const": "SPECIES_MIME_JR",
     "id": 492
-   },
-   {
-    "const": "SPECIES_MUNCHLAX",
-    "id": 499
    },
    {
     "const": "SPECIES_WOOBAT",
@@ -11721,10 +11097,6 @@
     "id": 92
    },
    {
-    "const": "SPECIES_MEWTWO",
-    "id": 150
-   },
-   {
     "const": "SPECIES_CHIKORITA",
     "id": 152
    },
@@ -11743,10 +11115,6 @@
    {
     "const": "SPECIES_LARVITAR",
     "id": 246
-   },
-   {
-    "const": "SPECIES_LUGIA",
-    "id": 249
    },
    {
     "const": "SPECIES_HO_OH",
@@ -12656,20 +12024,8 @@
     "id": 29
    },
    {
-    "const": "SPECIES_ODDISH",
-    "id": 43
-   },
-   {
-    "const": "SPECIES_MEOWTH",
-    "id": 52
-   },
-   {
     "const": "SPECIES_PSYDUCK",
     "id": 54
-   },
-   {
-    "const": "SPECIES_DODUO",
-    "id": 84
    },
    {
     "const": "SPECIES_LICKITUNG",
@@ -12704,14 +12060,6 @@
     "id": 216
    },
    {
-    "const": "SPECIES_PHANPY",
-    "id": 231
-   },
-   {
-    "const": "SPECIES_STANTLER",
-    "id": 234
-   },
-   {
     "const": "SPECIES_SMEARGLE",
     "id": 235
    },
@@ -12734,10 +12082,6 @@
    {
     "const": "SPECIES_BUNEARY",
     "id": 480
-   },
-   {
-    "const": "SPECIES_MIME_JR",
-    "id": 492
    },
    {
     "const": "SPECIES_HAPPINY",
@@ -12806,24 +12150,12 @@
   },
   "species": [
    {
-    "const": "SPECIES_ABRA",
-    "id": 63
-   },
-   {
     "const": "SPECIES_SLOWPOKE",
     "id": 79
    },
    {
-    "const": "SPECIES_DROWZEE",
-    "id": 96
-   },
-   {
     "const": "SPECIES_EXEGGCUTE",
     "id": 102
-   },
-   {
-    "const": "SPECIES_EEVEE",
-    "id": 133
    },
    {
     "const": "SPECIES_CLEFFA",
@@ -12834,16 +12166,8 @@
     "id": 177
    },
    {
-    "const": "SPECIES_GIRAFARIG",
-    "id": 203
-   },
-   {
     "const": "SPECIES_SMOOCHUM",
     "id": 238
-   },
-   {
-    "const": "SPECIES_ELEKID",
-    "id": 239
    },
    {
     "const": "SPECIES_SPOINK",
@@ -12856,14 +12180,6 @@
    {
     "const": "SPECIES_BRONZOR",
     "id": 489
-   },
-   {
-    "const": "SPECIES_HAPPINY",
-    "id": 493
-   },
-   {
-    "const": "SPECIES_MANTYKE",
-    "id": 511
    }
   ]
  },

@@ -42,6 +42,10 @@ def _load(name):
     return mod
 
 
+EEVEELUTIONS = {"Vaporeon", "Jolteon", "Flareon", "Espeon", "Umbreon", "Leafeon", "Glaceon", "Sylveon"}
+EEVEE_ROW = "Eevee (any evolution)"   # Eevee's evolutions are one doc row (user 2026-11-20; emit_roster_docs.py)
+
+
 def read(path):
     with open(path, encoding="utf-8") as f:
         return f.read()
@@ -173,6 +177,11 @@ def main():
             shown.add(row_name(sid))
         rom_finals[rec["character"]] = shown
 
+    # Eevee's evolutions are one "Eevee (any evolution)" doc row (user 2026-11-20).
+    for _c, _f in rom_finals.items():
+        if set(_f) & EEVEELUTIONS:
+            rom_finals[_c] = (set(_f) - EEVEELUTIONS) | {EEVEE_ROW}
+
     doc = parse_doc(read(os.path.join(ROOT, "ROSTERS.md")))
 
     for char in doc:
@@ -194,6 +203,13 @@ def main():
         if char not in rom_names:
             continue
         for mon in listed:
+            if mon == EEVEE_ROW:
+                if not (set(rom_names[char]) & EEVEELUTIONS):
+                    fails.append("%s: doc lists %s, but its in-ROM roster allows no Eevee evolution" % (char, mon))
+                continue
+            if mon in EEVEELUTIONS:
+                fails.append("%s: doc lists %s on its own row; Eevee's evolutions are one '%s' row" % (char, mon, EEVEE_ROW))
+                continue
             if mon not in rom_names[char] \
                     and REGION_RE.sub("", mon) not in rom_names[char]:
                 fails.append("%s: doc lists %s, which is not in its in-ROM roster"
