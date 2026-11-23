@@ -227,6 +227,12 @@ def main():
     win("SetDefaultOptions' +0x15 value (QoL A3)", 0x5499C, 1)
     win("HP bar fixed-point step (2026-11-14)", bp.HPBAR_QSTEP_SITE[0] - _B, 4)
     win("HP bar toAdd (QoL A3)", bp.HPBAR_TOADD_SITE[0] - _B, 6)
+    # Move best-version (2026-11-23): the exact byte of each applied move_changes.json row in the live table (odd address
+    # 0x08A769AF); tools/tests/check_move_best.py checks the values and that nothing else in the table moved.
+    import movepatch
+    for _c in movepatch.plan(json.load(open(os.path.join(ROOT, "tools", "character_mode", "move_changes.json"))), "cfru")[0]:
+        _r = movepatch.touched_bytes("cfru", 0xA769AF, _c["hack_move_id"], _c["field"], {})
+        win("move %d %s" % (_c["hack_move_id"], _c["field"]), _r.start, len(_r))
     check("no two declared windows overlap",
           all(not (a[1] < b[1] + b[2] and b[1] < a[1] + a[2])
               for i, a in enumerate(windows) for b in windows[i + 1:]))

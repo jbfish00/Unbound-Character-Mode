@@ -1469,6 +1469,18 @@ def main():
     print("battle animations off on new games:", anim_default(rom))
     print("instant HP bar:", instant_hp(rom))
 
+    # Move "best version" (user 2026-11-23: raise every move to its best value), cheap tier: numbers + type + priority +
+    # never-miss (CFRU: accuracy 0 always hits). Edits from tools/character_mode/move_changes.json; each asserts the byte
+    # it replaces. CM_NO_MOVEBEST=1 builds the control (the hack's own move table).
+    if os.environ.get("CM_NO_MOVEBEST") != "1":
+        sys.path.insert(0, os.path.join(ROOT, "tools"))
+        import movepatch
+        _refs = bytes(rom).count(struct.pack("<I", 0x08a769af))
+        assert _refs >= 400, f"move table has only {_refs} literal refs"   # live gBattleMoves (445 refs, 2026-11-23)
+        _mb = movepatch.apply(rom, json.load(open(os.path.join(os.path.join(ROOT, "tools"), "character_mode", "move_changes.json"))),
+                              0xa769af, "cfru")
+        print(f"move best-version: {_mb['applied']} applied, {_mb['deferred']} deferred")
+
     # 8. outputs
     out = os.path.join(BUILD, "unbound-cm.gba")
     with open(out, "wb") as f:
