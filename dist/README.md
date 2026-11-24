@@ -62,7 +62,7 @@ game restricted to that character's canon Pokemon.
    `b4776b82a4c7915d0fadeaa27e013523f99dfd94`).
 2. Apply `unbound-character-mode.bps` to that ROM with Flips
    (https://github.com/Alcaro/Flips), or any BPS patcher.
-3. The result should have sha1 `05c7e01df0d77f4392a07d2ed4de4595774af25a`.
+3. The result should have sha1 `b2ff57a88ca005406fba7e86710efbf4e11085d4`.
 
 ## Known limitations
 

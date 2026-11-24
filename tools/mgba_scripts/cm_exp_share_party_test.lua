@@ -78,6 +78,18 @@ s = s .. string.char(0x79) .. u16(10) .. string.char(5) .. u16(0) .. string.rep(
 s = s .. string.char(0xB6) .. u16(129) .. string.char(2) .. u16(0)                         -- setwildbattle Magikarp L2
 s = s .. string.char(0xB7, 0x27, 0x02)                                                     -- dowildbattle; waitstate; end
 
+-- crit +2 (2026-11-24, tools/test_harness/run_crit_test.sh): FORCE_MOVE replaces Tackle; CRIT_BP = the instruction
+-- after the crit routine's move-stage computation (0x089CE4D0: r6 = the move's crit stage, r4 = gCurrentMove).
+local FORCE = tonumber(os.getenv("FORCE_MOVE") or "33")
+local critSeen = {}
+if os.getenv("CRIT_BP") then
+    emu:setBreakpoint(function()
+        local mv = emu:readRegister("r4") & 0xFFFF
+        critSeen[mv] = emu:readRegister("r6")
+        console:log(string.format("EXPSHARE CRIT move %d stage %d", mv, critSeen[mv]))
+    end, tonumber(os.getenv("CRIT_BP")))
+end
+
 local function check(name, ok)
     if ok then passes = passes + 1 else table.insert(fails, name) end
     console:log(string.format("EXPSHARE %s %s", ok and "PASS" or "FAIL", name))
@@ -103,7 +115,7 @@ callbacks:add("frame", function()
         end
         if f > battleAt + 60 and f < battleAt + 600 then          -- both battlers are set up by now
             if not HPBAR then emu:write16(BMONS + 0x58 + 0x28, 1) end   -- wild HP 1
-            emu:write16(BMONS + 0x0C, 33); emu:write8(BMONS + 0x24, 35)   -- lead move 1 = Tackle, PP
+            emu:write16(BMONS + 0x0C, FORCE); emu:write8(BMONS + 0x24, 35)   -- lead move 1 = Tackle (or FORCE_MOVE), PP
         end
         if (f - battleAt) % 40 == 0 then emu:addKey(A) elseif (f - battleAt) % 40 == 8 then emu:clearKey(A) end
         if SHOTS and (f - battleAt) % 200 == 0 then emu:screenshot(string.format("%s/%05d.png", SHOTS, f)) end
@@ -118,6 +130,9 @@ callbacks:add("frame", function()
         console:log(string.format("EXPSHARE party %d->%d lead sp=%d exp=%d bench sp=%d exp=%d (L5 base %d)",
             n0, n, sp1, e1, sp2, e2, base))
         check("the battle started and ended", battleAt ~= nil and endAt ~= nil)
+        if os.getenv("WANT_CRIT") then
+            check("crit stage of move " .. FORCE .. " == " .. os.getenv("WANT_CRIT"), critSeen[FORCE] == tonumber(os.getenv("WANT_CRIT")))
+        end
         check("the bench slot is the Caterpie (species 10)", sp2 == 10)
         if EXPECT == "share" then
             check("the benched Caterpie gained Exp. (party-wide share)", e2 > base)

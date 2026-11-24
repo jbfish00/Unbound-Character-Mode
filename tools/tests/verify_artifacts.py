@@ -233,6 +233,9 @@ def main():
     for _c in movepatch.plan(json.load(open(os.path.join(ROOT, "tools", "character_mode", "move_changes.json"))), "cfru")[0]:
         _r = movepatch.touched_bytes("cfru", 0xA769AF, _c["hack_move_id"], _c["field"], {})
         win("move %d %s" % (_c["hack_move_id"], _c["field"]), _r.start, len(_r))
+    # crit +2 (2026-11-24): the crit routine's flag-bit site and its stub (check_move_best.py pins their bytes)
+    win("crit +2 site (bl stub)", bp.CRIT_SITE - _B, 4)
+    # (the stub itself is inside the declared injection-block window: CRIT_STUB_ADDR is at its end)
     check("no two declared windows overlap",
           all(not (a[1] < b[1] + b[2] and b[1] < a[1] + a[2])
               for i, a in enumerate(windows) for b in windows[i + 1:]))

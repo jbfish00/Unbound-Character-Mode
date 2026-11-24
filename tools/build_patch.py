@@ -359,6 +359,31 @@ def roster_icon_sheet(rom):
     return blob
 
 
+# Move best-version crit +2 (2026-11-24). Unbound's battle crit routine (the one indexing the Gen VII odds table at
+# 0x08A69594 and rolling Random) takes the move's stage from bit 3 of byte 3 of its 7-byte per-move record:
+# `ldrb r6,[r3,#3] ... lsls r6,r6,#28 ; lsrs r6,r6,#31` (r4 = gCurrentMove, r2 must survive). Those two instructions
+# become `bl CRIT_STUB_ADDR`: the stub computes the same bit, answers 2 for a move in the slice's crit_list (the moves
+# any generation gave a high crit ratio), and preserves every register but r6. CM_NO_MOVEBEST / CM_NO_CRITPLUS2: control.
+CRIT_SITE = 0x089CE4CC
+CRIT_OLD = bytes.fromhex("3607f60f")
+CRIT_STUB_ADDR = 0x08B4FC00             # end of the verified 147 KiB injection block (its data ends ~0x08B462D0)
+
+
+def crit_stub(at, ids):
+    import tempfile
+    asm = (".thumb\n.syntax unified\n.global _start\n_start:\n"
+           "  push {r0, r1, lr}\n  lsls r6, r6, #28\n  lsrs r6, r6, #31\n  ldr r0, =L\n"
+           "1: ldrh r1, [r0]\n  adds r0, #2\n  cmp r1, r4\n  beq 2f\n  adds r1, #1\n  lsls r1, r1, #16\n  bne 1b\n"
+           "  b 3f\n2: movs r6, #2\n3: pop {r0, r1, pc}\n.ltorg\n.balign 2\nL: .hword %s\n"
+           % ", ".join(str(i) for i in list(ids) + [0xFFFF]))
+    with tempfile.TemporaryDirectory() as d:
+        open(d + "/s.s", "w").write(asm)
+        subprocess.run(["arm-none-eabi-as", "-mcpu=arm7tdmi", "-o", d + "/s.o", d + "/s.s"], check=True)
+        subprocess.run(["arm-none-eabi-ld", "-Ttext", hex(at), "-o", d + "/s.elf", d + "/s.o"], check=True)
+        subprocess.run(["arm-none-eabi-objcopy", "-O", "binary", "-j", ".text", d + "/s.elf", d + "/s.bin"], check=True)
+        return open(d + "/s.bin", "rb").read()
+
+
 def thumb_bl(from_addr, to_addr):
     """Encode a Thumb-1 BL instruction pair at from_addr targeting to_addr."""
     offset = to_addr - (from_addr + 4)
@@ -1480,6 +1505,19 @@ def main():
         _mb = movepatch.apply(rom, json.load(open(os.path.join(os.path.join(ROOT, "tools"), "character_mode", "move_changes.json"))),
                               0xa769af, "cfru")
         print(f"move best-version: {_mb['applied']} applied, {_mb['deferred']} deferred")
+
+    if os.environ.get("CM_NO_MOVEBEST") != "1" and os.environ.get("CM_NO_CRITPLUS2") != "1":
+        _ids = json.load(open(os.path.join(ROOT, "tools", "character_mode", "move_changes.json")))["crit_list"]["ids"]
+        _stub = crit_stub(CRIT_STUB_ADDR, _ids)
+        _so = CRIT_STUB_ADDR - ROM_BASE
+        assert _so + len(_stub) <= INJECT_FILE_OFF + INJECT_BLOCK_LEN and set(rom[_so:_so + len(_stub)]) == {0xFF}, \
+            "crit stub area not blank"
+        rom[_so:_so + len(_stub)] = _stub
+        _co = CRIT_SITE - ROM_BASE
+        assert bytes(rom[_co:_co + 4]) == CRIT_OLD, f"crit site {CRIT_SITE:#x} differs: {rom[_co:_co + 4].hex()}"
+        assert bytes(rom[0x9CE598:0x9CE59A]) == bytes.fromhex("2b4a"), "not the crit routine (odds-table load)"
+        rom[_co:_co + 4] = thumb_bl(CRIT_SITE, CRIT_STUB_ADDR)
+        print(f"crit +2: {len(_ids)} moves, stub {len(_stub)} B @ {CRIT_STUB_ADDR:#x}, site {CRIT_SITE:#x}")
 
     # 8. outputs
     out = os.path.join(BUILD, "unbound-cm.gba")

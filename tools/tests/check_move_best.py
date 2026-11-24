@@ -4,13 +4,18 @@
 usage: python3 tools/tests/check_move_best.py [rom] [--no-tamper]
 Pass = every applied row of tools/character_mode/move_changes.json reads its new value, no other byte of the move table
 changed, and the applied/deferred counts equal the pinned EXPECT. Controls: a reverted edit, a stray table byte and the
-unpatched base ROM must each fail the check."""
+unpatched base ROM must each fail the check.
+Crit +2 (2026-11-24): the crit routine's `lsls r6,#28; lsrs r6,#31` (CRIT_SITE) is `bl CRIT_STUB_ADDR` and the stub
+there is byte for byte crit_stub(slice crit_list) (build_patch.py). Controls: the site's original bytes back, a list id
+changed in the stub."""
 import json, sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "tools"))
 import movepatch
+from build_patch import thumb_bl, crit_stub, CRIT_SITE, CRIT_OLD, CRIT_STUB_ADDR
+STUB = crit_stub(CRIT_STUB_ADDR, json.load((ROOT / "tools/character_mode/move_changes.json").open())["crit_list"]["ids"])
 
 BASE = ROOT / "rom" / "Pokemon Unbound (v2.1.1.1).gba"
 TABLE = 0xA769AF                 # live gBattleMoves file offset (445 literal refs)
@@ -22,6 +27,11 @@ N = max(c["hack_move_id"] for c in SL["changes"])
 def check(base, built):
     todo, deferred, _, _ = movepatch.plan(SL, "cfru")
     bad = movepatch.verify(base, built, SL, TABLE, "cfru", N)
+    if bytes(built[CRIT_SITE - 0x08000000:CRIT_SITE - 0x08000000 + 4]) != thumb_bl(CRIT_SITE, CRIT_STUB_ADDR):
+        bad.append("crit: %#x is not BL -> the crit stub" % CRIT_SITE)
+    so = CRIT_STUB_ADDR - 0x08000000
+    if bytes(built[so:so + len(STUB)]) != STUB:
+        bad.append("crit: the stub at %#x differs from crit_stub(crit_list)" % CRIT_STUB_ADDR)
     if (len(todo), len(deferred)) != EXPECT:
         bad.append(f"counts {len(todo)}/{len(deferred)} (want {EXPECT})")
     return bad, todo
@@ -43,13 +53,16 @@ def main():
         t2 = bytearray(built); t2[TABLE + 12 * 200 + 11] ^= 0x40
         cm = next(x for x in todo if x.get("tier") == "medium" and x["field"] == "flags")   # a medium-tier row too
         t3 = bytearray(built); o = TABLE + 12 * cm["hack_move_id"] + movepatch.LAYOUTS["cfru"]["fields"]["flags"][0]; t3[o] = base[o]
+        t4 = bytearray(built); co = CRIT_SITE - 0x08000000; t4[co:co + 4] = CRIT_OLD
+        t5 = bytearray(built); t5[CRIT_STUB_ADDR - 0x08000000 + len(STUB) - 4] ^= 0x01     # a crit_list id
         ok = 0
-        for name, t in [(f"an applied edit reverted ({c['move']} {c['field']})", t1), ("a stray move-table byte", t2),
+        for name, t in [("crit: the site's original bytes back", t4), ("crit: a list id changed", t5),
+                        (f"an applied edit reverted ({c['move']} {c['field']})", t1), ("a stray move-table byte", t2),
                         ("the unpatched base ROM's table", bytearray(base)), (f"a medium flags edit reverted ({cm['move']})", t3)]:
             f = check(base, t)[0]
             print("caught" if f else "MISSED", name, len(f)); ok += bool(f)
-        print(f"negative controls: {ok}/4")
-        rc |= ok != 4
+        print(f"negative controls: {ok}/6")
+        rc |= ok != 6
     sys.exit(rc)
 
 
