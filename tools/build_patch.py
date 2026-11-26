@@ -1519,6 +1519,22 @@ def main():
         rom[_co:_co + 4] = thumb_bl(CRIT_SITE, CRIT_STUB_ADDR)
         print(f"crit +2: {len(_ids)} moves, stub {len(_stub)} B @ {CRIT_STUB_ADDR:#x}, site {CRIT_SITE:#x}")
 
+    # Move/ability behaviour cards (item 1, 2026-11-26): tools/character_mode/behaviour_cards.json, written by the workspace
+    # generator game_plans/move_ability_best_2026-11-22/behaviour_all/gba/make_cfru.py from the base ROM. Every edit asserts
+    # the bytes it replaces (tools/bpatch.py). After move best-version + crit +2, so the two never overlap unnoticed.
+    # CM_NO_BEHAVIOUR=1 builds the control (build/unbound-cm_nobeh.gba; the shipped .sha1 and BPS are left alone).
+    nobeh = os.environ.get("CM_NO_BEHAVIOUR") == "1"
+    if nobeh:
+        out = os.path.join(BUILD, "unbound-cm_nobeh.gba")
+        with open(out, "wb") as f:
+            f.write(rom)
+        print(f"wrote {out} sha1 {sha1(rom)} (CM_NO_BEHAVIOUR control)")
+        return
+    sys.path.insert(0, os.path.join(ROOT, "tools"))
+    import bpatch
+    _bc = bpatch.apply(rom, bpatch.load(os.path.join(ROOT, "tools", "character_mode", "behaviour_cards.json")))
+    print(f"behaviour cards: {sum(_bc.values())} edits, {len(_bc)} cards")
+
     # 8. outputs
     out = os.path.join(BUILD, "unbound-cm.gba")
     with open(out, "wb") as f:

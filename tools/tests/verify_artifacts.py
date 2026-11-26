@@ -236,6 +236,12 @@ def main():
     # crit +2 (2026-11-24): the crit routine's flag-bit site and its stub (check_move_best.py pins their bytes)
     win("crit +2 site (bl stub)", bp.CRIT_SITE - _B, 4)
     # (the stub itself is inside the declared injection-block window: CRIT_STUB_ADDR is at its end)
+    # behaviour cards (2026-11-26): the exact bytes of each tools/character_mode/behaviour_cards.json edit; its "blob"
+    # edits (new script/data) sit in the injection block after the crit stub, which that window already declares.
+    # tools/tests/check_behaviour.py checks their values against the CM_NO_BEHAVIOUR control and decodes them.
+    for _e in json.load(open(os.path.join(ROOT, "tools", "character_mode", "behaviour_cards.json")))["edits"]:
+        if _e["kind"] != "blob":
+            win("behaviour card %s" % _e["card"], int(_e["addr"], 16) - _B, len(_e["to"]) // 2)
     check("no two declared windows overlap",
           all(not (a[1] < b[1] + b[2] and b[1] < a[1] + a[2])
               for i, a in enumerate(windows) for b in windows[i + 1:]))
